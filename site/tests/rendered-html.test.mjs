@@ -46,11 +46,28 @@ test("server-renders the Aaron Reader snapshot", async () => {
   assert.match(html, /codex:\/\/new\?prompt=/);
   assert.match(html, /10:00 &amp; 22:00 San Francisco/);
   assert.match(html, /class="report-section"/);
-  assert.match(html, /<article class="report-card" lang="en">/);
-  assert.match(html, /<strong>Weekly brief<\/strong>/);
-  assert.match(html, /<details class="report-items"><summary>/);
-  assert.doesNotMatch(html, /<details class="report-items" open/);
-  assert.doesNotMatch(html, /<article class="report-card" lang="zh-CN">/);
+  const reportCards = html.match(
+    /<article\b(?=[^>]*\bclass="[^"]*\breport-card\b[^"]*")[^>]*>[\s\S]*?<\/article>/g,
+  ) ?? [];
+  assert.ok(
+    reportCards.some(
+      (card) => /\blang="en"/.test(card) && /<strong>Weekly brief<\/strong>/.test(card),
+    ),
+    "English SSR should render an English weekly report card",
+  );
+  assert.ok(
+    reportCards.every((card) => !/\blang="zh-CN"/.test(card)),
+    "English SSR must not render a visible zh-CN report card",
+  );
+  const reportDetailTags = reportCards.flatMap(
+    (card) => card.match(
+      /<details\b(?=[^>]*\bclass="[^"]*\breport-items\b[^"]*")[^>]*>/g,
+    ) ?? [],
+  );
+  assert.ok(reportDetailTags.length > 0, "The weekly report should include a source-notes disclosure");
+  for (const tag of reportDetailTags) {
+    assert.doesNotMatch(tag, /\sopen(?:\s|=|>)/i, "Report details should be collapsed by default");
+  }
   assert.match(html, /OpenAI News/);
   assert.match(html, /Anthropic News/);
   assert.doesNotMatch(html, /codex-preview/);
