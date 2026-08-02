@@ -10,63 +10,63 @@ Showing the latest 100 of 110 public articles (limit: 100).
 - [Univé builds an AI\-ready workforce](<https://openai.com/index/unive>) — OpenAI News · 2026\-07\-31
 - [Disrupting a Criminal Scam Operation](<https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation>) — OpenAI News · 2026\-07\-31
 - [Advancing the price\-performance frontier with GPT\-5\.6](<https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6>) — OpenAI News · 2026\-07\-30
-- [Investigating three real\-world incidents in our cybersecurity evaluations](<https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals>) — Anthropic News · 2026\-07\-30
 - [How avatarin built a 24\/7 retail agent with GPT\-Realtime](<https://openai.com/index/avatarin>) — OpenAI News · 2026\-07\-30
+- [Investigating three real\-world incidents in our cybersecurity evaluations](<https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals>) — Anthropic News · 2026\-07\-30
 - [How enabling two settings tripled our scores on the ARC\-AGI\-3 benchmark](<https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores>) — OpenAI News · 2026\-07\-29
 - [Accelerating scientific discovery with ChatGPT for Academic Researchers](<https://openai.com/index/chatgpt-for-academic-researchers>) — OpenAI News · 2026\-07\-29
 - [How GPT\-5\.6 fuses frontier intelligence with frontier efficiency](<https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency>) — OpenAI News · 2026\-07\-29
 - [Scientific computing in the age of agentic AI](<https://openai.com/index/scientific-computing-agentic-ai>) — OpenAI News · 2026\-07\-28
 - [Bringing MCP 2026\-07\-28 to Claude](<https://claude.com/blog/bringing-mcp-2026-07-28-to-claude>) — Claude Blog · 2026\-07\-28
 - [How AI is expanding what people do at work](<https://openai.com/index/how-ai-is-expanding-what-people-do-at-work>) — OpenAI News · 2026\-07\-27
-- [Cognizant and Anthropic expand their partnership to bring Claude to enterprise clients](<https://www.anthropic.com/news/cognizant-anthropic>) — Anthropic News · 2026\-07\-27
 - [Our position on open\-weights models](<https://www.anthropic.com/news/position-open-weights-models>) — Anthropic News · 2026\-07\-27
-- [Introducing Claude Opus 5](<https://www.anthropic.com/news/claude-opus-5>) — Anthropic News · 2026\-07\-24
-- [Claude models explained\: choosing the best model for your use case](<https://claude.com/blog/claude-models-explained-choosing-the-best-model-for-your-use-case>) — Claude Blog · 2026\-07\-24
+- [Cognizant and Anthropic expand their partnership to bring Claude to enterprise clients](<https://www.anthropic.com/news/cognizant-anthropic>) — Anthropic News · 2026\-07\-27
 - [The new rules of context engineering for Claude 5 generation models](<https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models>) — Claude Blog · 2026\-07\-24
 - [How the product designer who built Claude Design uses it to explore ideas before building them](<https://claude.com/blog/how-the-product-designer-who-built-claude-design-uses-it-to-explore-ideas-before-building-them>) — Claude Blog · 2026\-07\-24
+- [Claude models explained\: choosing the best model for your use case](<https://claude.com/blog/claude-models-explained-choosing-the-best-model-for-your-use-case>) — Claude Blog · 2026\-07\-24
+- [Introducing Claude Opus 5](<https://www.anthropic.com/news/claude-opus-5>) — Anthropic News · 2026\-07\-24
+- [Launching Health in ChatGPT](<https://openai.com/index/health-in-chatgpt>) — OpenAI News · 2026\-07\-23
 - [Think through hard problems in voice mode](<https://claude.com/blog/think-through-hard-problems-in-voice-mode>) — Claude Blog · 2026\-07\-23
 - [Four role\-based certifications for the people who put Claude to work for customers](<https://claude.com/blog/four-role-based-claude-certifications>) — Claude Blog · 2026\-07\-23
-- [Launching Health in ChatGPT](<https://openai.com/index/health-in-chatgpt>) — OpenAI News · 2026\-07\-23
 - [How news organizations are using AI to advance their vital missions](<https://openai.com/index/how-news-organizations-are-using-ai>) — OpenAI News · 2026\-07\-22
 - [Building AI infrastructure with the Effingham County community](<https://openai.com/index/building-ai-infrastructure-with-the-effingham-county-community>) — OpenAI News · 2026\-07\-22
 - [Advancing the next era of national science](<https://openai.com/index/advancing-the-next-era-of-national-science>) — OpenAI News · 2026\-07\-22
 - [Introducing OpenAI Presence](<https://openai.com/index/introducing-openai-presence>) — OpenAI News · 2026\-07\-22
-- [Ask Claude about the Anthropic Economic Index](<https://www.anthropic.com/news/anthropic-economic-index-connector>) — Anthropic News · 2026\-07\-22
-- [A research agenda for the Economic Futures Research Fund](<https://www.anthropic.com/news/economic-futures-research-fund-agenda>) — Anthropic News · 2026\-07\-22
+- [NTT DATA Group cuts incident analysis to 30 minutes with Codex](<https://openai.com/index/ntt-data>) — OpenAI News · 2026\-07\-22
 - [How Outtake built a cyber investigator on Claude](<https://claude.com/blog/how-outtake-built-a-cyber-investigator-on-claude>) — Claude Blog · 2026\-07\-22
 - [Building verification loops in Claude Code with skills](<https://claude.com/blog/building-verification-loops-in-claude-code-with-skills>) — Claude Blog · 2026\-07\-22
-- [NTT DATA Group cuts incident analysis to 30 minutes with Codex](<https://openai.com/index/ntt-data>) — OpenAI News · 2026\-07\-22
+- [A research agenda for the Economic Futures Research Fund](<https://www.anthropic.com/news/economic-futures-research-fund-agenda>) — Anthropic News · 2026\-07\-22
+- [Ask Claude about the Anthropic Economic Index](<https://www.anthropic.com/news/anthropic-economic-index-connector>) — Anthropic News · 2026\-07\-22
 - [Introducing the ChatGPT for small business program](<https://openai.com/index/introducing-chatgpt-small-business-program>) — OpenAI News · 2026\-07\-21
 - [OpenAI and Hugging Face partner to address security incident during model evaluation](<https://openai.com/index/hugging-face-model-evaluation-security-incident>) — OpenAI News · 2026\-07\-21
-- [Anthropic is donating another \$20 million to Public First Action](<https://www.anthropic.com/news/donation-public-first-action>) — Anthropic News · 2026\-07\-21
+- [David Vélez and Robin Vince join the boards of the OpenAI Foundation and OpenAI Group PBC](<https://openai.com/index/david-velez-robin-vince-join-openai-boards>) — OpenAI News · 2026\-07\-21
 - [How Datadog built a “universal machine tool” for Claude Code](<https://claude.com/blog/how-datadog-built-a-universal-machine-tool-for-claude-code>) — Claude Blog · 2026\-07\-21
 - [How Anthropic secures its AI\-native software development lifecycle](<https://claude.com/blog/how-anthropic-secures-its-ai-native-software-development-lifecycle>) — Claude Blog · 2026\-07\-21
-- [David Vélez and Robin Vince join the boards of the OpenAI Foundation and OpenAI Group PBC](<https://openai.com/index/david-velez-robin-vince-join-openai-boards>) — OpenAI News · 2026\-07\-21
+- [Anthropic is donating another \$20 million to Public First Action](<https://www.anthropic.com/news/donation-public-first-action>) — Anthropic News · 2026\-07\-21
 - [Safety and alignment in an era of long\-horizon models](<https://openai.com/index/safety-alignment-long-horizon-models>) — OpenAI News · 2026\-07\-20
-- [Apply for Anthropic’s AI for Science rare disease research grants](<https://www.anthropic.com/news/rare-disease-research-grants>) — Anthropic News · 2026\-07\-20
-- [Working at the frontier\: How Rakuten builds agents overnight with Claude Fable 5](<https://claude.com/blog/working-at-the-frontier-rakuten>) — Claude Blog · 2026\-07\-20
 - [Custom Code Review rules for Codex](<https://developers.openai.com/blog/custom-code-review-rules-for-codex>) — OpenAI Developer Blog · 2026\-07\-20
+- [Working at the frontier\: How Rakuten builds agents overnight with Claude Fable 5](<https://claude.com/blog/working-at-the-frontier-rakuten>) — Claude Blog · 2026\-07\-20
+- [Apply for Anthropic’s AI for Science rare disease research grants](<https://www.anthropic.com/news/rare-disease-research-grants>) — Anthropic News · 2026\-07\-20
 - [A scorecard for the AI age](<https://openai.com/index/a-scorecard-for-the-ai-age>) — OpenAI News · 2026\-07\-17
-- [Zero risk isn\'t the job\: a CISO\'s guide to agentic AI](<https://claude.com/blog/ciso-guide-to-agentic-ai>) — Claude Blog · 2026\-07\-17
 - [Working at the frontier\: How Cursor knew Claude Fable 5 was ready for the hardest 1\% of problems](<https://claude.com/blog/working-at-the-frontier-cursor>) — Claude Blog · 2026\-07\-17
+- [Zero risk isn\'t the job\: a CISO\'s guide to agentic AI](<https://claude.com/blog/ciso-guide-to-agentic-ai>) — Claude Blog · 2026\-07\-17
 - [Why teens deserve access to safe AI](<https://openai.com/index/why-teens-deserve-access-safe-ai>) — OpenAI News · 2026\-07\-16
 - [How Codex became a collaborator for OpenAI’s creative team](<https://openai.com/index/codex-collaborator-creative-team>) — OpenAI News · 2026\-07\-16
+- [How Cars24 scales conversations and builds faster with OpenAI](<https://openai.com/index/cars24>) — OpenAI News · 2026\-07\-16
 - [Working with Claude Fable 5 in Claude Cowork](<https://claude.com/blog/working-with-claude-fable-5-in-claude-cowork>) — Claude Blog · 2026\-07\-16
 - [How Anthropic runs large\-scale code migrations with Claude Code](<https://claude.com/blog/ai-code-migration>) — Claude Blog · 2026\-07\-16
-- [How Cars24 scales conversations and builds faster with OpenAI](<https://openai.com/index/cars24>) — OpenAI News · 2026\-07\-16
 - [The US is advancing AI safety through state and federal action](<https://openai.com/index/advancing-ai-safety-through-state-and-federal-action>) — OpenAI News · 2026\-07\-15
 - [GPT\-Red\: Unlocking Self\-Improvement for Robustness](<https://openai.com/index/unlocking-self-improvement-gpt-red>) — OpenAI News · 2026\-07\-15
 - [How to manage AI investments in the agentic era](<https://openai.com/index/managing-ai-investments-in-agentic-era>) — OpenAI News · 2026\-07\-14
-- [Anthropic commits \$10 million to Canadian AI research](<https://www.anthropic.com/news/canadian-ai-research>) — Anthropic News · 2026\-07\-14
-- [Introducing Claude for Teachers](<https://www.anthropic.com/news/claude-for-teachers>) — Anthropic News · 2026\-07\-14
 - [How sales teams use ChatGPT Work](<https://openai.com/academy/codex-for-work/how-sales-teams-use-codex>) — OpenAI News · 2026\-07\-14
 - [How data science teams use ChatGPT Work](<https://openai.com/academy/codex-for-work/how-data-science-teams-use-codex>) — OpenAI News · 2026\-07\-14
+- [Introducing Claude for Teachers](<https://www.anthropic.com/news/claude-for-teachers>) — Anthropic News · 2026\-07\-14
+- [Anthropic commits \$10 million to Canadian AI research](<https://www.anthropic.com/news/canadian-ai-research>) — Anthropic News · 2026\-07\-14
 - [How Deutsche Telekom is rewiring telecommunications with AI](<https://openai.com/index/deutsche-telekom>) — OpenAI News · 2026\-07\-10
 - [Getting started with ChatGPT](<https://openai.com/academy/getting-started>) — OpenAI News · 2026\-07\-10
 - [GPT\-5\.6 is now the preferred model in Microsoft 365 Copilot](<https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot>) — OpenAI News · 2026\-07\-09
-- [GPT\-5\.5 Bio Bug Bounty](<https://openai.com/index/bio-bug-bounty>) — OpenAI News · 2026\-07\-09
 - [GPT\-5\.6\: Frontier intelligence that scales with your ambition](<https://openai.com/index/gpt-5-6>) — OpenAI News · 2026\-07\-09
 - [ChatGPT is now a partner for your most ambitious work](<https://openai.com/index/chatgpt-for-your-most-ambitious-work>) — OpenAI News · 2026\-07\-09
+- [GPT\-5\.5 Bio Bug Bounty](<https://openai.com/index/bio-bug-bounty>) — OpenAI News · 2026\-07\-09
 - [Inviting hard questions](<https://www.anthropic.com/news/hard-questions>) — Anthropic News · 2026\-07\-09
 - [Our approach to government and national security partnerships](<https://openai.com/index/government-national-security-partnerships>) — OpenAI News · 2026\-07\-08
 - [Separating signal from noise in coding evaluations](<https://openai.com/index/separating-signal-from-noise-coding-evaluations>) — OpenAI News · 2026\-07\-08
@@ -75,11 +75,11 @@ Showing the latest 100 of 110 public articles (limit: 100).
 - [MUFG aims to become AI\-native with OpenAI](<https://openai.com/index/mufg>) — OpenAI News · 2026\-07\-07
 - [Australian Payments Plus moves faster with ChatGPT and Codex](<https://openai.com/index/australian-payments-plus>) — OpenAI News · 2026\-07\-07
 - [How ChatGPT adoption has expanded](<https://openai.com/index/how-chatgpt-adoption-has-expanded>) — OpenAI News · 2026\-06\-30
-- [Introducing Claude Sonnet 5](<https://www.anthropic.com/news/claude-sonnet-5>) — Anthropic News · 2026\-06\-30
-- [Redeploying Fable 5](<https://www.anthropic.com/news/redeploying-fable-5>) — Anthropic News · 2026\-06\-30
 - [Introducing GeneBench\-Pro](<https://openai.com/index/introducing-genebench-pro>) — OpenAI News · 2026\-06\-30
 - [Inside Genebench\-Pro](<https://openai.com/index/genebench-pro/case-studies>) — OpenAI News · 2026\-06\-30
 - [Core dump epidemiology\: fixing an 18\-year\-old bug](<https://openai.com/index/core-dump-epidemiology-data-infrastructure-bug>) — OpenAI News · 2026\-06\-30
+- [Redeploying Fable 5](<https://www.anthropic.com/news/redeploying-fable-5>) — Anthropic News · 2026\-06\-30
+- [Introducing Claude Sonnet 5](<https://www.anthropic.com/news/claude-sonnet-5>) — Anthropic News · 2026\-06\-30
 - [Mapping Europe’s AI Workforce Opportunity](<https://openai.com/index/mapping-ai-jobs-transition-eu>) — OpenAI News · 2026\-06\-29
 - [HP Inc\. launches Frontier strategic partnership with OpenAI](<https://openai.com/index/hp-frontier-partnership>) — OpenAI News · 2026\-06\-28
 - [Previewing GPT\-5\.6 Sol\: a next\-generation model](<https://openai.com/index/previewing-gpt-5-6-sol>) — OpenAI News · 2026\-06\-26
@@ -90,8 +90,8 @@ Showing the latest 100 of 110 public articles (limit: 100).
 - [Building intelligent apps for Apple platforms with Claude in the Foundation Models framework](<https://claude.com/blog/claude-for-foundation-models>) — Claude Blog · 2026\-06\-08
 - [New in Claude Managed Agents\: dreaming\, outcomes\, and multiagent orchestration](<https://claude.com/blog/new-in-claude-managed-agents>) — Claude Blog · 2026\-05\-19
 - [New in Claude Managed Agents\: self\-hosted sandboxes and MCP tunnels](<https://claude.com/blog/claude-managed-agents-updates>) — Claude Blog · 2026\-05\-19
-- [Built\-in memory for Claude Managed Agents](<https://claude.com/blog/claude-managed-agents-memory>) — Claude Blog · 2026\-04\-23
 - [New connectors in Claude for everyday life](<https://claude.com/blog/connectors-for-everyday-life>) — Claude Blog · 2026\-04\-23
+- [Built\-in memory for Claude Managed Agents](<https://claude.com/blog/claude-managed-agents-memory>) — Claude Blog · 2026\-04\-23
 - [Redesigning Claude Code on desktop for parallel agents](<https://claude.com/blog/claude-code-desktop-redesign>) — Claude Blog · 2026\-04\-14
 - [Preparing your security program for AI\-accelerated offense](<https://claude.com/blog/preparing-your-security-program-for-ai-accelerated-offense>) — Claude Blog · 2026\-04\-10
 - [Claude Managed Agents\: get to production 10x faster](<https://claude.com/blog/claude-managed-agents>) — Claude Blog · 2026\-04\-08
