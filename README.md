@@ -246,6 +246,18 @@ unrequested field must be `null`; returning an unrequested result is rejected.
 The selected task is bound into the item fingerprint, while the default
 both-task fingerprint remains backward compatible.
 
+The hosted reader keeps historical backfill explicit so the low-token default
+does not silently process the baseline archive. Its **Backfill 3 articles in
+Chinese** action opens a bounded Codex task equivalent to:
+
+```bash
+./aaron-reader ai subscription-export --all --limit 3 --to zh-CN \
+  --output data/subscription-ai-request.json
+```
+
+The exporter skips valid cached artifacts and never selects more than three
+articles for that run. It does not change the twice-daily `--unread` policy.
+
 Daily and weekly report buttons use a separate subscription request. `daily`
 means the current `America/Los_Angeles` calendar day through export time;
 `weekly` means Monday 00:00 in that timezone through export time. Daylight
@@ -269,6 +281,12 @@ model, prompt, schema, and generation settings. The importer rechecks the
 covered time window and every article version in the same transaction that
 stores the digest and its durable report record. Cached latest daily/weekly
 records are exposed in `public/latest.json` as `ai_reports`.
+
+The hosted interface displays only reports whose cached language exactly
+matches the active English or Simplified Chinese interface. It never silently
+places a Chinese report inside the English view. Report item summaries remain
+part of that daily/weekly digest; they are not presented as independently
+validated per-article summary or translation artifacts.
 
 Export and import do not inspect `OPENAI_API_KEY`, do not require
 `ai.enabled=true`, do not construct the API provider, and do not consume the

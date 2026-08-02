@@ -3,6 +3,7 @@ export const CODEX_WORKSPACE_PATH =
 
 export type ArticleAITask = "summary" | "translation";
 export type ReportPeriod = "daily" | "weekly";
+export type TargetLanguage = "en" | "zh-CN";
 
 const subscriptionRules = [
   "Use my signed-in ChatGPT subscription in Codex with GPT-5.6 Luna and medium reasoning.",
@@ -22,15 +23,23 @@ function codexDeepLink(prompt: string, workspacePath = CODEX_WORKSPACE_PATH) {
   return `codex://new?${parameters.toString()}`;
 }
 
-export function articleCodexPrompt(articleId: number, task: ArticleAITask) {
+function languageName(language: TargetLanguage) {
+  return language === "en" ? "English (en)" : "Simplified Chinese (zh-CN)";
+}
+
+export function articleCodexPrompt(
+  articleId: number,
+  task: ArticleAITask,
+  targetLanguage: TargetLanguage = "zh-CN",
+) {
   const taskLines = task === "summary"
     ? [
-        "Task: generate or reuse only the Simplified Chinese (zh-CN) AI summary artifact.",
-        "Use subscription-export with --article-id for this ID and --task summary; do not generate a translation artifact.",
+        `Task: generate or reuse only the ${languageName(targetLanguage)} AI summary artifact.`,
+        `Use subscription-export --article-id ${articleId} --task summary --to ${targetLanguage}; do not generate a translation artifact.`,
       ]
     : [
-        "Task: generate or reuse only the Simplified Chinese (zh-CN) title and publisher-summary translation artifact.",
-        "Use subscription-export with --article-id for this ID and --task translation; do not generate a summary artifact.",
+        `Task: generate or reuse only the ${languageName(targetLanguage)} title and publisher-summary translation artifact.`,
+        `Use subscription-export --article-id ${articleId} --task translation --to ${targetLanguage}; do not generate a summary artifact.`,
       ];
 
   return [
@@ -44,28 +53,32 @@ export function articleCodexPrompt(articleId: number, task: ArticleAITask) {
 export function articleCodexLink(
   articleId: number,
   task: ArticleAITask,
+  targetLanguage: TargetLanguage = "zh-CN",
   workspacePath = CODEX_WORKSPACE_PATH,
 ) {
-  return codexDeepLink(articleCodexPrompt(articleId, task), workspacePath);
+  return codexDeepLink(articleCodexPrompt(articleId, task, targetLanguage), workspacePath);
 }
 
-export function reportCodexPrompt(period: ReportPeriod) {
+export function reportCodexPrompt(
+  period: ReportPeriod,
+  targetLanguage: TargetLanguage = "zh-CN",
+) {
   const periodLines = period === "daily"
     ? [
         "Report period: daily.",
         "Time zone: America/Los_Angeles (San Francisco time).",
         "Exact window: local midnight at the start of the current San Francisco calendar date through the subscription-report export timestamp.",
-        "Use subscription-report-export --period daily --to zh-CN, then import the validated result with subscription-report-import.",
+        `Use subscription-report-export --period daily --to ${targetLanguage}, then import the validated result with subscription-report-import.`,
       ]
     : [
         "Report period: weekly.",
         "Time zone: America/Los_Angeles (San Francisco time).",
         "Exact window: local midnight on Monday of the current San Francisco week through the subscription-report export timestamp.",
-        "Use subscription-report-export --period weekly --to zh-CN, then import the validated result with subscription-report-import.",
+        `Use subscription-report-export --period weekly --to ${targetLanguage}, then import the validated result with subscription-report-import.`,
       ];
 
   return [
-    "Generate one on-demand Aaron Reader period report in Simplified Chinese (zh-CN).",
+    `Generate one on-demand Aaron Reader period report in ${languageName(targetLanguage)}.`,
     ...periodLines,
     "Include only articles whose published timestamps fall inside that exported window, and report the exact period_start, period_end, and article IDs represented.",
     ...subscriptionRules,
@@ -74,7 +87,22 @@ export function reportCodexPrompt(period: ReportPeriod) {
 
 export function reportCodexLink(
   period: ReportPeriod,
+  targetLanguage: TargetLanguage = "zh-CN",
   workspacePath = CODEX_WORKSPACE_PATH,
 ) {
-  return codexDeepLink(reportCodexPrompt(period), workspacePath);
+  return codexDeepLink(reportCodexPrompt(period, targetLanguage), workspacePath);
+}
+
+export function backfillCodexPrompt() {
+  return [
+    "Run one explicit, bounded Aaron Reader historical backfill in Simplified Chinese (zh-CN).",
+    "Use subscription-export --all --limit 3 --to zh-CN --output data/subscription-ai-request.json.",
+    "Generate and import only the missing summary and translation artifacts reported for those articles; never exceed three articles in this run.",
+    "This is a user-requested one-time backfill, not an automation change. Do not switch the twice-daily low-token workflow from --unread to --all.",
+    ...subscriptionRules,
+  ].join("\n");
+}
+
+export function backfillCodexLink(workspacePath = CODEX_WORKSPACE_PATH) {
+  return codexDeepLink(backfillCodexPrompt(), workspacePath);
 }

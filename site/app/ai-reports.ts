@@ -51,17 +51,21 @@ function timestamp(report: AIReport) {
   return 0;
 }
 
+function hasLanguage(report: AIReport, language: string) {
+  const targetLanguage = cleanText(report.target_language);
+  const outputLanguage = cleanText(report.output?.language);
+  if (targetLanguage && outputLanguage && targetLanguage !== outputLanguage) return false;
+  return (targetLanguage || outputLanguage) === language;
+}
+
 export function findLatestReport(
   reports: AIReport[] | undefined,
   period: ReportPeriod,
-  preferredLanguage = "zh-CN",
+  language: string,
 ) {
-  const matching = (reports || []).filter((report) => report.period === period);
-  const preferred = matching.filter(
-    (report) => report.target_language === preferredLanguage
-      || report.output?.language === preferredLanguage,
-  );
-  return (preferred.length > 0 ? preferred : matching)
+  return (reports || []).filter(
+    (report) => report.period === period && hasLanguage(report, language),
+  )
     .sort((left, right) => timestamp(right) - timestamp(left))[0];
 }
 

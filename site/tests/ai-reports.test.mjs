@@ -34,12 +34,21 @@ const reports = [
     generated_at: "2026-08-01T11:00:00Z",
     output: { headline: "Weekly", overview: "English fallback", items: [], language: "en" },
   },
+  {
+    id: 4,
+    period: "daily",
+    target_language: "zh-CN",
+    generated_at: "2026-08-01T12:00:00Z",
+    output: { headline: "Invalid mismatch", overview: "Invalid", items: [], language: "en" },
+  },
 ];
 
 test("selects the latest cached report for a period and preferred language", () => {
   assert.equal(findLatestReport(reports, "daily", "zh-CN")?.id, 2);
-  assert.equal(findLatestReport(reports, "weekly", "zh-CN")?.id, 3);
-  assert.equal(findLatestReport(undefined, "daily"), undefined);
+  assert.equal(findLatestReport(reports, "weekly", "en")?.id, 3);
+  assert.equal(findLatestReport(reports, "weekly", "zh-CN"), undefined);
+  assert.equal(findLatestReport(reports, "daily", "en"), undefined);
+  assert.equal(findLatestReport(undefined, "daily", "en"), undefined);
 });
 
 test("normalizes report output for rendering", () => {

@@ -33,20 +33,19 @@ test("server-renders the Aaron Reader snapshot", async () => {
   assert.match(html, /The work behind/);
   assert.match(html, /GPT-5\.6 Luna/);
   assert.match(html, /Brief it with Codex/);
-  assert.match(html, /Summarize today/);
-  assert.match(html, /Summarize this week/);
-  assert.match(html, /Summarize this article/);
-  assert.match(html, /Translate this article/);
+  assert.match(html, /Summarize today in English/);
+  assert.match(html, /Summarize this week in English/);
+  assert.match(html, /Backfill 3 articles in Chinese/);
+  assert.match(html, /AI cache coverage/);
+  assert.match(html, /Summarize in English/);
+  assert.match(html, /Translate to Chinese/);
+  assert.match(html, /AI tools/);
   assert.match(html, /prefilled prompt/);
   assert.match(html, /press Send/);
   assert.match(html, /Local Aaron Reader checkout/);
   assert.match(html, /codex:\/\/new\?prompt=/);
   assert.match(html, /10:00 &amp; 22:00 San Francisco/);
-  assert.match(html, /Published AI reports/);
-  assert.match(
-    html,
-    /(?:No daily or weekly AI brief has been published yet|class="report-card")/,
-  );
+  assert.doesNotMatch(html, /class="report-section"|class="report-card"/);
   assert.match(html, /OpenAI News/);
   assert.match(html, /Anthropic News/);
   assert.doesNotMatch(html, /codex-preview/);

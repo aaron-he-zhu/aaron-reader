@@ -224,6 +224,17 @@ Python 程序发出 API 请求。固定程序只导出仍缺少 AI 结果、且�
 `null`；擅自返回未请求的结果会被拒绝。所选任务会写入文章指纹，而默认两任务
 指纹保持向后兼容。
 
+线上阅读器把历史回填保留为显式操作，避免低-token 默认流程静默处理全部基线
+文章。页面上的 **补齐接下来 3 篇中文内容** 会打开一个有界 Codex 任务，等价于：
+
+```bash
+./aaron-reader ai subscription-export --all --limit 3 --to zh-CN \
+  --output data/subscription-ai-request.json
+```
+
+导出器会跳过仍然有效的缓存，并保证本轮最多选择三篇；它不会改变每天两次的
+`--unread` 策略。
+
 日／周总结按钮使用独立的订阅请求。`daily` 指
 `America/Los_Angeles`（旧金山）当天 00:00 至导出时刻；`weekly` 指旧金山
 本周一 00:00 至导出时刻。夏令时切换由系统时区数据库正确处理。
@@ -244,6 +255,10 @@ Python 程序发出 API 请求。固定程序只导出仍缺少 AI 结果、且�
 集合与内容、语言、模型、prompt、schema 和生成设置缓存。导入器会在写入 digest
 及其持久报告记录的同一个事务中，重新核对时间窗口和每篇文章版本。最近的日／周
 缓存通过 `public/latest.json` 的 `ai_reports` 字段提供给网页。
+
+线上界面只显示与当前 English 或简体中文界面严格同语言的缓存报告，不会再把
+中文报告静默塞进英文页面。日／周报告中的逐篇短摘要仍属于该期 digest，不会被
+冒充为经过独立校验的文章级摘要或翻译缓存。
 
 导出与导入不会检查 `OPENAI_API_KEY`，不要求 `ai.enabled=true`，不会构造 API
 Provider，也不占用 API 旁路预算。导入器会拒绝额外字段、重复 JSON key、无效的

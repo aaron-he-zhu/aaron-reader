@@ -12,6 +12,7 @@ import { findLatestReport, reportPayload, type AIReport } from "./ai-reports";
 import {
   CODEX_WORKSPACE_PATH,
   articleCodexLink,
+  backfillCodexLink,
   reportCodexLink,
   type ReportPeriod,
 } from "./codex-actions";
@@ -93,23 +94,29 @@ const copy = {
     actionKicker: "On-demand AI",
     actionTitle: "Brief it with Codex.",
     actionIntro:
-      "Start a precisely scoped Chinese summary with your signed-in ChatGPT subscription. The website never sends a model request itself.",
-    summarizeToday: "Summarize today",
-    summarizeWeek: "Summarize this week",
+      "Create a brief in the current interface language with your signed-in ChatGPT subscription. The website never sends a model request itself.",
+    summarizeToday: "Summarize today in English",
+    summarizeWeek: "Summarize this week in English",
+    backfillThree: "Backfill 3 articles in Chinese",
+    backfillHint: "Optional · bounded to three",
+    coverage: "AI cache coverage",
+    coverageSuffix: "articles enriched. Historical backfill runs only when you choose it.",
     codexReview:
       "Opens Codex with a prefilled prompt. Review the prompt, then press Send—the link does not submit or run anything automatically.",
     workspacePath: "Local Aaron Reader checkout",
     workspacePlaceholder: "/absolute/path/to/aaron-reader",
     workspaceHint: "Saved only in this browser. Leave blank to choose or clone the GitHub repository in Codex.",
-    summarizeArticle: "Summarize this article",
-    translateArticle: "Translate this article",
+    summarizeArticle: "Summarize in English",
+    translateArticle: "Translate to Chinese",
     articleActions: "On-demand AI actions",
+    aiTools: "AI tools",
+    opensCodex: "Opens Codex; review the prompt before sending.",
     cachedShort: "Cached",
-    reports: "Published AI reports",
+    reports: "AI briefs",
     dailyReport: "Daily brief",
     weeklyReport: "Weekly brief",
     reportTimezone: "San Francisco time",
-    reportItems: "Articles in this brief",
+    reportItems: "Source notes",
     noReports: "No daily or weekly AI brief has been published yet.",
     reportLimitations: "Scope note",
     policy:
@@ -157,18 +164,24 @@ const copy = {
     digest: "Markdown 摘要",
     actionKicker: "按需 AI",
     actionTitle: "交给 Codex 生成简报。",
-    actionIntro: "使用已登录的 ChatGPT 订阅发起范围明确的中文总结；网页本身不会发送模型请求。",
+    actionIntro: "使用已登录的 ChatGPT 订阅，按当前界面语言生成范围明确的简报；网页本身不会发送模型请求。",
     summarizeToday: "总结今天",
     summarizeWeek: "总结本周",
+    backfillThree: "补齐接下来 3 篇中文内容",
+    backfillHint: "可选 · 每次最多三篇",
+    coverage: "AI 缓存覆盖",
+    coverageSuffix: "篇文章已有 AI 内容；历史回填仅在你主动选择时运行。",
     codexReview: "链接会打开 Codex 并预填指令；请先检查，再按“发送”。它不会自动提交或执行任务。",
     workspacePath: "Aaron Reader 本地目录",
     workspacePlaceholder: "/绝对路径/aaron-reader",
     workspaceHint: "仅保存在当前浏览器；留空时可在 Codex 中选择或克隆 GitHub 仓库。",
-    summarizeArticle: "总结这篇文章",
-    translateArticle: "翻译这篇文章",
+    summarizeArticle: "生成中文摘要",
+    translateArticle: "翻译为中文",
     articleActions: "按需 AI 操作",
+    aiTools: "AI 工具",
+    opensCodex: "将在 Codex 中打开；发送前请检查预填指令。",
     cachedShort: "已缓存",
-    reports: "已发布的 AI 报告",
+    reports: "AI 简报",
     dailyReport: "今日简报",
     weeklyReport: "本周简报",
     reportTimezone: "旧金山时间",
@@ -273,8 +286,12 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
     () => new Map(snapshot.articles.map((article) => [article.id, article])),
     [snapshot.articles],
   );
+  const enrichedArticleCount = useMemo(
+    () => snapshot.articles.filter((article) => article.ai_artifacts.length > 0).length,
+    [snapshot.articles],
+  );
   const publishedReports = reportPeriods.flatMap((period) => {
-    const report = findLatestReport(snapshot.ai_reports, period, "zh-CN");
+    const report = findLatestReport(snapshot.ai_reports, period, language);
     return report ? [{ period, report, payload: reportPayload(report) }] : [];
   });
 
@@ -327,7 +344,12 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
           <div className="codex-center-copy">
             <p className="panel-kicker">{t.actionKicker}</p>
             <h2 id="codex-center-title">{t.actionTitle}</h2>
-            <p>{t.actionIntro}</p>
+            <p className="codex-center-intro">{t.actionIntro}</p>
+            <p className="ai-coverage">
+              <span>{t.coverage}</span>
+              <strong>{enrichedArticleCount}/{snapshot.articles.length}</strong>
+              {t.coverageSuffix}
+            </p>
           </div>
           <div className="codex-center-controls">
             <label className="codex-workspace-field">
@@ -347,65 +369,18 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
               <small>{t.workspaceHint}</small>
             </label>
             <div className="codex-global-actions" role="group" aria-label={t.actionKicker}>
-              <a className="codex-action codex-action-primary" href={reportCodexLink("daily", workspacePath)} aria-describedby="codex-review-note">
+              <a className="codex-action codex-action-primary" href={reportCodexLink("daily", language, workspacePath)} aria-describedby="codex-review-note">
                 <span>{t.summarizeToday}</span><span aria-hidden="true">↗</span>
               </a>
-              <a className="codex-action" href={reportCodexLink("weekly", workspacePath)} aria-describedby="codex-review-note">
+              <a className="codex-action" href={reportCodexLink("weekly", language, workspacePath)} aria-describedby="codex-review-note">
                 <span>{t.summarizeWeek}</span><span aria-hidden="true">↗</span>
+              </a>
+              <a className="codex-action codex-action-backfill" href={backfillCodexLink(workspacePath)} aria-describedby="codex-review-note">
+                <span>{t.backfillThree}<small>{t.backfillHint}</small></span><span aria-hidden="true">↗</span>
               </a>
             </div>
             <p className="codex-review-note" id="codex-review-note"><span aria-hidden="true">◇</span>{t.codexReview}</p>
           </div>
-        </section>
-
-        <section className="report-section" aria-labelledby="report-section-title">
-          <div className="report-section-heading">
-            <h2 className="panel-kicker" id="report-section-title">{t.reports}</h2>
-            <span>{t.reportTimezone}</span>
-          </div>
-          {publishedReports.length > 0 ? (
-            <div className="report-grid">
-              {publishedReports.map(({ period, report, payload }) => (
-                <article className="report-card" key={`${period}-${report.id || report.generated_at || report.period_end}`}>
-                  <div className="report-card-meta">
-                    <strong>{period === "daily" ? t.dailyReport : t.weeklyReport}</strong>
-                    <span className="ai-state"><i />{t.generatedCached}</span>
-                  </div>
-                  <p className="report-window">{formatReportWindow(report, language)}</p>
-                  {payload.headline && <h3>{payload.headline}</h3>}
-                  {payload.overview && <p className="report-overview">{payload.overview}</p>}
-                  {payload.items.length > 0 && (
-                    <div className="report-items">
-                      <p>{t.reportItems} · {payload.items.length}</p>
-                      <ol>
-                        {payload.items.map((item) => {
-                          const article = articlesById.get(item.articleId);
-                          return (
-                            <li key={`${report.id || period}-${item.articleId}`}>
-                              {article ? (
-                                <a href={article.url} target="_blank" rel="noopener noreferrer">{item.title}</a>
-                              ) : <strong>{item.title}</strong>}
-                              <p>{item.summary}</p>
-                            </li>
-                          );
-                        })}
-                      </ol>
-                    </div>
-                  )}
-                  {payload.limitations && (
-                    <p className="report-limitations"><strong>{t.reportLimitations}:</strong> {payload.limitations}</p>
-                  )}
-                  <div className="report-footer">
-                    {report.model && <span>{report.model}</span>}
-                    {report.generated_at && (
-                      <time dateTime={report.generated_at}>{t.generatedOn} {formatDate(report.generated_at, language)}</time>
-                    )}
-                    {report.input_truncated && <span className="ai-warning">{t.inputTruncated}</span>}
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : <p className="report-empty">{t.noReports}</p>}
         </section>
 
         <section className="workspace">
@@ -433,6 +408,64 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
               </select>
             </div>
 
+            {publishedReports.length > 0 && (
+              <section className="report-section" aria-labelledby="report-section-title">
+                <div className="report-section-heading">
+                  <h2 className="panel-kicker" id="report-section-title">{t.reports}</h2>
+                  <span>{t.reportTimezone}</span>
+                </div>
+                <div className="report-grid">
+                  {publishedReports.map(({ period, report, payload }) => (
+                    <article
+                      className="report-card"
+                      key={`${period}-${report.id || report.generated_at || report.period_end}`}
+                      lang={report.target_language || report.output?.language || language}
+                    >
+                      <div className="report-card-meta">
+                        <strong>{period === "daily" ? t.dailyReport : t.weeklyReport}</strong>
+                        <span className="report-ai-status"><i />{t.generatedCached}</span>
+                      </div>
+                      <p className="report-window">{formatReportWindow(report, language)}</p>
+                      {payload.headline && <h3>{payload.headline}</h3>}
+                      {payload.overview && <p className="report-overview">{payload.overview}</p>}
+                      {payload.items.length > 0 && (
+                        <details className="report-items">
+                          <summary>
+                            <span>{t.reportItems}</span>
+                            <strong>{payload.items.length}</strong>
+                            <span className="report-disclosure" aria-hidden="true">+</span>
+                          </summary>
+                          <ol>
+                            {payload.items.map((item) => {
+                              const article = articlesById.get(item.articleId);
+                              return (
+                                <li key={`${report.id || period}-${item.articleId}`}>
+                                  {article ? (
+                                    <a href={article.url} target="_blank" rel="noopener noreferrer">{item.title}</a>
+                                  ) : <strong>{item.title}</strong>}
+                                  <p>{item.summary}</p>
+                                </li>
+                              );
+                            })}
+                          </ol>
+                          {payload.limitations && (
+                            <p className="report-limitations"><strong>{t.reportLimitations}:</strong> {payload.limitations}</p>
+                          )}
+                        </details>
+                      )}
+                      <div className="report-footer">
+                        {report.model && <span>{report.model}</span>}
+                        {report.generated_at && (
+                          <time dateTime={report.generated_at}>{t.generatedOn} {formatDate(report.generated_at, language)}</time>
+                        )}
+                        {report.input_truncated && <span className="ai-warning">{t.inputTruncated}</span>}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <div className="stream-heading">
               <p>{t.showing} <strong>{Math.min(filtered.length, visible)}</strong> {t.of} {filtered.length}</p>
               {(query || source) && <button onClick={reset}>{t.clear}</button>}
@@ -442,12 +475,18 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
               {filtered.slice(0, visible).map((article, index) => {
                 const translationArtifact = findArtifact(article.ai_artifacts, "translation", language);
                 const translation = artifactPayload(translationArtifact);
+                const chineseTranslationArtifact = findArtifact(article.ai_artifacts, "translation", "zh-CN");
+                const chineseTranslation = artifactPayload(chineseTranslationArtifact);
                 const summaryArtifact = findArtifact(article.ai_artifacts, "summary", language);
                 const aiSummary = artifactPayload(summaryArtifact);
                 const title = translation.title || article.title;
                 const publisherSummary = translation.publisherSummary || article.summary;
                 const hasTranslation = Boolean(translation.title || translation.publisherSummary);
+                const hasChineseTranslation = Boolean(
+                  chineseTranslation.title || chineseTranslation.publisherSummary,
+                );
                 const hasAISummary = Boolean(aiSummary.summary || aiSummary.keyPoints.length);
+                const cachedToolCount = Number(hasAISummary) + Number(hasChineseTranslation);
                 return (
                   <article className="article" key={article.id} style={{ "--source-color": sourceColor[article.source] || "#171717" } as React.CSSProperties}>
                     <span className="article-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
@@ -470,31 +509,6 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
                         </div>
                       )}
                       {publisherSummary && <p>{publisherSummary}</p>}
-                      <div className="article-ai-actions" role="group" aria-label={t.articleActions}>
-                        <div>
-                          <a
-                            className="article-ai-action"
-                            href={articleCodexLink(article.id, "summary", workspacePath)}
-                            aria-label={`${t.summarizeArticle}: ${article.title}`}
-                            aria-describedby={`article-codex-review-${article.id}`}
-                          >
-                            <span>{t.summarizeArticle}</span>
-                            {hasAISummary && <small>✓ {t.cachedShort}</small>}
-                            <span aria-hidden="true">↗</span>
-                          </a>
-                          <a
-                            className="article-ai-action"
-                            href={articleCodexLink(article.id, "translation", workspacePath)}
-                            aria-label={`${t.translateArticle}: ${article.title}`}
-                            aria-describedby={`article-codex-review-${article.id}`}
-                          >
-                            <span>{t.translateArticle}</span>
-                            {hasTranslation && <small>✓ {t.cachedShort}</small>}
-                            <span aria-hidden="true">↗</span>
-                          </a>
-                        </div>
-                        <p id={`article-codex-review-${article.id}`}><span aria-hidden="true">◇</span>{t.codexReview}</p>
-                      </div>
                       {hasAISummary && (
                         <section className="ai-summary-card" aria-label={t.aiSummary}>
                           <div className="ai-summary-heading">
@@ -520,7 +534,39 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
                           </div>
                         </section>
                       )}
-                      <a className="read-link" href={article.url} target="_blank" rel="noopener noreferrer">{t.read}<span aria-hidden="true">↗</span></a>
+                      <div className="article-links">
+                        <a className="read-link" href={article.url} target="_blank" rel="noopener noreferrer">{t.read}<span aria-hidden="true">↗</span></a>
+                        <details className="article-ai-tools">
+                          <summary>
+                            <span>{t.aiTools}</span>
+                            {cachedToolCount > 0 && <small>{cachedToolCount} {t.cachedShort}</small>}
+                            <span className="article-tools-disclosure" aria-hidden="true">+</span>
+                          </summary>
+                          <div className="article-ai-actions" role="group" aria-label={t.articleActions}>
+                            <div>
+                              <a
+                                className="article-ai-action"
+                                href={articleCodexLink(article.id, "summary", language, workspacePath)}
+                                aria-label={`${t.summarizeArticle}: ${article.title}`}
+                              >
+                                <span>{t.summarizeArticle}</span>
+                                {hasAISummary && <small>✓ {t.cachedShort}</small>}
+                                <span aria-hidden="true">↗</span>
+                              </a>
+                              <a
+                                className="article-ai-action"
+                                href={articleCodexLink(article.id, "translation", "zh-CN", workspacePath)}
+                                aria-label={`${t.translateArticle}: ${article.title}`}
+                              >
+                                <span>{t.translateArticle}</span>
+                                {hasChineseTranslation && <small>✓ {t.cachedShort}</small>}
+                                <span aria-hidden="true">↗</span>
+                              </a>
+                            </div>
+                            <p><span aria-hidden="true">◇</span>{t.opensCodex}</p>
+                          </div>
+                        </details>
+                      </div>
                     </div>
                   </article>
                 );

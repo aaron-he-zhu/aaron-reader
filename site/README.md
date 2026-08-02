@@ -29,3 +29,10 @@ The `codex://` action panel lets each visitor save an optional absolute checkout
 path in browser-local storage. Public source and deployment snapshots never
 contain that path. For a private local build, `.env.example` can seed the same
 value through an ignored `.env.production.local` file.
+
+Summary and daily/weekly report actions follow the active interface language.
+Translation and the optional three-article historical backfill are explicitly
+Simplified Chinese. Published reports require an exact language match, and
+their per-item notes remain distinct from independently cached article
+artifacts. Report details and per-article AI tools use collapsed native
+disclosures so the archive remains the primary reading surface.
