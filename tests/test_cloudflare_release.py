@@ -15,7 +15,7 @@ SPEC.loader.exec_module(RELEASE)
 
 
 class CloudflareReleaseTests(unittest.TestCase):
-    def _prepare_with_mocks(self, *, skip_sync):
+    def _prepare_with_mocks(self, *, skip_sync, database_path=None):
         snapshot = {
             "generated_at": "2026-08-02T12:00:00Z",
             "articles": [{"id": 1}],
@@ -40,7 +40,10 @@ class CloudflareReleaseTests(unittest.TestCase):
                 return_value="a" * 40,
             ) as commit_snapshot,
         ):
-            result = RELEASE.prepare(skip_sync=skip_sync)
+            result = RELEASE.prepare(
+                skip_sync=skip_sync,
+                database_path=database_path,
+            )
         return {
             "result": result,
             "commands": [call.args[0] for call in run.call_args_list],
@@ -119,6 +122,48 @@ class CloudflareReleaseTests(unittest.TestCase):
         )
         self.assertIn("unread", original["counts"])
 
+    def test_report_projection_must_be_reproducible_from_public_cache(self):
+        RELEASE._validate_report_projection(
+            {"ai_reports": [{"period": "weekly"}], "cached_ai_report_count": 1},
+            {"reports": [{"period": "weekly"}]},
+        )
+        with self.assertRaisesRegex(RELEASE.ReleaseError, "not reproducible"):
+            RELEASE._validate_report_projection(
+                {
+                    "ai_reports": [{"period": "weekly"}],
+                    "cached_ai_report_count": 1,
+                },
+                {"reports": []},
+            )
+        with self.assertRaisesRegex(RELEASE.ReleaseError, "identities differ"):
+            RELEASE._validate_report_projection(
+                {
+                    "ai_reports": [
+                        {
+                            "period": "weekly",
+                            "target_language": "en",
+                            "timezone": "America/Los_Angeles",
+                            "local_date": "2026-08-02",
+                            "period_start": "2026-07-27T07:00:00Z",
+                            "period_end": "2026-08-02T12:00:00Z",
+                        }
+                    ],
+                    "cached_ai_report_count": 1,
+                },
+                {
+                    "reports": [
+                        {
+                            "period": "weekly",
+                            "target_language": "zh-CN",
+                            "timezone": "America/Los_Angeles",
+                            "local_date": "2026-08-02",
+                            "period_start": "2026-07-27T07:00:00Z",
+                            "period_end": "2026-08-02T12:00:00Z",
+                        }
+                    ]
+                },
+            )
+
     def test_public_digest_uses_all_public_articles_and_escapes_markdown(self):
         digest = RELEASE._public_digest(
             {
@@ -173,6 +218,30 @@ class CloudflareReleaseTests(unittest.TestCase):
         prepared["verify_build"].assert_called_once_with()
         prepared["commit_snapshot"].assert_called_once()
         self.assertEqual(2, prepared["publication_hashes"].call_count)
+
+    def test_skip_sync_can_render_only_from_a_fresh_validation_database(self):
+        validation = RELEASE.ROOT / "data" / "cloud-validation.sqlite3"
+        prepared = self._prepare_with_mocks(
+            skip_sync=True,
+            database_path=validation,
+        )
+        reader = str(RELEASE.ROOT / "aaron-reader")
+
+        self.assertIn(
+            [reader, "--database", str(validation), "render"],
+            prepared["commands"],
+        )
+        self.assertIn(
+            [reader, "--database", str(validation), "status", "--strict"],
+            prepared["commands"],
+        )
+
+    def test_database_override_is_rejected_for_a_network_sync(self):
+        with self.assertRaisesRegex(RELEASE.ReleaseError, "requires --skip-sync"):
+            self._prepare_with_mocks(
+                skip_sync=False,
+                database_path=RELEASE.ROOT / "data" / "unexpected.sqlite3",
+            )
 
     def test_default_release_still_runs_deterministic_sync(self):
         prepared = self._prepare_with_mocks(skip_sync=False)

@@ -64,6 +64,8 @@ GitHub-hosted runners are disposable, so the repository contains two deliberatel
 
 At the beginning of a run, both files are validated and imported into a fresh ephemeral SQLite database. At the end, fixed serializers export the next public state atomically. Generated deployment data under `site/data/` and `site/public/reader/` is another public projection; runtime databases and temporary files are ignored by Git.
 
+Before a release is committed, the two exported handoffs are imported once more into a second empty validation database. The website is rendered only from that reconstructed database, and the release fails if its report identities differ from the public AI cache. This makes the checked-in state sufficient to reproduce the deployed site on a different disposable runner.
+
 Because AI artifacts are content-hash-bound, an unchanged article remains a cache hit across runs. Valid historical artifacts can also be reused after a provider or model change; switching the configured model does not by itself force every article to be regenerated.
 
 ## DeepSeek secret
