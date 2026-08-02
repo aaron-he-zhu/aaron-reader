@@ -36,7 +36,7 @@ test("server-renders the Aaron Reader snapshot", async () => {
   assert.match(html, /Summarize today in English/);
   assert.match(html, /Summarize this week in English/);
   assert.match(html, /Chinese AI cache coverage/);
-  assert.match(html, /<strong>110\/110<\/strong>/);
+  assert.match(html, /<strong>110(?:<!-- -->)?\/(?:<!-- -->)?110<\/strong>/);
   assert.match(html, /Backfill complete/);
   assert.doesNotMatch(
     html,
