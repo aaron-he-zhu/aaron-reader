@@ -1,4 +1,4 @@
-import type { ReportPeriod } from "./codex-actions";
+export type ReportPeriod = "daily" | "weekly";
 
 export type AIReportItem = {
   article_id?: number;
@@ -24,8 +24,6 @@ export type AIReport = {
   target_language?: string;
   generated_at?: string | null;
   input_truncated?: boolean;
-  provider?: string;
-  model?: string;
   output?: AIReportOutput;
 };
 

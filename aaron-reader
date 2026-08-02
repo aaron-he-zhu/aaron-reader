@@ -7,4 +7,4 @@ if [ -n "${PYTHONPATH:-}" ]; then
 else
   export PYTHONPATH="$READER_ROOT/src"
 fi
-exec /usr/bin/python3 -m aaron_reader "$@"
+exec python3 -m aaron_reader "$@"

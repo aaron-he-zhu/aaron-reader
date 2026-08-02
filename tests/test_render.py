@@ -103,7 +103,7 @@ class RenderTests(unittest.TestCase):
             feed_root = ET.fromstring((output / "feed.xml").read_bytes())
             self.assertEqual("en", feed_root.findtext("./channel/language"))
             self.assertEqual(
-                "Deterministic local subscriptions",
+                "Deterministic AI lab subscriptions",
                 feed_root.findtext("./channel/description"),
             )
 
@@ -137,7 +137,7 @@ class RenderTests(unittest.TestCase):
             chinese_feed_root = ET.fromstring((chinese_output / "feed.xml").read_bytes())
             self.assertEqual("zh-CN", chinese_feed_root.findtext("./channel/language"))
             self.assertEqual(
-                "确定性的本地订阅",
+                "确定性的 AI 实验室订阅",
                 chinese_feed_root.findtext("./channel/description"),
             )
 

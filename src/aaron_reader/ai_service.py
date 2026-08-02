@@ -10,9 +10,8 @@ import hashlib
 import json
 import math
 import os
-import threading
 import uuid
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timedelta, timezone
 from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 from urllib.parse import urlsplit
@@ -26,7 +25,8 @@ from .ai_prompts import (
     task_definition,
 )
 from .ai_provider import (
-    OpenAIResponsesProvider,
+    DEEPSEEK_MODEL,
+    DeepSeekChatCompletionsProvider,
     ProviderConfigError,
     ProviderHTTPError,
     ProviderKnownError,
@@ -42,7 +42,7 @@ from .content import (
     ContentSnapshot,
 )
 from .database import AIBudgetExceeded, AIJobConflict, Database, utc_now
-from .i18n import SUPPORTED_LANGUAGES, normalize_language
+from .i18n import normalize_language
 from .models import AIConfig, AIModelPrice, AppConfig, SourceConfig
 
 
@@ -60,6 +60,10 @@ class AIFeatureDisabledError(AIServiceError):
 
 class AIInputError(AIServiceError, ValueError):
     """The selected article, language, scope, or input is invalid."""
+
+
+class AIGenerationHeld(AIServiceError):
+    """A stable generation fingerprint is held against automatic replay."""
 
 
 TOKEN_ESTIMATE_PROTOCOL_MARGIN = 2_048
@@ -166,6 +170,24 @@ def _fit_payload(
     )
 
 
+def _strict_json_object(value: str) -> Dict[str, object]:
+    def reject_duplicate_keys(pairs):
+        result = {}
+        for key, item in pairs:
+            if key in result:
+                raise ValueError("duplicate JSON object key: %s" % key)
+            result[key] = item
+        return result
+
+    try:
+        decoded = json.loads(value, object_pairs_hook=reject_duplicate_keys)
+    except (TypeError, ValueError, json.JSONDecodeError) as exc:
+        raise ValueError("provider output is not valid strict JSON") from exc
+    if not isinstance(decoded, dict):
+        raise ValueError("provider output must be a JSON object")
+    return decoded
+
+
 class AIService:
     def __init__(
         self,
@@ -210,10 +232,16 @@ class AIService:
 
     def _provider(self) -> object:
         if self._provider_instance is None:
-            self._provider_instance = OpenAIResponsesProvider(
-                timeout_seconds=self.config.timeout_seconds,
-                max_response_bytes=self.config.max_response_bytes,
-            )
+            options = {
+                "timeout_seconds": self.config.timeout_seconds,
+                "max_response_bytes": self.config.max_response_bytes,
+            }
+            if self.config.provider == "deepseek":
+                self._provider_instance = DeepSeekChatCompletionsProvider(**options)
+            else:
+                raise ProviderConfigError(
+                    "unsupported AI provider: %s" % self.config.provider
+                )
         return self._provider_instance
 
     def _require_enabled(self, task_type: str, input_scope: str) -> None:
@@ -269,6 +297,93 @@ class AIService:
         if article is None:
             raise AIInputError("article ID %s was not found" % article_id)
         return article
+
+    def _portable_article_identity(self, article_id: int) -> Dict[str, str]:
+        article = self._article(int(article_id))
+        return {
+            "source_slug": str(article.get("source_slug") or ""),
+            "external_id": str(article.get("external_id") or ""),
+            "canonical_url": str(article.get("canonical_url") or ""),
+            "content_hash": str(article.get("content_hash") or ""),
+        }
+
+    def _portable_generation_input(self, value: object) -> object:
+        """Replace ephemeral local article IDs with publisher identities."""
+
+        if isinstance(value, Mapping):
+            result: Dict[str, object] = {}
+            article_id = value.get("article_id")
+            for key, item in value.items():
+                if key == "article_id":
+                    continue
+                result[str(key)] = self._portable_generation_input(item)
+            if isinstance(article_id, int) and not isinstance(article_id, bool):
+                result["article_identity"] = self._portable_article_identity(article_id)
+            return result
+        if isinstance(value, (list, tuple)):
+            return [self._portable_generation_input(item) for item in value]
+        return value
+
+    def _generation_hold_template(
+        self,
+        prepared: PreparedTask,
+        *,
+        workload_kind: str,
+    ) -> Dict[str, object]:
+        portable_input = self._portable_generation_input(prepared.input_payload)
+        descriptor: Dict[str, object] = {
+            "protocol": "aaron-reader-ai-generation-hold/v1",
+            "workload_kind": workload_kind,
+            "provider": self.config.provider,
+            "model": prepared.model,
+            "task_type": prepared.task_type,
+            "input_scope": prepared.input_scope,
+            "target_language": prepared.target_language,
+            "article_identities": [
+                self._portable_article_identity(article_id)
+                for article_id in prepared.expected_article_ids
+            ],
+            "portable_input_hash": stable_hash(portable_input),
+            "prompt_version": prepared.definition.prompt_version,
+            "prompt_hash": prepared.definition.prompt_hash,
+            "schema_name": prepared.definition.schema_name,
+            "schema_version": prepared.definition.schema_version,
+            "schema_hash": prepared.definition.schema_hash,
+            "generation_params_hash": prepared.generation_params_hash,
+            "max_output_tokens": prepared.max_output_tokens,
+        }
+        report_context = prepared.input_payload.get("report")
+        if isinstance(report_context, Mapping):
+            descriptor["report"] = dict(report_context)
+        return {
+            "hold_key": stable_hash(descriptor),
+            "workload_kind": workload_kind,
+            "descriptor": descriptor,
+        }
+
+    @staticmethod
+    def _classified_generation_hold(
+        template: Mapping[str, object], hold_class: str
+    ) -> Dict[str, object]:
+        return {
+            "hold_key": template["hold_key"],
+            "workload_kind": template["workload_kind"],
+            "hold_class": hold_class,
+            "descriptor": template["descriptor"],
+        }
+
+    def _check_generation_hold(
+        self,
+        template: Mapping[str, object],
+        *,
+        force_held: bool,
+    ) -> None:
+        hold = self.database.ai_generation_hold(str(template["hold_key"]))
+        if hold is not None and not force_held:
+            raise AIGenerationHeld(
+                "AI generation is held against automatic replay (%s, %s)"
+                % (hold.get("hold_class"), str(hold["hold_key"])[:12])
+            )
 
     def _source_hosts(self, article: Mapping[str, object]) -> Tuple[str, ...]:
         source_slug = str(article.get("source_slug") or "")
@@ -664,7 +779,9 @@ class AIService:
     def _ensure_api_key(self) -> None:
         value = str(os.environ.get(self.config.api_key_environment, "")).strip()
         if not value:
-            raise ProviderConfigError("OPENAI_API_KEY is not set")
+            raise ProviderConfigError(
+                "%s is not set" % self.config.api_key_environment
+            )
 
     def _price_reservation(self, prepared: PreparedTask, estimated_input: int) -> Tuple[int, Dict[str, object]]:
         price = self.config.prices.get(prepared.model)
@@ -742,6 +859,7 @@ class AIService:
         translated_fields: Sequence[str] = ("title", "publisher_summary"),
         trigger_kind: str = "cli",
         client_request_id: Optional[str] = None,
+        force_held: bool = False,
     ) -> Dict[str, object]:
         scope = self._normalize_scope(input_scope)
         self._require_enabled(task_type, scope)
@@ -756,6 +874,10 @@ class AIService:
         cached = self.database.ai_artifact_by_key(prepared.artifact_key)
         if cached is not None:
             return self._artifact_result(cached, cache_hit=True)
+        article_hold = self._generation_hold_template(
+            prepared, workload_kind="article"
+        )
+        self._check_generation_hold(article_hold, force_held=force_held)
         self._ensure_api_key()
         job = self.enqueue(
             prepared,
@@ -763,9 +885,403 @@ class AIService:
             trigger_kind=trigger_kind,
             client_request_id=client_request_id,
         )
-        if job.get("state") == "cancelled":
-            job = self.database.requeue_ai_job(int(job["id"]))
-        return self.run_job(int(job["id"]), prepared_task=prepared)
+        if job.get("state") == "cancelled" or (
+            force_held and job.get("state") in {"unknown", "permanent_failed"}
+        ):
+            job = self.database.requeue_ai_job(
+                int(job["id"]), allow_unknown=force_held
+            )
+        return self.run_job(
+            int(job["id"]),
+            prepared_task=prepared,
+            force_generation_hold=force_held,
+        )
+
+    def current_article_artifact(
+        self,
+        article_id: int,
+        *,
+        task_type: str,
+        target_language: str = "zh-CN",
+        input_scope: str = "metadata",
+    ) -> Optional[Dict[str, object]]:
+        """Return current coverage regardless of the producing provider/model."""
+
+        if task_type not in {"summary", "translation"}:
+            raise AIInputError("article task must be summary or translation")
+        language = normalize_language(target_language)
+        scope = self._normalize_scope(input_scope)
+        candidates = self.database.latest_ai_artifacts([int(article_id)]).get(
+            int(article_id), []
+        )
+        for artifact in candidates:
+            if (
+                artifact.get("task_type") == task_type
+                and artifact.get("target_language") == language
+                and artifact.get("input_scope") == scope
+            ):
+                return self._artifact_result(artifact, cache_hit=True)
+        return None
+
+    def generate_article_pair(
+        self,
+        article_id: int,
+        *,
+        target_language: str = "zh-CN",
+        trigger_kind: str = "cloud",
+        force_held: bool = False,
+    ) -> Dict[str, object]:
+        """Generate a summary and metadata translation with one DeepSeek call."""
+
+        if self.config.provider != "deepseek" or any(
+            model != DEEPSEEK_MODEL
+            for model in (
+                self.config.summary_model,
+                self.config.translation_model,
+            )
+        ):
+            raise AIInputError(
+                "combined article generation requires the fixed DeepSeek cloud profile"
+            )
+        language = normalize_language(target_language)
+        self._require_enabled("summary", "metadata")
+        self._require_enabled("translation", "metadata")
+        summary = self.prepare_article(
+            article_id,
+            task_type="summary",
+            target_language=language,
+            input_scope="metadata",
+        )
+        translation = self.prepare_article(
+            article_id,
+            task_type="translation",
+            target_language=language,
+            input_scope="metadata",
+            translated_fields=("title", "publisher_summary"),
+        )
+        if summary.article_content_hash != translation.article_content_hash:
+            raise AIInputError("article changed while preparing combined AI input")
+
+        cached_summary = self.current_article_artifact(
+            article_id,
+            task_type="summary",
+            target_language=language,
+        )
+        cached_translation = self.current_article_artifact(
+            article_id,
+            task_type="translation",
+            target_language=language,
+        )
+        if cached_summary is not None and cached_translation is not None:
+            return {
+                "summary": cached_summary,
+                "translation": cached_translation,
+                "cache_hit": True,
+                "provider_api_calls": 0,
+            }
+        if cached_summary is not None or cached_translation is not None:
+            missing_task = (
+                "translation" if cached_summary is not None else "summary"
+            )
+            generated = self.generate_article(
+                article_id,
+                task_type=missing_task,
+                target_language=language,
+                input_scope="metadata",
+                translated_fields=("title", "publisher_summary"),
+                trigger_kind=trigger_kind,
+                force_held=force_held,
+            )
+            return {
+                "summary": cached_summary or generated,
+                "translation": cached_translation or generated,
+                "cache_hit": bool(generated.get("cache_hit")),
+                "provider_api_calls": 0 if generated.get("cache_hit") else 1,
+            }
+
+        combined_schema: Dict[str, object] = {
+            "type": "object",
+            "properties": {
+                "summary": dict(summary.definition.schema),
+                "translation": dict(translation.definition.schema),
+            },
+            "required": ["summary", "translation"],
+            "additionalProperties": False,
+        }
+        combined_instructions = (
+            "%s\n\nUse the single article object for the summary. Translate only "
+            "article.title and article.publisher_summary without summarizing or "
+            "expanding them. If translation_overrides contains either field, use "
+            "that value for the translation only. Return one top-level JSON object "
+            "with exactly summary and translation; each nested value must match its "
+            "corresponding response schema."
+            % summary.definition.instructions
+        )
+        combined_definition = TaskDefinition(
+            task_type="summary",
+            instructions=combined_instructions,
+            schema_name="article_summary_translation",
+            schema=combined_schema,
+            prompt_version="ai-enrichment-pair-v2",
+            prompt_hash=stable_hash(combined_instructions),
+            schema_version="ai-output-pair-v1",
+            schema_hash=stable_hash(combined_schema),
+        )
+        combined_max_output = (
+            summary.max_output_tokens + translation.max_output_tokens
+        )
+        combined_generation_hash = stable_hash(
+            {
+                "profile": "deepseek-cloud-nonthinking-json-v1",
+                "thinking": "disabled",
+                "max_output_tokens": combined_max_output,
+                "store_sent": False,
+                "tools_sent": False,
+            }
+        )
+        bundle_key = stable_hash(
+            {
+                "protocol": "deepseek-article-pair/v2",
+                "summary_artifact_key": summary.artifact_key,
+                "translation_artifact_key": translation.artifact_key,
+                "prompt_hash": combined_definition.prompt_hash,
+                "schema_hash": combined_definition.schema_hash,
+                "generation_params_hash": combined_generation_hash,
+            }
+        )
+        shared_article = {
+            key: value
+            for key, value in summary.input_payload.items()
+            if key not in {"input_scope", "target_language"}
+        }
+        translation_overrides = {
+            field: translation.input_payload.get(field)
+            for field in ("title", "publisher_summary")
+            if translation.input_payload.get(field) != shared_article.get(field)
+        }
+        combined_input_payload: Dict[str, object] = {
+            "input_scope": "metadata",
+            "target_language": language,
+            "article": shared_article,
+        }
+        if translation_overrides:
+            combined_input_payload["translation_overrides"] = translation_overrides
+        combined_input_text = canonical_json(combined_input_payload)
+        bundle = replace(
+            summary,
+            input_payload=combined_input_payload,
+            input_text=combined_input_text,
+            input_hash=stable_hash(combined_input_text),
+            artifact_key=bundle_key,
+            max_output_tokens=combined_max_output,
+            definition=combined_definition,
+            generation_params_hash=combined_generation_hash,
+        )
+        generation_hold = self._generation_hold_template(
+            bundle,
+            workload_kind="article_pair",
+        )
+        self._check_generation_hold(
+            generation_hold,
+            force_held=force_held,
+        )
+        request_payload = bundle.job_request()
+        request_payload.update(
+            {
+                "bundle": "summary_translation_v1",
+                "summary_artifact_key": summary.artifact_key,
+                "translation_artifact_key": translation.artifact_key,
+            }
+        )
+        job = self.database.ensure_ai_job(
+            artifact_key=bundle_key,
+            article_id=int(article_id),
+            task_type="summary",
+            input_scope="metadata",
+            target_language=language,
+            request=request_payload,
+            priority=10,
+            trigger_kind=trigger_kind,
+            max_attempts=1,
+        )
+        if force_held and job.get("state") in {
+            "unknown",
+            "permanent_failed",
+            "cancelled",
+        }:
+            job = self.database.requeue_ai_job(
+                int(job["id"]), allow_unknown=True
+            )
+        if job.get("state") in {"unknown", "permanent_failed", "cancelled"}:
+            raise AIServiceError(
+                "combined AI job %s cannot run from state %s"
+                % (job["id"], job.get("state"))
+            )
+        if job.get("state") == "succeeded":
+            # Successful pair jobs are only committed with both artifacts.
+            refreshed_summary = self.current_article_artifact(
+                article_id, task_type="summary", target_language=language
+            )
+            refreshed_translation = self.current_article_artifact(
+                article_id, task_type="translation", target_language=language
+            )
+            if refreshed_summary is None or refreshed_translation is None:
+                raise AIServiceError("combined AI job is missing a committed artifact")
+            return {
+                "summary": refreshed_summary,
+                "translation": refreshed_translation,
+                "cache_hit": True,
+                "provider_api_calls": 0,
+            }
+
+        self._ensure_api_key()
+        estimated_input = conservative_token_estimate(
+            combined_definition.instructions,
+            bundle.input_text,
+            canonical_json(combined_schema),
+        )
+        reserved_cost, price_snapshot = self._price_reservation(
+            bundle, estimated_input
+        )
+        daily_start, monthly_start, daily_reset, monthly_reset = self._budget_window()
+        idempotency_key = self._provider_idempotency_key(
+            job_id=int(job["id"]),
+            next_attempt=int(job.get("attempt_count") or 0) + 1,
+            artifact_key=bundle_key,
+        )
+        budget = self.config.budget
+        reservation = self.database.reserve_ai_attempt(
+            job_id=int(job["id"]),
+            idempotency_key=idempotency_key,
+            requested_model=bundle.model,
+            estimated_input_tokens=estimated_input,
+            reserved_output_tokens=combined_max_output,
+            reserved_cost_micros=reserved_cost,
+            price_snapshot=price_snapshot,
+            daily_started_at=daily_start,
+            monthly_started_at=monthly_start,
+            daily_reset_at=daily_reset,
+            monthly_reset_at=monthly_reset,
+            daily_max_requests=budget.daily_max_requests,
+            daily_max_total_tokens=budget.daily_max_total_tokens,
+            daily_max_cost_micros=int(
+                round(budget.daily_max_cost_usd * 1_000_000)
+            ),
+            monthly_max_requests=budget.monthly_max_requests,
+            monthly_max_total_tokens=budget.monthly_max_total_tokens,
+            monthly_max_cost_micros=int(
+                round(budget.monthly_max_cost_usd * 1_000_000)
+            ),
+        )
+        if reservation.get("cache_hit"):
+            raise AIServiceError("combined AI cache is inconsistent")
+        attempt_id = int(reservation["id"])
+        provider_request = ProviderRequest(
+            model=bundle.model,
+            instructions=combined_definition.instructions,
+            input_text=bundle.input_text,
+            json_schema=combined_schema,
+            schema_name=combined_definition.schema_name,
+            idempotency_key=idempotency_key,
+            max_output_tokens=combined_max_output,
+            reasoning_effort="none",
+        )
+        response = self._call_provider_for_attempt(
+            attempt_id=attempt_id,
+            prepared=bundle,
+            provider_request=provider_request,
+            generation_hold=generation_hold,
+        )
+        usage_dict = self._usage_dict(response.usage)
+        usage_confirmed = bool(
+            response.usage_reported and usage_dict.get("total_tokens", 0) > 0
+        )
+        actual_cost = (
+            self._actual_cost(self.config.prices.get(bundle.model), response.usage)
+            if usage_confirmed
+            else None
+        )
+        try:
+            combined_output = _strict_json_object(response.output_text)
+            if set(combined_output) != {"summary", "translation"}:
+                raise ValueError(
+                    "combined output fields do not match the response contract"
+                )
+            validated_summary, readable_summary = parse_and_validate_output(
+                "summary",
+                canonical_json(combined_output["summary"]),
+                target_language=language,
+                input_scope="metadata",
+                expected_article_ids=(int(article_id),),
+            )
+            validated_translation, readable_translation = parse_and_validate_output(
+                "translation",
+                canonical_json(combined_output["translation"]),
+                target_language=language,
+                input_scope="metadata",
+                expected_article_ids=(int(article_id),),
+                translated_fields=("title", "publisher_summary"),
+            )
+        except ValueError as exc:
+            self.database.fail_ai_attempt(
+                attempt_id=attempt_id,
+                job_state="permanent_failed",
+                error_class="output_validation",
+                error_code="invalid_structured_output",
+                error_message=str(exc),
+                http_status=200,
+                usage=usage_dict if usage_confirmed else None,
+                actual_cost_micros=actual_cost,
+                preserve_reservation=not usage_confirmed,
+                generation_hold=self._classified_generation_hold(
+                    generation_hold,
+                    "paid_failure" if usage_confirmed else "ambiguous",
+                ),
+            )
+            raise AIServiceError(
+                "provider output failed local validation: %s" % exc
+            ) from exc
+
+        summary_artifact = self._provider_artifact(
+            summary,
+            validated=validated_summary,
+            readable=readable_summary,
+            response=response,
+            usage_confirmed=usage_confirmed,
+            response_text=response.output_text,
+        )
+        translation_artifact = self._provider_artifact(
+            translation,
+            validated=validated_translation,
+            readable=readable_translation,
+            response=response,
+            usage_confirmed=usage_confirmed,
+            response_text=response.output_text,
+        )
+        stored_summary = self.database.complete_ai_attempt(
+            attempt_id=attempt_id,
+            artifact=summary_artifact,
+            additional_artifacts=(translation_artifact,),
+            usage=usage_dict,
+            actual_cost_micros=actual_cost,
+            usage_confirmed=usage_confirmed,
+            clear_generation_hold_key=str(generation_hold["hold_key"]),
+        )
+        stored_translation = self.database.ai_artifact_by_key(
+            translation.artifact_key
+        )
+        if stored_translation is None:
+            raise AIServiceError("combined translation artifact was not committed")
+        return {
+            "summary": self._artifact_result(
+                stored_summary, cache_hit=False
+            ),
+            "translation": self._artifact_result(
+                stored_translation, cache_hit=False
+            ),
+            "cache_hit": False,
+            "provider_api_calls": 1,
+        }
 
     def generate_digest(
         self,
@@ -773,17 +1289,382 @@ class AIService:
         *,
         target_language: str = "zh-CN",
         trigger_kind: str = "cli",
+        report_context: Optional[Mapping[str, object]] = None,
+        force_held: bool = False,
     ) -> Dict[str, object]:
         self._require_enabled("digest", "digest")
-        prepared = self.prepare_digest(articles, target_language=target_language)
+        prepared = self.prepare_digest(
+            articles,
+            target_language=target_language,
+            report_context=report_context,
+        )
         cached = self.database.ai_artifact_by_key(prepared.artifact_key)
         if cached is not None:
             return self._artifact_result(cached, cache_hit=True)
+        workload_kind = "report" if report_context is not None else "digest"
+        digest_hold = self._generation_hold_template(
+            prepared, workload_kind=workload_kind
+        )
+        self._check_generation_hold(digest_hold, force_held=force_held)
         self._ensure_api_key()
         job = self.enqueue(prepared, priority=20, trigger_kind=trigger_kind)
-        if job.get("state") == "cancelled":
-            job = self.database.requeue_ai_job(int(job["id"]))
-        return self.run_job(int(job["id"]))
+        if job.get("state") == "cancelled" or (
+            force_held and job.get("state") in {"unknown", "permanent_failed"}
+        ):
+            job = self.database.requeue_ai_job(
+                int(job["id"]), allow_unknown=force_held
+            )
+        return self.run_job(
+            int(job["id"]),
+            prepared_task=prepared,
+            force_generation_hold=force_held,
+        )
+
+    def generate_digest_pair(
+        self,
+        articles: Sequence[Mapping[str, object]],
+        *,
+        report_context: Mapping[str, object],
+        trigger_kind: str = "cloud-report",
+        force_held: bool = False,
+    ) -> Dict[str, object]:
+        """Generate the English and Simplified-Chinese digests in one call.
+
+        The public single-language digest contract remains unchanged.  This
+        closed cloud-only envelope is used only when both language artifacts
+        are absent; a partial cache falls back to one ordinary digest call for
+        the missing language.
+        """
+
+        if self.config.provider != "deepseek" or self.config.digest_model != DEEPSEEK_MODEL:
+            raise AIInputError(
+                "bilingual report generation requires the fixed DeepSeek cloud profile"
+            )
+        self._require_enabled("digest", "digest")
+        prepared_by_language = {
+            language: self.prepare_digest(
+                articles,
+                target_language=language,
+                report_context=report_context,
+            )
+            for language in ("en", "zh-CN")
+        }
+        english = prepared_by_language["en"]
+        chinese = prepared_by_language["zh-CN"]
+        if (
+            english.expected_article_ids != chinese.expected_article_ids
+            or english.article_content_hash != chinese.article_content_hash
+        ):
+            raise AIInputError("report articles changed while preparing bilingual input")
+
+        def shared_payload(prepared: PreparedTask) -> Dict[str, object]:
+            payload = dict(prepared.input_payload)
+            payload.pop("target_language", None)
+            return payload
+
+        shared_input = shared_payload(english)
+        if shared_input != shared_payload(chinese):
+            raise AIInputError("bilingual report inputs differ beyond target language")
+
+        cached = {
+            language: self.database.ai_artifact_by_key(prepared.artifact_key)
+            for language, prepared in prepared_by_language.items()
+        }
+        if all(cached.values()):
+            return {
+                "artifacts": {
+                    language: self._artifact_result(artifact, cache_hit=True)
+                    for language, artifact in cached.items()
+                    if artifact is not None
+                },
+                "cache_hit": True,
+                "provider_api_calls": 0,
+            }
+        if any(cached.values()):
+            missing_language = next(
+                language for language, artifact in cached.items() if artifact is None
+            )
+            generated = self.generate_digest(
+                articles,
+                target_language=missing_language,
+                trigger_kind=trigger_kind,
+                report_context=report_context,
+                force_held=force_held,
+            )
+            return {
+                "artifacts": {
+                    language: (
+                        self._artifact_result(artifact, cache_hit=True)
+                        if artifact is not None
+                        else generated
+                    )
+                    for language, artifact in cached.items()
+                },
+                "cache_hit": bool(generated.get("cache_hit")),
+                "provider_api_calls": 0 if generated.get("cache_hit") else 1,
+            }
+
+        digest_schema = dict(english.definition.schema)
+        combined_schema: Dict[str, object] = {
+            "type": "object",
+            "properties": {
+                "en": digest_schema,
+                "zh-CN": dict(chinese.definition.schema),
+            },
+            "required": ["en", "zh-CN"],
+            "additionalProperties": False,
+        }
+        combined_instructions = (
+            "%s\n\nUse the single supplied articles array for both reports. "
+            "Return one top-level JSON object with exactly `en` and `zh-CN`. "
+            "The `en` digest must use language exactly `en`; the `zh-CN` digest "
+            "must use language exactly `zh-CN`. Both nested digests must cover "
+            "the same article IDs once, in the supplied order, and independently "
+            "match the digest response schema."
+            % english.definition.instructions
+        )
+        combined_definition = TaskDefinition(
+            task_type="digest",
+            instructions=combined_instructions,
+            schema_name="bilingual_report",
+            schema=combined_schema,
+            prompt_version="ai-bilingual-report-v1",
+            prompt_hash=stable_hash(combined_instructions),
+            schema_version="ai-bilingual-report-output-v1",
+            schema_hash=stable_hash(combined_schema),
+        )
+        combined_max_output = (
+            english.max_output_tokens + chinese.max_output_tokens
+        )
+        combined_generation_hash = stable_hash(
+            {
+                "profile": "deepseek-cloud-bilingual-report-nonthinking-json-v1",
+                "thinking": "disabled",
+                "max_output_tokens": combined_max_output,
+                "store_sent": False,
+                "tools_sent": False,
+            }
+        )
+        bundle_key = stable_hash(
+            {
+                "protocol": "deepseek-bilingual-report/v1",
+                "en_artifact_key": english.artifact_key,
+                "zh_cn_artifact_key": chinese.artifact_key,
+                "prompt_hash": combined_definition.prompt_hash,
+                "schema_hash": combined_definition.schema_hash,
+                "generation_params_hash": combined_generation_hash,
+            }
+        )
+        combined_input_payload: Dict[str, object] = {
+            **shared_input,
+            "target_languages": ["en", "zh-CN"],
+        }
+        combined_input_text = canonical_json(combined_input_payload)
+        bundle = replace(
+            english,
+            # Hold/cache protocols require one normalized language.  The
+            # bilingual nature remains fully bound by the dedicated input,
+            # prompt, schema, and generation hashes.
+            target_language="en",
+            input_payload=combined_input_payload,
+            input_text=combined_input_text,
+            input_hash=stable_hash(combined_input_text),
+            artifact_key=bundle_key,
+            max_output_tokens=combined_max_output,
+            definition=combined_definition,
+            generation_params_hash=combined_generation_hash,
+        )
+        generation_hold = self._generation_hold_template(
+            bundle,
+            workload_kind="report",
+        )
+        self._check_generation_hold(generation_hold, force_held=force_held)
+
+        request_payload = bundle.job_request()
+        request_payload.update(
+            {
+                "bundle": "bilingual_report_v1",
+                "en_artifact_key": english.artifact_key,
+                "zh_cn_artifact_key": chinese.artifact_key,
+            }
+        )
+        job = self.database.ensure_ai_job(
+            artifact_key=bundle_key,
+            article_id=None,
+            task_type="digest",
+            input_scope="digest",
+            target_language="en",
+            request=request_payload,
+            priority=5,
+            trigger_kind=trigger_kind,
+            max_attempts=1,
+        )
+        if force_held and job.get("state") in {
+            "unknown",
+            "permanent_failed",
+            "cancelled",
+        }:
+            job = self.database.requeue_ai_job(
+                int(job["id"]), allow_unknown=True
+            )
+        if job.get("state") in {"unknown", "permanent_failed", "cancelled"}:
+            raise AIServiceError(
+                "bilingual report job %s cannot run from state %s"
+                % (job["id"], job.get("state"))
+            )
+        if job.get("state") == "succeeded":
+            refreshed = {
+                language: self.database.ai_artifact_by_key(prepared.artifact_key)
+                for language, prepared in prepared_by_language.items()
+            }
+            if not all(refreshed.values()):
+                raise AIServiceError(
+                    "bilingual report job is missing a committed artifact"
+                )
+            return {
+                "artifacts": {
+                    language: self._artifact_result(artifact, cache_hit=True)
+                    for language, artifact in refreshed.items()
+                    if artifact is not None
+                },
+                "cache_hit": True,
+                "provider_api_calls": 0,
+            }
+
+        self._ensure_api_key()
+        estimated_input = conservative_token_estimate(
+            combined_definition.instructions,
+            combined_input_text,
+            canonical_json(combined_schema),
+        )
+        reserved_cost, price_snapshot = self._price_reservation(
+            bundle, estimated_input
+        )
+        daily_start, monthly_start, daily_reset, monthly_reset = self._budget_window()
+        idempotency_key = self._provider_idempotency_key(
+            job_id=int(job["id"]),
+            next_attempt=int(job.get("attempt_count") or 0) + 1,
+            artifact_key=bundle_key,
+        )
+        budget = self.config.budget
+        reservation = self.database.reserve_ai_attempt(
+            job_id=int(job["id"]),
+            idempotency_key=idempotency_key,
+            requested_model=bundle.model,
+            estimated_input_tokens=estimated_input,
+            reserved_output_tokens=combined_max_output,
+            reserved_cost_micros=reserved_cost,
+            price_snapshot=price_snapshot,
+            daily_started_at=daily_start,
+            monthly_started_at=monthly_start,
+            daily_reset_at=daily_reset,
+            monthly_reset_at=monthly_reset,
+            daily_max_requests=budget.daily_max_requests,
+            daily_max_total_tokens=budget.daily_max_total_tokens,
+            daily_max_cost_micros=int(
+                round(budget.daily_max_cost_usd * 1_000_000)
+            ),
+            monthly_max_requests=budget.monthly_max_requests,
+            monthly_max_total_tokens=budget.monthly_max_total_tokens,
+            monthly_max_cost_micros=int(
+                round(budget.monthly_max_cost_usd * 1_000_000)
+            ),
+        )
+        if reservation.get("cache_hit"):
+            raise AIServiceError("bilingual report cache is inconsistent")
+        attempt_id = int(reservation["id"])
+        response = self._call_provider_for_attempt(
+            attempt_id=attempt_id,
+            prepared=bundle,
+            provider_request=ProviderRequest(
+                model=bundle.model,
+                instructions=combined_definition.instructions,
+                input_text=combined_input_text,
+                json_schema=combined_schema,
+                schema_name=combined_definition.schema_name,
+                idempotency_key=idempotency_key,
+                max_output_tokens=combined_max_output,
+                reasoning_effort="none",
+            ),
+            generation_hold=generation_hold,
+        )
+        usage_dict = self._usage_dict(response.usage)
+        usage_confirmed = bool(
+            response.usage_reported and usage_dict.get("total_tokens", 0) > 0
+        )
+        actual_cost = (
+            self._actual_cost(self.config.prices.get(bundle.model), response.usage)
+            if usage_confirmed
+            else None
+        )
+        try:
+            combined_output = _strict_json_object(response.output_text)
+            if set(combined_output) != {"en", "zh-CN"}:
+                raise ValueError(
+                    "bilingual report fields do not match the response contract"
+                )
+            validated_outputs: Dict[str, Tuple[Dict[str, object], str]] = {}
+            for language in ("en", "zh-CN"):
+                validated_outputs[language] = parse_and_validate_output(
+                    "digest",
+                    canonical_json(combined_output[language]),
+                    target_language=language,
+                    input_scope="digest",
+                    expected_article_ids=english.expected_article_ids,
+                )
+        except ValueError as exc:
+            self.database.fail_ai_attempt(
+                attempt_id=attempt_id,
+                job_state="permanent_failed",
+                error_class="output_validation",
+                error_code="invalid_bilingual_structured_output",
+                error_message=str(exc),
+                http_status=200,
+                usage=usage_dict if usage_confirmed else None,
+                actual_cost_micros=actual_cost,
+                preserve_reservation=not usage_confirmed,
+                generation_hold=self._classified_generation_hold(
+                    generation_hold,
+                    "paid_failure" if usage_confirmed else "ambiguous",
+                ),
+            )
+            raise AIServiceError(
+                "provider bilingual output failed local validation: %s" % exc
+            ) from exc
+
+        artifacts = {
+            language: self._provider_artifact(
+                prepared_by_language[language],
+                validated=validated_outputs[language][0],
+                readable=validated_outputs[language][1],
+                response=response,
+                usage_confirmed=usage_confirmed,
+                response_text=response.output_text,
+            )
+            for language in ("en", "zh-CN")
+        }
+        stored_english = self.database.complete_ai_attempt(
+            attempt_id=attempt_id,
+            artifact=artifacts["en"],
+            additional_artifacts=(artifacts["zh-CN"],),
+            usage=usage_dict,
+            actual_cost_micros=actual_cost,
+            usage_confirmed=usage_confirmed,
+            clear_generation_hold_key=str(generation_hold["hold_key"]),
+        )
+        stored_chinese = self.database.ai_artifact_by_key(chinese.artifact_key)
+        if stored_chinese is None:
+            raise AIServiceError("bilingual Chinese report artifact was not committed")
+        return {
+            "artifacts": {
+                "en": self._artifact_result(stored_english, cache_hit=False),
+                "zh-CN": self._artifact_result(
+                    stored_chinese, cache_hit=False
+                ),
+            },
+            "cache_hit": False,
+            "provider_api_calls": 1,
+        }
 
     def _prepare_from_job(
         self, job: Mapping[str, object], *, fetch_if_missing: bool = False
@@ -833,12 +1714,125 @@ class AIService:
             artifact_key[:20],
         )
 
+    def _call_provider_for_attempt(
+        self,
+        *,
+        attempt_id: int,
+        prepared: PreparedTask,
+        provider_request: ProviderRequest,
+        generation_hold: Mapping[str, object],
+    ) -> ProviderResponse:
+        """Make one audited provider call without retrying ambiguous failures."""
+
+        self.database.mark_ai_attempt_sent(int(attempt_id))
+        try:
+            generate = getattr(self._provider(), "generate", None)
+            if not callable(generate):
+                raise ProviderConfigError(
+                    "AI provider does not provide generate(request)"
+                )
+            response = generate(provider_request)
+            if not isinstance(response, ProviderResponse):
+                raise ProviderUnknownError(
+                    "provider returned an invalid response; "
+                    "the request may already have been processed"
+                )
+            return response
+        except ProviderHTTPError as exc:
+            # No configured provider promises safe replay for a rejected POST.
+            # A 429 is a definitive rejection; transport-like HTTP failures may
+            # already have reached inference and therefore remain unknown.
+            ambiguous_result = bool(exc.retryable) and exc.status != 429
+            self.database.fail_ai_attempt(
+                attempt_id=int(attempt_id),
+                job_state="unknown" if ambiguous_result else "permanent_failed",
+                error_class=(
+                    "provider_http_unknown"
+                    if ambiguous_result
+                    else "provider_http"
+                ),
+                error_code="http_%d" % exc.status,
+                error_message=str(exc),
+                http_status=exc.status,
+                next_attempt_at=None,
+                generation_hold=(
+                    self._classified_generation_hold(
+                        generation_hold, "ambiguous"
+                    )
+                    if ambiguous_result
+                    else None
+                ),
+            )
+            raise AIServiceError(str(exc)) from exc
+        except ProviderKnownError as exc:
+            known_usage = self._usage_dict(exc.usage)
+            known_cost = self._actual_cost(
+                self.config.prices.get(prepared.model), exc.usage
+            )
+            self.database.fail_ai_attempt(
+                attempt_id=int(attempt_id),
+                job_state="permanent_failed",
+                error_class="provider_known",
+                error_code=exc.code,
+                error_message=str(exc),
+                http_status=200,
+                usage=known_usage,
+                actual_cost_micros=known_cost,
+                provider_request_id=exc.request_id or exc.response_id,
+                resolved_model=exc.model,
+                finish_reason=exc.code,
+                generation_hold=self._classified_generation_hold(
+                    generation_hold, "paid_failure"
+                ),
+            )
+            raise AIServiceError(str(exc)) from exc
+        except ProviderUnknownError as exc:
+            self.database.fail_ai_attempt(
+                attempt_id=int(attempt_id),
+                job_state="unknown",
+                error_class="provider_unknown",
+                error_code="unknown_result",
+                error_message=str(exc),
+                generation_hold=self._classified_generation_hold(
+                    generation_hold, "ambiguous"
+                ),
+            )
+            raise AIServiceError(str(exc)) from exc
+        except ProviderConfigError as exc:
+            self.database.fail_ai_attempt(
+                attempt_id=int(attempt_id),
+                job_state="permanent_failed",
+                error_class="provider_config",
+                error_code="provider_config",
+                error_message=str(exc),
+            )
+            raise AIServiceError(str(exc)) from exc
+        except Exception as exc:
+            self.database.fail_ai_attempt(
+                attempt_id=int(attempt_id),
+                job_state="unknown",
+                error_class="provider_unexpected",
+                error_code="unknown_result",
+                error_message=(
+                    "unexpected provider failure; "
+                    "the request may already have been processed"
+                ),
+                generation_hold=self._classified_generation_hold(
+                    generation_hold, "ambiguous"
+                ),
+            )
+            raise AIServiceError(
+                "unexpected provider failure; "
+                "the request may already have been processed"
+            ) from exc
+
     def run_job(
         self,
         job_id: int,
         *,
         force_new_provider_request: bool = False,
         prepared_task: Optional[PreparedTask] = None,
+        force_generation_hold: bool = False,
     ) -> Dict[str, object]:
         job = self.database.ai_job(int(job_id))
         if job is None:
@@ -892,6 +1886,20 @@ class AIService:
             except AIJobConflict:
                 pass
             raise
+        workload_kind = (
+            "report"
+            if prepared.task_type == "digest"
+            and isinstance(prepared.input_payload.get("report"), Mapping)
+            else ("digest" if prepared.task_type == "digest" else "article")
+        )
+        generation_hold = self._generation_hold_template(
+            prepared,
+            workload_kind=workload_kind,
+        )
+        self._check_generation_hold(
+            generation_hold,
+            force_held=force_generation_hold,
+        )
         try:
             self._require_enabled(prepared.task_type, prepared.input_scope)
             self._ensure_api_key()
@@ -952,86 +1960,12 @@ class AIService:
             max_output_tokens=prepared.max_output_tokens,
             reasoning_effort=self.config.reasoning_effort,
         )
-        self.database.mark_ai_attempt_sent(attempt_id)
-        response: Optional[ProviderResponse] = None
-        try:
-            generate = getattr(self._provider(), "generate", None)
-            if not callable(generate):
-                raise ProviderConfigError("AI provider does not provide generate(request)")
-            response = generate(provider_request)
-            if not isinstance(response, ProviderResponse):
-                raise ProviderUnknownError(
-                    "provider returned an invalid response; the request may already have been processed"
-                )
-        except ProviderHTTPError as exc:
-            # The Responses reference does not promise an idempotent replay
-            # contract for POST failures.  Never automatically issue a second
-            # potentially billable HTTP request.  A 429 is a definitive HTTP
-            # rejection and can be retried explicitly; transport-like statuses
-            # may have reached the provider and therefore remain unknown.
-            ambiguous_result = bool(exc.retryable) and exc.status != 429
-            self.database.fail_ai_attempt(
-                attempt_id=attempt_id,
-                job_state="unknown" if ambiguous_result else "permanent_failed",
-                error_class=(
-                    "provider_http_unknown" if ambiguous_result else "provider_http"
-                ),
-                error_code="http_%d" % exc.status,
-                error_message=str(exc),
-                http_status=exc.status,
-                next_attempt_at=None,
-            )
-            raise AIServiceError(str(exc)) from exc
-        except ProviderKnownError as exc:
-            known_usage = self._usage_dict(exc.usage)
-            known_cost = self._actual_cost(
-                self.config.prices.get(prepared.model), exc.usage
-            )
-            self.database.fail_ai_attempt(
-                attempt_id=attempt_id,
-                job_state="permanent_failed",
-                error_class="provider_known",
-                error_code=exc.code,
-                error_message=str(exc),
-                http_status=200,
-                usage=known_usage,
-                actual_cost_micros=known_cost,
-                provider_request_id=exc.request_id or exc.response_id,
-                resolved_model=exc.model,
-                finish_reason=exc.code,
-            )
-            raise AIServiceError(str(exc)) from exc
-        except ProviderUnknownError as exc:
-            self.database.fail_ai_attempt(
-                attempt_id=attempt_id,
-                job_state="unknown",
-                error_class="provider_unknown",
-                error_code="unknown_result",
-                error_message=str(exc),
-            )
-            raise AIServiceError(str(exc)) from exc
-        except ProviderConfigError as exc:
-            self.database.fail_ai_attempt(
-                attempt_id=attempt_id,
-                job_state="permanent_failed",
-                error_class="provider_config",
-                error_code="provider_config",
-                error_message=str(exc),
-            )
-            raise AIServiceError(str(exc)) from exc
-        except Exception as exc:
-            self.database.fail_ai_attempt(
-                attempt_id=attempt_id,
-                job_state="unknown",
-                error_class="provider_unexpected",
-                error_code="unknown_result",
-                error_message=(
-                    "unexpected provider failure; the request may already have been processed"
-                ),
-            )
-            raise AIServiceError(
-                "unexpected provider failure; the request may already have been processed"
-            ) from exc
+        response = self._call_provider_for_attempt(
+            attempt_id=attempt_id,
+            prepared=prepared,
+            provider_request=provider_request,
+            generation_hold=generation_hold,
+        )
 
         usage_dict = self._usage_dict(response.usage)
         usage_confirmed = bool(
@@ -1075,12 +2009,43 @@ class AIService:
                 actual_cost_micros=actual_cost,
                 next_attempt_at=_iso(self._now() + timedelta(seconds=5)) if retryable else None,
                 preserve_reservation=not usage_confirmed,
+                generation_hold=self._classified_generation_hold(
+                    generation_hold,
+                    "paid_failure" if usage_confirmed else "ambiguous",
+                ),
             )
             raise AIServiceError("provider output failed local validation: %s" % exc) from exc
 
-        stale = self._is_stale(prepared)
+        artifact = self._provider_artifact(
+            prepared,
+            validated=validated,
+            readable=readable,
+            response=response,
+            usage_confirmed=usage_confirmed,
+        )
+        stored = self.database.complete_ai_attempt(
+            attempt_id=attempt_id,
+            artifact=artifact,
+            usage=usage_dict,
+            actual_cost_micros=actual_cost,
+            usage_confirmed=usage_confirmed,
+            clear_generation_hold_key=str(generation_hold["hold_key"]),
+        )
+        return self._artifact_result(stored, cache_hit=False)
+
+    def _provider_artifact(
+        self,
+        prepared: PreparedTask,
+        *,
+        validated: Mapping[str, object],
+        readable: str,
+        response: ProviderResponse,
+        usage_confirmed: bool,
+        response_text: Optional[str] = None,
+    ) -> Dict[str, object]:
         output_json = canonical_json(validated)
-        artifact = {
+        raw_response = response.output_text if response_text is None else response_text
+        return {
             "article_id": prepared.article_id,
             "task_type": prepared.task_type,
             "input_scope": prepared.input_scope,
@@ -1103,22 +2068,16 @@ class AIService:
             "output_json": output_json,
             "output_text": readable,
             "output_hash": stable_hash(output_json),
-            "status": "stale" if stale else "succeeded",
+            "status": "stale" if self._is_stale(prepared) else "succeeded",
             "input_truncated": int(prepared.input_truncated),
             "http_status": 200,
             "finish_reason": (
                 "completed" if usage_confirmed else "completed_usage_unreported"
             ),
-            "response_hash": hashlib.sha256(response.output_text.encode("utf-8")).hexdigest(),
+            "response_hash": hashlib.sha256(
+                raw_response.encode("utf-8")
+            ).hexdigest(),
         }
-        stored = self.database.complete_ai_attempt(
-            attempt_id=attempt_id,
-            artifact=artifact,
-            usage=usage_dict,
-            actual_cost_micros=actual_cost,
-            usage_confirmed=usage_confirmed,
-        )
-        return self._artifact_result(stored, cache_hit=False)
 
     def _is_stale(self, prepared: PreparedTask) -> bool:
         if prepared.article_id is not None:
@@ -1266,120 +2225,3 @@ class AIService:
 
     def audit(self, limit: int = 100) -> List[Dict[str, object]]:
         return self.database.list_ai_attempts(limit)
-
-
-class AIWebController:
-    """Small controller consumed by the loopback-only HTTP server."""
-
-    def __init__(
-        self,
-        service: AIService,
-        *,
-        on_complete: Optional[Callable[[], None]] = None,
-    ) -> None:
-        self.service = service
-        self.on_complete = on_complete
-
-    def session(self) -> Dict[str, object]:
-        return {
-            "enabled": True,
-            "tasks": ["summary", "translation"],
-            "target_languages": list(SUPPORTED_LANGUAGES),
-            "default_target_language": "zh-CN",
-            "full_text_enabled": bool(
-                self.service.config.full_text_enabled
-                and self.service.config.input_policy != "metadata_only"
-            ),
-        }
-
-    def submit(
-        self, payload: Mapping[str, object], client_request_id: str
-    ) -> Dict[str, object]:
-        task_type = str(payload.get("task") or "summary")
-        if task_type not in {"summary", "translation"}:
-            raise AIInputError("web AI task must be summary or translation")
-        article_id = payload.get("article_id")
-        if isinstance(article_id, bool) or not isinstance(article_id, int):
-            raise AIInputError("article_id must be an integer")
-        target = normalize_language(str(payload.get("target_language") or "zh-CN"))
-        scope = self.service._normalize_scope(str(payload.get("input_scope") or "metadata"))
-        fields_value = payload.get("fields") or ["title", "publisher_summary"]
-        if not isinstance(fields_value, list) or not all(
-            isinstance(value, str) for value in fields_value
-        ):
-            raise AIInputError("fields must be an array of supported field names")
-        self.service._require_enabled(task_type, scope)
-        prepared = self.service.prepare_article(
-            article_id,
-            task_type=task_type,
-            target_language=target,
-            input_scope=scope,
-            translated_fields=tuple(fields_value),
-            fetch_if_missing=scope == "full_text",
-        )
-        job = self.service.enqueue(
-            prepared,
-            priority=5,
-            trigger_kind="web",
-            client_request_id=client_request_id,
-        )
-        if str(job.get("state") or "") == "cancelled":
-            job = self.service.database.requeue_ai_job(int(job["id"]))
-        state = str(job.get("state") or "")
-        next_attempt_at = str(job.get("next_attempt_at") or "")
-        retry_ready = state == "retryable" and (
-            not next_attempt_at or next_attempt_at <= _iso(self.service._now())
-        )
-        budget_ready = state == "budget_blocked" and (
-            not next_attempt_at or next_attempt_at <= _iso(self.service._now())
-        )
-        if state == "queued" or retry_ready or budget_ready:
-            thread = threading.Thread(
-                target=self._run,
-                args=(int(job["id"]), prepared),
-                name="aaron-reader-ai-%s" % job["id"],
-                daemon=True,
-            )
-            thread.start()
-        result: Dict[str, object] = {
-            "job_id": int(job["id"]),
-            "state": state,
-        }
-        if next_attempt_at:
-            result["next_attempt_at"] = next_attempt_at
-        return result
-
-    def _run(self, job_id: int, prepared: PreparedTask) -> None:
-        try:
-            self.service.run_job(job_id, prepared_task=prepared)
-        except Exception:
-            pass
-        finally:
-            if self.on_complete is not None:
-                try:
-                    self.on_complete()
-                except Exception:
-                    pass
-
-    def job(self, job_id: int) -> Optional[Dict[str, object]]:
-        job = self.service.database.ai_job(int(job_id))
-        if job is None:
-            return None
-        result: Dict[str, object] = {
-            "job_id": int(job["id"]),
-            "article_id": job.get("article_id"),
-            "task": job.get("task_type"),
-            "input_scope": job.get("input_scope"),
-            "target_language": job.get("target_language"),
-            "state": job.get("state"),
-            "error_code": job.get("last_error_code") or "",
-            "error": str(job.get("last_error_message") or "")[:500],
-            "next_attempt_at": job.get("next_attempt_at"),
-        }
-        if job.get("artifact_id"):
-            artifact = self.service.database.ai_artifact(int(job["artifact_id"]))
-            if artifact is not None:
-                result["artifact"] = self.service._artifact_result(
-                    artifact, cache_hit=True
-                )
-        return result

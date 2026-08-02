@@ -37,7 +37,7 @@ const artifacts = [
   },
 ];
 
-test("reads the nested artifact shape exported by the subscription", () => {
+test("reads the nested cached artifact shape", () => {
   const translation = findArtifact(artifacts, "translation", "zh-CN");
   const summary = findArtifact(artifacts, "summary", "zh-CN");
 

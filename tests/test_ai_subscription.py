@@ -1,8 +1,10 @@
 import json
+import os
 import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
+from unittest import mock
 import unittest
 
 
@@ -10,11 +12,17 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT / "src"))
 
 from aaron_reader.ai_prompts import stable_hash  # noqa: E402
+from aaron_reader.ai_provider import (  # noqa: E402
+    DEEPSEEK_MODEL,
+    ProviderResponse,
+    ProviderUsage,
+)
 from aaron_reader.ai_service import AIInputError, AIService  # noqa: E402
 from aaron_reader.ai_subscription import (  # noqa: E402
     SUBSCRIPTION_REPORT_PROTOCOL,
     export_subscription_batch,
     export_subscription_report,
+    generate_cloud_report_pair,
     import_subscription_report,
     import_subscription_results,
     report_period_window,
@@ -299,6 +307,228 @@ class AISubscriptionTests(unittest.TestCase):
         self.assertEqual(0, cached["pending_count"])
         self.assertTrue(cached["cached"])
         self.assertIsNone(cached["input"])
+
+    def test_cloud_report_pair_uses_one_call_and_attaches_both_reports(self):
+        overflow_candidates = []
+        for index in range(55):
+            external_id = "daily-overflow-%02d" % index
+            url = "https://example.com/blog/%s" % external_id
+            title = "Daily update %02d" % index
+            summary = "Short publisher note %02d." % index
+            overflow_candidates.append(
+                ArticleCandidate(
+                    source_slug=self.source.slug,
+                    external_id=external_id,
+                    url=url,
+                    title=title,
+                    summary=summary,
+                    published_at="2026-08-01T09:%02d:00Z" % (index % 60),
+                    content_hash=stable_hash([title, url, summary]),
+                )
+            )
+        self.database.commit_candidates(
+            self.source,
+            overflow_candidates,
+            started_at="2026-08-01T17:01:00Z",
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="daily-overflow-fixture",
+        )
+
+        class BilingualProvider:
+            def __init__(self):
+                self.requests = []
+
+            def generate(self, request):
+                self.requests.append(request)
+                payload = json.loads(request.input_text)
+                output = {
+                    language: {
+                        "headline": "%s headline" % language,
+                        "overview": "%s overview" % language,
+                        "items": [
+                            {
+                                "article_id": int(article["article_id"]),
+                                "title": str(article["title"]),
+                                "summary": "%s item" % language,
+                            }
+                            for article in payload["articles"]
+                        ],
+                        "language": language,
+                        "limitations": "Metadata only.",
+                    }
+                    for language in ("en", "zh-CN")
+                }
+                return ProviderResponse(
+                    output_text=json.dumps(output, ensure_ascii=False),
+                    usage=ProviderUsage(
+                        input_tokens=100,
+                        output_tokens=80,
+                        total_tokens=180,
+                    ),
+                    model=DEEPSEEK_MODEL,
+                    request_id="bilingual-test",
+                )
+
+        provider = BilingualProvider()
+        service = AIService(
+            AppConfig(
+                sources=[self.source],
+                ai=AIConfig(enabled=True),
+            ),
+            self.database,
+            provider=provider,
+        )
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            first = generate_cloud_report_pair(
+                service,
+                period="daily",
+                now=self.now,
+            )
+            second = generate_cloud_report_pair(
+                service,
+                period="daily",
+                now=self.now,
+            )
+
+        self.assertEqual(1, len(provider.requests))
+        self.assertEqual("bilingual_report", provider.requests[0].schema_name)
+        request_payload = json.loads(provider.requests[0].input_text)
+        self.assertEqual(50, len(request_payload["articles"]))
+        self.assertEqual(1, first["provider_api_calls"])
+        self.assertEqual(0, second["provider_api_calls"])
+        self.assertEqual(
+            ["en", "zh-CN"],
+            [report["target_language"] for report in first["reports"]],
+        )
+        self.assertTrue(
+            all(
+                report.get("generation_mode") == "bilingual_shared"
+                for report in first["reports"]
+            )
+        )
+        reports = self.database.latest_ai_reports()
+        self.assertEqual(2, len(reports))
+        self.assertTrue(all(int(report["input_truncated"]) == 1 for report in reports))
+        self.assertTrue(
+            all(len(json.loads(str(report["article_ids_json"]))) == 50 for report in reports)
+        )
+        self.assertTrue(
+            all(
+                len(json.loads(str(report["output_json"]))["items"]) == 50
+                for report in reports
+            )
+        )
+        self.assertEqual(1, len(self.database.list_ai_attempts()))
+
+    def test_overflow_partial_cache_legacy_import_then_generates_only_missing_language(self):
+        candidates = []
+        for index in range(51):
+            external_id = "partial-overflow-%02d" % index
+            url = "https://example.com/blog/%s" % external_id
+            title = "Partial daily update %02d" % index
+            summary = "Short partial-cache note %02d." % index
+            candidates.append(
+                ArticleCandidate(
+                    source_slug=self.source.slug,
+                    external_id=external_id,
+                    url=url,
+                    title=title,
+                    summary=summary,
+                    published_at="2026-08-01T10:%02d:00Z" % (index % 60),
+                    content_hash=stable_hash([title, url, summary]),
+                )
+            )
+        self.database.commit_candidates(
+            self.source,
+            candidates,
+            started_at="2026-08-01T17:02:00Z",
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="partial-overflow-fixture",
+        )
+
+        # Exercise the legacy/offline single-language attachment first.
+        chinese_request = export_subscription_report(
+            self.service,
+            period="daily",
+            target_language="zh-CN",
+            now=self.now,
+        )
+        self.assertEqual(50, len(chinese_request["input"]["articles"]))
+        imported = import_subscription_report(
+            self.service,
+            self.report_result(chinese_request),
+        )
+        self.assertEqual(1, imported["imported_artifacts"])
+
+        class EnglishOnlyProvider:
+            def __init__(self):
+                self.requests = []
+
+            def generate(self, request):
+                self.requests.append(request)
+                payload = json.loads(request.input_text)
+                language = payload["target_language"]
+                output = {
+                    "headline": "English headline",
+                    "overview": "English overview.",
+                    "items": [
+                        {
+                            "article_id": int(article["article_id"]),
+                            "title": str(article["title"]),
+                            "summary": "English item.",
+                        }
+                        for article in payload["articles"]
+                    ],
+                    "language": language,
+                    "limitations": "Metadata only.",
+                }
+                return ProviderResponse(
+                    output_text=json.dumps(output),
+                    usage=ProviderUsage(
+                        input_tokens=90,
+                        output_tokens=40,
+                        total_tokens=130,
+                    ),
+                    model=DEEPSEEK_MODEL,
+                    request_id="partial-cache-test",
+                )
+
+        provider = EnglishOnlyProvider()
+        service = AIService(
+            AppConfig(sources=[self.source], ai=AIConfig(enabled=True)),
+            self.database,
+            provider=provider,
+        )
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            first = generate_cloud_report_pair(
+                service,
+                period="daily",
+                now=self.now,
+            )
+            second = generate_cloud_report_pair(
+                service,
+                period="daily",
+                now=self.now,
+            )
+
+        self.assertEqual(1, len(provider.requests))
+        self.assertEqual("article_digest", provider.requests[0].schema_name)
+        self.assertEqual("en", json.loads(provider.requests[0].input_text)["target_language"])
+        self.assertEqual(1, first["provider_api_calls"])
+        self.assertEqual(0, second["provider_api_calls"])
+        reports = self.database.latest_ai_reports()
+        self.assertEqual({"en", "zh-CN"}, {report["target_language"] for report in reports})
+        self.assertTrue(
+            all(len(json.loads(str(report["article_ids_json"]))) == 50 for report in reports)
+        )
 
     def test_report_rejects_article_changes_without_partial_storage(self):
         request = export_subscription_report(

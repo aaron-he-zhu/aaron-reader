@@ -13,6 +13,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT / "src"))
 
 from aaron_reader.ai_provider import (  # noqa: E402
+    DEEPSEEK_MODEL,
     ProviderConfigError,
     ProviderHTTPError,
     ProviderKnownError,
@@ -21,13 +22,14 @@ from aaron_reader.ai_provider import (  # noqa: E402
     ProviderUnknownError,
     ProviderUsage,
 )
+from aaron_reader.ai_prompts import canonical_json  # noqa: E402
 from aaron_reader.ai_service import (  # noqa: E402
     AIDisabledError,
     AIFeatureDisabledError,
+    AIGenerationHeld,
     AIInputError,
     AIService,
     AIServiceError,
-    AIWebController,
     TOKEN_ESTIMATE_PROTOCOL_MARGIN,
     conservative_token_estimate,
 )
@@ -88,8 +90,42 @@ class FakeProvider:
             raise self.failure
         self.assert_safe_request(request)
         input_value = json.loads(request.input_text)
-        language = input_value["target_language"]
-        if request.schema_name == "article_summary":
+        language = input_value.get("target_language")
+        if request.schema_name == "bilingual_report":
+            output = {
+                target: {
+                    "headline": "%s report" % target,
+                    "overview": "A grounded overview.",
+                    "items": [
+                        {
+                            "article_id": int(item["article_id"]),
+                            "title": str(item["title"]),
+                            "summary": "Digest item.",
+                        }
+                        for item in input_value["articles"]
+                    ],
+                    "language": target,
+                    "limitations": "Based only on supplied metadata.",
+                }
+                for target in ("en", "zh-CN")
+            }
+        elif request.schema_name == "article_summary_translation":
+            output = {
+                "summary": {
+                    "summary": "A grounded short summary.",
+                    "key_points": ["First point", "Second point"],
+                    "language": language,
+                    "basis": input_value["input_scope"],
+                    "limitations": "Based only on supplied content.",
+                },
+                "translation": {
+                    "title": "译文标题",
+                    "publisher_summary": "译文简介",
+                    "language": language,
+                    "limitations": "",
+                },
+            }
+        elif request.schema_name == "article_summary":
             output = {
                 "summary": "A grounded short summary.",
                 "key_points": ["First point", "Second point"],
@@ -217,7 +253,7 @@ class AIServiceTests(unittest.TestCase):
             body_hash="one",
         )
         self.article = self.database.list_articles()[0]
-        self.key = mock.patch.dict(os.environ, {"OPENAI_API_KEY": "sk-test"})
+        self.key = mock.patch.dict(os.environ, {"DEEPSEEK_API_KEY": "sk-test"})
         self.key.start()
 
     def tearDown(self):
@@ -227,7 +263,6 @@ class AIServiceTests(unittest.TestCase):
     def app(self, ai=None):
         return AppConfig(
             sources=[SOURCE],
-            notification_enabled=False,
             ai=ai or enabled_ai(),
         )
 
@@ -281,6 +316,295 @@ class AIServiceTests(unittest.TestCase):
         self.assertEqual(2, len(provider.requests))
         self.assertNotEqual(first["artifact_key"], refreshed["artifact_key"])
 
+    def test_combined_article_call_stores_two_artifacts_and_reuses_any_provider(self):
+        provider = FakeProvider()
+        ai = enabled_ai(
+            provider="deepseek",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            digest_model=DEEPSEEK_MODEL,
+            reasoning_effort="none",
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        service = AIService(self.app(ai), self.database, provider=provider)
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            first = service.generate_article_pair(int(self.article["id"]))
+            second = service.generate_article_pair(int(self.article["id"]))
+
+        self.assertEqual(1, len(provider.requests))
+        self.assertEqual("article_summary_translation", provider.requests[0].schema_name)
+        combined_input = json.loads(provider.requests[0].input_text)
+        self.assertEqual(
+            {"input_scope", "target_language", "article"},
+            set(combined_input),
+        )
+        self.assertEqual(
+            1, provider.requests[0].input_text.count("Publisher description")
+        )
+        self.assertNotIn("summary_input", combined_input)
+        self.assertNotIn("translation_input", combined_input)
+        self.assertEqual(1, first["provider_api_calls"])
+        self.assertEqual(0, second["provider_api_calls"])
+        self.assertTrue(second["cache_hit"])
+        self.assertEqual("summary", first["summary"]["task_type"])
+        self.assertEqual("translation", first["translation"]["task_type"])
+        latest = self.database.latest_ai_artifacts([int(self.article["id"])])
+        self.assertEqual(2, len(latest[int(self.article["id"])]))
+        attempts = self.database.list_ai_attempts()
+        self.assertEqual(1, len(attempts))
+        self.assertEqual(160, attempts[0]["actual_total_tokens"])
+
+        with self.database.connect() as connection:
+            connection.execute(
+                "UPDATE ai_artifacts SET provider='historical-provider', "
+                "requested_model='historical-model', resolved_model='historical-model'"
+            )
+        fresh_provider = FakeProvider()
+        fresh_service = AIService(
+            self.app(ai), self.database, provider=fresh_provider
+        )
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            reused = fresh_service.generate_article_pair(int(self.article["id"]))
+        self.assertTrue(reused["cache_hit"])
+        self.assertEqual(0, reused["provider_api_calls"])
+        self.assertEqual([], fresh_provider.requests)
+
+        with self.database.connect() as connection:
+            connection.execute(
+                "UPDATE articles SET content_hash=? WHERE id=?",
+                ("new-publisher-content-version", int(self.article["id"])),
+            )
+        changed_provider = FakeProvider()
+        changed_service = AIService(
+            self.app(ai), self.database, provider=changed_provider
+        )
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            refreshed = changed_service.generate_article_pair(
+                int(self.article["id"])
+            )
+        self.assertEqual(1, refreshed["provider_api_calls"])
+        self.assertEqual(1, len(changed_provider.requests))
+
+    def test_bilingual_digest_uses_one_shared_input_call_and_two_cached_artifacts(self):
+        provider = FakeProvider()
+        ai = enabled_ai(
+            provider="deepseek",
+            digest_model=DEEPSEEK_MODEL,
+            reasoning_effort="none",
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        service = AIService(self.app(ai), self.database, provider=provider)
+        articles = self.database.list_articles(limit=10)
+        report_context = {
+            "period": "daily",
+            "timezone": "America/Los_Angeles",
+            "period_start_local_date": "2026-08-01",
+        }
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            first = service.generate_digest_pair(
+                articles,
+                report_context=report_context,
+            )
+            second = service.generate_digest_pair(
+                articles,
+                report_context=report_context,
+            )
+
+        self.assertEqual(1, len(provider.requests))
+        request = provider.requests[0]
+        self.assertEqual("bilingual_report", request.schema_name)
+        shared_input = json.loads(request.input_text)
+        self.assertEqual(["en", "zh-CN"], shared_input["target_languages"])
+        self.assertNotIn("target_language", shared_input)
+        self.assertEqual(1, len(shared_input["articles"]))
+        self.assertEqual({"en", "zh-CN"}, set(first["artifacts"]))
+        self.assertEqual(1, first["provider_api_calls"])
+        self.assertEqual(0, second["provider_api_calls"])
+        self.assertTrue(second["cache_hit"])
+        self.assertEqual(1, len(self.database.list_ai_attempts()))
+
+    def test_bilingual_digest_partial_cache_generates_only_missing_language(self):
+        provider = FakeProvider()
+        ai = enabled_ai(
+            provider="deepseek",
+            digest_model=DEEPSEEK_MODEL,
+            reasoning_effort="none",
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        service = AIService(self.app(ai), self.database, provider=provider)
+        articles = self.database.list_articles(limit=10)
+        report_context = {
+            "period": "daily",
+            "timezone": "America/Los_Angeles",
+            "period_start_local_date": "2026-08-01",
+        }
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            service.generate_digest(
+                articles,
+                target_language="en",
+                report_context=report_context,
+            )
+            result = service.generate_digest_pair(
+                articles,
+                report_context=report_context,
+            )
+
+        self.assertEqual(2, len(provider.requests))
+        self.assertTrue(
+            all(request.schema_name == "article_digest" for request in provider.requests)
+        )
+        self.assertEqual(1, result["provider_api_calls"])
+        self.assertEqual({"en", "zh-CN"}, set(result["artifacts"]))
+
+    def test_bilingual_digest_invalid_language_is_atomic_and_durably_held(self):
+        class InvalidChineseProvider(FakeProvider):
+            def generate(self, request):
+                response = super().generate(request)
+                output = json.loads(response.output_text)
+                output["zh-CN"]["language"] = "en"
+                return replace(
+                    response,
+                    output_text=json.dumps(output, ensure_ascii=False),
+                )
+
+        provider = InvalidChineseProvider()
+        ai = enabled_ai(
+            provider="deepseek",
+            digest_model=DEEPSEEK_MODEL,
+            reasoning_effort="none",
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        service = AIService(self.app(ai), self.database, provider=provider)
+        articles = self.database.list_articles(limit=10)
+        report_context = {
+            "period": "daily",
+            "timezone": "America/Los_Angeles",
+            "period_start_local_date": "2026-08-01",
+        }
+        prepared = {
+            language: service.prepare_digest(
+                articles,
+                target_language=language,
+                report_context=report_context,
+            )
+            for language in ("en", "zh-CN")
+        }
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            with self.assertRaisesRegex(AIServiceError, "bilingual output"):
+                service.generate_digest_pair(
+                    articles,
+                    report_context=report_context,
+                )
+            with self.assertRaises(AIGenerationHeld):
+                service.generate_digest_pair(
+                    articles,
+                    report_context=report_context,
+                )
+
+        self.assertEqual(1, len(provider.requests))
+        self.assertTrue(
+            all(
+                self.database.ai_artifact_by_key(task.artifact_key) is None
+                for task in prepared.values()
+            )
+        )
+        holds = self.database.list_ai_generation_holds()
+        self.assertEqual(1, len(holds))
+        self.assertEqual("report", holds[0]["workload_kind"])
+        self.assertEqual("paid_failure", holds[0]["hold_class"])
+
+    def test_sunday_daily_and_thirteen_article_weekly_pairs_fit_30k_reservation(self):
+        candidates = []
+        for index in range(12):
+            slug = "weekly-%02d" % index
+            url = "https://example.com/blog/%s" % slug
+            title = "Weekly AI update %02d" % index
+            summary = "A concise publisher description for update %02d." % index
+            candidates.append(
+                ArticleCandidate(
+                    source_slug="example",
+                    external_id=slug,
+                    url=url,
+                    title=title,
+                    summary=summary,
+                    published_at="2026-07-%02dT12:00:00Z" % (27 + index % 5),
+                    content_hash=article_hash(title, url, summary),
+                )
+            )
+        self.database.commit_candidates(
+            SOURCE,
+            candidates,
+            started_at="2026-08-02T20:00:00Z",
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="weekly-budget-fixture",
+        )
+        provider = FakeProvider()
+        ai = enabled_ai(
+            provider="deepseek",
+            digest_model=DEEPSEEK_MODEL,
+            reasoning_effort="none",
+            api_key_environment="DEEPSEEK_API_KEY",
+            budget=AIBudgetConfig(
+                daily_max_requests=20,
+                daily_max_total_tokens=30_000,
+                monthly_max_requests=300,
+                monthly_max_total_tokens=400_000,
+            ),
+        )
+        service = AIService(self.app(ai), self.database, provider=provider)
+        weekly_articles = self.database.list_articles(limit=20)
+        self.assertEqual(13, len(weekly_articles))
+        daily_articles = [
+            article
+            for article in weekly_articles
+            if int(article["id"]) == int(self.article["id"])
+        ]
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            service.generate_digest_pair(
+                daily_articles,
+                report_context={
+                    "period": "daily",
+                    "timezone": "America/Los_Angeles",
+                    "period_start_local_date": "2026-08-02",
+                },
+            )
+            service.generate_digest_pair(
+                weekly_articles,
+                report_context={
+                    "period": "weekly",
+                    "timezone": "America/Los_Angeles",
+                    "period_start_local_date": "2026-07-27",
+                },
+            )
+
+        self.assertEqual(2, len(provider.requests))
+        reservations = [
+            conservative_token_estimate(
+                request.instructions,
+                request.input_text,
+                canonical_json(request.json_schema),
+            )
+            + request.max_output_tokens
+            for request in provider.requests
+        ]
+        self.assertLessEqual(sum(reservations), 30_000)
+
     def test_translation_fields_have_an_independent_cache_key(self):
         provider = FakeProvider()
         service = AIService(self.app(), self.database, provider=provider)
@@ -326,9 +650,10 @@ class AIServiceTests(unittest.TestCase):
         service = AIService(self.app(), self.database, provider=provider)
         with self.assertRaises(AIServiceError):
             service.generate_article(int(self.article["id"]), task_type="summary")
-        with self.assertRaises(AIServiceError):
+        with self.assertRaises(AIGenerationHeld):
             service.generate_article(int(self.article["id"]), task_type="summary")
         self.assertEqual(1, len(provider.requests))
+        self.assertEqual(1, len(self.database.list_ai_generation_holds()))
         audit = self.database.list_ai_attempts()[0]
         self.assertEqual("unknown", audit["state"])
         self.assertEqual("provider_unknown", audit["error_class"])
@@ -439,9 +764,10 @@ class AIServiceTests(unittest.TestCase):
         service = AIService(self.app(), self.database, provider=provider)
         with self.assertRaises(AIServiceError):
             service.generate_article(int(self.article["id"]), task_type="summary")
-        with self.assertRaises(AIServiceError):
+        with self.assertRaises(AIGenerationHeld):
             service.generate_article(int(self.article["id"]), task_type="summary")
         self.assertEqual(1, len(provider.requests))
+        self.assertEqual(1, len(self.database.list_ai_generation_holds()))
         attempt = self.database.list_ai_attempts()[0]
         self.assertEqual("unknown", attempt["state"])
         self.assertEqual("provider_http_unknown", attempt["error_class"])
@@ -456,9 +782,17 @@ class AIServiceTests(unittest.TestCase):
         with self.assertRaises(AIServiceError):
             service.generate_article(int(self.article["id"]), task_type="summary")
         now[0] += timedelta(seconds=5)
-        result = service.generate_article(int(self.article["id"]), task_type="summary")
+        with self.assertRaises(AIGenerationHeld):
+            service.generate_article(int(self.article["id"]), task_type="summary")
+        self.assertEqual(1, len(provider.requests))
+        result = service.generate_article(
+            int(self.article["id"]),
+            task_type="summary",
+            force_held=True,
+        )
         self.assertFalse(result["cache_hit"])
         self.assertEqual(2, len(provider.requests))
+        self.assertEqual([], self.database.list_ai_generation_holds())
         self.assertNotEqual(
             provider.requests[0].idempotency_key,
             provider.requests[1].idempotency_key,
@@ -652,82 +986,6 @@ class AIServiceTests(unittest.TestCase):
             "succeeded", self.database.ai_job(int(translation["id"]))["state"]
         )
         self.assertEqual(1, len(provider.requests))
-
-    def test_web_ephemeral_full_text_uses_the_in_memory_prepared_input(self):
-        provider = FakeProvider()
-        ai = enabled_ai(
-            full_text_enabled=True,
-            web_actions_enabled=True,
-            input_policy="fetch_on_demand_ephemeral",
-        )
-        service = AIService(
-            self.app(ai),
-            self.database,
-            provider=provider,
-            content_fetcher_factory=FakeFetcher,
-        )
-        controller = AIWebController(service)
-
-        class ImmediateThread:
-            def __init__(self, *, target, args, **kwargs):
-                self.target = target
-                self.args = args
-
-            def start(self):
-                self.target(*self.args)
-
-        with mock.patch(
-            "aaron_reader.ai_service.threading.Thread", ImmediateThread
-        ):
-            submitted = controller.submit(
-                {
-                    "article_id": int(self.article["id"]),
-                    "task": "summary",
-                    "target_language": "zh-CN",
-                    "input_scope": "full_text",
-                },
-                "web-ephemeral-full-text",
-            )
-
-        self.assertEqual("queued", submitted["state"])
-        self.assertEqual(
-            "succeeded", self.database.ai_job(int(submitted["job_id"]))["state"]
-        )
-        self.assertEqual(1, len(provider.requests))
-        self.assertIsNone(
-            self.database.latest_content_snapshot(int(self.article["id"]))
-        )
-
-    def test_web_does_not_start_a_budget_blocked_job_before_reset(self):
-        provider = FakeProvider()
-        service = AIService(self.app(), self.database, provider=provider)
-        prepared = service.prepare_article(
-            int(self.article["id"]), task_type="summary"
-        )
-        job = service.enqueue(prepared, priority=5, trigger_kind="web")
-        with self.database.connect() as connection:
-            connection.execute(
-                "UPDATE ai_jobs SET state='budget_blocked', "
-                "next_attempt_at='2999-01-01T00:00:00Z' WHERE id=?",
-                (int(job["id"]),),
-            )
-
-        controller = AIWebController(service)
-        with mock.patch("aaron_reader.ai_service.threading.Thread") as thread_class:
-            submitted = controller.submit(
-                {
-                    "article_id": int(self.article["id"]),
-                    "task": "summary",
-                    "target_language": "zh-CN",
-                },
-                "web-budget-wait",
-            )
-
-        thread_class.assert_not_called()
-        self.assertEqual("budget_blocked", submitted["state"])
-        self.assertEqual("2999-01-01T00:00:00Z", submitted["next_attempt_at"])
-        self.assertEqual([], provider.requests)
-
 
 if __name__ == "__main__":
     unittest.main()

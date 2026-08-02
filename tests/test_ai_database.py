@@ -2,6 +2,7 @@ import json
 import sys
 import tempfile
 import threading
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import unittest
 
@@ -57,6 +58,30 @@ class AIDatabaseTests(unittest.TestCase):
             monthly_max_total_tokens=total_cap,
             monthly_max_cost_micros=0,
         )
+
+    @staticmethod
+    def usage_entry(**overrides):
+        entry = {
+            "timezone": "America/Los_Angeles",
+            "day_start": "2020-01-01T08:00:00Z",
+            "day_end": "2020-01-02T08:00:00Z",
+            "covered_through": "2020-01-02T08:00:00Z",
+            "requests": 1,
+            "confirmed_requests": 1,
+            "unconfirmed_requests": 0,
+            "input_tokens": 7,
+            "cached_input_tokens": 0,
+            "cache_miss_input_tokens": 7,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3,
+            "reasoning_tokens": 0,
+            "total_tokens": 10,
+            "reserved_total_tokens_for_unconfirmed": 0,
+            "cost_micros": 0,
+            "reserved_cost_micros_for_unconfirmed": 0,
+        }
+        entry.update(overrides)
+        return entry
 
     def test_v2_marker_upgrades_without_losing_existing_data(self):
         with self.database.connect() as connection:
@@ -166,6 +191,106 @@ class AIDatabaseTests(unittest.TestCase):
             thread.join(timeout=5)
         self.assertEqual(["blocked", "reserved"], sorted(outcomes))
         self.assertEqual(1, len(self.database.list_ai_attempts()))
+
+    def test_imported_usage_ledger_is_included_in_budget_reservation(self):
+        self.database.replace_ai_usage_ledger(
+            [
+                self.usage_entry(
+                    total_tokens=995,
+                    input_tokens=995,
+                    cache_miss_input_tokens=995,
+                    output_tokens=0,
+                )
+            ]
+        )
+        job = self.job("carried-budget")
+        with self.assertRaisesRegex(AIBudgetExceeded, "daily token budget exhausted"):
+            self.database.reserve_ai_attempt(
+                job_id=int(job["id"]),
+                idempotency_key="carried-budget-key",
+                requested_model="test-model",
+                estimated_input_tokens=6,
+                reserved_output_tokens=4,
+                reserved_cost_micros=0,
+                price_snapshot={},
+                daily_started_at="2020-01-01T08:00:00Z",
+                monthly_started_at="2020-01-01T08:00:00Z",
+                daily_reset_at="2020-01-02T08:00:00Z",
+                monthly_reset_at="2020-02-01T08:00:00Z",
+                daily_max_requests=100,
+                daily_max_total_tokens=1000,
+                daily_max_cost_micros=0,
+                monthly_max_requests=100,
+                monthly_max_total_tokens=1000,
+                monthly_max_cost_micros=0,
+            )
+        self.assertEqual(0, len(self.database.list_ai_attempts()))
+
+    def test_usage_ledger_suppresses_only_local_attempts_it_covers(self):
+        job = self.job("ledger-idempotence")
+        attempt = self.reserve(int(job["id"]), "ledger-idempotence-key")
+        started = datetime.fromisoformat(
+            str(attempt["request_started_at"]).replace("Z", "+00:00")
+        ).astimezone(timezone.utc)
+        day_start = started.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = day_start + timedelta(days=1)
+
+        def iso(value):
+            return value.isoformat().replace("+00:00", "Z")
+
+        self.database.replace_ai_usage_ledger(
+            [
+                self.usage_entry(
+                    timezone="UTC",
+                    day_start=iso(day_start),
+                    day_end=iso(day_end),
+                    covered_through=iso(day_end),
+                    confirmed_requests=0,
+                    unconfirmed_requests=1,
+                    input_tokens=0,
+                    cache_miss_input_tokens=0,
+                    output_tokens=0,
+                    total_tokens=0,
+                    reserved_total_tokens_for_unconfirmed=10,
+                )
+            ]
+        )
+        status = self.database.ai_status(iso(day_start), iso(day_start))
+        self.assertEqual(
+            {"requests": 1, "total_tokens": 10, "cost_micros": 0},
+            status["daily"],
+        )
+
+        later = iso(day_end + timedelta(seconds=1))
+        with self.database.connect() as connection:
+            connection.execute(
+                "UPDATE ai_attempts SET request_started_at=? WHERE id=?",
+                (later, int(attempt["id"])),
+            )
+        status = self.database.ai_status(iso(day_start), iso(day_start))
+        self.assertEqual(
+            {"requests": 2, "total_tokens": 20, "cost_micros": 0},
+            status["daily"],
+        )
+
+    def test_usage_ledger_replace_is_strict_atomic_and_attempt_rows_are_public_safe(self):
+        valid = self.usage_entry()
+        self.database.replace_ai_usage_ledger([valid])
+        invalid = dict(valid)
+        invalid["secret"] = "must not be accepted"
+        with self.assertRaisesRegex(ValueError, "unexpected fields"):
+            self.database.replace_ai_usage_ledger([invalid])
+        self.assertEqual([valid], self.database.list_ai_usage_ledger())
+
+        attempt = self.reserve(int(self.job("safe-rollup")["id"]), "private-key")
+        rows = self.database.list_ai_usage_attempt_rows()
+        self.assertEqual(1, len(rows))
+        self.assertEqual(str(attempt["request_started_at"]), rows[0]["request_started_at"])
+        self.assertTrue(
+            {"id", "idempotency_key", "provider_request_id", "error_message"}.isdisjoint(
+                rows[0]
+            )
+        )
 
     def test_stalled_sent_attempt_becomes_unknown_and_is_never_retried(self):
         job = self.job("unknown-artifact")

@@ -4,6 +4,7 @@ import os
 import sys
 import tempfile
 from contextlib import redirect_stderr, redirect_stdout
+from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
 import unittest
@@ -13,10 +14,13 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT / "src"))
 
 from aaron_reader.ai_provider import (  # noqa: E402
+    DEEPSEEK_MODEL,
+    ProviderHTTPError,
     ProviderResponse,
+    ProviderUnknownError,
     ProviderUsage,
 )
-from aaron_reader.cli import main  # noqa: E402
+from aaron_reader.cli import _weekly_report_due, main  # noqa: E402
 from aaron_reader.database import Database, utc_now  # noqa: E402
 from aaron_reader.models import ArticleCandidate, SourceConfig  # noqa: E402
 from aaron_reader.normalize import stable_hash  # noqa: E402
@@ -41,7 +45,6 @@ class AICliTests(unittest.TestCase):
                 {
                     "database_path": str(self.database_path),
                     "output_dir": str(self.output_dir),
-                    "notification_enabled": False,
                     "ai": {
                         "enabled": True,
                         "features": {
@@ -116,340 +119,238 @@ class AICliTests(unittest.TestCase):
             request_id="req_cli",
         )
 
+    def cloud_provider_response(self, request):
+        input_value = json.loads(request.input_text)
+        language = input_value.get("target_language")
+        if request.schema_name == "bilingual_report":
+            output = {
+                target: {
+                    "headline": "Daily AI" if target == "en" else "每日 AI",
+                    "overview": "Metadata overview.",
+                    "items": [
+                        {
+                            "article_id": article["article_id"],
+                            "title": article["title"],
+                            "summary": "Brief metadata summary.",
+                        }
+                        for article in input_value["articles"]
+                    ],
+                    "language": target,
+                    "limitations": "Metadata only.",
+                }
+                for target in ("en", "zh-CN")
+            }
+        elif request.schema_name == "article_summary_translation":
+            output = {
+                "summary": {
+                    "summary": "文章摘要",
+                    "key_points": ["要点"],
+                    "language": language,
+                    "basis": "metadata",
+                    "limitations": "仅依据元数据",
+                },
+                "translation": {
+                    "title": "文章标题",
+                    "publisher_summary": "发布方简介",
+                    "language": language,
+                    "limitations": "",
+                },
+            }
+        else:
+            output = {
+                "headline": "Daily AI" if language == "en" else "每日 AI",
+                "overview": "Metadata overview.",
+                "items": [
+                    {
+                        "article_id": article["article_id"],
+                        "title": article["title"],
+                        "summary": "Brief metadata summary.",
+                    }
+                    for article in input_value["articles"]
+                ],
+                "language": language,
+                "limitations": "Metadata only.",
+            }
+        return ProviderResponse(
+            output_text=json.dumps(output, ensure_ascii=False),
+            usage=ProviderUsage(
+                input_tokens=50,
+                cached_input_tokens=10,
+                output_tokens=20,
+                total_tokens=70,
+            ),
+            model=DEEPSEEK_MODEL,
+            request_id="safe-request-id",
+        )
+
     def base_args(self):
         return ["--config", str(self.config_path)]
 
-    def test_ai_status_and_preview_do_not_construct_or_call_a_provider(self):
-        output = io.StringIO()
-        with mock.patch(
-            "aaron_reader.ai_service.OpenAIResponsesProvider",
-            side_effect=AssertionError("provider must remain lazy"),
-        ), redirect_stdout(output):
-            status = main(self.base_args() + ["ai", "status", "--json"])
-        self.assertEqual(0, status)
-        self.assertEqual(0, json.loads(output.getvalue())["attempts"])
+    def test_cloud_run_is_fixed_combined_cache_aware_and_usage_audited(self):
+        class FixedDateTime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                value = cls(2026, 8, 1, 5, 0, tzinfo=timezone.utc)
+                return value if tz is None else value.astimezone(tz)
 
-        output = io.StringIO()
-        with mock.patch(
-            "aaron_reader.ai_service.OpenAIResponsesProvider",
-            side_effect=AssertionError("preview must not construct provider"),
-        ), redirect_stdout(output):
-            preview = main(
-                self.base_args()
-                + ["ai", "preview", str(self.article_id), "--task", "summary"]
-            )
-        self.assertEqual(0, preview)
-        self.assertFalse(json.loads(output.getvalue())["provider_will_be_called"])
+        outputs = []
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "deepseek-test"}, clear=True
+        ), mock.patch(
+            "aaron_reader.cli.datetime", FixedDateTime
+        ), mock.patch(
+            "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
+            side_effect=self.cloud_provider_response,
+        ) as generate:
+            for _ in range(2):
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    status = main(
+                        self.base_args()
+                        + ["ai", "cloud-run", "--yes", "--json"]
+                    )
+                self.assertEqual(0, status)
+                outputs.append(json.loads(output.getvalue()))
 
-    def test_non_json_ai_status_renders_api_key_state(self):
-        output = io.StringIO()
-        with mock.patch.dict(os.environ, {"OPENAI_API_KEY": ""}), redirect_stdout(output):
-            result = main(self.base_args() + ["ai", "status"])
-        self.assertEqual(0, result)
-        self.assertIn("API key present: False", output.getvalue())
-
-    def test_subscription_bridge_needs_no_api_key_and_is_idempotent(self):
-        config = json.loads(self.config_path.read_text(encoding="utf-8"))
-        config["ai"]["enabled"] = False
-        self.config_path.write_text(json.dumps(config), encoding="utf-8")
-        request_path = self.root / "subscription-request.json"
-        result_path = self.root / "subscription-request.results.json"
-
-        export_output = io.StringIO()
-        with mock.patch.dict(os.environ, {"OPENAI_API_KEY": ""}), mock.patch(
-            "aaron_reader.ai_service.OpenAIResponsesProvider",
-            side_effect=AssertionError("subscription bridge must not construct provider"),
-        ), redirect_stdout(export_output):
-            exported = main(
-                self.base_args()
-                + [
-                    "ai", "subscription-export", "--all", "--limit", "3",
-                    "--to", "zh-CN", "--output", str(request_path),
-                ]
-            )
-        self.assertEqual(0, exported)
-        status = json.loads(export_output.getvalue())
-        request = json.loads(request_path.read_text(encoding="utf-8"))
-        self.assertEqual(1, status["pending_count"])
-        self.assertEqual(1, request["pending_count"])
-        self.assertFalse(request["generation"]["api_key_required"])
-        item = request["items"][0]
-        self.assertEqual(["summary", "translation"], item["missing_tasks"])
-
-        result_path.write_text(
-            json.dumps(
-                {
-                    "protocol": request["protocol"],
-                    "batch_id": request["batch_id"],
-                    "target_language": request["target_language"],
-                    "items": [
-                        {
-                            "article_id": item["article_id"],
-                            "fingerprint": item["fingerprint"],
-                            "summary": {
-                                "summary": "文章摘要。",
-                                "key_points": ["要点。"],
-                                "language": "zh-CN",
-                                "basis": "metadata",
-                                "limitations": "仅依据发布方元数据。",
-                            },
-                            "translation": {
-                                "title": "文章标题",
-                                "publisher_summary": "发布方简介",
-                                "language": "zh-CN",
-                                "limitations": "",
-                            },
-                        }
-                    ],
-                },
-                ensure_ascii=False,
-            ),
-            encoding="utf-8",
-        )
-        invalid_path = self.root / "invalid-subscription-result.json"
-        invalid = json.loads(result_path.read_text(encoding="utf-8"))
-        invalid["unexpected"] = True
-        invalid_path.write_text(json.dumps(invalid), encoding="utf-8")
-        with redirect_stderr(io.StringIO()):
-            rejected = main(
-                self.base_args()
-                + ["ai", "subscription-import", str(invalid_path), "--json"]
-            )
-        self.assertEqual(2, rejected)
-        self.assertEqual({}, Database(self.database_path).latest_ai_artifacts([self.article_id]))
-
-        imported_output = io.StringIO()
-        with mock.patch.dict(os.environ, {"OPENAI_API_KEY": ""}), mock.patch(
-            "aaron_reader.ai_service.OpenAIResponsesProvider",
-            side_effect=AssertionError("subscription bridge must not construct provider"),
-        ), redirect_stdout(imported_output):
-            first = main(
-                self.base_args()
-                + ["ai", "subscription-import", str(result_path), "--json"]
-            )
-            second = main(
-                self.base_args()
-                + ["ai", "subscription-import", str(result_path), "--json"]
-            )
-        self.assertEqual((0, 0), (first, second))
-        decoder = json.JSONDecoder()
-        first_result, offset = decoder.raw_decode(imported_output.getvalue())
-        while imported_output.getvalue()[offset].isspace():
-            offset += 1
-        second_result, _ = decoder.raw_decode(imported_output.getvalue(), offset)
-        self.assertEqual(2, first_result["imported_artifacts"])
-        self.assertEqual(0, first_result["cache_hits"])
-        self.assertEqual(0, second_result["imported_artifacts"])
-        self.assertEqual(2, second_result["cache_hits"])
-        database = Database(self.database_path)
-        self.assertEqual(0, len(database.list_ai_attempts()))
+        first, second = outputs
+        self.assertEqual(2, generate.call_count)
+        self.assertEqual(2, first["provider_api_calls"])
+        self.assertEqual(0, second["provider_api_calls"])
+        self.assertEqual(2, len(first["reports"]))
+        self.assertFalse(first["weekly_due"])
+        self.assertEqual(1, len(first["article_results"]))
+        self.assertEqual(1, first["article_results"][0]["provider_api_calls"])
+        self.assertEqual(1, second["coverage_cache_hits"])
         self.assertEqual(
-            2,
-            len(database.latest_ai_artifacts([self.article_id])[self.article_id]),
+            {
+                "requests": 2,
+                "confirmed_requests": 2,
+                "unconfirmed_requests": 0,
+                "input_tokens": 100,
+                "cached_input_tokens": 20,
+                "cache_miss_input_tokens": 80,
+                "cache_write_input_tokens": 0,
+                "output_tokens": 40,
+                "reasoning_tokens": 0,
+                "total_tokens": 140,
+                "reserved_total_tokens_for_unconfirmed": 0,
+            },
+            first["usage"],
         )
-
-        empty_output = io.StringIO()
-        with redirect_stdout(empty_output):
-            empty = main(
-                self.base_args()
-                + ["ai", "subscription-export", "--all", "--limit", "3"]
-            )
-        self.assertEqual(0, empty)
-        self.assertEqual(0, json.loads(empty_output.getvalue())["pending_count"])
-
-    def test_subscription_cli_targets_one_read_article_and_one_task(self):
-        database = Database(self.database_path)
-        database.set_read([self.article_id], True)
-        request_path = self.root / "targeted-request.json"
-        result_path = self.root / "targeted-request.results.json"
-        with mock.patch.dict(os.environ, {"OPENAI_API_KEY": ""}), mock.patch(
-            "aaron_reader.ai_service.OpenAIResponsesProvider",
-            side_effect=AssertionError("targeted subscription export is offline"),
-        ), redirect_stdout(io.StringIO()):
-            result = main(
-                self.base_args()
-                + [
-                    "ai",
-                    "subscription-export",
-                    "--article-id",
-                    str(self.article_id),
-                    "--task",
-                    "summary",
-                    "--output",
-                    str(request_path),
-                ]
-            )
-        self.assertEqual(0, result)
-        request = json.loads(request_path.read_text(encoding="utf-8"))
-        self.assertEqual(1, request["pending_count"])
-        self.assertEqual({"summary"}, set(request["tasks"]))
-        item = request["items"][0]
-        self.assertEqual(self.article_id, item["article_id"])
-        self.assertEqual(["summary"], item["missing_tasks"])
-        result_path.write_text(
-            json.dumps(
-                {
-                    "protocol": request["protocol"],
-                    "batch_id": request["batch_id"],
-                    "target_language": request["target_language"],
-                    "items": [
-                        {
-                            "article_id": self.article_id,
-                            "fingerprint": item["fingerprint"],
-                            "summary": {
-                                "summary": "目标文章摘要",
-                                "key_points": [],
-                                "language": "zh-CN",
-                                "basis": "metadata",
-                                "limitations": "",
-                            },
-                            "translation": None,
-                        }
-                    ],
-                },
-                ensure_ascii=False,
+        self.assertEqual(0, second["usage"]["requests"])
+        requests = [call.args[0] for call in generate.call_args_list]
+        self.assertTrue(all(request.model == DEEPSEEK_MODEL for request in requests))
+        self.assertTrue(all(request.reasoning_effort == "none" for request in requests))
+        self.assertEqual(
+            1,
+            sum(
+                request.schema_name == "article_summary_translation"
+                for request in requests
             ),
-            encoding="utf-8",
         )
-        with redirect_stdout(io.StringIO()):
-            imported = main(
-                self.base_args()
-                + ["ai", "subscription-import", str(result_path), "--json"]
-            )
-        self.assertEqual(0, imported)
-        artifacts = Database(self.database_path).latest_ai_artifacts([self.article_id])
-        self.assertEqual(["summary"], [item["task_type"] for item in artifacts[self.article_id]])
+        self.assertEqual(
+            1,
+            sum(request.schema_name == "bilingual_report" for request in requests),
+        )
+        self.assertEqual(
+            {"extra_network_call": False, "validation": "fixed chat-completions request"},
+            first["model_preflight"],
+        )
 
-    def test_subscription_report_cli_imports_and_renders_latest_json(self):
-        database = Database(self.database_path)
-        with database.connect() as connection:
-            connection.execute(
-                "UPDATE articles SET published_at=? WHERE id=?",
-                (utc_now(), self.article_id),
-            )
-        request_path = self.root / "daily-report.json"
-        result_path = self.root / "daily-report.results.json"
-        with mock.patch.dict(os.environ, {"OPENAI_API_KEY": ""}), mock.patch(
-            "aaron_reader.ai_service.OpenAIResponsesProvider",
-            side_effect=AssertionError("subscription report export is offline"),
-        ), redirect_stdout(io.StringIO()):
-            exported = main(
-                self.base_args()
-                + [
-                    "ai",
-                    "subscription-report-export",
-                    "--period",
-                    "daily",
-                    "--output",
-                    str(request_path),
-                ]
-            )
-        self.assertEqual(0, exported)
-        request = json.loads(request_path.read_text(encoding="utf-8"))
-        self.assertEqual(1, request["pending_count"])
-        self.assertEqual("America/Los_Angeles", request["timezone"])
-        articles = request["input"]["articles"]
-        result = {
-            key: request[key]
-            for key in (
-                "protocol",
-                "report_id",
-                "fingerprint",
-                "period",
-                "timezone",
-                "local_date",
-                "period_start",
-                "period_end",
-                "target_language",
-            )
-        }
-        result["output"] = {
-            "headline": "今日博客摘要",
-            "overview": "今天共有一篇文章。",
-            "items": [
-                {
-                    "article_id": article["article_id"],
-                    "title": "文章",
-                    "summary": "文章简介。",
-                }
-                for article in articles
-            ],
-            "language": "zh-CN",
-            "limitations": "仅使用元数据。",
-        }
-        result_path.write_text(
-            json.dumps(result, ensure_ascii=False), encoding="utf-8"
-        )
-        output = io.StringIO()
-        with mock.patch.dict(os.environ, {"OPENAI_API_KEY": ""}), mock.patch(
-            "aaron_reader.ai_service.OpenAIResponsesProvider",
-            side_effect=AssertionError("subscription report import is offline"),
-        ), redirect_stdout(output):
-            imported = main(
-                self.base_args()
-                + [
-                    "ai",
-                    "subscription-report-import",
-                    str(result_path),
-                    "--json",
-                ]
-            )
-        self.assertEqual(0, imported)
-        import_status = json.loads(output.getvalue())
-        self.assertEqual(1, import_status["imported_artifacts"])
-        latest = json.loads(
-            (self.output_dir / "latest.json").read_text(encoding="utf-8")
-        )
-        self.assertEqual(1, latest["cached_ai_report_count"])
-        report = latest["ai_reports"][0]
-        self.assertEqual("daily", report["period"])
-        self.assertEqual("America/Los_Angeles", report["timezone"])
-        self.assertEqual("今日博客摘要", report["output"]["headline"])
-        self.assertEqual(0, len(Database(self.database_path).list_ai_attempts()))
+    def test_cloud_run_requires_confirmation_and_fails_fast_after_one_error(self):
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "deepseek-test"}, clear=True
+        ), mock.patch(
+            "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
+            side_effect=AssertionError("must not call without --yes"),
+        ) as generate, redirect_stderr(io.StringIO()):
+            rejected = main(self.base_args() + ["ai", "cloud-run", "--json"])
+        self.assertEqual(2, rejected)
+        self.assertEqual(0, generate.call_count)
 
-    def test_cli_summary_calls_once_then_uses_local_cache(self):
         output = io.StringIO()
-        with mock.patch.dict(os.environ, {"OPENAI_API_KEY": "sk-test"}), mock.patch(
-            "aaron_reader.ai_provider.OpenAIResponsesProvider.generate",
-            return_value=self.provider_response(),
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "deepseek-test"}, clear=True
+        ), mock.patch(
+            "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
+            side_effect=ProviderHTTPError(
+                "provider returned HTTP 429",
+                status=429,
+                retryable=True,
+            ),
         ) as generate, redirect_stdout(output):
-            first = main(
+            failed = main(
                 self.base_args()
-                + ["ai", "summarize", str(self.article_id), "--json"]
+                + ["ai", "cloud-run", "--yes", "--json"]
             )
-            second = main(
-                self.base_args()
-                + ["ai", "summarize", str(self.article_id), "--json"]
-            )
-        self.assertEqual((0, 0), (first, second))
+        self.assertEqual(1, failed)
         self.assertEqual(1, generate.call_count)
-        self.assertIn("CLI summary", output.getvalue())
+        result = json.loads(output.getvalue())
+        self.assertFalse(result["completed"])
+        self.assertEqual(1, len(result["failures"]))
+        self.assertEqual([], result["article_results"])
+        self.assertEqual(1, result["usage"]["requests"])
+        self.assertEqual(1, result["usage"]["unconfirmed_requests"])
 
-    def test_batch_and_retry_style_operations_require_yes(self):
-        stderr = io.StringIO()
-        with redirect_stderr(stderr):
-            result = main(self.base_args() + ["ai", "batch", "--task", "summary"])
-        self.assertEqual(2, result)
-        self.assertIn("requires --yes", stderr.getvalue())
+    def test_cloud_run_preserves_hold_without_rebilling_and_stays_failed(self):
+        class FixedDateTime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                value = cls(2026, 8, 1, 5, 0, tzinfo=timezone.utc)
+                return value if tz is None else value.astimezone(tz)
 
-    def test_ai_actions_cannot_be_combined_with_network_bind(self):
-        stderr = io.StringIO()
-        with redirect_stderr(stderr):
-            result = main(
-                [
-                    "serve",
-                    "--host",
-                    "0.0.0.0",
-                    "--allow-network",
-                    "--enable-ai-actions",
-                ]
+        arguments = self.base_args() + ["ai", "cloud-run", "--yes", "--json"]
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "deepseek-test"}, clear=True
+        ), mock.patch(
+            "aaron_reader.cli.datetime", FixedDateTime
+        ), mock.patch(
+            "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
+            side_effect=ProviderUnknownError("result unknown"),
+        ) as first_generate, redirect_stdout(io.StringIO()):
+            self.assertEqual(1, main(arguments))
+        self.assertEqual(1, first_generate.call_count)
+
+        output = io.StringIO()
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "deepseek-test"}, clear=True
+        ), mock.patch(
+            "aaron_reader.cli.datetime", FixedDateTime
+        ), mock.patch(
+            "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
+            side_effect=self.cloud_provider_response,
+        ) as second_generate, redirect_stdout(output):
+            status = main(arguments)
+
+        result = json.loads(output.getvalue())
+        self.assertEqual(1, status)
+        self.assertFalse(result["completed"])
+        self.assertEqual(1, result["generation_holds_skipped"])
+        self.assertEqual([], result["failures"])
+        self.assertEqual("generation_hold", result["reports"][0]["skipped"])
+        self.assertEqual(1, second_generate.call_count)
+
+    def test_weekly_report_is_only_due_sunday_night_or_when_forced(self):
+        self.assertFalse(
+            _weekly_report_due(
+                datetime(2026, 8, 3, 2, 59, tzinfo=timezone.utc)
             )
-        self.assertEqual(2, result)
-        self.assertIn("loopback-only", stderr.getvalue())
+        )
+        self.assertTrue(
+            _weekly_report_due(
+                datetime(2026, 8, 3, 3, 0, tzinfo=timezone.utc)
+            )
+        )
+        self.assertTrue(
+            _weekly_report_due(
+                datetime(2026, 8, 1, 5, 0, tzinfo=timezone.utc),
+                force=True,
+            )
+        )
 
     def test_normal_status_never_constructs_ai_provider(self):
         with mock.patch(
-            "aaron_reader.ai_service.OpenAIResponsesProvider",
+            "aaron_reader.ai_service.DeepSeekChatCompletionsProvider",
             side_effect=AssertionError("normal status must stay zero-token"),
         ), redirect_stdout(io.StringIO()):
             result = main(self.base_args() + ["status"])
