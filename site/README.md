@@ -35,4 +35,6 @@ Translation and the optional three-article historical backfill are explicitly
 Simplified Chinese. Published reports require an exact language match, and
 their per-item notes remain distinct from independently cached article
 artifacts. Report details and per-article AI tools use collapsed native
-disclosures so the archive remains the primary reading surface.
+disclosures so the archive remains the primary reading surface. The backfill
+action is rendered only while at least one current article lacks both cached
+Chinese artifacts; complete coverage replaces it with a completion message.

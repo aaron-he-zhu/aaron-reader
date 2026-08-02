@@ -1,3 +1,4 @@
+import json
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -193,6 +194,54 @@ class AISubscriptionTests(unittest.TestCase):
         self.assertEqual(1, result["imported_artifacts"])
         artifacts = self.database.latest_ai_artifacts([int(article["id"])])
         self.assertEqual("translation", artifacts[int(article["id"])][0]["task_type"])
+
+    def test_translation_preserves_an_empty_requested_publisher_summary(self):
+        url = "https://example.com/blog/empty-summary"
+        title = "An article without a publisher summary"
+        self.database.commit_candidates(
+            self.source,
+            [
+                ArticleCandidate(
+                    source_slug=self.source.slug,
+                    external_id="empty-summary",
+                    url=url,
+                    title=title,
+                    summary="",
+                    published_at="2026-08-01T09:00:00Z",
+                    content_hash=stable_hash([title, url, ""]),
+                )
+            ],
+            started_at="2026-08-01T17:01:00Z",
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="empty-summary-fixture",
+        )
+        article = next(
+            item
+            for item in self.database.list_articles(limit=20)
+            if item["canonical_url"] == url
+        )
+        request = export_subscription_batch(
+            self.service,
+            [article],
+            target_language="zh-CN",
+            tasks=("translation",),
+        )
+        self.assertEqual("", request["items"][0]["input"]["publisher_summary"])
+        payload = self.article_result(
+            request,
+            include_summary=False,
+            include_translation=True,
+        )
+        payload["items"][0]["translation"]["publisher_summary"] = ""
+
+        result = import_subscription_results(self.service, payload)
+
+        self.assertEqual(1, result["imported_artifacts"])
+        artifacts = self.database.latest_ai_artifacts([int(article["id"])])
+        output = json.loads(artifacts[int(article["id"])][0]["output_json"])
+        self.assertEqual("", output["publisher_summary"])
 
     def test_san_francisco_daily_weekly_and_dst_boundaries(self):
         daily = report_period_window("daily", now=self.now)

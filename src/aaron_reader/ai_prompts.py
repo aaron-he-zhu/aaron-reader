@@ -233,7 +233,12 @@ def parse_and_validate_output(
                     raise ValueError("translation returned a field that was not requested")
                 clean_translation[field] = None
             else:
-                cleaned = _clean_text(item, field, maximum=maximum)
+                cleaned = _clean_text(
+                    item,
+                    field,
+                    maximum=maximum,
+                    allow_empty=field == "publisher_summary",
+                )
                 clean_translation[field] = cleaned
                 readable_parts.append(cleaned)
         return clean_translation, "\n\n".join(readable_parts)

@@ -35,8 +35,13 @@ test("server-renders the Aaron Reader snapshot", async () => {
   assert.match(html, /Brief it with Codex/);
   assert.match(html, /Summarize today in English/);
   assert.match(html, /Summarize this week in English/);
-  assert.match(html, /Backfill 3 articles in Chinese/);
-  assert.match(html, /AI cache coverage/);
+  assert.match(html, /Chinese AI cache coverage/);
+  assert.match(html, /<strong>110\/110<\/strong>/);
+  assert.match(html, /Backfill complete/);
+  assert.doesNotMatch(
+    html,
+    /<a\b(?=[^>]*\bclass="[^"]*\bcodex-action-backfill\b[^"]*")[^>]*>/,
+  );
   assert.match(html, /Summarize in English/);
   assert.match(html, /Translate to Chinese/);
   assert.match(html, /AI tools/);

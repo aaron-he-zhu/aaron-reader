@@ -257,6 +257,9 @@ Chinese** action opens a bounded Codex task equivalent to:
 
 The exporter skips valid cached artifacts and never selects more than three
 articles for that run. It does not change the twice-daily `--unread` policy.
+The hosted action is shown only while at least one current article lacks the
+complete Chinese summary-and-translation pair; once coverage is complete, the
+reader shows the completed ratio and removes the redundant backfill action.
 
 Daily and weekly report buttons use a separate subscription request. `daily`
 means the current `America/Los_Angeles` calendar day through export time;

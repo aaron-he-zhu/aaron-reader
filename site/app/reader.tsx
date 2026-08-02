@@ -99,8 +99,9 @@ const copy = {
     summarizeWeek: "Summarize this week in English",
     backfillThree: "Backfill 3 articles in Chinese",
     backfillHint: "Optional · bounded to three",
-    coverage: "AI cache coverage",
-    coverageSuffix: "articles enriched. Historical backfill runs only when you choose it.",
+    coverage: "Chinese AI cache coverage",
+    coverageSuffix: "articles have both a Chinese summary and translation. Historical backfill runs only when you choose it.",
+    coverageCompleteSuffix: "articles have both a Chinese summary and translation. Backfill complete.",
     codexReview:
       "Opens Codex with a prefilled prompt. Review the prompt, then press Send—the link does not submit or run anything automatically.",
     workspacePath: "Local Aaron Reader checkout",
@@ -169,8 +170,9 @@ const copy = {
     summarizeWeek: "总结本周",
     backfillThree: "补齐接下来 3 篇中文内容",
     backfillHint: "可选 · 每次最多三篇",
-    coverage: "AI 缓存覆盖",
-    coverageSuffix: "篇文章已有 AI 内容；历史回填仅在你主动选择时运行。",
+    coverage: "中文 AI 缓存覆盖",
+    coverageSuffix: "篇文章同时已有中文摘要和翻译；历史回填仅在你主动选择时运行。",
+    coverageCompleteSuffix: "篇文章同时已有中文摘要和翻译；历史回填已完成。",
     codexReview: "链接会打开 Codex 并预填指令；请先检查，再按“发送”。它不会自动提交或执行任务。",
     workspacePath: "Aaron Reader 本地目录",
     workspacePlaceholder: "/绝对路径/aaron-reader",
@@ -286,9 +288,18 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
     () => new Map(snapshot.articles.map((article) => [article.id, article])),
     [snapshot.articles],
   );
-  const enrichedArticleCount = useMemo(
-    () => snapshot.articles.filter((article) => article.ai_artifacts.length > 0).length,
+  const chineseCompleteArticleCount = useMemo(
+    () => snapshot.articles.filter(
+      (article) => (
+        Boolean(findArtifact(article.ai_artifacts, "summary", "zh-CN"))
+        && Boolean(findArtifact(article.ai_artifacts, "translation", "zh-CN"))
+      ),
+    ).length,
     [snapshot.articles],
+  );
+  const chineseBackfillComplete = (
+    snapshot.articles.length > 0
+    && chineseCompleteArticleCount === snapshot.articles.length
   );
   const publishedReports = reportPeriods.flatMap((period) => {
     const report = findLatestReport(snapshot.ai_reports, period, language);
@@ -347,8 +358,8 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
             <p className="codex-center-intro">{t.actionIntro}</p>
             <p className="ai-coverage">
               <span>{t.coverage}</span>
-              <strong>{enrichedArticleCount}/{snapshot.articles.length}</strong>
-              {t.coverageSuffix}
+              <strong>{chineseCompleteArticleCount}/{snapshot.articles.length}</strong>
+              {chineseBackfillComplete ? t.coverageCompleteSuffix : t.coverageSuffix}
             </p>
           </div>
           <div className="codex-center-controls">
@@ -375,9 +386,11 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
               <a className="codex-action" href={reportCodexLink("weekly", language, workspacePath)} aria-describedby="codex-review-note">
                 <span>{t.summarizeWeek}</span><span aria-hidden="true">↗</span>
               </a>
-              <a className="codex-action codex-action-backfill" href={backfillCodexLink(workspacePath)} aria-describedby="codex-review-note">
-                <span>{t.backfillThree}<small>{t.backfillHint}</small></span><span aria-hidden="true">↗</span>
-              </a>
+              {!chineseBackfillComplete && (
+                <a className="codex-action codex-action-backfill" href={backfillCodexLink(workspacePath)} aria-describedby="codex-review-note">
+                  <span>{t.backfillThree}<small>{t.backfillHint}</small></span><span aria-hidden="true">↗</span>
+                </a>
+              )}
             </div>
             <p className="codex-review-note" id="codex-review-note"><span aria-hidden="true">◇</span>{t.codexReview}</p>
           </div>
