@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01T17:02:24Z",
+  "generated_at": "2026-08-02T06:34:39Z",
   "language": "en",
   "supported_languages": [
     "en",
@@ -8,7 +8,7 @@
   "llm_tokens_used": 0,
   "render_llm_tokens_used": 0,
   "cached_ai_artifact_count": 2,
-  "cached_ai_report_count": 1,
+  "cached_ai_report_count": 2,
   "counts": {
     "total": 110
   },
@@ -24,28 +24,28 @@
       "slug": "anthropic-news",
       "name": "Anthropic News",
       "health": "healthy",
-      "last_success_at": "2026-08-01T17:02:24Z",
+      "last_success_at": "2026-08-02T06:34:39Z",
       "article_count": 13
     },
     {
       "slug": "claude-blog",
       "name": "Claude Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-01T17:02:22Z",
+      "last_success_at": "2026-08-02T06:34:36Z",
       "article_count": 25
     },
     {
       "slug": "openai-developers",
       "name": "OpenAI Developer Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-01T17:02:18Z",
+      "last_success_at": "2026-08-02T06:34:35Z",
       "article_count": 21
     },
     {
       "slug": "openai-news",
       "name": "OpenAI News",
       "health": "healthy",
-      "last_success_at": "2026-08-01T17:02:16Z",
+      "last_success_at": "2026-08-02T06:34:34Z",
       "article_count": 51
     }
   ],
@@ -1299,6 +1299,92 @@
     }
   ],
   "ai_reports": [
+    {
+      "id": 2,
+      "period": "weekly",
+      "timezone": "America/Los_Angeles",
+      "local_date": "2026-08-01",
+      "period_start": "2026-07-27T07:00:00Z",
+      "period_end": "2026-08-02T06:30:33Z",
+      "target_language": "en",
+      "generated_at": "2026-08-02T06:31:22Z",
+      "input_truncated": false,
+      "provider": "chatgpt-codex-subscription",
+      "model": "gpt-5.6-luna",
+      "output": {
+        "headline": "AI's week: mathematical advances, efficiency, deployment, and safeguards",
+        "items": [
+          {
+            "article_id": 110,
+            "summary": "OpenAI reports new results on long-standing problems in mathematics and theoretical computer science, including work in geometry, cryptography, and complexity.",
+            "title": "Ten advances in mathematics and theoretical computer science"
+          },
+          {
+            "article_id": 2,
+            "summary": "The article presents a full-stack approach intended to make advanced AI more capable, affordable, and broadly useful.",
+            "title": "Building abundant intelligence"
+          },
+          {
+            "article_id": 1,
+            "summary": "OpenAI describes how its safety, security, transparency, and provenance practices support responsible AI governance in Europe as the EU AI Act advances.",
+            "title": "Advancing responsible AI across Europe"
+          },
+          {
+            "article_id": 3,
+            "summary": "The case study describes how Univé combined leadership, responsible governance, and employee-led innovation with ChatGPT Enterprise to support workforce transformation.",
+            "title": "Univé builds an AI-ready workforce"
+          },
+          {
+            "article_id": 4,
+            "summary": "OpenAI says it disrupted a Cambodia-based operation that used ChatGPT to support investment, romance, gambling, and impersonation scams.",
+            "title": "Disrupting a Criminal Scam Operation"
+          },
+          {
+            "article_id": 5,
+            "summary": "The update covers lower GPT-5.6 pricing for Luna and Terra and describes how more efficient models can support enterprise AI workflows at scale.",
+            "title": "Advancing the price-performance frontier with GPT-5.6"
+          },
+          {
+            "article_id": 97,
+            "summary": "Anthropic published an investigation concerning three real-world incidents in its cybersecurity evaluations; the supplied publisher metadata does not describe the incidents or findings.",
+            "title": "Investigating three real-world incidents in our cybersecurity evaluations"
+          },
+          {
+            "article_id": 6,
+            "summary": "avatarin used GPT-Realtime to provide Yamada Denki shoppers with continuous multilingual support; the publisher reports 30,000 users in two weeks and 92% positive survey responses.",
+            "title": "How avatarin built a 24/7 retail agent with GPT-Realtime"
+          },
+          {
+            "article_id": 7,
+            "summary": "The article says retaining reasoning and enabling compaction improved GPT-5.6 scores and efficiency on ARC-AGI-3.",
+            "title": "How enabling two settings tripled our scores on the ARC-AGI-3 benchmark"
+          },
+          {
+            "article_id": 8,
+            "summary": "OpenAI says it is providing 100,000 academic researchers with free access to advanced ChatGPT models to support research, collaboration, and discovery.",
+            "title": "Accelerating scientific discovery with ChatGPT for Academic Researchers"
+          },
+          {
+            "article_id": 9,
+            "summary": "The article describes GPT-5.6 efficiency improvements across models, inference, and agentic workflows, with the goal of delivering more useful intelligence per dollar.",
+            "title": "How GPT-5.6 fuses frontier intelligence with frontier efficiency"
+          },
+          {
+            "article_id": 10,
+            "summary": "A field report describes scientists using AI coding agents to modernize scientific computing and accelerate software development and discovery in fields including genomics.",
+            "title": "Scientific computing in the age of agentic AI"
+          },
+          {
+            "article_id": 72,
+            "summary": "Claude Blog published an update about bringing MCP 2026-07-28 to Claude; the supplied publisher metadata provides no additional details.",
+            "title": "Bringing MCP 2026-07-28 to Claude"
+          }
+        ],
+        "language": "en",
+        "limitations": "This brief uses only supplied titles, publication metadata, and publisher summaries; it does not use article full text. The Anthropic cybersecurity evaluation item and the Claude MCP item had no publisher summary, so their descriptions are limited to what their titles establish.",
+        "overview": "This week's feed spans advances in mathematics and theoretical computer science, efforts to improve GPT-5.6 price-performance and reasoning efficiency, and deployments in workforce development, retail support, academic research, and scientific computing. It also covers responsible AI governance in Europe, action against a criminal scam operation, cybersecurity evaluation incidents, and an update about bringing MCP 2026-07-28 to Claude."
+      }
+    },
     {
       "id": 1,
       "period": "weekly",
