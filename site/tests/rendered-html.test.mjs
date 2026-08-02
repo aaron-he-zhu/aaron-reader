@@ -47,7 +47,7 @@ test("server-renders the Aaron Reader snapshot", async () => {
   assert.match(html, /10:00 &amp; 22:00 San Francisco/);
   assert.match(html, /class="report-section"/);
   assert.match(html, /<article class="report-card" lang="en">/);
-  assert.match(html, /AI(?:&#x27;|')s week: mathematical advances/);
+  assert.match(html, /<strong>Weekly brief<\/strong>/);
   assert.match(html, /<details class="report-items"><summary>/);
   assert.doesNotMatch(html, /<details class="report-items" open/);
   assert.doesNotMatch(html, /<article class="report-card" lang="zh-CN">/);
