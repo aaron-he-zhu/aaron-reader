@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://aaron-reader.aaron-he-zhu.workers.dev/"),
   title: "Aaron Reader",
   description: "A deterministic signal reader for the leading AI labs.",
   icons: {

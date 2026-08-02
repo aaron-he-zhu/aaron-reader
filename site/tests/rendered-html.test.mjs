@@ -20,6 +20,15 @@ test("server-renders the Aaron Reader snapshot", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>Aaron Reader — AI labs, without the noise<\/title>/i);
+  assert.match(
+    html,
+    /<link rel="canonical" href="https:\/\/aaron-reader\.aaron-he-zhu\.workers\.dev\/"\s*\/?>/i,
+  );
+  assert.match(
+    html,
+    /<meta property="og:url" content="https:\/\/aaron-reader\.aaron-he-zhu\.workers\.dev\/"\s*\/?>/i,
+  );
+  assert.doesNotMatch(html, /aaron-reader\.zhuhe1983\.workers\.dev/i);
   assert.match(html, /Independent signal desk/);
   assert.match(html, /The work behind/);
   assert.match(html, /GPT-5\.6 Luna/);

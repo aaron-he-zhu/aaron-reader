@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-[Cloudflare 线上站点](https://aaron-reader.zhuhe1983.workers.dev/) ·
+[Cloudflare 线上站点](https://aaron-reader.aaron-he-zhu.workers.dev/) ·
 [GitHub 开源仓库](https://github.com/aaron-he-zhu/aaron-reader)
 
 一个本地运行、确定性抓取、默认使用 **0 LLM token** 的博客订阅器。它目前订阅：
@@ -110,7 +110,7 @@ AARON_READER_LANG=zh-CN ./scripts/status-launchd.sh
 ### GitHub 与 Cloudflare 发布边界
 
 公开生产站点是
-[aaron-reader.zhuhe1983.workers.dev](https://aaron-reader.zhuhe1983.workers.dev/)。
+[aaron-reader.aaron-he-zhu.workers.dev](https://aaron-reader.aaron-he-zhu.workers.dev/)。
 Cloudflare Workers Builds 跟踪 GitHub `main` 分支，从 `/site` 构建，并且只在
 GitHub push 成功后发布；非生产分支构建已经关闭。
 

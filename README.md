@@ -2,7 +2,7 @@
 
 [简体中文](README.zh-CN.md)
 
-[Live Cloudflare site](https://aaron-reader.zhuhe1983.workers.dev/) ·
+[Live Cloudflare site](https://aaron-reader.aaron-he-zhu.workers.dev/) ·
 [GitHub repository](https://github.com/aaron-he-zhu/aaron-reader)
 
 A local, deterministic blog reader that uses **zero LLM tokens by default**. It currently subscribes to:
@@ -123,7 +123,7 @@ Uninstalling moves the plist to the Trash. It does not delete the installed runt
 ### GitHub and Cloudflare release boundary
 
 The public production deployment is
-[aaron-reader.zhuhe1983.workers.dev](https://aaron-reader.zhuhe1983.workers.dev/).
+[aaron-reader.aaron-he-zhu.workers.dev](https://aaron-reader.aaron-he-zhu.workers.dev/).
 Cloudflare Workers Builds tracks the GitHub `main` branch, builds from `/site`,
 and deploys only after a successful GitHub push. Non-production branch builds
 are disabled.

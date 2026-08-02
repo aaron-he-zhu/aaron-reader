@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   description:
     "A deterministic, token-free feed for OpenAI, Anthropic, and Claude updates, with optional GPT-5.6 Luna enrichment.",
   alternates: {
+    canonical: "/",
     types: {
       "application/rss+xml": "/reader/feed.xml",
     },
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
     title: "Aaron Reader",
     description:
       "The work behind the AI frontier, collected at 10:00 and 22:00 San Francisco time.",
+    url: "/",
     images: [{ url: "/og.png", width: 1200, height: 630 }],
     type: "website",
   },

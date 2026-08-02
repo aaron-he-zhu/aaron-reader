@@ -1,6 +1,6 @@
 # Aaron Reader on Cloudflare Workers
 
-Production: [aaron-reader.zhuhe1983.workers.dev](https://aaron-reader.zhuhe1983.workers.dev/)
+Production: [aaron-reader.aaron-he-zhu.workers.dev](https://aaron-reader.aaron-he-zhu.workers.dev/)
 
 This directory is the isolated Cloudflare Worker deployment surface for Aaron Reader. The
 Python application in the parent directory remains the only data producer. The
