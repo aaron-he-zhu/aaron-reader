@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Example Atom</title>
+  <entry>
+    <id>tag:openai.com,2026:atom-1</id>
+    <title>Atom &lt;entry&gt; support</title>
+    <link rel="self" href="https://openai.com/feed/atom-1" />
+    <link rel="alternate" href="https://openai.com/index/atom-entry/?utm_medium=feed" />
+    <summary type="html">A concise &lt;b&gt;Atom&lt;/b&gt; summary.</summary>
+    <author><name>Ada Example</name></author>
+    <category term="Research" />
+    <published>2026-07-25T08:30:00+08:00</published>
+    <updated>2026-07-26T01:00:00Z</updated>
+  </entry>
+</feed>

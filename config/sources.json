@@ -1,0 +1,96 @@
+{
+  "default_language": "en",
+  "database_path": "data/reader.sqlite3",
+  "output_dir": "public",
+  "request_timeout_seconds": 25,
+  "max_response_bytes": 8000000,
+  "notification_enabled": true,
+  "ai": {
+    "enabled": false,
+    "provider": "openai",
+    "translation_model": "gpt-5.6-luna",
+    "summary_model": "gpt-5.6-luna",
+    "digest_model": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "store": false,
+    "api_key_environment": "OPENAI_API_KEY",
+    "input_policy": "metadata_only",
+    "max_input_chars_per_article": 12000,
+    "max_full_text_chars": 60000,
+    "max_response_bytes": 2000000,
+    "timeout_seconds": 60,
+    "max_output_tokens": {
+      "summary": 400,
+      "translation": 800,
+      "digest": 1200
+    },
+    "features": {
+      "summary": true,
+      "translation": true,
+      "digest": true,
+      "full_text": false,
+      "web_actions": false
+    },
+    "budget": {
+      "timezone": "Asia/Singapore",
+      "daily_max_requests": 20,
+      "daily_max_total_tokens": 30000,
+      "daily_max_cost_usd": 0,
+      "monthly_max_requests": 300,
+      "monthly_max_total_tokens": 400000,
+      "monthly_max_cost_usd": 0
+    },
+    "batch": {
+      "enabled": false,
+      "max_articles_per_run": 10,
+      "concurrency": 1,
+      "max_attempts": 2
+    },
+    "prices": {}
+  },
+  "sources": [
+    {
+      "slug": "openai-news",
+      "name": "OpenAI News",
+      "home_url": "https://openai.com/news/",
+      "fetch_url": "https://openai.com/news/rss.xml",
+      "adapter": "rss",
+      "history_limit": 50,
+      "enabled": true
+    },
+    {
+      "slug": "openai-developers",
+      "name": "OpenAI Developer Blog",
+      "home_url": "https://developers.openai.com/blog",
+      "fetch_url": "https://developers.openai.com/blog.md",
+      "adapter": "openai_developers",
+      "history_limit": 50,
+      "metadata_url": "https://developers.openai.com/blog",
+      "enabled": true
+    },
+    {
+      "slug": "claude-blog",
+      "name": "Claude Blog",
+      "home_url": "https://claude.com/blog/",
+      "fetch_url": "https://claude.com/blog/",
+      "adapter": "claude_blog",
+      "history_limit": 50,
+      "sitemap_url": "https://claude.com/sitemap.xml",
+      "sitemap_prefix": "https://claude.com/blog/",
+      "sitemap_interval_hours": 24,
+      "enabled": true
+    },
+    {
+      "slug": "anthropic-news",
+      "name": "Anthropic News",
+      "home_url": "https://www.anthropic.com/news",
+      "fetch_url": "https://www.anthropic.com/news",
+      "adapter": "anthropic_news",
+      "history_limit": 50,
+      "sitemap_url": "https://www.anthropic.com/sitemap.xml",
+      "sitemap_prefix": "https://www.anthropic.com/news/",
+      "sitemap_interval_hours": 24,
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,1389 @@
+{
+  "generated_at": "2026-08-01T17:02:24Z",
+  "language": "en",
+  "supported_languages": [
+    "en",
+    "zh-CN"
+  ],
+  "llm_tokens_used": 0,
+  "render_llm_tokens_used": 0,
+  "cached_ai_artifact_count": 2,
+  "cached_ai_report_count": 1,
+  "counts": {
+    "total": 110
+  },
+  "articles_page": {
+    "order": "newest_first",
+    "returned_count": 110,
+    "limit": 500,
+    "omitted_count": 0,
+    "truncated": false
+  },
+  "sources": [
+    {
+      "slug": "anthropic-news",
+      "name": "Anthropic News",
+      "health": "healthy",
+      "last_success_at": "2026-08-01T17:02:24Z",
+      "article_count": 13
+    },
+    {
+      "slug": "claude-blog",
+      "name": "Claude Blog",
+      "health": "healthy",
+      "last_success_at": "2026-08-01T17:02:22Z",
+      "article_count": 25
+    },
+    {
+      "slug": "openai-developers",
+      "name": "OpenAI Developer Blog",
+      "health": "healthy",
+      "last_success_at": "2026-08-01T17:02:18Z",
+      "article_count": 21
+    },
+    {
+      "slug": "openai-news",
+      "name": "OpenAI News",
+      "health": "healthy",
+      "last_success_at": "2026-08-01T17:02:16Z",
+      "article_count": 51
+    }
+  ],
+  "articles": [
+    {
+      "id": 110,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Ten advances in mathematics and theoretical computer science",
+      "summary": "OpenAI shares new results on long-standing open problems in mathematics and theoretical computer science, including advances in geometry, cryptography, and complexity.",
+      "category": "Publication",
+      "published_at": "2026-08-01T00:00:00Z",
+      "url": "https://openai.com/index/ten-advances-in-mathematics",
+      "ai_artifacts": [
+        {
+          "id": 2,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-01T08:09:47Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "翻译仅依据提供的标题和发布方摘要。",
+            "publisher_summary": "OpenAI分享了数学和理论计算机科学领域长期存在的开放问题的新成果，包括几何学、密码学和复杂性理论方面的进展。",
+            "title": "数学和理论计算机科学领域的十项进展"
+          }
+        },
+        {
+          "id": 1,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-01T08:09:47Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "成果涵盖几何学、密码学和复杂性理论。",
+              "这些成果针对数学和理论计算机科学中的长期开放问题。"
+            ],
+            "language": "zh-CN",
+            "limitations": "该总结仅依据标题和发布方摘要，未涵盖文章全文，因此无法提供具体问题、方法、结果或影响的更多细节。",
+            "summary": "OpenAI分享了数学和理论计算机科学领域长期存在的开放问题的新成果，涉及几何学、密码学和复杂性理论等方向。"
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Building abundant intelligence",
+      "summary": "A full-stack approach to making advanced AI more capable, more affordable, and more widely useful.",
+      "category": "Company",
+      "published_at": "2026-07-31T15:00:00Z",
+      "url": "https://openai.com/index/building-abundant-intelligence",
+      "ai_artifacts": []
+    },
+    {
+      "id": 1,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Advancing responsible AI across Europe",
+      "summary": "OpenAI shares how its safety, security, transparency, and provenance practices support responsible AI governance in Europe. The work will continue as the EU AI Act advances.",
+      "category": "Global Affairs",
+      "published_at": "2026-07-31T15:00:00Z",
+      "url": "https://openai.com/index/advancing-responsible-ai-across-europe",
+      "ai_artifacts": []
+    },
+    {
+      "id": 3,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Univé builds an AI-ready workforce",
+      "summary": "See how Univé built an AI-ready workforce with ChatGPT Enterprise by combining leadership, responsible governance, and employee-led innovation to transform work at scale.",
+      "category": "",
+      "published_at": "2026-07-31T07:00:00Z",
+      "url": "https://openai.com/index/unive",
+      "ai_artifacts": []
+    },
+    {
+      "id": 4,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Disrupting a Criminal Scam Operation",
+      "summary": "OpenAI disrupted a Cambodia-based scam operation using ChatGPT to support investment, romance, gambling, and impersonation schemes.",
+      "category": "",
+      "published_at": "2026-07-31T00:00:00Z",
+      "url": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+      "ai_artifacts": []
+    },
+    {
+      "id": 5,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Advancing the price-performance frontier with GPT-5.6",
+      "summary": "Explore lower GPT‑5.6 pricing for Luna and Terra—and how OpenAI’s more efficient models help enterprises deploy AI workflows at scale.",
+      "category": "Product",
+      "published_at": "2026-07-30T10:00:00Z",
+      "url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+      "ai_artifacts": []
+    },
+    {
+      "id": 97,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Investigating three real-world incidents in our cybersecurity evaluations",
+      "summary": "",
+      "category": "Frontier Red Team",
+      "published_at": "2026-07-30T00:00:00Z",
+      "url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+      "ai_artifacts": []
+    },
+    {
+      "id": 6,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How avatarin built a 24/7 retail agent with GPT-Realtime",
+      "summary": "avatarin uses OpenAI’s GPT-Realtime to give Yamada Denki shoppers 24/7 multilingual support. In two weeks, 30,000 people used the agent and 92% of survey responses were positive.",
+      "category": "",
+      "published_at": "2026-07-30T00:00:00Z",
+      "url": "https://openai.com/index/avatarin",
+      "ai_artifacts": []
+    },
+    {
+      "id": 7,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How enabling two settings tripled our scores on the ARC-AGI-3 benchmark",
+      "summary": "How two API settings improved GPT-5.6 performance on ARC-AGI-3, boosting scores and efficiency by retaining reasoning and enabling compaction.",
+      "category": "Research",
+      "published_at": "2026-07-29T15:00:00Z",
+      "url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+      "ai_artifacts": []
+    },
+    {
+      "id": 8,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Accelerating scientific discovery with ChatGPT for Academic Researchers",
+      "summary": "OpenAI is giving 100,000 academic researchers free access to ChatGPT's most advanced AI models to accelerate scientific research, collaboration, and discovery.",
+      "category": "Company",
+      "published_at": "2026-07-29T10:00:00Z",
+      "url": "https://openai.com/index/chatgpt-for-academic-researchers",
+      "ai_artifacts": []
+    },
+    {
+      "id": 9,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How GPT-5.6 fuses frontier intelligence with frontier efficiency",
+      "summary": "GPT-5.6 improves AI efficiency across models, inference, and agentic workflows, helping deliver more useful intelligence per dollar.",
+      "category": "Engineering",
+      "published_at": "2026-07-29T00:00:00Z",
+      "url": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+      "ai_artifacts": []
+    },
+    {
+      "id": 10,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Scientific computing in the age of agentic AI",
+      "summary": "A new field report shows how scientists use AI coding agents to modernize scientific computing, accelerating software development and discovery in genomics and beyond.",
+      "category": "Publication",
+      "published_at": "2026-07-28T17:00:00Z",
+      "url": "https://openai.com/index/scientific-computing-agentic-ai",
+      "ai_artifacts": []
+    },
+    {
+      "id": 72,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Bringing MCP 2026-07-28 to Claude",
+      "summary": "",
+      "category": "Product announcements",
+      "published_at": "2026-07-28T00:00:00Z",
+      "url": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+      "ai_artifacts": []
+    },
+    {
+      "id": 11,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How AI is expanding what people do at work",
+      "summary": "New OpenAI research shows how AI is expanding what workers do, with ChatGPT users taking on tasks across roles and reshaping job boundaries.",
+      "category": "Company",
+      "published_at": "2026-07-27T03:30:00Z",
+      "url": "https://openai.com/index/how-ai-is-expanding-what-people-do-at-work",
+      "ai_artifacts": []
+    },
+    {
+      "id": 99,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Cognizant and Anthropic expand their partnership to bring Claude to enterprise clients",
+      "summary": "",
+      "category": "Announcements",
+      "published_at": "2026-07-27T00:00:00Z",
+      "url": "https://www.anthropic.com/news/cognizant-anthropic",
+      "ai_artifacts": []
+    },
+    {
+      "id": 98,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Our position on open-weights models",
+      "summary": "",
+      "category": "Announcements",
+      "published_at": "2026-07-27T00:00:00Z",
+      "url": "https://www.anthropic.com/news/position-open-weights-models",
+      "ai_artifacts": []
+    },
+    {
+      "id": 100,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Introducing Claude Opus 5",
+      "summary": "Opus 5 is a step change improvement for the Opus tier powering long-running agents while delivering improvements in coding and professional work.",
+      "category": "Product",
+      "published_at": "2026-07-24T00:00:00Z",
+      "url": "https://www.anthropic.com/news/claude-opus-5",
+      "ai_artifacts": []
+    },
+    {
+      "id": 75,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Claude models explained: choosing the best model for your use case",
+      "summary": "",
+      "category": "Enterprise AI",
+      "published_at": "2026-07-24T00:00:00Z",
+      "url": "https://claude.com/blog/claude-models-explained-choosing-the-best-model-for-your-use-case",
+      "ai_artifacts": []
+    },
+    {
+      "id": 74,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "The new rules of context engineering for Claude 5 generation models",
+      "summary": "",
+      "category": "Claude Code",
+      "published_at": "2026-07-24T00:00:00Z",
+      "url": "https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models",
+      "ai_artifacts": []
+    },
+    {
+      "id": 73,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "How the product designer who built Claude Design uses it to explore ideas before building them",
+      "summary": "",
+      "category": "Enterprise AI",
+      "published_at": "2026-07-24T00:00:00Z",
+      "url": "https://claude.com/blog/how-the-product-designer-who-built-claude-design-uses-it-to-explore-ideas-before-building-them",
+      "ai_artifacts": []
+    },
+    {
+      "id": 77,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Think through hard problems in voice mode",
+      "summary": "",
+      "category": "Product announcements",
+      "published_at": "2026-07-23T00:00:00Z",
+      "url": "https://claude.com/blog/think-through-hard-problems-in-voice-mode",
+      "ai_artifacts": []
+    },
+    {
+      "id": 76,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Four role-based certifications for the people who put Claude to work for customers",
+      "summary": "",
+      "category": "Enterprise AI",
+      "published_at": "2026-07-23T00:00:00Z",
+      "url": "https://claude.com/blog/four-role-based-claude-certifications",
+      "ai_artifacts": []
+    },
+    {
+      "id": 12,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Launching Health in ChatGPT",
+      "summary": "Health in ChatGPT now lets eligible U.S. users securely connect medical records and Apple Health to get more personalized insights and better understand their health.",
+      "category": "Product",
+      "published_at": "2026-07-23T00:00:00Z",
+      "url": "https://openai.com/index/health-in-chatgpt",
+      "ai_artifacts": []
+    },
+    {
+      "id": 14,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How news organizations are using AI to advance their vital missions",
+      "summary": "News organizations are using AI to strengthen reporting, grow audiences, and improve business operations, with OpenAI tools supporting journalists and publishers worldwide.",
+      "category": "Company",
+      "published_at": "2026-07-22T13:00:00Z",
+      "url": "https://openai.com/index/how-news-organizations-are-using-ai",
+      "ai_artifacts": []
+    },
+    {
+      "id": 13,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Building AI infrastructure with the Effingham County community",
+      "summary": "OpenAI announces Project Camellia in Effingham County, Georgia, with commitments to responsible energy, community investment, jobs, and access to Codex.",
+      "category": "Global Affairs",
+      "published_at": "2026-07-22T13:00:00Z",
+      "url": "https://openai.com/index/building-ai-infrastructure-with-the-effingham-county-community",
+      "ai_artifacts": []
+    },
+    {
+      "id": 15,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Advancing the next era of national science",
+      "summary": "OpenAI outlines its commitment to advancing American science working with the U.S. Department of Energy and national labs to use frontier AI to accelerate discovery.",
+      "category": "Global Affairs",
+      "published_at": "2026-07-22T12:00:00Z",
+      "url": "https://openai.com/index/advancing-the-next-era-of-national-science",
+      "ai_artifacts": []
+    },
+    {
+      "id": 16,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Introducing OpenAI Presence",
+      "summary": "Introducing OpenAI Presence, a proven enterprise AI agent platform that helps organizations deploy trusted voice and chat agents for customer and internal workflows.",
+      "category": "Product",
+      "published_at": "2026-07-22T05:30:00Z",
+      "url": "https://openai.com/index/introducing-openai-presence",
+      "ai_artifacts": []
+    },
+    {
+      "id": 102,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Ask Claude about the Anthropic Economic Index",
+      "summary": "",
+      "category": "Product",
+      "published_at": "2026-07-22T00:00:00Z",
+      "url": "https://www.anthropic.com/news/anthropic-economic-index-connector",
+      "ai_artifacts": []
+    },
+    {
+      "id": 101,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "A research agenda for the Economic Futures Research Fund",
+      "summary": "",
+      "category": "Economic Research",
+      "published_at": "2026-07-22T00:00:00Z",
+      "url": "https://www.anthropic.com/news/economic-futures-research-fund-agenda",
+      "ai_artifacts": []
+    },
+    {
+      "id": 79,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "How Outtake built a cyber investigator on Claude",
+      "summary": "",
+      "category": "Agents",
+      "published_at": "2026-07-22T00:00:00Z",
+      "url": "https://claude.com/blog/how-outtake-built-a-cyber-investigator-on-claude",
+      "ai_artifacts": []
+    },
+    {
+      "id": 78,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Building verification loops in Claude Code with skills",
+      "summary": "",
+      "category": "Claude Code",
+      "published_at": "2026-07-22T00:00:00Z",
+      "url": "https://claude.com/blog/building-verification-loops-in-claude-code-with-skills",
+      "ai_artifacts": []
+    },
+    {
+      "id": 17,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "NTT DATA Group cuts incident analysis to 30 minutes with Codex",
+      "summary": "NTT DATA Group uses ChatGPT Enterprise and Codex to help 9,000 employees automate work, cut incident analysis to 30 minutes, and scale secure AI adoption.",
+      "category": "",
+      "published_at": "2026-07-22T00:00:00Z",
+      "url": "https://openai.com/index/ntt-data",
+      "ai_artifacts": []
+    },
+    {
+      "id": 18,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Introducing the ChatGPT for small business program",
+      "summary": "OpenAI launches the ChatGPT for Small Businesses program, helping entrepreneurs build AI skills, automate work, and grow with ChatGPT Work.",
+      "category": "AI Adoption",
+      "published_at": "2026-07-21T17:00:00Z",
+      "url": "https://openai.com/index/introducing-chatgpt-small-business-program",
+      "ai_artifacts": []
+    },
+    {
+      "id": 19,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "OpenAI and Hugging Face partner to address security incident during model evaluation",
+      "summary": "OpenAI and Hugging Face share early findings from a security incident during AI model evaluation, highlighting advanced cyber capabilities and lessons for defenders.",
+      "category": "Security",
+      "published_at": "2026-07-21T07:00:00Z",
+      "url": "https://openai.com/index/hugging-face-model-evaluation-security-incident",
+      "ai_artifacts": []
+    },
+    {
+      "id": 103,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Anthropic is donating another $20 million to Public First Action",
+      "summary": "",
+      "category": "Announcements",
+      "published_at": "2026-07-21T00:00:00Z",
+      "url": "https://www.anthropic.com/news/donation-public-first-action",
+      "ai_artifacts": []
+    },
+    {
+      "id": 81,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "How Datadog built a “universal machine tool” for Claude Code",
+      "summary": "",
+      "category": "Claude Code",
+      "published_at": "2026-07-21T00:00:00Z",
+      "url": "https://claude.com/blog/how-datadog-built-a-universal-machine-tool-for-claude-code",
+      "ai_artifacts": []
+    },
+    {
+      "id": 80,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "How Anthropic secures its AI-native software development lifecycle",
+      "summary": "",
+      "category": "Claude Code",
+      "published_at": "2026-07-21T00:00:00Z",
+      "url": "https://claude.com/blog/how-anthropic-secures-its-ai-native-software-development-lifecycle",
+      "ai_artifacts": []
+    },
+    {
+      "id": 20,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "David Vélez and Robin Vince join the boards of the OpenAI Foundation and OpenAI Group PBC",
+      "summary": "David Vélez and Robin Vince join the boards of the OpenAI Foundation and OpenAI Group PBC, bringing global leadership in finance, technology, and governance.",
+      "category": "Company",
+      "published_at": "2026-07-21T00:00:00Z",
+      "url": "https://openai.com/index/david-velez-robin-vince-join-openai-boards",
+      "ai_artifacts": []
+    },
+    {
+      "id": 21,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Safety and alignment in an era of long-horizon models",
+      "summary": "OpenAI shares lessons from deploying long-running AI models, highlighting new safety risks, observed failures, and improved safeguards through iterative deployment.",
+      "category": "Safety",
+      "published_at": "2026-07-20T10:00:00Z",
+      "url": "https://openai.com/index/safety-alignment-long-horizon-models",
+      "ai_artifacts": []
+    },
+    {
+      "id": 104,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Apply for Anthropic’s AI for Science rare disease research grants",
+      "summary": "",
+      "category": "Announcements",
+      "published_at": "2026-07-20T00:00:00Z",
+      "url": "https://www.anthropic.com/news/rare-disease-research-grants",
+      "ai_artifacts": []
+    },
+    {
+      "id": 82,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Working at the frontier: How Rakuten builds agents overnight with Claude Fable 5",
+      "summary": "",
+      "category": "Enterprise AI",
+      "published_at": "2026-07-20T00:00:00Z",
+      "url": "https://claude.com/blog/working-at-the-frontier-rakuten",
+      "ai_artifacts": []
+    },
+    {
+      "id": 53,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Custom Code Review rules for Codex",
+      "summary": "Provide more detailed rules for Codex to spot issues and better adhere your conventions during code review.",
+      "category": "Codex",
+      "published_at": "2026-07-20T00:00:00Z",
+      "url": "https://developers.openai.com/blog/custom-code-review-rules-for-codex",
+      "ai_artifacts": []
+    },
+    {
+      "id": 22,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "A scorecard for the AI age",
+      "summary": "Sarah Friar, CFO of OpenAI, introduces a practical AI scorecard to measure ROI through useful work, cost per successful task, dependability, and return on compute.",
+      "category": "Company",
+      "published_at": "2026-07-17T10:00:00Z",
+      "url": "https://openai.com/index/a-scorecard-for-the-ai-age",
+      "ai_artifacts": []
+    },
+    {
+      "id": 84,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Zero risk isn't the job: a CISO's guide to agentic AI",
+      "summary": "",
+      "category": "Enterprise AI",
+      "published_at": "2026-07-17T00:00:00Z",
+      "url": "https://claude.com/blog/ciso-guide-to-agentic-ai",
+      "ai_artifacts": []
+    },
+    {
+      "id": 83,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Working at the frontier: How Cursor knew Claude Fable 5 was ready for the hardest 1% of problems",
+      "summary": "",
+      "category": "Enterprise AI",
+      "published_at": "2026-07-17T00:00:00Z",
+      "url": "https://claude.com/blog/working-at-the-frontier-cursor",
+      "ai_artifacts": []
+    },
+    {
+      "id": 23,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Why teens deserve access to safe AI",
+      "summary": "Learn how OpenAI is making ChatGPT safer for teens with age-appropriate protections, learning tools, parental controls, and expert partnerships.",
+      "category": "Safety",
+      "published_at": "2026-07-16T16:00:00Z",
+      "url": "https://openai.com/index/why-teens-deserve-access-safe-ai",
+      "ai_artifacts": []
+    },
+    {
+      "id": 24,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How Codex became a collaborator for OpenAI’s creative team",
+      "summary": "How OpenAI’s creative team uses Codex to build custom creative tools, accelerate ideation, and prototype faster with context-aware AI.",
+      "category": "OpenAI on OpenAI",
+      "published_at": "2026-07-16T07:00:00Z",
+      "url": "https://openai.com/index/codex-collaborator-creative-team",
+      "ai_artifacts": []
+    },
+    {
+      "id": 86,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Working with Claude Fable 5 in Claude Cowork",
+      "summary": "",
+      "category": "Enterprise AI",
+      "published_at": "2026-07-16T00:00:00Z",
+      "url": "https://claude.com/blog/working-with-claude-fable-5-in-claude-cowork",
+      "ai_artifacts": []
+    },
+    {
+      "id": 85,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "How Anthropic runs large-scale code migrations with Claude Code",
+      "summary": "",
+      "category": "Claude Code",
+      "published_at": "2026-07-16T00:00:00Z",
+      "url": "https://claude.com/blog/ai-code-migration",
+      "ai_artifacts": []
+    },
+    {
+      "id": 25,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How Cars24 scales conversations and builds faster with OpenAI",
+      "summary": "Cars24 uses OpenAI-powered voice and chat agents to handle 1M+ monthly conversation minutes, recover 12% of lost leads, and bring agentic workflows to teams across the company.",
+      "category": "",
+      "published_at": "2026-07-16T00:00:00Z",
+      "url": "https://openai.com/index/cars24",
+      "ai_artifacts": []
+    },
+    {
+      "id": 26,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "The US is advancing AI safety through state and federal action",
+      "summary": "OpenAI outlines a “reverse federalism” approach to AI governance, where state laws help build a national framework for safe, democratic AI.",
+      "category": "Global Affairs",
+      "published_at": "2026-07-15T12:00:00Z",
+      "url": "https://openai.com/index/advancing-ai-safety-through-state-and-federal-action",
+      "ai_artifacts": []
+    },
+    {
+      "id": 27,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "GPT-Red: Unlocking Self-Improvement for Robustness",
+      "summary": "Explore GPT-Red, OpenAI’s automated red teaming system that uses self-play to improve AI safety, alignment, and prompt injection robustness.",
+      "category": "Safety",
+      "published_at": "2026-07-15T10:00:00Z",
+      "url": "https://openai.com/index/unlocking-self-improvement-gpt-red",
+      "ai_artifacts": []
+    },
+    {
+      "id": 28,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How to manage AI investments in the agentic era",
+      "summary": "Learn how enterprises can manage AI investments in the agentic era by measuring useful work per dollar, improving efficiency, and scaling high-value workflows.",
+      "category": "AI Adoption",
+      "published_at": "2026-07-14T10:00:00Z",
+      "url": "https://openai.com/index/managing-ai-investments-in-agentic-era",
+      "ai_artifacts": []
+    },
+    {
+      "id": 106,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Anthropic commits $10 million to Canadian AI research",
+      "summary": "",
+      "category": "Announcements",
+      "published_at": "2026-07-14T00:00:00Z",
+      "url": "https://www.anthropic.com/news/canadian-ai-research",
+      "ai_artifacts": []
+    },
+    {
+      "id": 105,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Introducing Claude for Teachers",
+      "summary": "",
+      "category": "Product",
+      "published_at": "2026-07-14T00:00:00Z",
+      "url": "https://www.anthropic.com/news/claude-for-teachers",
+      "ai_artifacts": []
+    },
+    {
+      "id": 30,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How sales teams use ChatGPT Work",
+      "summary": "See how sales teams can use ChatGPT Work to create pipeline briefs, meeting prep packets, forecast reviews, account plans, and stalled-deal diagnoses from real work inputs.",
+      "category": "OpenAI Academy",
+      "published_at": "2026-07-14T00:00:00Z",
+      "url": "https://openai.com/academy/codex-for-work/how-sales-teams-use-codex",
+      "ai_artifacts": []
+    },
+    {
+      "id": 29,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How data science teams use ChatGPT Work",
+      "summary": "See how data science teams can use ChatGPT Work to build root-cause briefs, impact readouts, KPI memos, scoped analyses, and dashboard specs from real work inputs.",
+      "category": "OpenAI Academy",
+      "published_at": "2026-07-14T00:00:00Z",
+      "url": "https://openai.com/academy/codex-for-work/how-data-science-teams-use-codex",
+      "ai_artifacts": []
+    },
+    {
+      "id": 31,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How Deutsche Telekom is rewiring telecommunications with AI",
+      "summary": "How Deutsche Telekom is becoming an AI-native telco with OpenAI-transforming customer service, employee workflows, network operations, and the future of voice.",
+      "category": "",
+      "published_at": "2026-07-10T07:00:00Z",
+      "url": "https://openai.com/index/deutsche-telekom",
+      "ai_artifacts": []
+    },
+    {
+      "id": 32,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Getting started with ChatGPT",
+      "summary": "Learn how to use ChatGPT, start your first conversation, and discover simple ways to write, brainstorm, and solve problems with AI.",
+      "category": "OpenAI Academy",
+      "published_at": "2026-07-10T00:00:00Z",
+      "url": "https://openai.com/academy/getting-started",
+      "ai_artifacts": []
+    },
+    {
+      "id": 33,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot",
+      "summary": "Learn how GPT-5.6 powers Microsoft 365 Copilot with stronger AI capabilities across Word, Excel, PowerPoint, Chat, and Cowork for faster, higher-quality work.",
+      "category": "Product",
+      "published_at": "2026-07-09T13:00:00Z",
+      "url": "https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot",
+      "ai_artifacts": []
+    },
+    {
+      "id": 36,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "GPT-5.5 Bio Bug Bounty",
+      "summary": "Details about the OpenAI Bio Bounty program",
+      "category": "Safety",
+      "published_at": "2026-07-09T10:00:00Z",
+      "url": "https://openai.com/index/bio-bug-bounty",
+      "ai_artifacts": []
+    },
+    {
+      "id": 35,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "GPT-5.6: Frontier intelligence that scales with your ambition",
+      "summary": "More intelligence from every token, stronger performance per dollar, and more capability on demand for your hardest work.",
+      "category": "Product",
+      "published_at": "2026-07-09T10:00:00Z",
+      "url": "https://openai.com/index/gpt-5-6",
+      "ai_artifacts": []
+    },
+    {
+      "id": 34,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "ChatGPT is now a partner for your most ambitious work",
+      "summary": "ChatGPT Work is an agent that can take action across your apps and files, stay with a project for hours if needed, and turn a goal into finished work.",
+      "category": "Product",
+      "published_at": "2026-07-09T10:00:00Z",
+      "url": "https://openai.com/index/chatgpt-for-your-most-ambitious-work",
+      "ai_artifacts": []
+    },
+    {
+      "id": 107,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Inviting hard questions",
+      "summary": "We’re asking the public for their hardest questions about AI, and committing to show our work as we address them.",
+      "category": "Announcements",
+      "published_at": "2026-07-09T00:00:00Z",
+      "url": "https://www.anthropic.com/news/hard-questions",
+      "ai_artifacts": []
+    },
+    {
+      "id": 37,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Our approach to government and national security partnerships",
+      "summary": "Learn how OpenAI approaches government and national security partnerships, with principles for responsible AI use, democratic accountability, and public safety.",
+      "category": "Global Affairs",
+      "published_at": "2026-07-08T13:30:00Z",
+      "url": "https://openai.com/index/government-national-security-partnerships",
+      "ai_artifacts": []
+    },
+    {
+      "id": 38,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Separating signal from noise in coding evaluations",
+      "summary": "A new analysis from OpenAI reveals issues in SWE-Bench Pro, a popular coding benchmark, raising concerns about reliability and accuracy in evaluating AI models.",
+      "category": "Research",
+      "published_at": "2026-07-08T13:00:00Z",
+      "url": "https://openai.com/index/separating-signal-from-noise-coding-evaluations",
+      "ai_artifacts": []
+    },
+    {
+      "id": 39,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Helping K–12 educators build practical AI skills",
+      "summary": "OpenAI Academy and the Walton Family Foundation are bringing hands-on AI Skills Jams to help K–12 educators build practical AI skills for the classroom.",
+      "category": "Global Affairs",
+      "published_at": "2026-07-08T10:00:00Z",
+      "url": "https://openai.com/index/k-12-educators-practical-skills",
+      "ai_artifacts": []
+    },
+    {
+      "id": 40,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Introducing GPT-Live",
+      "summary": "A new generation of voice models for natural human-AI interaction, now powering ChatGPT Voice.",
+      "category": "Product",
+      "published_at": "2026-07-08T00:00:00Z",
+      "url": "https://openai.com/index/introducing-gpt-live",
+      "ai_artifacts": []
+    },
+    {
+      "id": 42,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "MUFG aims to become AI-native with OpenAI",
+      "summary": "MUFG uses ChatGPT Enterprise to build an AI-native organization, improve workflows, and deliver new AI-powered financial services at scale.",
+      "category": "",
+      "published_at": "2026-07-07T00:00:00Z",
+      "url": "https://openai.com/index/mufg",
+      "ai_artifacts": []
+    },
+    {
+      "id": 41,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Australian Payments Plus moves faster with ChatGPT and Codex",
+      "summary": "See how Australian Payments Plus uses ChatGPT Enterprise and Codex to move faster through payments complexity. AP+ saves time, improves quality, and keeps human judgment central.",
+      "category": "",
+      "published_at": "2026-07-07T00:00:00Z",
+      "url": "https://openai.com/index/australian-payments-plus",
+      "ai_artifacts": []
+    },
+    {
+      "id": 43,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How ChatGPT adoption has expanded",
+      "summary": "New OpenAI Signals data shows how ChatGPT adoption is growing globally, with users increasing usage, exploring more capabilities, and driving growth across regions and languages.",
+      "category": "Global Affairs",
+      "published_at": "2026-06-30T09:00:00Z",
+      "url": "https://openai.com/index/how-chatgpt-adoption-has-expanded",
+      "ai_artifacts": []
+    },
+    {
+      "id": 109,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Introducing Claude Sonnet 5",
+      "summary": "Sonnet 5 delivers frontier performance across coding, agents, and professional work at scale.",
+      "category": "Product",
+      "published_at": "2026-06-30T00:00:00Z",
+      "url": "https://www.anthropic.com/news/claude-sonnet-5",
+      "ai_artifacts": []
+    },
+    {
+      "id": 108,
+      "source": "anthropic-news",
+      "source_name": "Anthropic News",
+      "title": "Redeploying Fable 5",
+      "summary": "Fable 5 returns globally July 1. We're also proposing an industry-wide framework for scoring jailbreak severity, together with Amazon, Microsoft, Google, and other Glasswing partners.",
+      "category": "Announcements",
+      "published_at": "2026-06-30T00:00:00Z",
+      "url": "https://www.anthropic.com/news/redeploying-fable-5",
+      "ai_artifacts": []
+    },
+    {
+      "id": 46,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Introducing GeneBench-Pro",
+      "summary": "Introducing GeneBench-Pro, a new benchmark testing AI performance in genomics, biology, and scientific research using complex, real-world datasets.",
+      "category": "Research",
+      "published_at": "2026-06-30T00:00:00Z",
+      "url": "https://openai.com/index/introducing-genebench-pro",
+      "ai_artifacts": []
+    },
+    {
+      "id": 45,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Inside Genebench-Pro",
+      "summary": "",
+      "category": "",
+      "published_at": "2026-06-30T00:00:00Z",
+      "url": "https://openai.com/index/genebench-pro/case-studies",
+      "ai_artifacts": []
+    },
+    {
+      "id": 44,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Core dump epidemiology: fixing an 18-year-old bug",
+      "summary": "OpenAI engineers used large-scale core dump analysis to debug rare infrastructure crashes, uncovering both a hardware fault and a long-standing software bug.",
+      "category": "Engineering",
+      "published_at": "2026-06-30T00:00:00Z",
+      "url": "https://openai.com/index/core-dump-epidemiology-data-infrastructure-bug",
+      "ai_artifacts": []
+    },
+    {
+      "id": 47,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Mapping Europe’s AI Workforce Opportunity",
+      "summary": "A new OpenAI report maps how AI could reshape jobs across the EU, highlighting which occupations may face automation, growth, or workflow changes.",
+      "category": "Global Affairs",
+      "published_at": "2026-06-29T07:00:00Z",
+      "url": "https://openai.com/index/mapping-ai-jobs-transition-eu",
+      "ai_artifacts": []
+    },
+    {
+      "id": 48,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "HP Inc. launches Frontier strategic partnership with OpenAI",
+      "summary": "HP Inc. scales its OpenAI Frontier partnership to deploy AI across customer experiences, software development, and enterprise operations.",
+      "category": "Company",
+      "published_at": "2026-06-28T17:00:00Z",
+      "url": "https://openai.com/index/hp-frontier-partnership",
+      "ai_artifacts": []
+    },
+    {
+      "id": 49,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Previewing GPT-5.6 Sol: a next-generation model",
+      "summary": "OpenAI previews GPT-5.6 Sol, a next-generation model with stronger capabilities in coding, science, and cybersecurity, paired with its most advanced safety stack.",
+      "category": "Product",
+      "published_at": "2026-06-26T10:00:00Z",
+      "url": "https://openai.com/index/previewing-gpt-5-6-sol",
+      "ai_artifacts": []
+    },
+    {
+      "id": 60,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Making private MCP servers reachable without making them public",
+      "summary": "How we preserved private network boundaries while supporting MCP streaming, authentication, and an inspectable client.",
+      "category": "General",
+      "published_at": "2026-06-26T00:00:00Z",
+      "url": "https://developers.openai.com/blog/connect-private-mcp-servers-to-openai-products",
+      "ai_artifacts": []
+    },
+    {
+      "id": 50,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How agents are transforming work",
+      "summary": "A new OpenAI research paper shows how AI agents are transforming work, enabling longer, more complex tasks and expanding productivity across roles.",
+      "category": "Company",
+      "published_at": "2026-06-25T02:00:00Z",
+      "url": "https://openai.com/index/how-agents-are-transforming-work",
+      "ai_artifacts": []
+    },
+    {
+      "id": 61,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Mastering remote engineering work from your phone",
+      "summary": "Use Remote in the ChatGPT mobile app to start, steer, review, and organize engineering work.",
+      "category": "Codex",
+      "published_at": "2026-06-23T00:00:00Z",
+      "url": "https://developers.openai.com/blog/mastering-codex-remote-for-engineering",
+      "ai_artifacts": []
+    },
+    {
+      "id": 87,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Claude Code now supports artifacts",
+      "summary": "",
+      "category": "",
+      "published_at": "2026-06-18T00:00:00Z",
+      "url": "https://claude.com/blog/artifacts-in-claude-code",
+      "ai_artifacts": []
+    },
+    {
+      "id": 88,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Building intelligent apps for Apple platforms with Claude in the Foundation Models framework",
+      "summary": "",
+      "category": "",
+      "published_at": "2026-06-08T00:00:00Z",
+      "url": "https://claude.com/blog/claude-for-foundation-models",
+      "ai_artifacts": []
+    },
+    {
+      "id": 90,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "New in Claude Managed Agents: dreaming, outcomes, and multiagent orchestration",
+      "summary": "",
+      "category": "",
+      "published_at": "2026-05-19T00:00:00Z",
+      "url": "https://claude.com/blog/new-in-claude-managed-agents",
+      "ai_artifacts": []
+    },
+    {
+      "id": 89,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "New in Claude Managed Agents: self-hosted sandboxes and MCP tunnels",
+      "summary": "",
+      "category": "",
+      "published_at": "2026-05-19T00:00:00Z",
+      "url": "https://claude.com/blog/claude-managed-agents-updates",
+      "ai_artifacts": []
+    },
+    {
+      "id": 92,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Built-in memory for Claude Managed Agents",
+      "summary": "",
+      "category": "",
+      "published_at": "2026-04-23T00:00:00Z",
+      "url": "https://claude.com/blog/claude-managed-agents-memory",
+      "ai_artifacts": []
+    },
+    {
+      "id": 91,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "New connectors in Claude for everyday life",
+      "summary": "",
+      "category": "",
+      "published_at": "2026-04-23T00:00:00Z",
+      "url": "https://claude.com/blog/connectors-for-everyday-life",
+      "ai_artifacts": []
+    },
+    {
+      "id": 93,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Redesigning Claude Code on desktop for parallel agents",
+      "summary": "",
+      "category": "",
+      "published_at": "2026-04-14T00:00:00Z",
+      "url": "https://claude.com/blog/claude-code-desktop-redesign",
+      "ai_artifacts": []
+    },
+    {
+      "id": 94,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Preparing your security program for AI-accelerated offense",
+      "summary": "",
+      "category": "",
+      "published_at": "2026-04-10T00:00:00Z",
+      "url": "https://claude.com/blog/preparing-your-security-program-for-ai-accelerated-offense",
+      "ai_artifacts": []
+    },
+    {
+      "id": 95,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Claude Managed Agents: get to production 10x faster",
+      "summary": "",
+      "category": "",
+      "published_at": "2026-04-08T00:00:00Z",
+      "url": "https://claude.com/blog/claude-managed-agents",
+      "ai_artifacts": []
+    },
+    {
+      "id": 96,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Agent Harness Design: 3 Patterns for Harnessing Claude's Intelligence",
+      "summary": "",
+      "category": "",
+      "published_at": "2026-04-02T00:00:00Z",
+      "url": "https://claude.com/blog/harnessing-claudes-intelligence",
+      "ai_artifacts": []
+    },
+    {
+      "id": 59,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "How Perplexity Brought Voice Search to Millions Using the Realtime API",
+      "summary": "Lessons from how Perplexity Computer's voice agent was built with the Realtime API.",
+      "category": "Audio",
+      "published_at": "2026-03-25T00:00:00Z",
+      "url": "https://developers.openai.com/blog/realtime-perplexity-computer",
+      "ai_artifacts": []
+    },
+    {
+      "id": 54,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Designing delightful frontends with GPT-5.4",
+      "summary": "Practical techniques for steering GPT-5.4 toward polished, production-ready frontend designs.",
+      "category": "General",
+      "published_at": "2026-03-20T00:00:00Z",
+      "url": "https://developers.openai.com/blog/designing-delightful-frontends-with-gpt-5-4",
+      "ai_artifacts": []
+    },
+    {
+      "id": 56,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "From prompts to products: One year of Responses",
+      "summary": "Five stories from developers building agentic products with the Responses API in its first year.",
+      "category": "API",
+      "published_at": "2026-03-11T00:00:00Z",
+      "url": "https://developers.openai.com/blog/one-year-of-responses",
+      "ai_artifacts": []
+    },
+    {
+      "id": 69,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Using skills to accelerate OSS maintenance",
+      "summary": "Using skills and GitHub Actions to optimize Codex workflows in the OpenAI Agents SDK repos.",
+      "category": "Codex",
+      "published_at": "2026-03-09T00:00:00Z",
+      "url": "https://developers.openai.com/blog/skills-agents-sdk",
+      "ai_artifacts": []
+    },
+    {
+      "id": 52,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Building frontend UIs with Codex and Figma",
+      "summary": "Use Codex and Figma to bring real, running interfaces into Figma, refine them, and bring changes back to Codex.",
+      "category": "Codex",
+      "published_at": "2026-02-26T00:00:00Z",
+      "url": "https://developers.openai.com/blog/building-frontend-uis-with-codex-and-figma",
+      "ai_artifacts": []
+    },
+    {
+      "id": 63,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Run long horizon tasks with Codex",
+      "summary": "",
+      "category": "Codex",
+      "published_at": "2026-02-23T00:00:00Z",
+      "url": "https://developers.openai.com/blog/run-long-horizon-tasks-with-codex",
+      "ai_artifacts": []
+    },
+    {
+      "id": 64,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Shell + Skills + Compaction: Tips for long-running agents that do real work",
+      "summary": "Practical patterns for building with skills, hosted shell, and server-side compaction in the Responses API.",
+      "category": "API",
+      "published_at": "2026-02-11T00:00:00Z",
+      "url": "https://developers.openai.com/blog/skills-shell-tips",
+      "ai_artifacts": []
+    },
+    {
+      "id": 51,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "15 lessons learned building ChatGPT Apps",
+      "summary": "And how we incorporated them into a Codex Skill to help you build ChatGPT Apps 10x faster.",
+      "category": "Apps SDK",
+      "published_at": "2026-02-04T00:00:00Z",
+      "url": "https://developers.openai.com/blog/15-lessons-building-chatgpt-apps",
+      "ai_artifacts": []
+    },
+    {
+      "id": 66,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Testing Agent Skills Systematically with Evals",
+      "summary": "A practical guide to turning agent skills into something you can test, score, and improve over time.",
+      "category": "Codex",
+      "published_at": "2026-01-22T00:00:00Z",
+      "url": "https://developers.openai.com/blog/eval-skills",
+      "ai_artifacts": []
+    },
+    {
+      "id": 65,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Supercharging Codex with JetBrains MCP at Skyscanner",
+      "summary": "How Skyscanner integrated Codex CLI with JetBrains IDEs to speed up debugging, testing, and development workflows.",
+      "category": "Codex",
+      "published_at": "2026-01-11T00:00:00Z",
+      "url": "https://developers.openai.com/blog/skyscanner-codex-jetbrains-mcp",
+      "ai_artifacts": []
+    },
+    {
+      "id": 62,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "OpenAI for Developers in 2025",
+      "summary": "A year-end roundup of the biggest model, API, and platform shifts for building production-grade agents.",
+      "category": "General",
+      "published_at": "2025-12-30T00:00:00Z",
+      "url": "https://developers.openai.com/blog/openai-for-developers-2025",
+      "ai_artifacts": []
+    },
+    {
+      "id": 67,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Updates for developers building with voice",
+      "summary": "New audio model snapshots and broader access to Custom Voices for production voice apps.",
+      "category": "Audio",
+      "published_at": "2025-12-22T00:00:00Z",
+      "url": "https://developers.openai.com/blog/updates-audio-models",
+      "ai_artifacts": []
+    },
+    {
+      "id": 70,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "What makes a great ChatGPT app",
+      "summary": "How to build capabilities that make conversations better.",
+      "category": "Apps SDK",
+      "published_at": "2025-11-24T00:00:00Z",
+      "url": "https://developers.openai.com/blog/what-makes-a-great-chatgpt-app",
+      "ai_artifacts": []
+    },
+    {
+      "id": 68,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Using Codex for education at Dagster Labs",
+      "summary": "Learn how Dagster uses Codex in their open-source projects to accelerate documentation, translate content across mediums, and even measure how complete their docs are.",
+      "category": "Codex",
+      "published_at": "2025-10-27T00:00:00Z",
+      "url": "https://developers.openai.com/blog/codex-for-documentation-dagster",
+      "ai_artifacts": []
+    },
+    {
+      "id": 58,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "How Codex ran OpenAI DevDay 2025",
+      "summary": "Learn how Codex helped us build experiences, demos, products, and more",
+      "category": "Codex",
+      "published_at": "2025-10-10T00:00:00Z",
+      "url": "https://developers.openai.com/blog/codex-at-devday",
+      "ai_artifacts": []
+    },
+    {
+      "id": 71,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Why we built the Responses API",
+      "summary": "How the Responses API unlocks persistent reasoning, hosted tools, and multimodal workflows for GPT-5.",
+      "category": "API",
+      "published_at": "2025-09-22T00:00:00Z",
+      "url": "https://developers.openai.com/blog/responses-api",
+      "ai_artifacts": []
+    },
+    {
+      "id": 55,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Developer notes on the Realtime API",
+      "summary": "Details worth noticing in recent realtime speech-to-speech updates",
+      "category": "Audio",
+      "published_at": "2025-09-12T00:00:00Z",
+      "url": "https://developers.openai.com/blog/realtime-api",
+      "ai_artifacts": []
+    },
+    {
+      "id": 57,
+      "source": "openai-developers",
+      "source_name": "OpenAI Developer Blog",
+      "title": "Hello, world!",
+      "summary": "Introducing our developer blog",
+      "category": "General",
+      "published_at": "2025-09-11T00:00:00Z",
+      "url": "https://developers.openai.com/blog/intro",
+      "ai_artifacts": []
+    }
+  ],
+  "ai_reports": [
+    {
+      "id": 1,
+      "period": "weekly",
+      "timezone": "America/Los_Angeles",
+      "local_date": "2026-08-01",
+      "period_start": "2026-07-27T07:00:00Z",
+      "period_end": "2026-08-01T08:36:49Z",
+      "target_language": "zh-CN",
+      "generated_at": "2026-08-01T08:37:25Z",
+      "input_truncated": false,
+      "provider": "chatgpt-codex-subscription",
+      "model": "gpt-5.6-luna",
+      "output": {
+        "headline": "本周 AI 动态：数学进展、效率提升与可信部署",
+        "items": [
+          {
+            "article_id": 110,
+            "summary": "OpenAI 分享了若干长期开放问题的新结果，涉及几何、密码学和计算复杂性等方向。",
+            "title": "数学与理论计算机科学的十项进展"
+          },
+          {
+            "article_id": 2,
+            "summary": "文章提出一套全栈方法，目标是让先进 AI 更有能力、成本更低，并能得到更广泛的应用。",
+            "title": "构建充裕的智能"
+          },
+          {
+            "article_id": 1,
+            "summary": "OpenAI 介绍其安全、安保、透明度和来源验证实践如何支持欧洲负责任 AI 治理，并表示会随着欧盟《人工智能法案》推进而继续相关工作。",
+            "title": "推动欧洲负责任 AI 发展"
+          },
+          {
+            "article_id": 3,
+            "summary": "案例介绍 Univé 如何结合领导力、负责任治理和员工主导创新，通过 ChatGPT Enterprise 推动大规模工作转型。",
+            "title": "Univé 建设面向 AI 的员工队伍"
+          },
+          {
+            "article_id": 4,
+            "summary": "OpenAI 表示已处置一个位于柬埔寨、利用 ChatGPT 支持投资、情感、赌博和冒充类诈骗的团伙。",
+            "title": "打击犯罪诈骗活动"
+          },
+          {
+            "article_id": 5,
+            "summary": "更新介绍 Luna 与 Terra 更低的 GPT-5.6 定价，并说明更高效的模型如何帮助企业规模化部署 AI 工作流。",
+            "title": "GPT-5.6 推进价格性能前沿"
+          },
+          {
+            "article_id": 97,
+            "summary": "Anthropic 发布了关于其网络安全评估中三起真实事件的调查；发布方元数据未提供更多事件细节。",
+            "title": "调查网络安全评估中的三起真实事件"
+          },
+          {
+            "article_id": 6,
+            "summary": "avatarin 为山田电机购物者提供 24 小时多语言支持；发布方称该助手两周内服务了 3 万人，问卷正面反馈率为 92%。",
+            "title": "avatarin 如何用 GPT-Realtime 构建全天候零售助手"
+          },
+          {
+            "article_id": 7,
+            "summary": "文章称，通过保留推理并启用压缩两项 API 设置，GPT-5.6 在 ARC-AGI-3 上的得分和效率均得到提升。",
+            "title": "两项设置如何将 ARC-AGI-3 得分提高三倍"
+          },
+          {
+            "article_id": 8,
+            "summary": "OpenAI 将向 10 万名学术研究人员免费开放 ChatGPT 的先进 AI 模型，以促进科研、协作与发现。",
+            "title": "以 ChatGPT 加速学术研究发现"
+          },
+          {
+            "article_id": 9,
+            "summary": "文章介绍 GPT-5.6 在模型、推理和智能体工作流方面的效率改进，目标是以更低成本提供更有用的智能。",
+            "title": "GPT-5.6 如何融合前沿智能与前沿效率"
+          },
+          {
+            "article_id": 10,
+            "summary": "一份现场报告描述科学家如何使用 AI 编程智能体改造科学计算，并加速基因组学等领域的软件开发与发现。",
+            "title": "智能体 AI 时代的科学计算"
+          },
+          {
+            "article_id": 72,
+            "summary": "Claude Blog 发布了关于在 Claude 中引入 MCP 2026-07-28 的更新；发布方元数据未提供更多内容。",
+            "title": "将 MCP 2026-07-28 带到 Claude"
+          }
+        ],
+        "language": "zh-CN",
+        "limitations": "本简报仅依据订阅源提供的标题、发布日期和发布方摘要生成，未读取文章全文；两篇条目缺少发布方摘要，因此只能概述其标题所指主题。",
+        "overview": "本周收录的更新集中在三条主线：OpenAI 发布数学与理论计算机科学进展，并继续强调 GPT-5.6 的价格性能、推理效率和科研应用；企业案例展示了 ChatGPT Enterprise 与 GPT-Realtime 在员工转型和零售服务中的落地；安全与治理方面则涵盖欧洲负责任 AI 实践、诈骗活动处置和网络安全评估事件调查。Claude 还发布了 MCP 2026-07-28 的相关更新。"
+      }
+    }
+  ]
+}

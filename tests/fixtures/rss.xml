@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>OpenAI News</title>
+    <link>https://openai.com/news/</link>
+    <item>
+      <guid isPermaLink="false">openai-post-001</guid>
+      <title>Building &amp; shipping safely</title>
+      <link>https://openai.com/index/building-safely/?utm_source=rss&amp;ref=newsletter</link>
+      <description><![CDATA[<p>A <strong>deterministic</strong> release update.</p>]]></description>
+      <dc:creator>OpenAI Safety Team</dc:creator>
+      <category>Safety</category>
+      <pubDate>Thu, 30 Jul 2026 09:15:00 GMT</pubDate>
+    </item>
+    <item>
+      <guid>openai-post-002</guid>
+      <title>New tools for teams</title>
+      <link>https://openai.com/index/new-tools-for-teams</link>
+      <content:encoded><![CDATA[<div>Tools that help teams move faster.</div>]]></content:encoded>
+      <category>Company</category>
+      <pubDate>2026-07-28T16:00:00Z</pubDate>
+    </item>
+  </channel>
+</rss>

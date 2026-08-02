@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+READER_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+if [ -n "${PYTHONPATH:-}" ]; then
+  export PYTHONPATH="$READER_ROOT/src:$PYTHONPATH"
+else
+  export PYTHONPATH="$READER_ROOT/src"
+fi
+exec /usr/bin/python3 -m aaron_reader "$@"

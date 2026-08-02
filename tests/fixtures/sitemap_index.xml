@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://www.anthropic.com/sitemaps/news.xml</loc>
+    <lastmod>2026-07-31T12:00:00Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>/sitemaps/pages.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://other.example/sitemap.xml</loc>
+  </sitemap>
+</sitemapindex>

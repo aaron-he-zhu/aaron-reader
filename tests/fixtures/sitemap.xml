@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.anthropic.com/news/first-story/?utm_source=sitemap</loc>
+    <lastmod>2026-07-30</lastmod>
+  </url>
+  <url>
+    <loc>https://www.anthropic.com/news/second-story</loc>
+    <lastmod>2026-07-29T09:30:00-07:00</lastmod>
+  </url>
+  <url>
+    <loc>https://www.anthropic.com/news/first-story</loc>
+  </url>
+  <url>
+    <loc>https://www.anthropic.com/research/outside-prefix</loc>
+    <lastmod>2026-07-28</lastmod>
+  </url>
+  <url>
+    <loc>https://evil.example/news/copied</loc>
+  </url>
+</urlset>

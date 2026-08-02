@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv/
+.env*
+!.env.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+data/*
+!data/.gitkeep
+public/*
+!public/.gitkeep

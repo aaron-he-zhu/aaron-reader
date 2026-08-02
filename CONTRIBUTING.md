@@ -1,0 +1,41 @@
+# Contributing to Aaron Reader
+
+Thanks for helping improve Aaron Reader. The project favors deterministic,
+auditable code over model calls: ordinary collection, parsing, rendering,
+testing, and deployment preparation must work with zero LLM tokens.
+
+## Development setup
+
+- Python 3.9 or newer for the reader.
+- Node.js 22.13 or newer for `site/`.
+- No API key is needed for tests, normal syncs, or site builds.
+
+Run the Python suite from the repository root:
+
+```bash
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+```
+
+Run the website checks from `site/`:
+
+```bash
+npm ci --ignore-scripts --no-audit --no-fund
+npm run lint
+npm run typecheck
+npm test
+```
+
+Tests must use bounded local fixtures. Do not make live feed, model, GitHub, or
+Cloudflare requests from the test suite. Never commit SQLite files, generated
+root `public/` files, `.env*`, `.dev.vars*`, subscription request/results,
+Wrangler state, tokens, or credentials.
+
+## Public snapshot boundary
+
+The committed files under `site/data/` and `site/public/reader/` are public
+deployment inputs. The fixed release program removes private read, star,
+pending, and raw error state before staging them. Do not bypass that projection
+or force-add ignored runtime data.
+
+Keep pull requests focused, explain behavior changes, and include the checks
+you ran. Security issues should follow `SECURITY.md`, not a public issue.
