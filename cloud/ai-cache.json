@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v2",
-  "exported_at": "2026-08-02T11:32:13Z",
-  "bundle_hash": "c82555f36c56dc5e06356355a1e3aa922819bd4b0bce0e54c96704d3367d98cf",
+  "exported_at": "2026-08-02T11:49:48Z",
+  "bundle_hash": "671e61d48be9acf91877c93e9008b069cfe04ee4086cb4ce39546d529348865e",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -7075,7 +7075,660 @@
       "created_at": "2026-08-02T07:12:37Z"
     }
   ],
-  "reports": [],
+  "reports": [
+    {
+      "cache_key": "5d131f50de7f03bfbf0deaf1354c09bff51ffef6aa74285e8f1d30144a34b67e",
+      "period": "weekly",
+      "timezone": "America/Los_Angeles",
+      "local_date": "2026-08-01",
+      "period_start": "2026-07-27T07:00:00Z",
+      "period_end": "2026-08-01T08:36:49Z",
+      "target_language": "zh-CN",
+      "window_articles": [
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/ten-advances-in-mathematics",
+          "canonical_url": "https://openai.com/index/ten-advances-in-mathematics",
+          "content_hash": "6e2fe228c9c3d5620fc28eaea0f053b52938050cb9c2ef9c5f3c9cb0db7f6936"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/advancing-responsible-ai-across-europe",
+          "canonical_url": "https://openai.com/index/advancing-responsible-ai-across-europe",
+          "content_hash": "c0127b4d3e722c6498de97bcf088df40f10abd85313568b231d22c199a600251"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/building-abundant-intelligence",
+          "canonical_url": "https://openai.com/index/building-abundant-intelligence",
+          "content_hash": "541c43491bc05666b30543fb1b16ddd9334340dbfaac2187e925fe341aea02bf"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/unive",
+          "canonical_url": "https://openai.com/index/unive",
+          "content_hash": "f89d410c3681bda0bc0e90e817bbed3c6557beb0e84df5a985dc45e0969c7539"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+          "canonical_url": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+          "content_hash": "db7222003755041bcd4f5e527b8a45b246c32b201d81e195bd7a8808fe8d78fe"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+          "canonical_url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+          "content_hash": "1410229c75e15319bbaf61c86d4cadd82ddbd2f777b28e432304c9427a3e6f4d"
+        },
+        {
+          "source_slug": "anthropic-news",
+          "external_id": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+          "canonical_url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+          "content_hash": "2721b42a122493a8b06bbf1aa9f59c436e2856b5b917007d08780ccc4ecf4f6c"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/avatarin",
+          "canonical_url": "https://openai.com/index/avatarin",
+          "content_hash": "0ba0a1dff5b98c95d0edf53b260085f421ccfc3df9b3c2035bff5aef38f00b78"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+          "canonical_url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+          "content_hash": "8f636db666455ea94c603cfa7f8ea313ec70dd5dcec70f2faaa4edf2ad591f82"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/chatgpt-for-academic-researchers",
+          "canonical_url": "https://openai.com/index/chatgpt-for-academic-researchers",
+          "content_hash": "b7227bd6196fbaac3872aa370cfeafa0d941afce9c4a62dcc187bf9d012a0cb8"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+          "canonical_url": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+          "content_hash": "6399e7a44881f424894f7eeecb38ea158ee491583853f675d51e6b550554a920"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/scientific-computing-agentic-ai",
+          "canonical_url": "https://openai.com/index/scientific-computing-agentic-ai",
+          "content_hash": "f6b8cee23e2df32797b5f08fcb450848d04c6dd5f44e6162ed3cfdd5205e8bf3"
+        },
+        {
+          "source_slug": "claude-blog",
+          "external_id": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+          "canonical_url": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+          "content_hash": "1ddfbcd58a92887b3056ec0a6b2aa5f047a2b5801c5b1025b4915e66e15e4923"
+        }
+      ],
+      "articles": [
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/ten-advances-in-mathematics",
+          "canonical_url": "https://openai.com/index/ten-advances-in-mathematics",
+          "content_hash": "6e2fe228c9c3d5620fc28eaea0f053b52938050cb9c2ef9c5f3c9cb0db7f6936"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/advancing-responsible-ai-across-europe",
+          "canonical_url": "https://openai.com/index/advancing-responsible-ai-across-europe",
+          "content_hash": "c0127b4d3e722c6498de97bcf088df40f10abd85313568b231d22c199a600251"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/building-abundant-intelligence",
+          "canonical_url": "https://openai.com/index/building-abundant-intelligence",
+          "content_hash": "541c43491bc05666b30543fb1b16ddd9334340dbfaac2187e925fe341aea02bf"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/unive",
+          "canonical_url": "https://openai.com/index/unive",
+          "content_hash": "f89d410c3681bda0bc0e90e817bbed3c6557beb0e84df5a985dc45e0969c7539"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+          "canonical_url": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+          "content_hash": "db7222003755041bcd4f5e527b8a45b246c32b201d81e195bd7a8808fe8d78fe"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+          "canonical_url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+          "content_hash": "1410229c75e15319bbaf61c86d4cadd82ddbd2f777b28e432304c9427a3e6f4d"
+        },
+        {
+          "source_slug": "anthropic-news",
+          "external_id": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+          "canonical_url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+          "content_hash": "2721b42a122493a8b06bbf1aa9f59c436e2856b5b917007d08780ccc4ecf4f6c"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/avatarin",
+          "canonical_url": "https://openai.com/index/avatarin",
+          "content_hash": "0ba0a1dff5b98c95d0edf53b260085f421ccfc3df9b3c2035bff5aef38f00b78"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+          "canonical_url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+          "content_hash": "8f636db666455ea94c603cfa7f8ea313ec70dd5dcec70f2faaa4edf2ad591f82"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/chatgpt-for-academic-researchers",
+          "canonical_url": "https://openai.com/index/chatgpt-for-academic-researchers",
+          "content_hash": "b7227bd6196fbaac3872aa370cfeafa0d941afce9c4a62dcc187bf9d012a0cb8"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+          "canonical_url": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+          "content_hash": "6399e7a44881f424894f7eeecb38ea158ee491583853f675d51e6b550554a920"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/scientific-computing-agentic-ai",
+          "canonical_url": "https://openai.com/index/scientific-computing-agentic-ai",
+          "content_hash": "f6b8cee23e2df32797b5f08fcb450848d04c6dd5f44e6162ed3cfdd5205e8bf3"
+        },
+        {
+          "source_slug": "claude-blog",
+          "external_id": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+          "canonical_url": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+          "content_hash": "1ddfbcd58a92887b3056ec0a6b2aa5f047a2b5801c5b1025b4915e66e15e4923"
+        }
+      ],
+      "articles_hash": "9f5ba7252bd6145c6c832e737272b2044fa1af534483f943b1626d5671740f74",
+      "artifact": {
+        "task_type": "digest",
+        "input_scope": "digest",
+        "source_language": "unknown",
+        "target_language": "zh-CN",
+        "prompt_version": "ai-enrichment-v1",
+        "prompt_hash": "c7de63d573807b12fa9115c7b16078ad49be95de955b459be3ea403f45e79811",
+        "response_schema_version": "ai-output-v1",
+        "response_schema_hash": "e3b3cf36cf1a0f621d818dade80daea5b074ccc3747e1088076ff2dfb261df1f",
+        "provider": "chatgpt-codex-subscription",
+        "requested_model": "gpt-5.6-luna",
+        "resolved_model": "gpt-5.6-luna",
+        "generation_params_hash": "24738275687c28de1c1f97f35ea783449aaba99b732e5989d8d0018ab9b92f12",
+        "output": {
+          "headline": "本周 AI 动态：数学进展、效率提升与可信部署",
+          "overview": "本周收录的更新集中在三条主线：OpenAI 发布数学与理论计算机科学进展，并继续强调 GPT-5.6 的价格性能、推理效率和科研应用；企业案例展示了 ChatGPT Enterprise 与 GPT-Realtime 在员工转型和零售服务中的落地；安全与治理方面则涵盖欧洲负责任 AI 实践、诈骗活动处置和网络安全评估事件调查。Claude 还发布了 MCP 2026-07-28 的相关更新。",
+          "items": [
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/ten-advances-in-mathematics",
+                "canonical_url": "https://openai.com/index/ten-advances-in-mathematics",
+                "content_hash": "6e2fe228c9c3d5620fc28eaea0f053b52938050cb9c2ef9c5f3c9cb0db7f6936"
+              },
+              "title": "数学与理论计算机科学的十项进展",
+              "summary": "OpenAI 分享了若干长期开放问题的新结果，涉及几何、密码学和计算复杂性等方向。"
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/advancing-responsible-ai-across-europe",
+                "canonical_url": "https://openai.com/index/advancing-responsible-ai-across-europe",
+                "content_hash": "c0127b4d3e722c6498de97bcf088df40f10abd85313568b231d22c199a600251"
+              },
+              "title": "推动欧洲负责任 AI 发展",
+              "summary": "OpenAI 介绍其安全、安保、透明度和来源验证实践如何支持欧洲负责任 AI 治理，并表示会随着欧盟《人工智能法案》推进而继续相关工作。"
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/building-abundant-intelligence",
+                "canonical_url": "https://openai.com/index/building-abundant-intelligence",
+                "content_hash": "541c43491bc05666b30543fb1b16ddd9334340dbfaac2187e925fe341aea02bf"
+              },
+              "title": "构建充裕的智能",
+              "summary": "文章提出一套全栈方法，目标是让先进 AI 更有能力、成本更低，并能得到更广泛的应用。"
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/unive",
+                "canonical_url": "https://openai.com/index/unive",
+                "content_hash": "f89d410c3681bda0bc0e90e817bbed3c6557beb0e84df5a985dc45e0969c7539"
+              },
+              "title": "Univé 建设面向 AI 的员工队伍",
+              "summary": "案例介绍 Univé 如何结合领导力、负责任治理和员工主导创新，通过 ChatGPT Enterprise 推动大规模工作转型。"
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+                "canonical_url": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+                "content_hash": "db7222003755041bcd4f5e527b8a45b246c32b201d81e195bd7a8808fe8d78fe"
+              },
+              "title": "打击犯罪诈骗活动",
+              "summary": "OpenAI 表示已处置一个位于柬埔寨、利用 ChatGPT 支持投资、情感、赌博和冒充类诈骗的团伙。"
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+                "canonical_url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+                "content_hash": "1410229c75e15319bbaf61c86d4cadd82ddbd2f777b28e432304c9427a3e6f4d"
+              },
+              "title": "GPT-5.6 推进价格性能前沿",
+              "summary": "更新介绍 Luna 与 Terra 更低的 GPT-5.6 定价，并说明更高效的模型如何帮助企业规模化部署 AI 工作流。"
+            },
+            {
+              "article": {
+                "source_slug": "anthropic-news",
+                "external_id": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+                "canonical_url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+                "content_hash": "2721b42a122493a8b06bbf1aa9f59c436e2856b5b917007d08780ccc4ecf4f6c"
+              },
+              "title": "调查网络安全评估中的三起真实事件",
+              "summary": "Anthropic 发布了关于其网络安全评估中三起真实事件的调查；发布方元数据未提供更多事件细节。"
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/avatarin",
+                "canonical_url": "https://openai.com/index/avatarin",
+                "content_hash": "0ba0a1dff5b98c95d0edf53b260085f421ccfc3df9b3c2035bff5aef38f00b78"
+              },
+              "title": "avatarin 如何用 GPT-Realtime 构建全天候零售助手",
+              "summary": "avatarin 为山田电机购物者提供 24 小时多语言支持；发布方称该助手两周内服务了 3 万人，问卷正面反馈率为 92%。"
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+                "canonical_url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+                "content_hash": "8f636db666455ea94c603cfa7f8ea313ec70dd5dcec70f2faaa4edf2ad591f82"
+              },
+              "title": "两项设置如何将 ARC-AGI-3 得分提高三倍",
+              "summary": "文章称，通过保留推理并启用压缩两项 API 设置，GPT-5.6 在 ARC-AGI-3 上的得分和效率均得到提升。"
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/chatgpt-for-academic-researchers",
+                "canonical_url": "https://openai.com/index/chatgpt-for-academic-researchers",
+                "content_hash": "b7227bd6196fbaac3872aa370cfeafa0d941afce9c4a62dcc187bf9d012a0cb8"
+              },
+              "title": "以 ChatGPT 加速学术研究发现",
+              "summary": "OpenAI 将向 10 万名学术研究人员免费开放 ChatGPT 的先进 AI 模型，以促进科研、协作与发现。"
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+                "canonical_url": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+                "content_hash": "6399e7a44881f424894f7eeecb38ea158ee491583853f675d51e6b550554a920"
+              },
+              "title": "GPT-5.6 如何融合前沿智能与前沿效率",
+              "summary": "文章介绍 GPT-5.6 在模型、推理和智能体工作流方面的效率改进，目标是以更低成本提供更有用的智能。"
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/scientific-computing-agentic-ai",
+                "canonical_url": "https://openai.com/index/scientific-computing-agentic-ai",
+                "content_hash": "f6b8cee23e2df32797b5f08fcb450848d04c6dd5f44e6162ed3cfdd5205e8bf3"
+              },
+              "title": "智能体 AI 时代的科学计算",
+              "summary": "一份现场报告描述科学家如何使用 AI 编程智能体改造科学计算，并加速基因组学等领域的软件开发与发现。"
+            },
+            {
+              "article": {
+                "source_slug": "claude-blog",
+                "external_id": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+                "canonical_url": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+                "content_hash": "1ddfbcd58a92887b3056ec0a6b2aa5f047a2b5801c5b1025b4915e66e15e4923"
+              },
+              "title": "将 MCP 2026-07-28 带到 Claude",
+              "summary": "Claude Blog 发布了关于在 Claude 中引入 MCP 2026-07-28 的更新；发布方元数据未提供更多内容。"
+            }
+          ],
+          "language": "zh-CN",
+          "limitations": "本简报仅依据订阅源提供的标题、发布日期和发布方摘要生成，未读取文章全文；两篇条目缺少发布方摘要，因此只能概述其标题所指主题。"
+        },
+        "output_hash": "1a00e90ad991b8e43dcef79c924132756b8f070406dba78111a1b3f923099ee4",
+        "input_truncated": false,
+        "created_at": "2026-08-01T08:37:25Z"
+      },
+      "created_at": "2026-08-01T08:37:25Z"
+    },
+    {
+      "cache_key": "a173c235d7680aba76a472a161a8e7db4cb5c0ad0518f7beb8b2ed5b6b6148ce",
+      "period": "weekly",
+      "timezone": "America/Los_Angeles",
+      "local_date": "2026-08-01",
+      "period_start": "2026-07-27T07:00:00Z",
+      "period_end": "2026-08-02T06:30:33Z",
+      "target_language": "en",
+      "window_articles": [
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/ten-advances-in-mathematics",
+          "canonical_url": "https://openai.com/index/ten-advances-in-mathematics",
+          "content_hash": "6e2fe228c9c3d5620fc28eaea0f053b52938050cb9c2ef9c5f3c9cb0db7f6936"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/advancing-responsible-ai-across-europe",
+          "canonical_url": "https://openai.com/index/advancing-responsible-ai-across-europe",
+          "content_hash": "c0127b4d3e722c6498de97bcf088df40f10abd85313568b231d22c199a600251"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/building-abundant-intelligence",
+          "canonical_url": "https://openai.com/index/building-abundant-intelligence",
+          "content_hash": "541c43491bc05666b30543fb1b16ddd9334340dbfaac2187e925fe341aea02bf"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/unive",
+          "canonical_url": "https://openai.com/index/unive",
+          "content_hash": "f89d410c3681bda0bc0e90e817bbed3c6557beb0e84df5a985dc45e0969c7539"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+          "canonical_url": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+          "content_hash": "db7222003755041bcd4f5e527b8a45b246c32b201d81e195bd7a8808fe8d78fe"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+          "canonical_url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+          "content_hash": "1410229c75e15319bbaf61c86d4cadd82ddbd2f777b28e432304c9427a3e6f4d"
+        },
+        {
+          "source_slug": "anthropic-news",
+          "external_id": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+          "canonical_url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+          "content_hash": "2721b42a122493a8b06bbf1aa9f59c436e2856b5b917007d08780ccc4ecf4f6c"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/avatarin",
+          "canonical_url": "https://openai.com/index/avatarin",
+          "content_hash": "0ba0a1dff5b98c95d0edf53b260085f421ccfc3df9b3c2035bff5aef38f00b78"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+          "canonical_url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+          "content_hash": "8f636db666455ea94c603cfa7f8ea313ec70dd5dcec70f2faaa4edf2ad591f82"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/chatgpt-for-academic-researchers",
+          "canonical_url": "https://openai.com/index/chatgpt-for-academic-researchers",
+          "content_hash": "b7227bd6196fbaac3872aa370cfeafa0d941afce9c4a62dcc187bf9d012a0cb8"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+          "canonical_url": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+          "content_hash": "6399e7a44881f424894f7eeecb38ea158ee491583853f675d51e6b550554a920"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/scientific-computing-agentic-ai",
+          "canonical_url": "https://openai.com/index/scientific-computing-agentic-ai",
+          "content_hash": "f6b8cee23e2df32797b5f08fcb450848d04c6dd5f44e6162ed3cfdd5205e8bf3"
+        },
+        {
+          "source_slug": "claude-blog",
+          "external_id": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+          "canonical_url": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+          "content_hash": "1ddfbcd58a92887b3056ec0a6b2aa5f047a2b5801c5b1025b4915e66e15e4923"
+        }
+      ],
+      "articles": [
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/ten-advances-in-mathematics",
+          "canonical_url": "https://openai.com/index/ten-advances-in-mathematics",
+          "content_hash": "6e2fe228c9c3d5620fc28eaea0f053b52938050cb9c2ef9c5f3c9cb0db7f6936"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/advancing-responsible-ai-across-europe",
+          "canonical_url": "https://openai.com/index/advancing-responsible-ai-across-europe",
+          "content_hash": "c0127b4d3e722c6498de97bcf088df40f10abd85313568b231d22c199a600251"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/building-abundant-intelligence",
+          "canonical_url": "https://openai.com/index/building-abundant-intelligence",
+          "content_hash": "541c43491bc05666b30543fb1b16ddd9334340dbfaac2187e925fe341aea02bf"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/unive",
+          "canonical_url": "https://openai.com/index/unive",
+          "content_hash": "f89d410c3681bda0bc0e90e817bbed3c6557beb0e84df5a985dc45e0969c7539"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+          "canonical_url": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+          "content_hash": "db7222003755041bcd4f5e527b8a45b246c32b201d81e195bd7a8808fe8d78fe"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+          "canonical_url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+          "content_hash": "1410229c75e15319bbaf61c86d4cadd82ddbd2f777b28e432304c9427a3e6f4d"
+        },
+        {
+          "source_slug": "anthropic-news",
+          "external_id": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+          "canonical_url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+          "content_hash": "2721b42a122493a8b06bbf1aa9f59c436e2856b5b917007d08780ccc4ecf4f6c"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/avatarin",
+          "canonical_url": "https://openai.com/index/avatarin",
+          "content_hash": "0ba0a1dff5b98c95d0edf53b260085f421ccfc3df9b3c2035bff5aef38f00b78"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+          "canonical_url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+          "content_hash": "8f636db666455ea94c603cfa7f8ea313ec70dd5dcec70f2faaa4edf2ad591f82"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/chatgpt-for-academic-researchers",
+          "canonical_url": "https://openai.com/index/chatgpt-for-academic-researchers",
+          "content_hash": "b7227bd6196fbaac3872aa370cfeafa0d941afce9c4a62dcc187bf9d012a0cb8"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+          "canonical_url": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+          "content_hash": "6399e7a44881f424894f7eeecb38ea158ee491583853f675d51e6b550554a920"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/scientific-computing-agentic-ai",
+          "canonical_url": "https://openai.com/index/scientific-computing-agentic-ai",
+          "content_hash": "f6b8cee23e2df32797b5f08fcb450848d04c6dd5f44e6162ed3cfdd5205e8bf3"
+        },
+        {
+          "source_slug": "claude-blog",
+          "external_id": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+          "canonical_url": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+          "content_hash": "1ddfbcd58a92887b3056ec0a6b2aa5f047a2b5801c5b1025b4915e66e15e4923"
+        }
+      ],
+      "articles_hash": "9f5ba7252bd6145c6c832e737272b2044fa1af534483f943b1626d5671740f74",
+      "artifact": {
+        "task_type": "digest",
+        "input_scope": "digest",
+        "source_language": "unknown",
+        "target_language": "en",
+        "prompt_version": "ai-enrichment-v1",
+        "prompt_hash": "c7de63d573807b12fa9115c7b16078ad49be95de955b459be3ea403f45e79811",
+        "response_schema_version": "ai-output-v1",
+        "response_schema_hash": "e3b3cf36cf1a0f621d818dade80daea5b074ccc3747e1088076ff2dfb261df1f",
+        "provider": "chatgpt-codex-subscription",
+        "requested_model": "gpt-5.6-luna",
+        "resolved_model": "gpt-5.6-luna",
+        "generation_params_hash": "24738275687c28de1c1f97f35ea783449aaba99b732e5989d8d0018ab9b92f12",
+        "output": {
+          "headline": "AI's week: mathematical advances, efficiency, deployment, and safeguards",
+          "overview": "This week's feed spans advances in mathematics and theoretical computer science, efforts to improve GPT-5.6 price-performance and reasoning efficiency, and deployments in workforce development, retail support, academic research, and scientific computing. It also covers responsible AI governance in Europe, action against a criminal scam operation, cybersecurity evaluation incidents, and an update about bringing MCP 2026-07-28 to Claude.",
+          "items": [
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/ten-advances-in-mathematics",
+                "canonical_url": "https://openai.com/index/ten-advances-in-mathematics",
+                "content_hash": "6e2fe228c9c3d5620fc28eaea0f053b52938050cb9c2ef9c5f3c9cb0db7f6936"
+              },
+              "title": "Ten advances in mathematics and theoretical computer science",
+              "summary": "OpenAI reports new results on long-standing problems in mathematics and theoretical computer science, including work in geometry, cryptography, and complexity."
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/advancing-responsible-ai-across-europe",
+                "canonical_url": "https://openai.com/index/advancing-responsible-ai-across-europe",
+                "content_hash": "c0127b4d3e722c6498de97bcf088df40f10abd85313568b231d22c199a600251"
+              },
+              "title": "Advancing responsible AI across Europe",
+              "summary": "OpenAI describes how its safety, security, transparency, and provenance practices support responsible AI governance in Europe as the EU AI Act advances."
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/building-abundant-intelligence",
+                "canonical_url": "https://openai.com/index/building-abundant-intelligence",
+                "content_hash": "541c43491bc05666b30543fb1b16ddd9334340dbfaac2187e925fe341aea02bf"
+              },
+              "title": "Building abundant intelligence",
+              "summary": "The article presents a full-stack approach intended to make advanced AI more capable, affordable, and broadly useful."
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/unive",
+                "canonical_url": "https://openai.com/index/unive",
+                "content_hash": "f89d410c3681bda0bc0e90e817bbed3c6557beb0e84df5a985dc45e0969c7539"
+              },
+              "title": "Univé builds an AI-ready workforce",
+              "summary": "The case study describes how Univé combined leadership, responsible governance, and employee-led innovation with ChatGPT Enterprise to support workforce transformation."
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+                "canonical_url": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
+                "content_hash": "db7222003755041bcd4f5e527b8a45b246c32b201d81e195bd7a8808fe8d78fe"
+              },
+              "title": "Disrupting a Criminal Scam Operation",
+              "summary": "OpenAI says it disrupted a Cambodia-based operation that used ChatGPT to support investment, romance, gambling, and impersonation scams."
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+                "canonical_url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
+                "content_hash": "1410229c75e15319bbaf61c86d4cadd82ddbd2f777b28e432304c9427a3e6f4d"
+              },
+              "title": "Advancing the price-performance frontier with GPT-5.6",
+              "summary": "The update covers lower GPT-5.6 pricing for Luna and Terra and describes how more efficient models can support enterprise AI workflows at scale."
+            },
+            {
+              "article": {
+                "source_slug": "anthropic-news",
+                "external_id": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+                "canonical_url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+                "content_hash": "2721b42a122493a8b06bbf1aa9f59c436e2856b5b917007d08780ccc4ecf4f6c"
+              },
+              "title": "Investigating three real-world incidents in our cybersecurity evaluations",
+              "summary": "Anthropic published an investigation concerning three real-world incidents in its cybersecurity evaluations; the supplied publisher metadata does not describe the incidents or findings."
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/avatarin",
+                "canonical_url": "https://openai.com/index/avatarin",
+                "content_hash": "0ba0a1dff5b98c95d0edf53b260085f421ccfc3df9b3c2035bff5aef38f00b78"
+              },
+              "title": "How avatarin built a 24/7 retail agent with GPT-Realtime",
+              "summary": "avatarin used GPT-Realtime to provide Yamada Denki shoppers with continuous multilingual support; the publisher reports 30,000 users in two weeks and 92% positive survey responses."
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+                "canonical_url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
+                "content_hash": "8f636db666455ea94c603cfa7f8ea313ec70dd5dcec70f2faaa4edf2ad591f82"
+              },
+              "title": "How enabling two settings tripled our scores on the ARC-AGI-3 benchmark",
+              "summary": "The article says retaining reasoning and enabling compaction improved GPT-5.6 scores and efficiency on ARC-AGI-3."
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/chatgpt-for-academic-researchers",
+                "canonical_url": "https://openai.com/index/chatgpt-for-academic-researchers",
+                "content_hash": "b7227bd6196fbaac3872aa370cfeafa0d941afce9c4a62dcc187bf9d012a0cb8"
+              },
+              "title": "Accelerating scientific discovery with ChatGPT for Academic Researchers",
+              "summary": "OpenAI says it is providing 100,000 academic researchers with free access to advanced ChatGPT models to support research, collaboration, and discovery."
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+                "canonical_url": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
+                "content_hash": "6399e7a44881f424894f7eeecb38ea158ee491583853f675d51e6b550554a920"
+              },
+              "title": "How GPT-5.6 fuses frontier intelligence with frontier efficiency",
+              "summary": "The article describes GPT-5.6 efficiency improvements across models, inference, and agentic workflows, with the goal of delivering more useful intelligence per dollar."
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/scientific-computing-agentic-ai",
+                "canonical_url": "https://openai.com/index/scientific-computing-agentic-ai",
+                "content_hash": "f6b8cee23e2df32797b5f08fcb450848d04c6dd5f44e6162ed3cfdd5205e8bf3"
+              },
+              "title": "Scientific computing in the age of agentic AI",
+              "summary": "A field report describes scientists using AI coding agents to modernize scientific computing and accelerate software development and discovery in fields including genomics."
+            },
+            {
+              "article": {
+                "source_slug": "claude-blog",
+                "external_id": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+                "canonical_url": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
+                "content_hash": "1ddfbcd58a92887b3056ec0a6b2aa5f047a2b5801c5b1025b4915e66e15e4923"
+              },
+              "title": "Bringing MCP 2026-07-28 to Claude",
+              "summary": "Claude Blog published an update about bringing MCP 2026-07-28 to Claude; the supplied publisher metadata provides no additional details."
+            }
+          ],
+          "language": "en",
+          "limitations": "This brief uses only supplied titles, publication metadata, and publisher summaries; it does not use article full text. The Anthropic cybersecurity evaluation item and the Claude MCP item had no publisher summary, so their descriptions are limited to what their titles establish."
+        },
+        "output_hash": "93f8d59e2a83549d06e8dc30dacd6b96d9d22fc3acba6c6e4f2be0b3b2e03181",
+        "input_truncated": false,
+        "created_at": "2026-08-02T06:31:22Z"
+      },
+      "created_at": "2026-08-02T06:31:22Z"
+    }
+  ],
   "usage_ledger": [],
   "generation_holds": []
 }

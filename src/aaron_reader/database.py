@@ -1054,7 +1054,8 @@ class Database:
                           >= julianday(?)
                   AND julianday(COALESCE(a.published_at, a.discovered_at))
                           <= julianday(?)
-                ORDER BY COALESCE(a.published_at, a.discovered_at) DESC, a.id DESC
+                ORDER BY COALESCE(a.published_at, a.discovered_at) DESC,
+                    a.source_slug ASC, a.external_id ASC, a.canonical_url ASC
                 LIMIT ?
                 """,
                 (period_start, period_end, bounded_limit),
@@ -2385,7 +2386,8 @@ class Database:
                           >= julianday(?)
                   AND julianday(COALESCE(published_at, discovered_at))
                           <= julianday(?)
-                ORDER BY COALESCE(published_at, discovered_at) DESC, id DESC
+                ORDER BY COALESCE(published_at, discovered_at) DESC,
+                    source_slug ASC, external_id ASC, canonical_url ASC
                 LIMIT ?
                 """,
                 (
@@ -2563,7 +2565,8 @@ class Database:
                           >= julianday(?)
                   AND julianday(COALESCE(published_at, discovered_at))
                           <= julianday(?)
-                ORDER BY COALESCE(published_at, discovered_at) DESC, id DESC
+                ORDER BY COALESCE(published_at, discovered_at) DESC,
+                    source_slug ASC, external_id ASC, canonical_url ASC
                 LIMIT ?
                 """,
                 (

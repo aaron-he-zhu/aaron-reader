@@ -94,6 +94,7 @@ jobs:
         run: |
           ./aaron-reader crawl-export crawler/latest.json --json
           ./aaron-reader ai-cache-export cloud/ai-cache.json --json
+          test ! -e data/cloud-validation.sqlite3
           ./aaron-reader \
             --database data/cloud-validation.sqlite3 \
             crawl-import crawler/latest.json --seed --json
@@ -109,6 +110,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           python3 scripts/prepare_cloudflare_release.py --skip-sync \
+            --database data/cloud-validation.sqlite3 \
             | tee data/cloud-release.json
 
       - name: Push only the verified commit

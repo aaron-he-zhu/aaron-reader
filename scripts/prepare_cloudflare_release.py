@@ -101,10 +101,57 @@ def _validate_regular_file(path: Path, maximum: int) -> bytes:
     return path.read_bytes()
 
 
+def _validate_report_projection(
+    snapshot: Mapping[str, object], cache: Mapping[str, object]
+) -> None:
+    cache_reports = cache.get("reports")
+    if not isinstance(cache_reports, list):
+        raise ReleaseError("cloud AI cache is missing its report array")
+    snapshot_reports = snapshot.get("ai_reports")
+    if not isinstance(snapshot_reports, list) or snapshot.get(
+        "cached_ai_report_count"
+    ) != len(snapshot_reports):
+        raise ReleaseError("latest.json AI report count is inconsistent")
+    if len(snapshot_reports) != len(cache_reports):
+        raise ReleaseError(
+            "rendered AI reports are not reproducible from the public AI cache"
+        )
+    identity_fields = (
+        "period",
+        "target_language",
+        "timezone",
+        "local_date",
+        "period_start",
+        "period_end",
+    )
+    snapshot_keys = {
+        tuple(str(report.get(field) or "") for field in identity_fields)
+        for report in snapshot_reports
+        if isinstance(report, dict)
+    }
+    cache_keys = {
+        tuple(str(report.get(field) or "") for field in identity_fields)
+        for report in cache_reports
+        if isinstance(report, dict)
+    }
+    if (
+        len(snapshot_keys) != len(snapshot_reports)
+        or len(cache_keys) != len(cache_reports)
+        or snapshot_keys != cache_keys
+    ):
+        raise ReleaseError(
+            "rendered AI report identities differ from the public AI cache"
+        )
+
+
 def _validate_outputs() -> dict[str, object]:
     json_bytes = _validate_regular_file(PUBLIC / "latest.json", SIZE_LIMITS["latest.json"])
     feed_bytes = _validate_regular_file(PUBLIC / "feed.xml", SIZE_LIMITS["feed.xml"])
     digest_bytes = _validate_regular_file(PUBLIC / "digest.md", SIZE_LIMITS["digest.md"])
+    cache_bytes = _validate_regular_file(
+        ROOT / "cloud" / "ai-cache.json",
+        PUBLICATION_SIZE_LIMITS["cloud/ai-cache.json"],
+    )
 
     try:
         snapshot = json.loads(json_bytes.decode("utf-8"))
@@ -112,10 +159,17 @@ def _validate_outputs() -> dict[str, object]:
         raise ReleaseError("latest.json is invalid: %s" % exc) from exc
     if not isinstance(snapshot, dict):
         raise ReleaseError("latest.json must contain an object")
+    try:
+        cache = json.loads(cache_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ReleaseError("cloud AI cache is invalid: %s" % exc) from exc
+    if not isinstance(cache, dict):
+        raise ReleaseError("cloud AI cache must contain an object")
     if not isinstance(snapshot.get("articles"), list) or not isinstance(
         snapshot.get("sources"), list
     ):
         raise ReleaseError("latest.json is missing article or source arrays")
+    _validate_report_projection(snapshot, cache)
     if snapshot.get("render_llm_tokens_used") != 0:
         raise ReleaseError("static rendering unexpectedly reported LLM token use")
     if snapshot.get("llm_tokens_used") != 0:
@@ -397,21 +451,50 @@ def _push_public_main() -> str:
     return repository
 
 
+def _reader_command(database_path: Optional[Path], *arguments: str) -> list[str]:
+    command = [str(ROOT / "aaron-reader")]
+    if database_path is not None:
+        command.extend(["--database", str(database_path)])
+    command.extend(arguments)
+    return command
+
+
+def _validated_database_path(value: Optional[str]) -> Optional[Path]:
+    if value is None:
+        return None
+    candidate = Path(value)
+    unresolved = candidate if candidate.is_absolute() else ROOT / candidate
+    if unresolved.is_symlink():
+        raise ReleaseError("release database must not be a symbolic link")
+    resolved = unresolved.resolve()
+    data_root = (ROOT / "data").resolve()
+    try:
+        resolved.relative_to(data_root)
+    except ValueError as exc:
+        raise ReleaseError("release database must be inside the repository data directory") from exc
+    if not resolved.is_file():
+        raise ReleaseError("release database is not a regular file: %s" % resolved)
+    return resolved
+
+
 def prepare(
     *,
     push: bool = False,
     skip_sync: bool = False,
+    database_path: Optional[Path] = None,
 ) -> Mapping[str, object]:
     _ensure_clean_source()
     starting_head = _run(["git", "rev-parse", "HEAD"], capture=True)
     if skip_sync:
-        # Subscription imports update the database atomically and normally
-        # render immediately. Render once more here so this release boundary is
-        # self-contained while still guaranteeing that it cannot fetch feeds.
-        _run([str(ROOT / "aaron-reader"), "render"])
+        # Render only from the selected already-validated state. In production
+        # this is a fresh database reconstructed from both public handoffs, so
+        # the committed site must be reproducible on another disposable runner.
+        _run(_reader_command(database_path, "render"))
     else:
-        _run([str(ROOT / "aaron-reader"), "sync"])
-    _run([str(ROOT / "aaron-reader"), "status", "--strict"])
+        if database_path is not None:
+            raise ReleaseError("--database requires --skip-sync")
+        _run(_reader_command(None, "sync"))
+    _run(_reader_command(database_path, "status", "--strict"))
     snapshot = _validate_outputs()
     _copy_snapshot(snapshot)
     _run(["npm", "run", "validate:data"], cwd=SITE)
@@ -457,11 +540,23 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             "Render and publish the populated database without fetching feeds"
         ),
     )
+    parser.add_argument(
+        "--database",
+        help=(
+            "With --skip-sync, render from this validated SQLite file under "
+            "the repository data directory"
+        ),
+    )
     args = parser.parse_args(argv)
+    database_path = _validated_database_path(args.database)
     LOCK.parent.mkdir(parents=True, exist_ok=True)
     with LOCK.open("a+") as lock_file:
         fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
-        result = prepare(push=args.push, skip_sync=args.skip_sync)
+        result = prepare(
+            push=args.push,
+            skip_sync=args.skip_sync,
+            database_path=database_path,
+        )
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0
 

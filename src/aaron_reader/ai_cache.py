@@ -787,6 +787,52 @@ def _public_digest_to_local(
     return validated, readable
 
 
+def _digest_output_in_article_order(
+    validated: Mapping[str, object],
+    article_ids: Sequence[int],
+    *,
+    target_language: str,
+    label: str,
+) -> Tuple[Dict[str, object], str]:
+    """Return one already-validated digest in a new, equivalent ID order."""
+
+    raw_items = validated.get("items")
+    if not isinstance(raw_items, list):
+        raise ValueError("AI cache %s.output.items must be an array" % label)
+    items_by_id: Dict[int, Mapping[str, object]] = {}
+    for item in raw_items:
+        if not isinstance(item, Mapping):
+            raise ValueError("AI cache %s.output.items contains an invalid item" % label)
+        article_id = item.get("article_id")
+        if isinstance(article_id, bool) or not isinstance(article_id, int):
+            raise ValueError("AI cache %s.output.items contains an invalid ID" % label)
+        if article_id in items_by_id:
+            raise ValueError("AI cache %s.output.items contains a duplicate ID" % label)
+        items_by_id[article_id] = item
+    expected_ids = [int(value) for value in article_ids]
+    if set(items_by_id) != set(expected_ids) or len(items_by_id) != len(expected_ids):
+        raise ValueError("AI cache %s.output.items coverage changed" % label)
+    reordered = {
+        "headline": validated["headline"],
+        "overview": validated["overview"],
+        "items": [dict(items_by_id[article_id]) for article_id in expected_ids],
+        "language": validated["language"],
+        "limitations": validated["limitations"],
+    }
+    try:
+        return parse_and_validate_output(
+            "digest",
+            canonical_json(reordered),
+            target_language=target_language,
+            input_scope="digest",
+            expected_article_ids=tuple(expected_ids),
+        )
+    except ValueError as exc:
+        raise ValueError(
+            "AI cache %s.output failed reordered validation: %s" % (label, exc)
+        ) from exc
+
+
 def _validate_payload(
     payload: object,
     configured_sources: Sequence[SourceConfig],
@@ -1142,7 +1188,8 @@ def _window_rows(
                       >= julianday(?)
               AND julianday(COALESCE(a.published_at, a.discovered_at))
                       <= julianday(?)
-            ORDER BY COALESCE(a.published_at, a.discovered_at) DESC, a.id DESC
+            ORDER BY COALESCE(a.published_at, a.discovered_at) DESC,
+                a.source_slug ASC, a.external_id ASC, a.canonical_url ASC
             LIMIT 1000
             """,
             (period_start, period_end),
@@ -1165,6 +1212,27 @@ def _strict_integer_ids(value: object, label: str) -> List[int]:
     if len(set(result)) != len(result):
         raise ValueError("%s contains duplicate article IDs" % label)
     return result
+
+
+def _selected_report_rows(
+    window_rows: Sequence[Mapping[str, object]],
+    selected_ids: Sequence[int],
+) -> List[Mapping[str, object]]:
+    """Rebuild a legacy digest input without relying on ephemeral row IDs.
+
+    ``ai_reports`` retains the exact selected article order used by the stored
+    artifact.  Those selected rows are the complete hashed prompt payload;
+    omitted window rows only determined truncation provenance.  Preparing just
+    this ordered selection therefore recreates the historical task even when
+    equal-timestamp rows received different local IDs on a disposable runner.
+    """
+
+    row_by_id = {int(row["id"]): row for row in window_rows}
+    try:
+        selected = [row_by_id[int(article_id)] for article_id in selected_ids]
+    except KeyError as exc:
+        raise ValueError("stored AI report references an article outside its window") from exc
+    return selected
 
 
 def _stored_report_key(
@@ -1230,7 +1298,7 @@ def _report_entries(
             )
             if not window_rows:
                 continue
-            prepared = service.prepare_digest(
+            stable_prepared = service.prepare_digest(
                 window_rows,
                 target_language=language,
                 report_context=_report_context(window),
@@ -1238,26 +1306,59 @@ def _report_entries(
             stored_article_ids = _strict_integer_ids(
                 report["article_ids_json"], "stored report article_ids_json"
             )
-            if list(prepared.expected_article_ids) != stored_article_ids:
+            # A changed window must not revive a stale report.  Compare the
+            # selected set under the stable publisher-identity ordering; set
+            # equality intentionally tolerates the historical local-ID
+            # tie-breaker while still detecting a new article entering the
+            # top-N/input-budget selection (including windows larger than 50).
+            stable_article_ids = list(stable_prepared.expected_article_ids)
+            if (
+                len(stable_article_ids) != len(stored_article_ids)
+                or set(stable_article_ids) != set(stored_article_ids)
+            ):
                 continue
-            if not _row_contract_matches_prepared(artifact, prepared):
+            try:
+                legacy_window_rows = _selected_report_rows(
+                    window_rows, stored_article_ids
+                )
+            except ValueError:
                 continue
-            if str(report.get("article_content_hash") or "") != prepared.article_content_hash:
+            legacy_prepared = service.prepare_digest(
+                legacy_window_rows,
+                target_language=language,
+                report_context=_report_context(window),
+            )
+            if list(legacy_prepared.expected_article_ids) != stored_article_ids:
+                continue
+            if not _row_contract_matches_prepared(artifact, legacy_prepared):
+                continue
+            if (
+                str(report.get("article_content_hash") or "")
+                != legacy_prepared.article_content_hash
+            ):
                 continue
             if str(report.get("report_key") or "") != _stored_report_key(
                 artifact, window
             ):
                 continue
-            validated, _ = _validated_db_output(artifact, prepared)
+            validated, _ = _validated_db_output(artifact, legacy_prepared)
+            validated_by_id = {
+                int(item["article_id"]): item for item in validated["items"]
+            }
             row_by_id = {int(row["id"]): row for row in window_rows}
             try:
-                included_rows = [row_by_id[article_id] for article_id in stored_article_ids]
+                included_rows = [
+                    row_by_id[article_id] for article_id in stable_article_ids
+                ]
+                ordered_items = [
+                    validated_by_id[article_id] for article_id in stable_article_ids
+                ]
             except KeyError:
                 continue
             window_identities = [_identity_from_row(row) for row in window_rows]
             identities = [_identity_from_row(row) for row in included_rows]
             public_items = []
-            for item, identity in zip(validated["items"], identities):
+            for item, identity in zip(ordered_items, identities):
                 public_items.append(
                     {
                         "article": identity,
@@ -1759,7 +1860,7 @@ def _resolved_payload(
     report_key_seen = set()
     for index, report in enumerate(payload["reports"]):  # type: ignore[index]
         window = _validated_report_window(report)
-        ordered_window_rows = [
+        portable_window_rows = [
             identity_rows[_identity_key(identity)]
             for identity in report["window_articles"]
         ]
@@ -1771,28 +1872,55 @@ def _resolved_payload(
         expected_keys = {
             _identity_key(identity) for identity in report["window_articles"]
         }
-        if actual_keys != expected_keys or len(actual_window_rows) != len(ordered_window_rows):
+        if (
+            actual_keys != expected_keys
+            or len(actual_window_rows) != len(portable_window_rows)
+        ):
             raise ValueError("AI cache report article window differs locally")
 
-        prepared = service.prepare_digest(
-            ordered_window_rows,
+        portable_prepared = service.prepare_digest(
+            portable_window_rows,
             target_language=str(report["target_language"]),
             report_context=_report_context(window),
         )
-        included_rows = [
+        portable_included_rows = [
             identity_rows[_identity_key(identity)] for identity in report["articles"]
         ]
-        included_ids = tuple(int(row["id"]) for row in included_rows)
-        if prepared.expected_article_ids != included_ids:
+        portable_included_ids = tuple(
+            int(row["id"]) for row in portable_included_rows
+        )
+        if portable_prepared.expected_article_ids != portable_included_ids:
             raise ValueError("AI cache report coverage differs under the current input budget")
         portable_artifact = report["artifact"]
-        if not _prepared_contract_matches(prepared, portable_artifact):
+        if not _prepared_contract_matches(portable_prepared, portable_artifact):
             raise ValueError(
                 "AI cache report is incompatible with the current prompt or schema"
             )
-        validated, readable = _public_digest_to_local(
+        portable_validated, _ = _public_digest_to_local(
             portable_artifact["output"],
             report["articles"],
+            portable_included_ids,
+            target_language=str(report["target_language"]),
+            label="reports[%d].artifact" % index,
+        )
+
+        # Normalize legacy cache order to the stable publisher-identity order
+        # used by current cloud generation.  The selected identity set must be
+        # unchanged; otherwise an article entered or left the current top-N
+        # selection and the historical report is stale.
+        prepared = service.prepare_digest(
+            actual_window_rows,
+            target_language=str(report["target_language"]),
+            report_context=_report_context(window),
+        )
+        included_ids = tuple(int(value) for value in prepared.expected_article_ids)
+        if (
+            len(included_ids) != len(portable_included_ids)
+            or set(included_ids) != set(portable_included_ids)
+        ):
+            raise ValueError("AI cache report coverage differs under stable ordering")
+        validated, readable = _digest_output_in_article_order(
+            portable_validated,
             included_ids,
             target_language=str(report["target_language"]),
             label="reports[%d].artifact" % index,
@@ -1814,7 +1942,9 @@ def _resolved_payload(
                 "article_ids_json": canonical_json(list(included_ids)),
                 "article_content_hash": prepared.article_content_hash,
                 "created_at": str(report["created_at"]),
-                "window_identities": [dict(value) for value in report["window_articles"]],
+                "window_identities": [
+                    _identity_from_row(row) for row in actual_window_rows
+                ],
             }
         )
     id_map = {

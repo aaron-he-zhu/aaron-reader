@@ -33,6 +33,7 @@ from aaron_reader.ai_service import AIGenerationHeld, AIService  # noqa: E402
 from aaron_reader.ai_subscription import (  # noqa: E402
     export_subscription_batch,
     export_subscription_report,
+    generate_cloud_report_pair,
     import_subscription_report,
     import_subscription_results,
 )
@@ -492,6 +493,173 @@ class PublicAICacheTests(unittest.TestCase):
         round_trip_payload = json.loads(round_trip.read_text(encoding="utf-8"))
         self.assertEqual(self.payload()["artifacts"], round_trip_payload["artifacts"])
         self.assertEqual(self.payload()["reports"], round_trip_payload["reports"])
+
+    def test_legacy_equal_timestamp_report_order_survives_disposable_runners(self) -> None:
+        tied_candidates = [
+            self.candidate("tie-beta", "2026-08-01T08:00:00Z"),
+            self.candidate("tie-alpha", "2026-08-01T08:00:00Z"),
+            self.candidate("newest", "2026-08-01T10:00:00Z"),
+        ]
+        source = self.database("legacy-order-source.sqlite3", tied_candidates)
+        service = AIService(self.old_config, source)
+        now = datetime(2026, 8, 1, 17, 0, tzinfo=timezone.utc)
+        for period in ("daily", "weekly"):
+            for language in ("en", "zh-CN"):
+                request = export_subscription_report(
+                    service,
+                    period=period,
+                    target_language=language,
+                    now=now,
+                )
+                articles = request["input"]["articles"]
+                result = {
+                    key: request[key]
+                    for key in (
+                        "protocol",
+                        "report_id",
+                        "fingerprint",
+                        "period",
+                        "timezone",
+                        "local_date",
+                        "period_start",
+                        "period_end",
+                        "target_language",
+                    )
+                }
+                result["output"] = {
+                    "headline": "%s %s report" % (period, language),
+                    "overview": "Portable metadata report.",
+                    "items": [
+                        {
+                            "article_id": int(article["article_id"]),
+                            "title": str(article["title"]),
+                            "summary": "Metadata-only report item.",
+                        }
+                        for article in articles
+                    ],
+                    "language": language,
+                    "limitations": "Metadata only.",
+                }
+                import_subscription_report(service, result)
+
+        stable_bundle = self.root / "stable-tied-reports.json"
+        export_ai_cache(source, self.old_config, stable_bundle)
+        legacy_payload = json.loads(stable_bundle.read_text(encoding="utf-8"))
+        self.assertEqual(4, len(legacy_payload["reports"]))
+
+        # Recreate the old `published_at DESC, id DESC` transport order by
+        # swapping the equal-timestamp identities.  The portable output must
+        # follow the same legacy order, just as a historical cache did.
+        for report in legacy_payload["reports"]:
+            for field in ("window_articles", "articles"):
+                values = report[field]
+                alpha = next(
+                    index
+                    for index, identity in enumerate(values)
+                    if identity["external_id"] == "external-tie-alpha"
+                )
+                beta = next(
+                    index
+                    for index, identity in enumerate(values)
+                    if identity["external_id"] == "external-tie-beta"
+                )
+                values[alpha], values[beta] = values[beta], values[alpha]
+            output = report["artifact"]["output"]
+            items_by_url = {
+                item["article"]["canonical_url"]: item
+                for item in output["items"]
+            }
+            output["items"] = [
+                items_by_url[identity["canonical_url"]]
+                for identity in report["articles"]
+            ]
+            report["artifact"]["output_hash"] = stable_hash(
+                canonical_json(output)
+            )
+            report["articles_hash"] = stable_hash(report["articles"])
+            report["cache_key"] = _entry_hash(report)
+        legacy_payload["reports"].sort(
+            key=lambda report: (
+                report["period"],
+                report["period_start"],
+                report["period_end"],
+                report["target_language"],
+                report["cache_key"],
+            )
+        )
+        self.rehash(legacy_payload)
+        legacy_bundle = self.write_payload(
+            legacy_payload, "legacy-tied-reports.json"
+        )
+
+        class RejectingProvider:
+            def __init__(self):
+                self.calls = 0
+
+            def generate(self, request):
+                self.calls += 1
+                raise AssertionError("a persisted report must not call the provider")
+
+        first_target = self.database(
+            "legacy-order-first.sqlite3",
+            tied_candidates,
+            reverse=True,
+            shift_ids=True,
+        )
+        first_import = import_ai_cache(
+            first_target, self.new_config, legacy_bundle
+        )
+        self.assertEqual(4, first_import["inserted_reports"])
+        first_provider = RejectingProvider()
+        first_service = AIService(
+            self.new_config, first_target, provider=first_provider
+        )
+        for period in ("daily", "weekly"):
+            cached = generate_cloud_report_pair(
+                first_service, period=period, now=now
+            )
+            self.assertEqual(0, cached["provider_api_calls"])
+            self.assertTrue(
+                all(report["cache_hit"] for report in cached["reports"])
+            )
+        self.assertEqual(0, first_provider.calls)
+
+        round_trip = self.root / "legacy-tied-round-trip.json"
+        exported = export_ai_cache(first_target, self.new_config, round_trip)
+        self.assertEqual(4, exported["reports"])
+
+        second_target = self.database(
+            "legacy-order-second.sqlite3",
+            tied_candidates,
+            reverse=False,
+            shift_ids=True,
+        )
+        second_import = import_ai_cache(
+            second_target, self.new_config, round_trip
+        )
+        self.assertEqual(4, second_import["inserted_reports"])
+        second_provider = RejectingProvider()
+        second_service = AIService(
+            self.new_config, second_target, provider=second_provider
+        )
+        for period in ("daily", "weekly"):
+            cached = generate_cloud_report_pair(
+                second_service, period=period, now=now
+            )
+            self.assertEqual(0, cached["provider_api_calls"])
+            self.assertTrue(
+                all(report["cache_hit"] for report in cached["reports"])
+            )
+        self.assertEqual(0, second_provider.calls)
+        second_round_trip = self.root / "legacy-tied-second-round-trip.json"
+        second_export = export_ai_cache(
+            second_target, self.new_config, second_round_trip
+        )
+        self.assertEqual(4, second_export["reports"])
+        self.assertEqual(
+            json.loads(round_trip.read_text(encoding="utf-8"))["reports"],
+            json.loads(second_round_trip.read_text(encoding="utf-8"))["reports"],
+        )
 
     def test_usage_ledger_is_aggregate_durable_idempotent_and_budget_enforced(self) -> None:
         confirmed = self.reserve_usage_attempt(
