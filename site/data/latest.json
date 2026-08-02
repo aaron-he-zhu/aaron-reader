@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-02T11:32:15Z",
+  "generated_at": "2026-08-02T11:52:36Z",
   "language": "en",
   "supported_languages": [
     "en",
@@ -4942,14 +4942,14 @@
             "title": "Ten advances in mathematics and theoretical computer science"
           },
           {
-            "article_id": 71,
-            "summary": "The article presents a full-stack approach intended to make advanced AI more capable, affordable, and broadly useful.",
-            "title": "Building abundant intelligence"
-          },
-          {
             "article_id": 65,
             "summary": "OpenAI describes how its safety, security, transparency, and provenance practices support responsible AI governance in Europe as the EU AI Act advances.",
             "title": "Advancing responsible AI across Europe"
+          },
+          {
+            "article_id": 71,
+            "summary": "The article presents a full-stack approach intended to make advanced AI more capable, affordable, and broadly useful.",
+            "title": "Building abundant intelligence"
           },
           {
             "article_id": 108,
@@ -5026,14 +5026,14 @@
             "title": "数学与理论计算机科学的十项进展"
           },
           {
-            "article_id": 71,
-            "summary": "文章提出一套全栈方法，目标是让先进 AI 更有能力、成本更低，并能得到更广泛的应用。",
-            "title": "构建充裕的智能"
-          },
-          {
             "article_id": 65,
             "summary": "OpenAI 介绍其安全、安保、透明度和来源验证实践如何支持欧洲负责任 AI 治理，并表示会随着欧盟《人工智能法案》推进而继续相关工作。",
             "title": "推动欧洲负责任 AI 发展"
+          },
+          {
+            "article_id": 71,
+            "summary": "文章提出一套全栈方法，目标是让先进 AI 更有能力、成本更低，并能得到更广泛的应用。",
+            "title": "构建充裕的智能"
           },
           {
             "article_id": 108,
