@@ -15,8 +15,6 @@ export type AIArtifact = {
   target_language?: string;
   generated_at?: string | null;
   input_truncated?: boolean;
-  provider?: string;
-  model?: string;
   output?: AIArtifactOutput | string;
 
   // These fields keep older, flattened snapshots readable.

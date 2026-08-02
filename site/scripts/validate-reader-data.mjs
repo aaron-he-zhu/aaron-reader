@@ -32,6 +32,16 @@ if ("unread" in (snapshot.counts || {}) || "starred" in (snapshot.counts || {}))
 if (snapshot.articles.some((article) => "unread" in article || "starred" in article)) {
   throw new Error("The public snapshot must not expose private article state.");
 }
+if (snapshot.articles.some((article) => (article.ai_artifacts || []).some(
+  (artifact) => "provider" in artifact || "model" in artifact,
+))) {
+  throw new Error("The public snapshot must not expose AI provider provenance.");
+}
+if ((snapshot.ai_reports || []).some(
+  (report) => "provider" in report || "model" in report,
+)) {
+  throw new Error("The public snapshot must not expose report provider provenance.");
+}
 if (snapshot.sources.some(
   (source) => "unread_count" in source || "pending_count" in source || "last_error" in source,
 )) {

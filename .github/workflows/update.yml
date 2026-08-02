@@ -1,0 +1,223 @@
+name: Production update
+
+on:
+  schedule:
+    - cron: "0 10,22 * * *"
+      timezone: "America/Los_Angeles"
+  workflow_dispatch:
+    inputs:
+      force_weekly:
+        description: Generate the bilingual weekly brief outside Sunday evening
+        required: false
+        default: false
+        type: boolean
+      force_held:
+        description: Explicitly retry held AI work that may already have been billed
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: production-update-${{ github.repository }}-main
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Crawl, enrich, verify, and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out the production branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.9"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install the locked site dependencies
+        working-directory: site
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Test fixed programs before any model call
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m unittest discover -s tests -v
+          npm --prefix site run lint
+          npm --prefix site run typecheck
+          npm --prefix site test
+
+      - name: Restore the public cloud state
+        run: |
+          ./aaron-reader crawl-import crawler/latest.json --seed --json
+          ./aaron-reader ai-cache-import cloud/ai-cache.json --json
+
+      - name: Crawl all publishers with fixed code
+        run: |
+          ./aaron-reader sync
+          ./aaron-reader status --strict --json
+
+      - name: Generate only missing or changed language artifacts
+        id: deepseek
+        continue-on-error: true
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          FORCE_WEEKLY: ${{ inputs.force_weekly || 'false' }}
+          FORCE_HELD: ${{ inputs.force_held || 'false' }}
+        run: |
+          arguments=(ai cloud-run --yes --json --limit 50)
+          if [[ "$FORCE_WEEKLY" == "true" ]]; then
+            arguments+=(--force-weekly)
+          fi
+          if [[ "$FORCE_HELD" == "true" ]]; then
+            arguments+=(--force-held)
+          fi
+          ./aaron-reader "${arguments[@]}" | tee data/cloud-ai-run.json
+
+      - name: Export and independently validate both public handoffs
+        run: |
+          ./aaron-reader crawl-export crawler/latest.json --json
+          ./aaron-reader ai-cache-export cloud/ai-cache.json --json
+          ./aaron-reader \
+            --database data/cloud-validation.sqlite3 \
+            crawl-import crawler/latest.json --seed --json
+          ./aaron-reader \
+            --database data/cloud-validation.sqlite3 \
+            ai-cache-import cloud/ai-cache.json --json
+          ./aaron-reader \
+            --database data/cloud-validation.sqlite3 \
+            status --strict --json
+
+      - name: Build and commit the exact public state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python3 scripts/prepare_cloudflare_release.py --skip-sync \
+            | tee data/cloud-release.json
+
+      - name: Push only the verified commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+        run: |
+          if [[ ! "$EXPECTED_REPOSITORY" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+            echo "Refusing invalid GitHub repository identity" >&2
+            exit 1
+          fi
+          remote="$(git remote get-url origin)"
+          expected="https://github.com/${EXPECTED_REPOSITORY}"
+          if [[ "$remote" != "$expected" && "$remote" != "${expected}.git" ]]; then
+            echo "Refusing unexpected Git origin: $remote" >&2
+            exit 1
+          fi
+          gh auth setup-git
+          git -c core.hooksPath=/dev/null push origin HEAD:main
+
+      - name: Verify Cloudflare published the exact snapshot
+        env:
+          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL || 'https://aaron-reader.aaron-he-zhu.workers.dev/' }}
+          DEPLOYMENT_CHECK_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import hmac
+          import os
+          from pathlib import Path
+          import time
+          from urllib.error import HTTPError, URLError
+          from urllib.parse import quote, urljoin, urlsplit
+          from urllib.request import Request, urlopen
+
+          base = os.environ["PUBLIC_SITE_URL"].strip()
+          parts = urlsplit(base)
+          if (
+              parts.scheme != "https"
+              or not parts.hostname
+              or parts.username
+              or parts.password
+              or parts.query
+              or parts.fragment
+          ):
+              raise SystemExit("PUBLIC_SITE_URL must be a credential-free HTTPS origin")
+          expected = Path("site/public/reader/latest.json").read_bytes()
+          if not expected or len(expected) > 25 * 1024 * 1024:
+              raise SystemExit("expected public snapshot is outside the safe size range")
+          expected_hash = hashlib.sha256(expected).hexdigest()
+          endpoint = urljoin(base.rstrip("/") + "/", "reader/latest.json")
+          check_id = quote(os.environ["DEPLOYMENT_CHECK_ID"], safe="-")
+
+          for attempt in range(36):
+              request = Request(
+                  "%s?deployment-check=%s-%d" % (endpoint, check_id, attempt),
+                  headers={"Accept": "application/json", "User-Agent": "AaronReaderDeploymentCheck/1.0"},
+              )
+              try:
+                  with urlopen(request, timeout=15) as response:
+                      body = response.read(len(expected) + 1)
+                  if len(body) == len(expected) and hmac.compare_digest(body, expected):
+                      print("Cloudflare snapshot verified: sha256:%s" % expected_hash)
+                      break
+              except (HTTPError, URLError, TimeoutError, OSError):
+                  pass
+              if attempt == 35:
+                  raise SystemExit(
+                      "Cloudflare did not publish the expected snapshot within six minutes"
+                  )
+              time.sleep(10)
+          PY
+
+      - name: Write a redacted run summary
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+          AI_OUTCOME: ${{ steps.deepseek.outcome }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          lines = [
+              "# Aaron Reader production update",
+              "",
+              "Workflow status before final alert: **%s**" % os.environ["JOB_STATUS"],
+              "",
+              "DeepSeek step outcome: **%s**" % (os.environ.get("AI_OUTCOME") or "not-run"),
+          ]
+          for title, filename in (
+              ("DeepSeek usage", "data/cloud-ai-run.json"),
+              ("Publication", "data/cloud-release.json"),
+          ):
+              path = Path(filename)
+              if not path.is_file():
+                  continue
+              try:
+                  payload = json.loads(path.read_text(encoding="utf-8"))
+              except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+                  continue
+              lines.extend(["", "## %s" % title, "", "```json", json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True), "```"])
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("\n".join(lines) + "\n")
+          PY
+
+      - name: Mark an incomplete AI cycle after preserving valid progress
+        if: steps.deepseek.outcome == 'failure'
+        run: |
+          echo "DeepSeek enrichment was incomplete; validated partial progress was published to avoid rebilling successful calls."
+          exit 1

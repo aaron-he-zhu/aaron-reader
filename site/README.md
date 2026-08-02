@@ -15,26 +15,23 @@ npm test
 npm run deploy
 ```
 
-The site has no D1 or R2 binding, contains no API key, and exposes no hosted AI
-endpoint. Optional AI summaries and translations are generated locally under
-the parent application's explicit opt-in and hard-budget rules, then displayed
-only as cached artifacts in a later snapshot.
+The site has no D1 or R2 binding, contains no API key, and exposes no browser-
+callable AI endpoint. Chinese summaries and translations, plus English and
+Chinese daily reports, are refreshed by DeepSeek V4 Flash in the twice-daily
+cloud pipeline. Weekly reports are generated once on Sunday evening. All
+results are published as validated cached artifacts. The hosted reader only
+renders those caches; loading or using the page never calls a model.
 
-`../scripts/prepare_cloudflare_release.py` performs the repeatable release
-preparation. Source and snapshots are pushed to GitHub before Cloudflare
-Workers Builds deploys that exact commit. The repository contains no
-Cloudflare credential, model credential, SQLite database, or hosted AI API.
+`../scripts/prepare_cloudflare_release.py` performs repeatable snapshot
+validation and release preparation. Source and snapshots are pushed to GitHub
+before Cloudflare Workers Builds deploys that exact commit. The repository
+contains no Cloudflare credential, model credential, SQLite database, or
+browser-callable AI API.
 
-The `codex://` action panel lets each visitor save an optional absolute checkout
-path in browser-local storage. Public source and deployment snapshots never
-contain that path. For a private local build, `.env.example` can seed the same
-value through an ignored `.env.production.local` file.
-
-Summary and daily/weekly report actions follow the active interface language.
-Translation and the optional three-article historical backfill are explicitly
-Simplified Chinese. Published reports require an exact language match, and
-their per-item notes remain distinct from independently cached article
-artifacts. Report details and per-article AI tools use collapsed native
-disclosures so the archive remains the primary reading surface. The backfill
-action is rendered only while at least one current article lacks both cached
-Chinese artifacts; complete coverage replaces it with a completion message.
+There are no client-side AI controls, deep links, workspace settings, or manual
+translation buttons. Cached Simplified Chinese translations appear
+automatically in the Chinese view, while cached article summaries remain visible
+in the matching interface language. Published reports require an exact language
+match, and their per-item notes remain distinct from independently cached
+article artifacts. Report details use collapsed native disclosures so the
+archive remains the primary reading surface.

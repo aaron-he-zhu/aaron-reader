@@ -10,7 +10,6 @@ from .database import Database, utc_now
 from .http_client import FetchError, HttpClient
 from .i18n import translate
 from .models import AppConfig, ArticleCandidate, SourceConfig, SourceSyncResult, SyncResult
-from .notifier import notify_new_articles
 from .parsers import parse_article_page, parse_sitemap, parse_source
 from .normalize import stable_hash
 
@@ -53,7 +52,6 @@ def sync_all(
     config: AppConfig,
     database: Database,
     source_slugs: Optional[Sequence[str]] = None,
-    notify: bool = False,
     force: bool = False,
     keep_history_unread: bool = False,
     client: Optional[HttpClient] = None,
@@ -105,23 +103,6 @@ def sync_all(
                 )
             )
 
-    if notify and config.notification_enabled:
-        pending_notification = database.pending_notifications()
-        notification_total = int(pending_notification["total"])
-        if notification_total:
-            article_ids = list(pending_notification["article_ids"])
-            delivered = notify_new_articles(
-                notification_total,
-                dict(pending_notification["source_counts"]),
-                language=language,
-            )
-            if delivered:
-                database.acknowledge_notifications(article_ids)
-            else:
-                database.record_notification_failure(
-                    article_ids,
-                    translate("sync.notification_failed", language),
-                )
     return results
 
 

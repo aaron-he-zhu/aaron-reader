@@ -34,7 +34,7 @@ class AIModelPrice:
 
 @dataclass(frozen=True)
 class AIBudgetConfig:
-    timezone: str = "Asia/Singapore"
+    timezone: str = "America/Los_Angeles"
     daily_max_requests: int = 20
     daily_max_total_tokens: int = 30_000
     daily_max_cost_usd: float = 0.0
@@ -56,13 +56,13 @@ class AIConfig:
     """Explicitly opt-in settings for token-consuming enrichment."""
 
     enabled: bool = False
-    provider: str = "openai"
-    translation_model: str = "gpt-5.6-luna"
-    summary_model: str = "gpt-5.6-luna"
-    digest_model: str = "gpt-5.6-luna"
-    reasoning_effort: str = "medium"
+    provider: str = "deepseek"
+    translation_model: str = "deepseek-v4-flash"
+    summary_model: str = "deepseek-v4-flash"
+    digest_model: str = "deepseek-v4-flash"
+    reasoning_effort: str = "none"
     store: bool = False
-    api_key_environment: str = "OPENAI_API_KEY"
+    api_key_environment: str = "DEEPSEEK_API_KEY"
     input_policy: str = "metadata_only"
     max_input_chars_per_article: int = 12_000
     max_full_text_chars: int = 60_000
@@ -75,7 +75,6 @@ class AIConfig:
     translation_enabled: bool = True
     digest_enabled: bool = True
     full_text_enabled: bool = False
-    web_actions_enabled: bool = False
     budget: AIBudgetConfig = field(default_factory=AIBudgetConfig)
     batch: AIBatchConfig = field(default_factory=AIBatchConfig)
     prices: Dict[str, AIModelPrice] = field(default_factory=dict)
@@ -89,7 +88,6 @@ class AppConfig:
     output_dir: str = "public"
     request_timeout_seconds: int = 25
     max_response_bytes: int = 8_000_000
-    notification_enabled: bool = True
     ai: AIConfig = field(default_factory=AIConfig)
 
 

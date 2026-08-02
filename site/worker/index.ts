@@ -9,10 +9,11 @@ const worker = {
       const asset = await env.ASSETS.fetch(request);
       if (asset.ok && request.method !== "HEAD") {
         const feed = await asset.text();
-        const publicHome = new URL("/", request.url).href;
+        const canonicalHome = "https://aaron-reader.aaron-he-zhu.workers.dev/";
+        const requestHome = new URL("/", request.url).href;
         const body = feed.replace(
-          "<link>http://127.0.0.1:8765/</link>",
-          `<link>${escapeXml(publicHome)}</link>`,
+          `<link>${canonicalHome}</link>`,
+          `<link>${escapeXml(requestHome)}</link>`,
         );
         const headers = new Headers(asset.headers);
         headers.set("content-type", "application/rss+xml; charset=utf-8");

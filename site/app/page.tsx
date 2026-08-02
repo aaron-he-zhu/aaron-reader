@@ -5,7 +5,7 @@ import { Reader } from "./reader";
 export const metadata: Metadata = {
   title: "Aaron Reader — AI labs, without the noise",
   description:
-    "A deterministic, token-free feed for OpenAI, Anthropic, and Claude updates, with optional GPT-5.6 Luna enrichment.",
+    "A deterministic feed for OpenAI, Anthropic, and Claude updates, with automatically refreshed multilingual AI enrichment.",
   alternates: {
     canonical: "/",
     types: {

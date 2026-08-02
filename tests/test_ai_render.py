@@ -82,21 +82,14 @@ class AIRenderTests(unittest.TestCase):
         self.assertNotIn("<script>alert(1)</script>", page)
         self.assertNotIn("fetch(", page)
 
-    def test_ai_buttons_and_network_script_exist_only_for_explicit_server_render(self):
-        page = render_html([article_with_ai()], [], ai_actions=True)
-        self.assertIn('data-ai-actions="1"', page)
-        self.assertIn('data-task="summary"', page)
-        self.assertIn('data-task="translation"', page)
-        self.assertIn("fetch('/api/ai/session')", page)
-        self.assertIn("X-CSRF-Token", page)
-        self.assertNotIn("OPENAI_API_KEY", page)
-
     def test_latest_json_keeps_ai_in_an_independent_field(self):
         payload = json.loads(render_json([article_with_ai()], []))
         public_article = payload["articles"][0]
         self.assertEqual("Publisher title", public_article["title"])
         self.assertEqual("Publisher summary", public_article["summary"])
         self.assertEqual(2, len(public_article["ai_artifacts"]))
+        self.assertNotIn("provider", public_article["ai_artifacts"][0])
+        self.assertNotIn("model", public_article["ai_artifacts"][0])
         self.assertEqual(2, payload["cached_ai_artifact_count"])
         self.assertEqual(0, payload["render_llm_tokens_used"])
 

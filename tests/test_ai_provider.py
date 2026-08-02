@@ -13,9 +13,10 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT / "src"))
 
 from aaron_reader.ai_provider import (  # noqa: E402
+    DEEPSEEK_CHAT_COMPLETIONS_URL,
+    DEEPSEEK_MODEL,
     MAX_RESPONSE_BYTES,
-    OPENAI_RESPONSES_URL,
-    OpenAIResponsesProvider,
+    DeepSeekChatCompletionsProvider,
     ProviderConfigError,
     ProviderHTTPError,
     ProviderKnownError,
@@ -31,8 +32,8 @@ API_KEY = "test-secret-api-key"
 
 def provider_request(**overrides) -> ProviderRequest:
     values = {
-        "model": "example-reasoning-model",
-        "instructions": "Return only the requested structured result.",
+        "model": DEEPSEEK_MODEL,
+        "instructions": "Return only the requested structured JSON result.",
         "input_text": '{"article_id":17,"title":"An article"}',
         "json_schema": {
             "type": "object",
@@ -42,6 +43,7 @@ def provider_request(**overrides) -> ProviderRequest:
         },
         "idempotency_key": "article-17.summary.zh-CN.v1",
         "max_output_tokens": 384,
+        "reasoning_effort": "none",
         "schema_name": "article_summary",
     }
     values.update(overrides)
@@ -88,165 +90,225 @@ class RecordingOpener:
         return self.outcome
 
 
-class OpenAIResponsesProviderTests(unittest.TestCase):
-    def setUp(self) -> None:
-        self.environment = mock.patch.dict(
-            os.environ, {"OPENAI_API_KEY": API_KEY}
-        )
-        self.environment.start()
-
-    def tearDown(self) -> None:
-        self.environment.stop()
-
-    def test_posts_strict_schema_without_tools_and_extracts_later_message(self) -> None:
-        headers = Message()
-        headers["x-request-id"] = "http-request-123"
-        response = FakeResponse(
-            {
-                "id": "resp_123",
-                "status": "completed",
-                "model": "resolved-model-2026-08-01",
-                "output": [
-                    {"type": "reasoning", "summary": []},
-                    {
-                        "type": "message",
-                        "content": [
-                            {"type": "refusal", "refusal": ""},
-                            {
-                                "type": "output_text",
-                                "text": '{"summary":"中文摘要"}',
-                            },
-                        ],
+class DeepSeekChatCompletionsProviderTests(unittest.TestCase):
+    @staticmethod
+    def successful_payload(content='{"summary":"ok"}'):
+        return {
+            "id": "chatcmpl-deepseek-1",
+            "object": "chat.completion",
+            "model": DEEPSEEK_MODEL,
+            "choices": [
+                {
+                    "index": 0,
+                    "finish_reason": "stop",
+                    "message": {
+                        "role": "assistant",
+                        "content": content,
                     },
-                ],
-                "usage": {
-                    "input_tokens": 101,
-                    "input_tokens_details": {
-                        "cached_tokens": 40,
-                        "cache_write_tokens": 11,
-                    },
-                    "output_tokens": 23,
-                    "output_tokens_details": {"reasoning_tokens": 7},
-                    "total_tokens": 124,
-                },
+                }
+            ],
+            "usage": {
+                "prompt_tokens": 100,
+                "prompt_cache_hit_tokens": 40,
+                "prompt_cache_miss_tokens": 60,
+                "completion_tokens": 20,
+                "total_tokens": 120,
+                "completion_tokens_details": {"reasoning_tokens": 0},
             },
-            headers=headers,
+        }
+
+    def test_fixed_json_mode_request_has_no_tools_store_or_reasoning_effort(self) -> None:
+        headers = Message()
+        headers["x-request-id"] = "deepseek-request-1"
+        opener = RecordingOpener(
+            FakeResponse(self.successful_payload(), headers=headers)
         )
-        opener = RecordingOpener(response)
-        provider = OpenAIResponsesProvider(
+        provider = DeepSeekChatCompletionsProvider(
             opener=opener,
-            timeout_seconds=12,
+            timeout_seconds=9,
         )
+        with mock.patch.dict(
+            os.environ,
+            {"DEEPSEEK_API_KEY": API_KEY},
+            clear=True,
+        ):
+            result = provider.generate(provider_request())
 
-        result = provider.generate(provider_request())
-
-        self.assertEqual('{"summary":"中文摘要"}', result.output_text)
-        self.assertEqual("resolved-model-2026-08-01", result.model)
-        self.assertEqual("http-request-123", result.request_id)
-        self.assertEqual("resp_123", result.response_id)
+        self.assertEqual('{"summary":"ok"}', result.output_text)
+        self.assertEqual("deepseek-request-1", result.request_id)
+        self.assertEqual("chatcmpl-deepseek-1", result.response_id)
+        self.assertEqual(DEEPSEEK_MODEL, result.model)
         self.assertTrue(result.usage_reported)
         self.assertEqual(
             ProviderUsage(
-                input_tokens=101,
+                input_tokens=100,
                 cached_input_tokens=40,
-                cache_write_input_tokens=11,
-                output_tokens=23,
-                reasoning_tokens=7,
-                total_tokens=124,
+                output_tokens=20,
+                total_tokens=120,
             ),
             result.usage,
         )
 
         self.assertEqual(1, len(opener.calls))
         request, timeout = opener.calls[0]
-        self.assertEqual(12.0, timeout)
-        self.assertEqual(OPENAI_RESPONSES_URL, request.full_url)
+        self.assertEqual(9.0, timeout)
+        self.assertEqual(DEEPSEEK_CHAT_COMPLETIONS_URL, request.full_url)
         self.assertEqual("POST", request.get_method())
         self.assertEqual("Bearer %s" % API_KEY, request.get_header("Authorization"))
-        self.assertEqual(
-            "article-17.summary.zh-CN.v1",
-            request.get_header("Idempotency-key"),
-        )
+        self.assertIsNone(request.get_header("Idempotency-Key"))
         payload = json.loads(request.data.decode("utf-8"))
-        self.assertEqual("example-reasoning-model", payload["model"])
-        self.assertEqual("medium", payload["reasoning"]["effort"])
-        self.assertEqual(384, payload["max_output_tokens"])
-        self.assertIs(False, payload["store"])
-        self.assertNotIn("tools", payload)
+        self.assertEqual(DEEPSEEK_MODEL, payload["model"])
+        self.assertEqual({"type": "disabled"}, payload["thinking"])
+        self.assertEqual({"type": "json_object"}, payload["response_format"])
+        self.assertIs(False, payload["stream"])
+        self.assertEqual(384, payload["max_tokens"])
         self.assertEqual(
-            {
-                "type": "json_schema",
-                "name": "article_summary",
-                "strict": True,
-                "schema": provider_request().json_schema,
-            },
-            payload["text"]["format"],
+            ["system", "user"],
+            [item["role"] for item in payload["messages"]],
         )
-
-    def test_missing_key_and_invalid_request_fail_before_transport(self) -> None:
-        opener = RecordingOpener(AssertionError("transport must not be called"))
-        without_key = OpenAIResponsesProvider(opener=opener)
-        with mock.patch.dict(os.environ, {}, clear=True):
-            with self.assertRaisesRegex(ProviderConfigError, "OPENAI_API_KEY"):
-                without_key.generate(provider_request())
-
-        provider = OpenAIResponsesProvider(opener=opener)
-        for request in (
-            provider_request(idempotency_key="bad\r\nheader"),
-            provider_request(max_output_tokens=0),
-            provider_request(schema_name="bad schema name"),
+        self.assertIn("Return JSON only", payload["messages"][0]["content"])
+        self.assertIn("JSON Schema:", payload["messages"][0]["content"])
+        for forbidden in (
+            "tools",
+            "tool_choice",
+            "store",
+            "reasoning_effort",
         ):
-            with self.subTest(request=request):
-                with self.assertRaises(ProviderConfigError):
-                    provider.generate(request)
-        self.assertEqual([], opener.calls)
+            self.assertNotIn(forbidden, payload)
 
-    def test_json_schema_serialization_error_is_local_configuration_error(self) -> None:
+    def test_only_fixed_key_and_model_are_accepted_before_transport(self) -> None:
         opener = RecordingOpener(AssertionError("transport must not be called"))
-        provider = OpenAIResponsesProvider(opener=opener)
-        with self.assertRaisesRegex(ProviderConfigError, "not JSON serializable"):
-            provider.generate(provider_request(json_schema={"invalid": {1, 2}}))
+        provider = DeepSeekChatCompletionsProvider(opener=opener)
+        with mock.patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(ProviderConfigError, "DEEPSEEK_API_KEY"):
+                provider.generate(provider_request())
+        with mock.patch.dict(os.environ, {"DEEPSEEK_API_KEY": API_KEY}, clear=True):
+            with self.assertRaisesRegex(ProviderConfigError, DEEPSEEK_MODEL):
+                provider.generate(provider_request(model="deepseek-v4-pro"))
         self.assertEqual([], opener.calls)
 
-    def test_http_429_is_retryable_and_does_not_read_or_disclose_body(self) -> None:
-        headers = Message()
-        headers["Retry-After"] = "17"
-        secret_body = io.BytesIO(
-            ("provider detail containing %s and private input" % API_KEY).encode()
+    def test_invalid_local_options_fail_before_transport(self) -> None:
+        for options in (
+            {"timeout_seconds": 0},
+            {"timeout_seconds": float("nan")},
+            {"max_response_bytes": 100},
+            {"max_response_bytes": MAX_RESPONSE_BYTES + 1},
+        ):
+            with self.subTest(options=options):
+                with self.assertRaises(ProviderConfigError):
+                    DeepSeekChatCompletionsProvider(**options)
+
+        opener = RecordingOpener(AssertionError("transport must not be called"))
+        provider = DeepSeekChatCompletionsProvider(opener=opener)
+        with mock.patch.dict(os.environ, {"DEEPSEEK_API_KEY": API_KEY}, clear=True):
+            for request in (
+                provider_request(idempotency_key="bad\r\nheader"),
+                provider_request(max_output_tokens=0),
+                provider_request(schema_name="bad schema"),
+                provider_request(json_schema={"bad": {1, 2}}),
+            ):
+                with self.subTest(request=request):
+                    with self.assertRaises(ProviderConfigError):
+                        provider.generate(request)
+        self.assertEqual([], opener.calls)
+
+    def test_non_stop_tool_or_thinking_outputs_are_known_and_usage_is_auditable(self) -> None:
+        cases = (
+            ("finish_length", {"finish_reason": "length"}),
+            (
+                "tool_calls",
+                {
+                    "message": {
+                        "role": "assistant",
+                        "content": "{}",
+                        "tool_calls": [{"id": "x"}],
+                    }
+                },
+            ),
+            (
+                "thinking_output",
+                {
+                    "message": {
+                        "role": "assistant",
+                        "content": "{}",
+                        "reasoning_content": "private chain",
+                    }
+                },
+            ),
         )
-        error = urllib.error.HTTPError(
-            OPENAI_RESPONSES_URL,
+        for expected_code, choice_overrides in cases:
+            payload = self.successful_payload()
+            payload["choices"][0].update(choice_overrides)
+            provider = DeepSeekChatCompletionsProvider(
+                opener=RecordingOpener(FakeResponse(payload))
+            )
+            with self.subTest(code=expected_code), mock.patch.dict(
+                os.environ, {"DEEPSEEK_API_KEY": API_KEY}, clear=True
+            ):
+                with self.assertRaises(ProviderKnownError) as raised:
+                    provider.generate(provider_request())
+                self.assertEqual(expected_code, raised.exception.code)
+                self.assertEqual(120, raised.exception.usage.total_tokens)
+                self.assertNotIn("private chain", str(raised.exception))
+
+    def test_incomplete_usage_is_not_claimed_as_audited(self) -> None:
+        payload = self.successful_payload()
+        payload["usage"].pop("prompt_cache_miss_tokens")
+        provider = DeepSeekChatCompletionsProvider(
+            opener=RecordingOpener(FakeResponse(payload))
+        )
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": API_KEY}, clear=True
+        ):
+            result = provider.generate(provider_request())
+        self.assertFalse(result.usage_reported)
+
+    def test_http_error_body_and_transport_secret_are_never_disclosed(self) -> None:
+        secret_body = io.BytesIO((API_KEY + " private body").encode("utf-8"))
+        http_error = urllib.error.HTTPError(
+            DEEPSEEK_CHAT_COMPLETIONS_URL,
             429,
             "rate limited",
-            headers,
+            Message(),
             secret_body,
         )
-        opener = RecordingOpener(error)
-        provider = OpenAIResponsesProvider(opener=opener)
-
-        with self.assertRaises(ProviderHTTPError) as raised:
-            provider.generate(provider_request())
-        self.assertEqual(429, raised.exception.status)
-        self.assertEqual(17.0, raised.exception.retry_after)
-        self.assertTrue(raised.exception.retryable)
-        self.assertNotIn(API_KEY, str(raised.exception))
-        self.assertNotIn("private input", str(raised.exception))
-        self.assertEqual(1, len(opener.calls))
-        self.assertTrue(secret_body.closed)
-
-    def test_nonretryable_http_error_and_redirect_are_not_followed(self) -> None:
-        for status in (302, 400, 401, 403, 422):
-            with self.subTest(status=status):
-                response = FakeResponse({}, status=status)
-                opener = RecordingOpener(response)
-                provider = OpenAIResponsesProvider(opener=opener)
-                with self.assertRaises(ProviderHTTPError) as raised:
+        for outcome in (
+            http_error,
+            urllib.error.URLError(API_KEY + " transport"),
+        ):
+            provider = DeepSeekChatCompletionsProvider(
+                opener=RecordingOpener(outcome)
+            )
+            with self.subTest(outcome=type(outcome).__name__), mock.patch.dict(
+                os.environ, {"DEEPSEEK_API_KEY": API_KEY}, clear=True
+            ):
+                with self.assertRaises(
+                    (ProviderHTTPError, ProviderUnknownError)
+                ) as raised:
                     provider.generate(provider_request())
-                self.assertEqual(status, raised.exception.status)
-                self.assertFalse(raised.exception.retryable)
-                self.assertEqual(0, response.read_calls)
-                self.assertEqual(1, len(opener.calls))
+                self.assertNotIn(API_KEY, str(raised.exception))
+                self.assertNotIn("private body", str(raised.exception))
 
+    def test_response_size_and_invalid_json_are_bounded_unknown_results(self) -> None:
+        large_headers = Message()
+        large_headers["Content-Length"] = str(MAX_RESPONSE_BYTES + 1)
+        responses = (
+            FakeResponse({}, headers=large_headers),
+            FakeResponse(None, raw_body=b"x" * (MAX_RESPONSE_BYTES + 1)),
+            FakeResponse(None, raw_body=b"not-json"),
+            FakeResponse(["not", "an", "object"]),
+        )
+        for response in responses:
+            provider = DeepSeekChatCompletionsProvider(
+                opener=RecordingOpener(response)
+            )
+            with self.subTest(size=len(response.body.getvalue())), mock.patch.dict(
+                os.environ, {"DEEPSEEK_API_KEY": API_KEY}, clear=True
+            ):
+                with self.assertRaises(ProviderUnknownError):
+                    provider.generate(provider_request())
+
+    def test_redirect_handler_never_forwards_authorization(self) -> None:
         handler = _NoRedirectHandler()
         self.assertIsNone(
             handler.redirect_request(
@@ -258,241 +320,6 @@ class OpenAIResponsesProviderTests(unittest.TestCase):
                 "https://attacker.example/steal",
             )
         )
-
-    def test_server_error_is_retryable_but_never_retried_internally(self) -> None:
-        error = urllib.error.HTTPError(
-            OPENAI_RESPONSES_URL, 503, "temporarily unavailable", Message(), None
-        )
-        opener = RecordingOpener(error)
-        provider = OpenAIResponsesProvider(opener=opener)
-        with self.assertRaises(ProviderHTTPError) as raised:
-            provider.generate(provider_request())
-        self.assertTrue(raised.exception.retryable)
-        self.assertEqual(1, len(opener.calls))
-
-    def test_transport_failure_is_unknown_redacted_truncated_and_not_retried(self) -> None:
-        detail = "%s %s" % (API_KEY, "x" * 1000)
-        opener = RecordingOpener(urllib.error.URLError(detail))
-        provider = OpenAIResponsesProvider(opener=opener)
-        with self.assertRaises(ProviderUnknownError) as raised:
-            provider.generate(provider_request())
-        message = str(raised.exception)
-        self.assertNotIn(API_KEY, message)
-        self.assertIn("[redacted]", message)
-        self.assertIn("may already have been processed", message)
-        self.assertLess(len(message), 400)
-        self.assertEqual(1, len(opener.calls))
-
-    def test_response_size_limit_content_length_and_streaming(self) -> None:
-        large_headers = Message()
-        large_headers["Content-Length"] = str(MAX_RESPONSE_BYTES + 1)
-        declared_large = FakeResponse({}, headers=large_headers)
-        streamed_large = FakeResponse(None, raw_body=b"x" * (MAX_RESPONSE_BYTES + 1))
-        for response in (declared_large, streamed_large):
-            with self.subTest(declared=bool(response.headers.get("Content-Length"))):
-                opener = RecordingOpener(response)
-                provider = OpenAIResponsesProvider(opener=opener)
-                with self.assertRaisesRegex(ProviderUnknownError, "configured byte limit"):
-                    provider.generate(provider_request())
-                self.assertEqual(1, len(opener.calls))
-        self.assertEqual(0, declared_large.read_calls)
-        self.assertEqual(1, streamed_large.read_calls)
-
-        lower_limit = FakeResponse(None, raw_body=b"x" * 1_025)
-        provider = OpenAIResponsesProvider(
-            opener=RecordingOpener(lower_limit), max_response_bytes=1_024
-        )
-        with self.assertRaisesRegex(ProviderUnknownError, "configured byte limit"):
-            provider.generate(provider_request())
-
-    def test_invalid_json_missing_output_and_nonobject_are_unknown(self) -> None:
-        responses = (
-            FakeResponse(None, raw_body=b"not json"),
-            FakeResponse({"id": "resp_without_output", "output": []}),
-            FakeResponse(["not", "an", "object"]),
-        )
-        for response in responses:
-            with self.subTest(body=response.body.getvalue()[:30]):
-                provider = OpenAIResponsesProvider(
-                    opener=RecordingOpener(response),
-                )
-                with self.assertRaises(ProviderUnknownError):
-                    provider.generate(provider_request())
-
-    def test_usage_is_defensive_and_ids_fall_back_to_response_and_request(self) -> None:
-        response = FakeResponse(
-            {
-                "id": "resp_fallback",
-                "status": "completed",
-                "output": [
-                    {"type": "output_text", "text": '{"summary":"ok"}'}
-                ],
-                "usage": {
-                    "prompt_tokens": "9",
-                    "completion_tokens": 4,
-                    "cached_input_tokens": -10,
-                    "reasoning_tokens": True,
-                    "cache_write_input_tokens": "3",
-                    "total_tokens": None,
-                },
-            }
-        )
-        provider = OpenAIResponsesProvider(
-            opener=RecordingOpener(response),
-        )
-        result = provider.generate(provider_request())
-        self.assertFalse(result.usage_reported)
-        self.assertEqual("example-reasoning-model", result.model)
-        self.assertEqual("resp_fallback", result.request_id)
-        self.assertEqual("resp_fallback", result.response_id)
-        self.assertEqual(
-            ProviderUsage(
-                input_tokens=9,
-                cached_input_tokens=0,
-                cache_write_input_tokens=3,
-                output_tokens=4,
-                reasoning_tokens=0,
-                total_tokens=13,
-            ),
-            result.usage,
-        )
-
-    def test_noncompleted_error_and_refusal_are_known_when_usage_is_exact(self) -> None:
-        cases = (
-            (
-                "response_status",
-                {
-                    "id": "resp_missing_status",
-                    "output_text": '{"summary":"unsafe"}',
-                },
-            ),
-            (
-                "incomplete",
-                {
-                    "id": "resp_incomplete",
-                    "status": "incomplete",
-                    "incomplete_details": {"reason": "max_output_tokens"},
-                    "output_text": '{"summary":"partial"}',
-                },
-            ),
-            (
-                "response_error",
-                {
-                    "id": "resp_failed",
-                    "status": "completed",
-                    "error": {"code": "internal_error", "message": "secret detail"},
-                    "output_text": '{"summary":"unsafe"}',
-                },
-            ),
-            (
-                "refusal",
-                {
-                    "id": "resp_refusal",
-                    "status": "completed",
-                    "output": [
-                        {
-                            "type": "message",
-                            "content": [
-                                {"type": "refusal", "refusal": "private refusal text"}
-                            ],
-                        }
-                    ],
-                },
-            ),
-        )
-        for code, payload in cases:
-            payload["usage"] = {
-                "input_tokens": 10,
-                "input_tokens_details": {
-                    "cached_tokens": 0,
-                    "cache_write_tokens": 0,
-                },
-                "output_tokens": 2,
-                "total_tokens": 12,
-            }
-            with self.subTest(code=code):
-                provider = OpenAIResponsesProvider(
-                    opener=RecordingOpener(FakeResponse(payload))
-                )
-                with self.assertRaises(ProviderKnownError) as raised:
-                    provider.generate(provider_request())
-                self.assertEqual(code, raised.exception.code)
-                self.assertEqual(12, raised.exception.usage.total_tokens)
-                self.assertNotIn("secret detail", str(raised.exception))
-                self.assertNotIn("private refusal text", str(raised.exception))
-
-        provider = OpenAIResponsesProvider(
-            opener=RecordingOpener(
-                FakeResponse(
-                    {
-                        "id": "resp_incomplete_unknown_usage",
-                        "status": "incomplete",
-                        "incomplete_details": {"reason": "max_output_tokens"},
-                    }
-                )
-            )
-        )
-        with self.assertRaises(ProviderUnknownError):
-            provider.generate(provider_request())
-
-    def test_completed_response_without_usage_is_marked_unreported(self) -> None:
-        for usage in (
-            None,
-            {"total_tokens": 1},
-            {"input_tokens": 1, "output_tokens": 1},
-            {
-                "input_tokens": 100,
-                "output_tokens": 2,
-                "total_tokens": 102,
-                "input_tokens_details": {"cached_tokens": 0},
-            },
-            {
-                "input_tokens": 100,
-                "output_tokens": 2,
-                "total_tokens": 102,
-                "input_tokens_details": {"cache_write_tokens": 0},
-            },
-            {
-                "input_tokens": 100,
-                "output_tokens": 2,
-                "total_tokens": 102,
-                "input_tokens_details": {
-                    "cached_tokens": "1000",
-                    "cache_write_tokens": 0,
-                },
-            },
-            {
-                "input_tokens": 100,
-                "output_tokens": 2,
-                "total_tokens": 102,
-                "input_tokens_details": {
-                    "cached_tokens": 60,
-                    "cache_write_tokens": 60,
-                },
-            },
-            {
-                "input_tokens": 1,
-                "output_tokens": 1,
-                "total_tokens": 3,
-                "input_tokens_details": {
-                    "cached_tokens": 0,
-                    "cache_write_tokens": 0,
-                },
-            },
-        ):
-            payload = {
-                "id": "resp_no_usage",
-                "status": "completed",
-                "output_text": '{"summary":"ok"}',
-            }
-            if usage is not None:
-                payload["usage"] = usage
-            with self.subTest(usage=usage):
-                provider = OpenAIResponsesProvider(
-                    opener=RecordingOpener(FakeResponse(payload))
-                )
-                result = provider.generate(provider_request())
-                self.assertFalse(result.usage_reported)
 
 
 if __name__ == "__main__":

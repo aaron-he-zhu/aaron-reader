@@ -1,4 +1,4 @@
-"""Opt-in OpenAI Responses API transport for Aaron Reader.
+"""Fixed DeepSeek Chat Completions transport for Aaron Reader cloud runs.
 
 This module is deliberately isolated from the deterministic sync path.  It
 uses only the Python standard library, performs one request per ``generate``
@@ -19,7 +19,9 @@ from email.utils import parsedate_to_datetime
 from typing import Any, Dict, Mapping, Optional
 
 
-OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
+DEEPSEEK_CHAT_COMPLETIONS_URL = "https://api.deepseek.com/chat/completions"
+DEEPSEEK_MODEL = "deepseek-v4-flash"
+DEEPSEEK_API_KEY_ENVIRONMENT = "DEEPSEEK_API_KEY"
 MAX_RESPONSE_BYTES = 2 * 1024 * 1024
 _ERROR_TEXT_LIMIT = 240
 _IDEMPOTENCY_KEY = re.compile(r"^[A-Za-z0-9._:-]+$")
@@ -106,7 +108,7 @@ class ProviderRequest:
     json_schema: Mapping[str, object]
     idempotency_key: str
     max_output_tokens: int
-    reasoning_effort: str = "medium"
+    reasoning_effort: str = "none"
     schema_name: str = "aaron_reader_result"
 
 
@@ -126,8 +128,8 @@ class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
         return None
 
 
-class OpenAIResponsesProvider:
-    """A small, injectable client for the fixed OpenAI Responses endpoint."""
+class _ProviderTransportBase:
+    """Shared validation and bounded standard-library HTTP plumbing."""
 
     def __init__(
         self,
@@ -157,19 +159,101 @@ class OpenAIResponsesProvider:
         self.max_response_bytes = int(max_response_bytes)
         self._opener = opener or urllib.request.build_opener(_NoRedirectHandler())
 
-    def generate(self, request: ProviderRequest) -> ProviderResponse:
-        """Send exactly one Responses API request and return validated metadata."""
+    def _open(self, request: urllib.request.Request):
+        open_method = getattr(self._opener, "open", None)
+        if callable(open_method):
+            return open_method(request, timeout=self.timeout_seconds)
+        if callable(self._opener):
+            return self._opener(request, timeout=self.timeout_seconds)
+        raise ProviderConfigError("provider opener is not callable")
 
+    @staticmethod
+    def _validate_request(request: ProviderRequest) -> None:
+        for label, value in (
+            ("model", request.model),
+            ("instructions", request.instructions),
+            ("input_text", request.input_text),
+            ("reasoning_effort", request.reasoning_effort),
+            ("schema_name", request.schema_name),
+        ):
+            if not isinstance(value, str) or not value.strip():
+                raise ProviderConfigError("%s must be a non-empty string" % label)
+            if "\x00" in value:
+                raise ProviderConfigError("%s contains a NUL character" % label)
+        if not isinstance(request.json_schema, Mapping):
+            raise ProviderConfigError("json_schema must be an object")
+        if (
+            isinstance(request.max_output_tokens, bool)
+            or not isinstance(request.max_output_tokens, int)
+            or request.max_output_tokens <= 0
+        ):
+            raise ProviderConfigError("max_output_tokens must be a positive integer")
+        if (
+            not isinstance(request.idempotency_key, str)
+            or not request.idempotency_key
+            or len(request.idempotency_key) > 200
+            or not _IDEMPOTENCY_KEY.fullmatch(request.idempotency_key)
+        ):
+            raise ProviderConfigError(
+                "idempotency_key must contain 1-200 letters, digits, '.', '_', ':', or '-'"
+            )
+        if len(request.schema_name) > 64 or not _TOKEN_FIELD.fullmatch(
+            request.schema_name
+        ):
+            raise ProviderConfigError(
+                "schema_name must contain 1-64 letters, digits, '_' or '-'"
+            )
+        if len(request.reasoning_effort) > 32 or not _TOKEN_FIELD.fullmatch(
+            request.reasoning_effort
+        ):
+            raise ProviderConfigError("reasoning_effort contains invalid characters")
+
+    @staticmethod
+    def _http_error(
+        status: int,
+        headers: object,
+        reason: object,
+        api_key: str,
+    ) -> ProviderHTTPError:
+        retry_after = _parse_retry_after(_header_value(headers, "Retry-After"))
+        retryable = status in (408, 409, 425, 429) or 500 <= status <= 599
+        detail = _safe_error_text(reason, secret=api_key)
+        message = "provider returned HTTP %d" % status
+        if detail:
+            message += ": %s" % detail
+        return ProviderHTTPError(
+            message,
+            status=status,
+            retry_after=retry_after,
+            retryable=retryable,
+        )
+
+
+class DeepSeekChatCompletionsProvider(_ProviderTransportBase):
+    """One-shot client for Aaron Reader's fixed DeepSeek JSON-mode profile.
+
+    The endpoint, model, API-key environment variable, non-thinking mode, and
+    lack of tools are intentionally not configurable.  Keeping this profile
+    closed prevents a workflow or mutable configuration file from silently
+    expanding the billable request or enabling model-side capabilities.
+    """
+
+    def generate(self, request: ProviderRequest) -> ProviderResponse:
         if not isinstance(request, ProviderRequest):
             raise ProviderConfigError("request must be a ProviderRequest")
-        api_key = str(os.environ.get("OPENAI_API_KEY", "")).strip()
+        api_key = str(os.environ.get(DEEPSEEK_API_KEY_ENVIRONMENT, "")).strip()
         if not api_key:
-            raise ProviderConfigError("OPENAI_API_KEY is not set")
+            raise ProviderConfigError("DEEPSEEK_API_KEY is not set")
         if any(ord(character) < 32 or ord(character) == 127 for character in api_key):
-            raise ProviderConfigError("OPENAI_API_KEY contains invalid characters")
+            raise ProviderConfigError("DEEPSEEK_API_KEY contains invalid characters")
         self._validate_request(request)
-        payload = self._request_payload(request)
+        if request.model.strip() != DEEPSEEK_MODEL:
+            raise ProviderConfigError(
+                "DeepSeek automation requires model %s" % DEEPSEEK_MODEL
+            )
+
         try:
+            payload = self._request_payload(request)
             encoded = json.dumps(
                 payload,
                 ensure_ascii=False,
@@ -179,14 +263,13 @@ class OpenAIResponsesProvider:
             raise ProviderConfigError("json_schema is not JSON serializable") from exc
 
         http_request = urllib.request.Request(
-            OPENAI_RESPONSES_URL,
+            DEEPSEEK_CHAT_COMPLETIONS_URL,
             data=encoded,
             headers={
                 "Accept": "application/json",
                 "Authorization": "Bearer %s" % api_key,
                 "Content-Type": "application/json",
-                "Idempotency-Key": request.idempotency_key,
-                "User-Agent": "AaronReader/1.1 (opt-in AI provider)",
+                "User-Agent": "AaronReader/1.1 (DeepSeek cloud automation)",
             },
             method="POST",
         )
@@ -265,298 +348,172 @@ class OpenAIResponsesProvider:
             )
 
         response_id = _safe_identifier(response_payload.get("id"))
-        header_request_id = _safe_identifier(
+        request_id = _safe_identifier(
             _header_value(headers, "x-request-id")
             or _header_value(headers, "request-id")
-        )
+        ) or response_id
+        resolved_model = _safe_identifier(response_payload.get("model"))
         raw_usage = response_payload.get("usage")
-        parsed_usage = _parse_usage(raw_usage)
-        usage_reported = _usage_is_complete(raw_usage, parsed_usage)
-        resolved_model = _safe_identifier(response_payload.get("model")) or request.model
-        request_id = header_request_id or response_id
-        status = response_payload.get("status")
-        error_present = response_payload.get("error") is not None
-        incomplete = response_payload.get("incomplete_details") is not None
+        usage = _parse_deepseek_usage(raw_usage)
+        usage_reported = _deepseek_usage_is_complete(raw_usage, usage)
+
         failure_code = ""
-        if status != "completed":
-            failure_code = "incomplete" if status == "incomplete" else "response_status"
-        elif error_present:
-            failure_code = "response_error"
-        elif incomplete:
-            failure_code = "incomplete"
-        elif _contains_refusal(response_payload):
-            failure_code = "refusal"
+        if not response_id:
+            failure_code = "response_id"
+        elif resolved_model != DEEPSEEK_MODEL:
+            failure_code = "response_model"
+        elif response_payload.get("object") != "chat.completion":
+            failure_code = "response_object"
+        choices = response_payload.get("choices")
+        choice: Mapping[str, Any] = {}
+        if not failure_code:
+            if not isinstance(choices, list) or len(choices) != 1:
+                failure_code = "response_choices"
+            elif not isinstance(choices[0], Mapping) or choices[0].get("index") != 0:
+                failure_code = "response_choice"
+            else:
+                choice = choices[0]
+
+        message: Mapping[str, Any] = {}
+        finish_reason = ""
+        if not failure_code:
+            finish_reason = str(choice.get("finish_reason") or "")
+            if finish_reason != "stop":
+                failure_code = (
+                    "finish_%s" % finish_reason
+                    if finish_reason
+                    else "finish_reason"
+                )
+            raw_message = choice.get("message")
+            if not isinstance(raw_message, Mapping):
+                failure_code = failure_code or "response_message"
+            else:
+                message = raw_message
+        if not failure_code and message.get("role") != "assistant":
+            failure_code = "response_role"
+        if not failure_code and message.get("tool_calls") not in (None, []):
+            failure_code = "tool_calls"
+        reasoning_content = message.get("reasoning_content")
+        if not failure_code and isinstance(reasoning_content, str) and reasoning_content.strip():
+            failure_code = "thinking_output"
+        if not failure_code and usage.reasoning_tokens:
+            failure_code = "thinking_tokens"
+        output_text = message.get("content") if message else None
+        if not failure_code and (not isinstance(output_text, str) or not output_text.strip()):
+            failure_code = "no_output"
+
         if failure_code:
             if usage_reported:
                 raise ProviderKnownError(
-                    "provider returned a known non-completed result",
-                    code=failure_code,
-                    usage=parsed_usage,
+                    "provider returned a known unusable chat completion",
+                    code=failure_code[:100],
+                    usage=usage,
                     model=resolved_model,
                     request_id=request_id,
                     response_id=response_id,
                 )
             raise ProviderUnknownError(
-                "provider response was not completed and usage was unavailable; "
+                "provider response was unusable and usage was unavailable; "
                 "the request may already have been processed"
             )
 
-        output_text = _extract_output_text(response_payload)
-        if not output_text:
-            if usage_reported:
-                raise ProviderKnownError(
-                    "provider completed without usable output",
-                    code="no_output",
-                    usage=parsed_usage,
-                    model=resolved_model,
-                    request_id=request_id,
-                    response_id=response_id,
-                )
-            raise ProviderUnknownError(
-                "provider response contained no output_text and usage was unavailable; "
-                "the request may already have been processed"
-            )
         return ProviderResponse(
-            output_text=output_text,
-            usage=parsed_usage,
+            output_text=str(output_text).strip(),
+            usage=usage,
             model=resolved_model,
             request_id=request_id,
             response_id=response_id,
-            usage_reported=usage_reported and parsed_usage.output_tokens > 0,
+            usage_reported=usage_reported,
         )
-
-    def _open(self, request: urllib.request.Request):
-        open_method = getattr(self._opener, "open", None)
-        if callable(open_method):
-            return open_method(request, timeout=self.timeout_seconds)
-        if callable(self._opener):
-            return self._opener(request, timeout=self.timeout_seconds)
-        raise ProviderConfigError("provider opener is not callable")
-
-    @staticmethod
-    def _validate_request(request: ProviderRequest) -> None:
-        for label, value in (
-            ("model", request.model),
-            ("instructions", request.instructions),
-            ("input_text", request.input_text),
-            ("reasoning_effort", request.reasoning_effort),
-            ("schema_name", request.schema_name),
-        ):
-            if not isinstance(value, str) or not value.strip():
-                raise ProviderConfigError("%s must be a non-empty string" % label)
-            if "\x00" in value:
-                raise ProviderConfigError("%s contains a NUL character" % label)
-        if not isinstance(request.json_schema, Mapping):
-            raise ProviderConfigError("json_schema must be an object")
-        if (
-            isinstance(request.max_output_tokens, bool)
-            or not isinstance(request.max_output_tokens, int)
-            or request.max_output_tokens <= 0
-        ):
-            raise ProviderConfigError("max_output_tokens must be a positive integer")
-        if (
-            not isinstance(request.idempotency_key, str)
-            or not request.idempotency_key
-            or len(request.idempotency_key) > 200
-            or not _IDEMPOTENCY_KEY.fullmatch(request.idempotency_key)
-        ):
-            raise ProviderConfigError(
-                "idempotency_key must contain 1-200 letters, digits, '.', '_', ':', or '-'"
-            )
-        if len(request.schema_name) > 64 or not _TOKEN_FIELD.fullmatch(
-            request.schema_name
-        ):
-            raise ProviderConfigError(
-                "schema_name must contain 1-64 letters, digits, '_' or '-'"
-            )
-        if len(request.reasoning_effort) > 32 or not _TOKEN_FIELD.fullmatch(
-            request.reasoning_effort
-        ):
-            raise ProviderConfigError("reasoning_effort contains invalid characters")
 
     @staticmethod
     def _request_payload(request: ProviderRequest) -> Dict[str, object]:
+        schema_json = json.dumps(
+            dict(request.json_schema),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        instructions = (
+            "%s\n\nReturn JSON only. The JSON object must match this schema "
+            "exactly; do not add Markdown or commentary.\nJSON Schema: %s"
+            % (request.instructions.strip(), schema_json)
+        )
         return {
-            "model": request.model.strip(),
-            "instructions": request.instructions,
-            "input": request.input_text,
-            "store": False,
-            "reasoning": {"effort": request.reasoning_effort.strip()},
-            "max_output_tokens": request.max_output_tokens,
-            "text": {
-                "format": {
-                    "type": "json_schema",
-                    "name": request.schema_name,
-                    "strict": True,
-                    "schema": dict(request.json_schema),
-                }
-            },
+            "model": DEEPSEEK_MODEL,
+            "messages": [
+                {"role": "system", "content": instructions},
+                {"role": "user", "content": request.input_text},
+            ],
+            "thinking": {"type": "disabled"},
+            "response_format": {"type": "json_object"},
+            "max_tokens": request.max_output_tokens,
+            "stream": False,
         }
 
-    @staticmethod
-    def _http_error(
-        status: int,
-        headers: object,
-        reason: object,
-        api_key: str,
-    ) -> ProviderHTTPError:
-        retry_after = _parse_retry_after(_header_value(headers, "Retry-After"))
-        retryable = status in (408, 409, 425, 429) or 500 <= status <= 599
-        detail = _safe_error_text(reason, secret=api_key)
-        message = "provider returned HTTP %d" % status
-        if detail:
-            message += ": %s" % detail
-        return ProviderHTTPError(
-            message,
-            status=status,
-            retry_after=retry_after,
-            retryable=retryable,
-        )
 
-
-def _extract_output_text(payload: Mapping[str, Any]) -> str:
-    pieces = []
-    output = payload.get("output")
-    if isinstance(output, list):
-        for message in output:
-            if not isinstance(message, Mapping):
-                continue
-            nested_message = message.get("message")
-            if isinstance(nested_message, Mapping):
-                message = nested_message
-            if message.get("type") == "output_text":
-                text = message.get("text")
-                if isinstance(text, str):
-                    pieces.append(text)
-            content = message.get("content")
-            if not isinstance(content, list):
-                continue
-            for item in content:
-                if not isinstance(item, Mapping) or item.get("type") != "output_text":
-                    continue
-                text = item.get("text")
-                if isinstance(text, str):
-                    pieces.append(text)
-    if not pieces and isinstance(payload.get("output_text"), str):
-        pieces.append(str(payload["output_text"]))
-    return "".join(pieces).strip()
-
-
-def _contains_refusal(payload: Mapping[str, Any]) -> bool:
-    output = payload.get("output")
-    if not isinstance(output, list):
-        return False
-    for message in output:
-        if not isinstance(message, Mapping):
-            continue
-        content = message.get("content")
-        if not isinstance(content, list):
-            continue
-        for item in content:
-            if not isinstance(item, Mapping) or item.get("type") != "refusal":
-                continue
-            refusal = item.get("refusal")
-            if isinstance(refusal, str) and refusal.strip():
-                return True
-    return False
-
-
-def _parse_usage(value: object) -> ProviderUsage:
+def _parse_deepseek_usage(value: object) -> ProviderUsage:
     usage = value if isinstance(value, Mapping) else {}
-    input_details = usage.get("input_tokens_details")
-    if not isinstance(input_details, Mapping):
-        input_details = {}
-    output_details = usage.get("output_tokens_details")
-    if not isinstance(output_details, Mapping):
-        output_details = {}
-    input_tokens = _token_count(usage.get("input_tokens", usage.get("prompt_tokens")))
-    output_tokens = _token_count(
-        usage.get("output_tokens", usage.get("completion_tokens"))
-    )
-    cached_input_tokens = _token_count(
-        input_details.get("cached_tokens", usage.get("cached_input_tokens"))
-    )
-    cache_write_input_tokens = _token_count(
-        input_details.get(
-            "cache_write_tokens",
-            input_details.get(
-                "cache_creation_tokens",
-                usage.get("cache_write_input_tokens"),
-            ),
-        )
-    )
-    reasoning_tokens = _token_count(
-        output_details.get("reasoning_tokens", usage.get("reasoning_tokens"))
-    )
+    completion_details = usage.get("completion_tokens_details")
+    if not isinstance(completion_details, Mapping):
+        completion_details = {}
+    input_tokens = _token_count(usage.get("prompt_tokens"))
+    output_tokens = _token_count(usage.get("completion_tokens"))
     total_tokens = _token_count(usage.get("total_tokens"))
     if not total_tokens:
         total_tokens = input_tokens + output_tokens
     return ProviderUsage(
         input_tokens=input_tokens,
-        cached_input_tokens=cached_input_tokens,
-        cache_write_input_tokens=cache_write_input_tokens,
+        cached_input_tokens=_token_count(usage.get("prompt_cache_hit_tokens")),
+        cache_write_input_tokens=0,
         output_tokens=output_tokens,
-        reasoning_tokens=reasoning_tokens,
+        reasoning_tokens=_token_count(completion_details.get("reasoning_tokens")),
         total_tokens=total_tokens,
     )
 
 
-def _usage_is_complete(value: object, parsed: ProviderUsage) -> bool:
+def _deepseek_usage_is_complete(value: object, parsed: ProviderUsage) -> bool:
+    """Validate the current DeepSeek non-streaming usage contract exactly."""
+
     if not isinstance(value, Mapping):
         return False
-    raw_counts = []
-    for key in ("input_tokens", "output_tokens", "total_tokens"):
+    counts = {}
+    for key in (
+        "prompt_tokens",
+        "prompt_cache_hit_tokens",
+        "prompt_cache_miss_tokens",
+        "completion_tokens",
+        "total_tokens",
+    ):
         raw = value.get(key)
         if isinstance(raw, bool) or not isinstance(raw, int) or raw < 0:
             return False
-        raw_counts.append(raw)
-    raw_input, raw_output, raw_total = raw_counts
-    input_details = value.get("input_tokens_details")
-    if not isinstance(input_details, Mapping):
+        counts[key] = raw
+    details = value.get("completion_tokens_details")
+    if details is not None and not isinstance(details, Mapping):
         return False
-    for key in ("cached_tokens", "cache_write_tokens"):
-        raw = input_details.get(key)
-        if isinstance(raw, bool) or not isinstance(raw, int) or raw < 0:
+    reasoning = 0
+    if isinstance(details, Mapping) and "reasoning_tokens" in details:
+        raw_reasoning = details.get("reasoning_tokens")
+        if (
+            isinstance(raw_reasoning, bool)
+            or not isinstance(raw_reasoning, int)
+            or raw_reasoning < 0
+        ):
             return False
-    output_details = value.get("output_tokens_details")
-    if output_details is not None and not isinstance(output_details, Mapping):
-        return False
-    detail_values = []
-    detail_values.extend(
-        input_details.get(key)
-        for key in (
-            "cached_tokens",
-            "cache_write_tokens",
-            "cache_creation_tokens",
-        )
-        if key in input_details
-    )
-    detail_values.extend(
-        value.get(key)
-        for key in (
-            "cached_input_tokens",
-            "cache_write_input_tokens",
-        )
-        if key in value
-    )
-    if isinstance(output_details, Mapping) and "reasoning_tokens" in output_details:
-        detail_values.append(output_details.get("reasoning_tokens"))
-    if "reasoning_tokens" in value:
-        detail_values.append(value.get("reasoning_tokens"))
-    if any(
-        isinstance(raw, bool) or not isinstance(raw, int) or raw < 0
-        for raw in detail_values
-    ):
-        return False
+        reasoning = raw_reasoning
     return bool(
-        raw_input > 0
-        and raw_output >= 0
-        and raw_total == raw_input + raw_output
-        and parsed.cached_input_tokens + parsed.cache_write_input_tokens <= raw_input
-        and parsed.reasoning_tokens <= raw_output
-        and parsed.input_tokens == raw_input
-        and parsed.output_tokens == raw_output
-        and parsed.total_tokens == raw_total
+        counts["prompt_tokens"] > 0
+        and counts["prompt_tokens"]
+        == counts["prompt_cache_hit_tokens"] + counts["prompt_cache_miss_tokens"]
+        and counts["total_tokens"]
+        == counts["prompt_tokens"] + counts["completion_tokens"]
+        and reasoning <= counts["completion_tokens"]
+        and parsed.input_tokens == counts["prompt_tokens"]
+        and parsed.cached_input_tokens == counts["prompt_cache_hit_tokens"]
+        and parsed.output_tokens == counts["completion_tokens"]
+        and parsed.reasoning_tokens == reasoning
+        and parsed.total_tokens == counts["total_tokens"]
     )
 
 
@@ -622,9 +579,11 @@ def _safe_error_text(value: object, *, secret: str = "") -> str:
 
 
 __all__ = [
+    "DEEPSEEK_API_KEY_ENVIRONMENT",
+    "DEEPSEEK_CHAT_COMPLETIONS_URL",
+    "DEEPSEEK_MODEL",
+    "DeepSeekChatCompletionsProvider",
     "MAX_RESPONSE_BYTES",
-    "OPENAI_RESPONSES_URL",
-    "OpenAIResponsesProvider",
     "ProviderConfigError",
     "ProviderError",
     "ProviderHTTPError",

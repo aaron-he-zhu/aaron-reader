@@ -3,6 +3,9 @@
 
 Cloudflare Workers Builds deploys the pushed commit. This fixed program never
 uses a model, a model API key, a Cloudflare token, or a hosting-specific archive.
+By default it refreshes the deterministic feeds first. ``--skip-sync`` is the
+GitHub Actions post-enrichment path: it renders and publishes the populated
+ephemeral database without performing another network crawl.
 """
 
 from __future__ import annotations
@@ -10,6 +13,7 @@ from __future__ import annotations
 import argparse
 import copy
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -32,6 +36,19 @@ SNAPSHOT_PATHS = (
     "site/public/reader/feed.xml",
     "site/public/reader/digest.md",
 )
+STATE_PATHS = (
+    "crawler/latest.json",
+    "cloud/ai-cache.json",
+)
+PUBLICATION_PATHS = STATE_PATHS + SNAPSHOT_PATHS
+PUBLICATION_SIZE_LIMITS = {
+    "crawler/latest.json": 25 * 1024 * 1024,
+    "cloud/ai-cache.json": 25 * 1024 * 1024,
+    "site/data/latest.json": 25 * 1024 * 1024,
+    "site/public/reader/latest.json": 25 * 1024 * 1024,
+    "site/public/reader/feed.xml": 25 * 1024 * 1024,
+    "site/public/reader/digest.md": 5 * 1024 * 1024,
+}
 SIZE_LIMITS = {
     "latest.json": 25 * 1024 * 1024,
     "feed.xml": 25 * 1024 * 1024,
@@ -138,6 +155,21 @@ def _public_snapshot(snapshot: Mapping[str, object]) -> dict[str, object]:
                 continue
             article.pop("unread", None)
             article.pop("starred", None)
+            artifacts = article.get("ai_artifacts")
+            if isinstance(artifacts, list):
+                for artifact in artifacts:
+                    if not isinstance(artifact, dict):
+                        continue
+                    artifact.pop("provider", None)
+                    artifact.pop("model", None)
+
+    reports = public.get("ai_reports")
+    if isinstance(reports, list):
+        for report in reports:
+            if not isinstance(report, dict):
+                continue
+            report.pop("provider", None)
+            report.pop("model", None)
 
     return public
 
@@ -173,7 +205,7 @@ def _safe_http_url(value: object) -> str:
 
 
 def _public_digest(snapshot: Mapping[str, object]) -> str:
-    """Render a public digest without copying the local unread selection."""
+    """Render a public digest without copying ephemeral read-state fields."""
 
     raw_articles = snapshot.get("articles")
     articles = (
@@ -224,6 +256,19 @@ def _atomic_copy(source: Path, destination: Path) -> None:
     os.replace(str(temporary), str(destination))
 
 
+def _publication_hashes() -> dict[str, str]:
+    """Hash every commit-eligible file so build code cannot alter it later."""
+
+    result: dict[str, str] = {}
+    for relative in PUBLICATION_PATHS:
+        payload = _validate_regular_file(
+            ROOT / relative,
+            PUBLICATION_SIZE_LIMITS[relative],
+        )
+        result[relative] = hashlib.sha256(payload).hexdigest()
+    return result
+
+
 def _copy_snapshot(snapshot: Mapping[str, object]) -> None:
     public_snapshot = _public_snapshot(snapshot)
     payload = (json.dumps(public_snapshot, ensure_ascii=False, indent=2) + "\n").encode(
@@ -239,7 +284,7 @@ def _copy_snapshot(snapshot: Mapping[str, object]) -> None:
 
 
 def _unexpected_changes(lines: Iterable[str]) -> list[str]:
-    allowed = set(SNAPSHOT_PATHS)
+    allowed = set(PUBLICATION_PATHS)
     unexpected: list[str] = []
     for line in lines:
         if not line:
@@ -299,9 +344,9 @@ def _verify_build() -> None:
 
 
 def _commit_snapshot(snapshot: Mapping[str, object]) -> str:
-    _run(["git", "add", "--", *SNAPSHOT_PATHS])
+    _run(["git", "add", "--", *PUBLICATION_PATHS])
     staged = subprocess.run(
-        ["git", "diff", "--cached", "--quiet", "--", *SNAPSHOT_PATHS],
+        ["git", "diff", "--cached", "--quiet", "--", *PUBLICATION_PATHS],
         cwd=str(ROOT),
         check=False,
     )
@@ -310,7 +355,14 @@ def _commit_snapshot(snapshot: Mapping[str, object]) -> str:
     if staged.returncode != 1:
         raise ReleaseError("could not inspect the staged public snapshot")
     generated_at = str(snapshot.get("generated_at") or "unknown")
-    _run(["git", "commit", "-m", "Update reader snapshot %s" % generated_at])
+    _run([
+        "git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "commit",
+        "-m",
+        "Update reader cloud state %s" % generated_at,
+    ])
     return _run(["git", "rev-parse", "HEAD"], capture=True)
 
 
@@ -345,27 +397,46 @@ def _push_public_main() -> str:
     return repository
 
 
-def prepare(*, push: bool = False) -> Mapping[str, object]:
+def prepare(
+    *,
+    push: bool = False,
+    skip_sync: bool = False,
+) -> Mapping[str, object]:
     _ensure_clean_source()
-    _run([str(ROOT / "aaron-reader"), "sync", "--no-notify"])
+    starting_head = _run(["git", "rev-parse", "HEAD"], capture=True)
+    if skip_sync:
+        # Subscription imports update the database atomically and normally
+        # render immediately. Render once more here so this release boundary is
+        # self-contained while still guaranteeing that it cannot fetch feeds.
+        _run([str(ROOT / "aaron-reader"), "render"])
+    else:
+        _run([str(ROOT / "aaron-reader"), "sync"])
     _run([str(ROOT / "aaron-reader"), "status", "--strict"])
     snapshot = _validate_outputs()
     _copy_snapshot(snapshot)
     _run(["npm", "run", "validate:data"], cwd=SITE)
+    expected_publication_hashes = _publication_hashes()
     _run(["npm", "run", "lint"], cwd=SITE)
     _run(["npm", "run", "typecheck"], cwd=SITE)
     _run(["npm", "run", "build"], cwd=SITE)
     _run(["node", "--test", "tests/rendered-html.test.mjs"], cwd=SITE)
     _verify_build()
+    if _run(["git", "rev-parse", "HEAD"], capture=True) != starting_head:
+        raise ReleaseError("a build or test changed the checked-out Git commit")
+    _ensure_clean_source()
+    if _publication_hashes() != expected_publication_hashes:
+        raise ReleaseError(
+            "a build or test changed a commit-eligible public state file"
+        )
     commit_sha = _commit_snapshot(snapshot)
     head_sha = commit_sha or _run(["git", "rev-parse", "HEAD"], capture=True)
 
     repository = _push_public_main() if push else None
     return {
         "status": "ready" if commit_sha else "unchanged",
-        "project_dir": str(ROOT),
         "commit_sha": head_sha,
         "pushed": push,
+        "sync_skipped": skip_sync,
         "repository": repository,
         "article_count": len(snapshot["articles"]),
         "generated_at": snapshot.get("generated_at"),
@@ -379,11 +450,18 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         action="store_true",
         help="Push the validated main commit to the verified public GitHub origin",
     )
+    parser.add_argument(
+        "--skip-sync",
+        action="store_true",
+        help=(
+            "Render and publish the populated database without fetching feeds"
+        ),
+    )
     args = parser.parse_args(argv)
     LOCK.parent.mkdir(parents=True, exist_ok=True)
     with LOCK.open("a+") as lock_file:
         fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
-        result = prepare(push=args.push)
+        result = prepare(push=args.push, skip_sync=args.skip_sync)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0
 

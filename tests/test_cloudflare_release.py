@@ -1,6 +1,7 @@
 import importlib.util
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -14,6 +15,42 @@ SPEC.loader.exec_module(RELEASE)
 
 
 class CloudflareReleaseTests(unittest.TestCase):
+    def _prepare_with_mocks(self, *, skip_sync):
+        snapshot = {
+            "generated_at": "2026-08-02T12:00:00Z",
+            "articles": [{"id": 1}],
+            "sources": [{"slug": "example"}],
+            "render_llm_tokens_used": 0,
+            "llm_tokens_used": 0,
+        }
+        with (
+            mock.patch.object(RELEASE, "_ensure_clean_source") as clean,
+            mock.patch.object(RELEASE, "_run") as run,
+            mock.patch.object(RELEASE, "_validate_outputs", return_value=snapshot),
+            mock.patch.object(RELEASE, "_copy_snapshot") as copy_snapshot,
+            mock.patch.object(
+                RELEASE,
+                "_publication_hashes",
+                return_value={"site/data/latest.json": "safe"},
+            ) as publication_hashes,
+            mock.patch.object(RELEASE, "_verify_build") as verify_build,
+            mock.patch.object(
+                RELEASE,
+                "_commit_snapshot",
+                return_value="a" * 40,
+            ) as commit_snapshot,
+        ):
+            result = RELEASE.prepare(skip_sync=skip_sync)
+        return {
+            "result": result,
+            "commands": [call.args[0] for call in run.call_args_list],
+            "clean": clean,
+            "copy_snapshot": copy_snapshot,
+            "publication_hashes": publication_hashes,
+            "verify_build": verify_build,
+            "commit_snapshot": commit_snapshot,
+        }
+
     def test_git_porcelain_leading_status_column_is_preserved(self):
         status = RELEASE._run(
             ["/bin/echo", " M site/data/latest.json"], capture=True
@@ -26,6 +63,14 @@ class CloudflareReleaseTests(unittest.TestCase):
         self.assertEqual(
             [" M site/app/reader.tsx"],
             RELEASE._unexpected_changes([" M site/app/reader.tsx"]),
+        )
+
+    def test_cloud_handoffs_are_allowed_publication_changes(self):
+        self.assertEqual(
+            [],
+            RELEASE._unexpected_changes(
+                [" M crawler/latest.json", " M cloud/ai-cache.json"]
+            ),
         )
 
     def test_public_projection_removes_private_reader_state(self):
@@ -44,9 +89,20 @@ class CloudflareReleaseTests(unittest.TestCase):
                     "id": 7,
                     "unread": True,
                     "starred": True,
-                    "ai_artifacts": [{"task": "summary", "output": "public"}],
+                    "ai_artifacts": [{
+                        "task": "summary",
+                        "provider": "private-provenance",
+                        "model": "private-model",
+                        "output": "public",
+                    }],
                 }
             ],
+            "ai_reports": [{
+                "period": "daily",
+                "provider": "private-provenance",
+                "model": "private-model",
+                "output": {"headline": "public"},
+            }],
         }
 
         public = RELEASE._public_snapshot(original)
@@ -56,6 +112,10 @@ class CloudflareReleaseTests(unittest.TestCase):
         self.assertEqual(
             {"id": 7, "ai_artifacts": [{"task": "summary", "output": "public"}]},
             public["articles"][0],
+        )
+        self.assertEqual(
+            {"period": "daily", "output": {"headline": "public"}},
+            public["ai_reports"][0],
         )
         self.assertIn("unread", original["counts"])
 
@@ -99,6 +159,54 @@ class CloudflareReleaseTests(unittest.TestCase):
         )
         with self.assertRaises(RELEASE.ReleaseError):
             RELEASE._github_repo_slug("https://example.com/repo.git")
+
+    def test_skip_sync_renders_existing_state_without_running_sync(self):
+        prepared = self._prepare_with_mocks(skip_sync=True)
+        reader = str(RELEASE.ROOT / "aaron-reader")
+
+        self.assertIn([reader, "render"], prepared["commands"])
+        self.assertIn([reader, "status", "--strict"], prepared["commands"])
+        self.assertNotIn([reader, "sync"], prepared["commands"])
+        self.assertTrue(prepared["result"]["sync_skipped"])
+        self.assertEqual(2, prepared["clean"].call_count)
+        prepared["copy_snapshot"].assert_called_once()
+        prepared["verify_build"].assert_called_once_with()
+        prepared["commit_snapshot"].assert_called_once()
+        self.assertEqual(2, prepared["publication_hashes"].call_count)
+
+    def test_default_release_still_runs_deterministic_sync(self):
+        prepared = self._prepare_with_mocks(skip_sync=False)
+        reader = str(RELEASE.ROOT / "aaron-reader")
+
+        self.assertIn([reader, "sync"], prepared["commands"])
+        self.assertIn([reader, "status", "--strict"], prepared["commands"])
+        self.assertNotIn([reader, "render"], prepared["commands"])
+        self.assertFalse(prepared["result"]["sync_skipped"])
+
+    def test_release_refuses_a_publication_file_changed_by_build_code(self):
+        snapshot = {
+            "generated_at": "2026-08-02T12:00:00Z",
+            "articles": [],
+            "sources": [],
+            "render_llm_tokens_used": 0,
+            "llm_tokens_used": 0,
+        }
+        with (
+            mock.patch.object(RELEASE, "_ensure_clean_source"),
+            mock.patch.object(RELEASE, "_run"),
+            mock.patch.object(RELEASE, "_validate_outputs", return_value=snapshot),
+            mock.patch.object(RELEASE, "_copy_snapshot"),
+            mock.patch.object(RELEASE, "_verify_build"),
+            mock.patch.object(
+                RELEASE,
+                "_publication_hashes",
+                side_effect=[{"crawler/latest.json": "before"}, {"crawler/latest.json": "after"}],
+            ),
+            mock.patch.object(RELEASE, "_commit_snapshot") as commit_snapshot,
+        ):
+            with self.assertRaisesRegex(RELEASE.ReleaseError, "build or test changed"):
+                RELEASE.prepare(skip_sync=True)
+        commit_snapshot.assert_not_called()
 
 
 if __name__ == "__main__":

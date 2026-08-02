@@ -17,13 +17,14 @@ from aaron_reader.cli import build_parser, main  # noqa: E402
 class StatusCliTests(unittest.TestCase):
     def test_default_help_is_canonical_english(self) -> None:
         help_text = build_parser().format_help()
-        self.assertIn("local, deterministic blog reader", help_text)
+        self.assertIn("deterministic blog reader", help_text)
         self.assertIn("Interface language", help_text)
-        self.assertNotIn("本地、确定性", help_text)
+        self.assertNotIn("本地", help_text)
 
     def test_simplified_chinese_help_is_available(self) -> None:
         help_text = build_parser("zh-CN").format_help()
-        self.assertIn("本地、确定性", help_text)
+        self.assertIn("确定性", help_text)
+        self.assertNotIn("本地", help_text)
         self.assertIn("界面语言", help_text)
 
     def test_status_can_switch_languages_before_or_after_subcommand(self) -> None:
@@ -60,6 +61,26 @@ class StatusCliTests(unittest.TestCase):
                 strict = main(["--database", database, "status", "--strict"])
         self.assertEqual(0, normal)
         self.assertEqual(1, strict)
+
+    def test_crawler_handoff_commands_have_stable_automation_syntax(self) -> None:
+        imported = build_parser().parse_args(
+            ["crawl-import", "crawler/latest.json"]
+        )
+        self.assertEqual("crawl-import", imported.command)
+        self.assertEqual("crawler/latest.json", imported.path)
+        self.assertFalse(imported.seed)
+
+        seeded = build_parser().parse_args(
+            ["crawl-import", "crawler/latest.json", "--seed", "--json"]
+        )
+        self.assertTrue(seeded.seed)
+        self.assertTrue(seeded.json)
+
+        exported = build_parser().parse_args(
+            ["crawl-export", "crawler/latest.json", "--json"]
+        )
+        self.assertEqual("crawl-export", exported.command)
+        self.assertEqual("crawler/latest.json", exported.path)
 
 
 if __name__ == "__main__":

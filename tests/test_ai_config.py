@@ -14,7 +14,6 @@ from aaron_reader.models import AIConfig  # noqa: E402
 
 def base_payload():
     return {
-        "notification_enabled": False,
         "sources": [
             {
                 "slug": "example",
@@ -35,7 +34,7 @@ class AIConfigTests(unittest.TestCase):
             path.write_text(json.dumps(payload), encoding="utf-8")
             return load_config(str(path))
 
-    def test_default_ai_configuration_is_opt_in_luna_with_medium_reasoning(self):
+    def test_default_ai_configuration_is_fixed_deepseek_nonthinking(self):
         configurations = (
             AIConfig(),
             self.load(base_payload()).ai,
@@ -44,10 +43,31 @@ class AIConfigTests(unittest.TestCase):
         for configuration in configurations:
             with self.subTest(configuration=configuration):
                 self.assertFalse(configuration.enabled)
-                self.assertEqual("gpt-5.6-luna", configuration.translation_model)
-                self.assertEqual("gpt-5.6-luna", configuration.summary_model)
-                self.assertEqual("gpt-5.6-luna", configuration.digest_model)
-                self.assertEqual("medium", configuration.reasoning_effort)
+                self.assertEqual("deepseek", configuration.provider)
+                self.assertEqual("deepseek-v4-flash", configuration.translation_model)
+                self.assertEqual("deepseek-v4-flash", configuration.summary_model)
+                self.assertEqual("deepseek-v4-flash", configuration.digest_model)
+                self.assertEqual("none", configuration.reasoning_effort)
+                self.assertEqual("DEEPSEEK_API_KEY", configuration.api_key_environment)
+                self.assertEqual(
+                    "America/Los_Angeles", configuration.budget.timezone
+                )
+
+    def test_openai_and_mutable_deepseek_profiles_are_rejected(self):
+        invalid_fields = (
+            ("provider", "openai"),
+            ("summary_model", "deepseek-v4-pro"),
+            ("translation_model", "gpt-5.6-luna"),
+            ("digest_model", "another-model"),
+            ("reasoning_effort", "low"),
+            ("api_key_environment", "OPENAI_API_KEY"),
+        )
+        for field, value in invalid_fields:
+            with self.subTest(field=field):
+                payload = base_payload()
+                payload["ai"][field] = value
+                with self.assertRaises(ValueError):
+                    self.load(payload)
 
     def test_all_ai_opt_in_switches_require_real_json_booleans(self):
         mutations = (
@@ -58,7 +78,6 @@ class AIConfigTests(unittest.TestCase):
             (("features", "translation"), 1),
             (("features", "digest"), 0),
             (("features", "full_text"), "false"),
-            (("features", "web_actions"), "false"),
         )
         for path, value in mutations:
             with self.subTest(path=path, value=value):

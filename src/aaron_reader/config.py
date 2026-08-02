@@ -77,7 +77,6 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
         output_dir=str(payload.get("output_dir", "public")),
         request_timeout_seconds=int(payload.get("request_timeout_seconds", 25)),
         max_response_bytes=int(payload.get("max_response_bytes", 8_000_000)),
-        notification_enabled=bool(payload.get("notification_enabled", True)),
         ai=_load_ai_config(payload.get("ai")),
     )
 
@@ -135,6 +134,13 @@ def _nonempty(value: object, name: str) -> str:
     return result
 
 
+def _fixed_deepseek_model(value: object, name: str) -> str:
+    result = _nonempty(value, name)
+    if result != "deepseek-v4-flash":
+        raise ValueError("%s must be deepseek-v4-flash" % name)
+    return result
+
+
 def _load_ai_config(raw_value: object) -> AIConfig:
     raw = _object(raw_value, "config.ai")
     features = _object(raw.get("features"), "config.ai.features")
@@ -142,14 +148,16 @@ def _load_ai_config(raw_value: object) -> AIConfig:
     budgets = _object(raw.get("budget"), "config.ai.budget")
     batch = _object(raw.get("batch"), "config.ai.batch")
 
-    provider = _nonempty(raw.get("provider", "openai"), "config.ai.provider")
-    if provider != "openai":
-        raise ValueError("config.ai.provider currently supports only 'openai'")
+    provider = _nonempty(raw.get("provider", "deepseek"), "config.ai.provider")
+    if provider != "deepseek":
+        raise ValueError("config.ai.provider must be 'deepseek'")
     reasoning = _nonempty(
-        raw.get("reasoning_effort", "medium"), "config.ai.reasoning_effort"
+        raw.get("reasoning_effort", "none"), "config.ai.reasoning_effort"
     )
-    if reasoning not in {"none", "low", "medium", "high", "xhigh", "max"}:
-        raise ValueError("unsupported config.ai.reasoning_effort: %s" % reasoning)
+    if reasoning != "none":
+        raise ValueError(
+            "config.ai.reasoning_effort must be 'none'; DeepSeek thinking is disabled"
+        )
     input_policy = _nonempty(
         raw.get("input_policy", "metadata_only"), "config.ai.input_policy"
     )
@@ -160,12 +168,12 @@ def _load_ai_config(raw_value: object) -> AIConfig:
     }:
         raise ValueError("unsupported config.ai.input_policy: %s" % input_policy)
     api_key_environment = _nonempty(
-        raw.get("api_key_environment", "OPENAI_API_KEY"),
+        raw.get("api_key_environment", "DEEPSEEK_API_KEY"),
         "config.ai.api_key_environment",
     )
-    if api_key_environment != "OPENAI_API_KEY":
+    if api_key_environment != "DEEPSEEK_API_KEY":
         raise ValueError(
-            "config.ai.api_key_environment must be OPENAI_API_KEY for the OpenAI provider"
+            "config.ai.api_key_environment must be DEEPSEEK_API_KEY"
         )
     store = _boolean(raw.get("store", False), "config.ai.store")
     if store:
@@ -198,7 +206,8 @@ def _load_ai_config(raw_value: object) -> AIConfig:
 
     budget = AIBudgetConfig(
         timezone=_nonempty(
-            budgets.get("timezone", "Asia/Singapore"), "config.ai.budget.timezone"
+            budgets.get("timezone", "America/Los_Angeles"),
+            "config.ai.budget.timezone",
         ),
         daily_max_requests=_integer(
             budgets.get("daily_max_requests", 20),
@@ -252,16 +261,16 @@ def _load_ai_config(raw_value: object) -> AIConfig:
     return AIConfig(
         enabled=_boolean(raw.get("enabled", False), "config.ai.enabled"),
         provider=provider,
-        translation_model=_nonempty(
-            raw.get("translation_model", "gpt-5.6-luna"),
+        translation_model=_fixed_deepseek_model(
+            raw.get("translation_model", "deepseek-v4-flash"),
             "config.ai.translation_model",
         ),
-        summary_model=_nonempty(
-            raw.get("summary_model", "gpt-5.6-luna"),
+        summary_model=_fixed_deepseek_model(
+            raw.get("summary_model", "deepseek-v4-flash"),
             "config.ai.summary_model",
         ),
-        digest_model=_nonempty(
-            raw.get("digest_model", "gpt-5.6-luna"),
+        digest_model=_fixed_deepseek_model(
+            raw.get("digest_model", "deepseek-v4-flash"),
             "config.ai.digest_model",
         ),
         reasoning_effort=reasoning,
@@ -321,9 +330,6 @@ def _load_ai_config(raw_value: object) -> AIConfig:
         ),
         full_text_enabled=_boolean(
             features.get("full_text", False), "config.ai.features.full_text"
-        ),
-        web_actions_enabled=_boolean(
-            features.get("web_actions", False), "config.ai.features.web_actions"
         ),
         budget=budget,
         batch=batch_config,

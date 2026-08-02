@@ -1,4 +1,5 @@
 import json
+import hashlib
 import sqlite3
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
@@ -9,7 +10,7 @@ from .i18n import translate
 from .models import ArticleCandidate, SourceConfig
 
 
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 
 
 class AIBudgetExceeded(ValueError):
@@ -164,15 +165,6 @@ class Database:
                     PRIMARY KEY(source_slug, check_name)
                 );
 
-                CREATE TABLE IF NOT EXISTS notification_outbox (
-                    article_id INTEGER PRIMARY KEY REFERENCES articles(id) ON DELETE CASCADE,
-                    source_slug TEXT NOT NULL REFERENCES sources(slug),
-                    created_at TEXT NOT NULL,
-                    last_attempt_at TEXT,
-                    attempt_count INTEGER NOT NULL DEFAULT 0,
-                    last_error TEXT NOT NULL DEFAULT ''
-                );
-
                 CREATE TABLE IF NOT EXISTS article_content_snapshots (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     article_id INTEGER NOT NULL REFERENCES articles(id) ON DELETE CASCADE,
@@ -307,6 +299,50 @@ class Database:
                 );
                 CREATE INDEX IF NOT EXISTS idx_ai_attempts_started
                     ON ai_attempts(request_started_at, state);
+
+                CREATE TABLE IF NOT EXISTS ai_usage_ledger (
+                    timezone TEXT NOT NULL,
+                    day_start TEXT PRIMARY KEY,
+                    day_end TEXT NOT NULL,
+                    covered_through TEXT NOT NULL,
+                    requests INTEGER NOT NULL CHECK(requests >= 0),
+                    confirmed_requests INTEGER NOT NULL CHECK(confirmed_requests >= 0),
+                    unconfirmed_requests INTEGER NOT NULL CHECK(unconfirmed_requests >= 0),
+                    input_tokens INTEGER NOT NULL CHECK(input_tokens >= 0),
+                    cached_input_tokens INTEGER NOT NULL CHECK(cached_input_tokens >= 0),
+                    cache_miss_input_tokens INTEGER NOT NULL CHECK(cache_miss_input_tokens >= 0),
+                    cache_write_input_tokens INTEGER NOT NULL CHECK(cache_write_input_tokens >= 0),
+                    output_tokens INTEGER NOT NULL CHECK(output_tokens >= 0),
+                    reasoning_tokens INTEGER NOT NULL CHECK(reasoning_tokens >= 0),
+                    total_tokens INTEGER NOT NULL CHECK(total_tokens >= 0),
+                    reserved_total_tokens_for_unconfirmed INTEGER NOT NULL
+                        CHECK(reserved_total_tokens_for_unconfirmed >= 0),
+                    cost_micros INTEGER NOT NULL CHECK(cost_micros >= 0),
+                    reserved_cost_micros_for_unconfirmed INTEGER NOT NULL
+                        CHECK(reserved_cost_micros_for_unconfirmed >= 0),
+                    CHECK(day_start < day_end),
+                    CHECK(day_start <= covered_through),
+                    CHECK(confirmed_requests + unconfirmed_requests = requests)
+                );
+                CREATE INDEX IF NOT EXISTS idx_ai_usage_ledger_end
+                    ON ai_usage_ledger(day_end);
+
+                CREATE TABLE IF NOT EXISTS ai_generation_holds (
+                    hold_key TEXT PRIMARY KEY,
+                    workload_kind TEXT NOT NULL CHECK(workload_kind IN (
+                        'article', 'article_pair', 'digest', 'report'
+                    )),
+                    hold_class TEXT NOT NULL CHECK(hold_class IN (
+                        'ambiguous', 'paid_failure'
+                    )),
+                    descriptor_json TEXT NOT NULL,
+                    first_seen_at TEXT NOT NULL,
+                    last_seen_at TEXT NOT NULL,
+                    CHECK(length(hold_key) = 64),
+                    CHECK(first_seen_at <= last_seen_at)
+                );
+                CREATE INDEX IF NOT EXISTS idx_ai_generation_holds_seen
+                    ON ai_generation_holds(last_seen_at DESC);
                 """
             )
             if stored_version < 4:
@@ -849,14 +885,6 @@ class Database:
                         seeded += 1
                     else:
                         new_ids.append(int(cursor.lastrowid))
-                        connection.execute(
-                            """
-                            INSERT OR IGNORE INTO notification_outbox(
-                                article_id, source_slug, created_at
-                            ) VALUES (?, ?, ?)
-                            """,
-                            (int(cursor.lastrowid), source.slug, now),
-                        )
                     continue
 
                 changed = any(
@@ -934,55 +962,6 @@ class Database:
                 "",
             )
         return inserted, updated, seeded, baseline, new_ids
-
-    def pending_notifications(self, limit: int = 1000) -> Dict[str, object]:
-        with self.connect() as connection:
-            rows = connection.execute(
-                """
-                SELECT article_id, source_slug
-                FROM notification_outbox
-                ORDER BY created_at, article_id
-                LIMIT ?
-                """,
-                (max(1, min(int(limit), 10_000)),),
-            ).fetchall()
-        article_ids = [int(row["article_id"]) for row in rows]
-        source_counts: Dict[str, int] = {}
-        for row in rows:
-            slug = str(row["source_slug"])
-            source_counts[slug] = source_counts.get(slug, 0) + 1
-        return {
-            "article_ids": article_ids,
-            "total": len(article_ids),
-            "source_counts": source_counts,
-        }
-
-    def acknowledge_notifications(self, article_ids: Sequence[int]) -> int:
-        if not article_ids:
-            return 0
-        placeholders = ",".join("?" for _ in article_ids)
-        with self.connect() as connection:
-            cursor = connection.execute(
-                "DELETE FROM notification_outbox WHERE article_id IN (%s)" % placeholders,
-                [int(article_id) for article_id in article_ids],
-            )
-        return cursor.rowcount
-
-    def record_notification_failure(
-        self, article_ids: Sequence[int], error: str
-    ) -> None:
-        if not article_ids:
-            return
-        now = utc_now()
-        with self.connect() as connection:
-            connection.executemany(
-                """
-                UPDATE notification_outbox SET
-                    last_attempt_at=?, attempt_count=attempt_count+1, last_error=?
-                WHERE article_id=?
-                """,
-                [(now, error[:2000], int(article_id)) for article_id in article_ids],
-            )
 
     @staticmethod
     def _insert_run(
@@ -1480,10 +1459,456 @@ class Database:
         return dict(leased) if leased else None
 
     @staticmethod
+    def _validated_ai_usage_ledger_entry(
+        raw: Mapping[str, object],
+    ) -> Dict[str, object]:
+        """Validate one public, aggregate-only carried-usage bucket.
+
+        The ledger deliberately has no provider identifiers, prompts, errors,
+        or response bodies.  Timestamps are canonical UTC strings so SQLite's
+        lexical comparisons are chronological and deterministic.
+        """
+
+        expected = {
+            "timezone",
+            "day_start",
+            "day_end",
+            "covered_through",
+            "requests",
+            "confirmed_requests",
+            "unconfirmed_requests",
+            "input_tokens",
+            "cached_input_tokens",
+            "cache_miss_input_tokens",
+            "cache_write_input_tokens",
+            "output_tokens",
+            "reasoning_tokens",
+            "total_tokens",
+            "reserved_total_tokens_for_unconfirmed",
+            "cost_micros",
+            "reserved_cost_micros_for_unconfirmed",
+        }
+        if set(raw) != expected:
+            raise ValueError("AI usage ledger entry has unexpected fields")
+
+        timezone_name = raw.get("timezone")
+        if (
+            not isinstance(timezone_name, str)
+            or not timezone_name
+            or len(timezone_name) > 64
+            or any(ord(character) < 32 for character in timezone_name)
+        ):
+            raise ValueError("AI usage ledger timezone is invalid")
+
+        def timestamp(name: str) -> str:
+            value = raw.get(name)
+            if not isinstance(value, str) or not value.endswith("Z"):
+                raise ValueError("AI usage ledger %s must be canonical UTC" % name)
+            try:
+                parsed = datetime.fromisoformat(value[:-1] + "+00:00")
+            except ValueError as exc:
+                raise ValueError(
+                    "AI usage ledger %s must be canonical UTC" % name
+                ) from exc
+            canonical = (
+                parsed.astimezone(timezone.utc)
+                .replace(microsecond=0)
+                .isoformat()
+                .replace("+00:00", "Z")
+            )
+            if canonical != value:
+                raise ValueError("AI usage ledger %s must be canonical UTC" % name)
+            return value
+
+        day_start = timestamp("day_start")
+        day_end = timestamp("day_end")
+        covered_through = timestamp("covered_through")
+        if day_start >= day_end or covered_through < day_start:
+            raise ValueError("AI usage ledger window is invalid")
+
+        result: Dict[str, object] = {
+            "timezone": timezone_name,
+            "day_start": day_start,
+            "day_end": day_end,
+            "covered_through": covered_through,
+        }
+        for name in expected - set(result):
+            value = raw.get(name)
+            if isinstance(value, bool) or not isinstance(value, int):
+                raise ValueError("AI usage ledger %s must be an integer" % name)
+            # Keep aggregate SUM operations comfortably inside signed 64-bit
+            # SQLite integers even at the maximum accepted row count.
+            if value < 0 or value > 1_000_000_000_000:
+                raise ValueError("AI usage ledger %s is outside the safe range" % name)
+            result[name] = int(value)
+        if int(result["confirmed_requests"]) + int(
+            result["unconfirmed_requests"]
+        ) != int(result["requests"]):
+            raise ValueError("AI usage ledger request counts are inconsistent")
+        return result
+
+    @classmethod
+    def _replace_ai_usage_ledger(
+        cls,
+        connection: sqlite3.Connection,
+        entries: Sequence[Mapping[str, object]],
+    ) -> None:
+        """Replace imported carry rows inside the caller's transaction."""
+
+        if len(entries) > 20_000:
+            raise ValueError("AI usage ledger has too many entries")
+        validated = [cls._validated_ai_usage_ledger_entry(entry) for entry in entries]
+        validated.sort(key=lambda entry: str(entry["day_start"]))
+        previous_end = ""
+        timezone_name = str(validated[0]["timezone"]) if validated else ""
+        for entry in validated:
+            if str(entry["timezone"]) != timezone_name:
+                raise ValueError("AI usage ledger timezones must match")
+            if previous_end and str(entry["day_start"]) < previous_end:
+                raise ValueError("AI usage ledger windows overlap")
+            previous_end = str(entry["day_end"])
+
+        connection.execute("DELETE FROM ai_usage_ledger")
+        connection.executemany(
+            """
+            INSERT INTO ai_usage_ledger(
+                timezone, day_start, day_end, covered_through, requests,
+                confirmed_requests, unconfirmed_requests, input_tokens,
+                cached_input_tokens, cache_miss_input_tokens,
+                cache_write_input_tokens, output_tokens, reasoning_tokens,
+                total_tokens, reserved_total_tokens_for_unconfirmed,
+                cost_micros, reserved_cost_micros_for_unconfirmed
+            ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            [
+                tuple(
+                    entry[name]
+                    for name in (
+                        "timezone",
+                        "day_start",
+                        "day_end",
+                        "covered_through",
+                        "requests",
+                        "confirmed_requests",
+                        "unconfirmed_requests",
+                        "input_tokens",
+                        "cached_input_tokens",
+                        "cache_miss_input_tokens",
+                        "cache_write_input_tokens",
+                        "output_tokens",
+                        "reasoning_tokens",
+                        "total_tokens",
+                        "reserved_total_tokens_for_unconfirmed",
+                        "cost_micros",
+                        "reserved_cost_micros_for_unconfirmed",
+                    )
+                )
+                for entry in validated
+            ],
+        )
+
+    def replace_ai_usage_ledger(
+        self, entries: Sequence[Mapping[str, object]]
+    ) -> None:
+        """Atomically replace the aggregate carry-forward usage ledger."""
+
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            self._replace_ai_usage_ledger(connection, entries)
+            connection.commit()
+
+    def list_ai_usage_ledger(self) -> List[Dict[str, object]]:
+        with self.connect() as connection:
+            rows = connection.execute(
+                "SELECT * FROM ai_usage_ledger ORDER BY day_start ASC"
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    def list_ai_usage_attempt_rows(self) -> List[Dict[str, object]]:
+        """Return unbounded, identifier-free rows needed for public rollups."""
+
+        with self.connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT request_started_at, reservation_active,
+                    reserved_total_tokens, reserved_cost_micros,
+                    actual_input_tokens, actual_cached_input_tokens,
+                    actual_cache_write_tokens, actual_output_tokens,
+                    actual_reasoning_tokens, actual_total_tokens,
+                    actual_cost_micros
+                FROM ai_attempts
+                ORDER BY request_started_at ASC, id ASC
+                """
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    @staticmethod
+    def _canonical_hold_descriptor(value: object) -> Tuple[Dict[str, object], str]:
+        if not isinstance(value, Mapping):
+            raise ValueError("AI generation hold descriptor must be an object")
+
+        forbidden = {
+            "api_key",
+            "authorization",
+            "provider_request_id",
+            "request_id",
+            "response_id",
+            "error",
+            "error_code",
+            "error_message",
+            "messages",
+            "instructions",
+            "output",
+            "response_body",
+            "request_body",
+        }
+
+        def inspect(item: object) -> None:
+            if isinstance(item, Mapping):
+                for key, nested in item.items():
+                    if not isinstance(key, str) or key in forbidden:
+                        raise ValueError(
+                            "AI generation hold descriptor contains a forbidden field"
+                        )
+                    inspect(nested)
+            elif isinstance(item, list):
+                for nested in item:
+                    inspect(nested)
+            elif item is not None and not isinstance(item, (str, int, float, bool)):
+                raise ValueError("AI generation hold descriptor contains an invalid value")
+
+        descriptor = dict(value)
+        inspect(descriptor)
+        try:
+            encoded = json.dumps(
+                descriptor,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            )
+        except (TypeError, ValueError) as exc:
+            raise ValueError("AI generation hold descriptor is not strict JSON") from exc
+        if not encoded or len(encoded.encode("utf-8")) > 100_000:
+            raise ValueError("AI generation hold descriptor is outside the safe size")
+        decoded = json.loads(encoded)
+        if not isinstance(decoded, dict):
+            raise ValueError("AI generation hold descriptor must be an object")
+        return decoded, encoded
+
+    @staticmethod
+    def _canonical_hold_timestamp(value: object, field: str) -> str:
+        if not isinstance(value, str) or not value.endswith("Z"):
+            raise ValueError("AI generation hold %s must be canonical UTC" % field)
+        try:
+            parsed = datetime.fromisoformat(value[:-1] + "+00:00")
+        except ValueError as exc:
+            raise ValueError(
+                "AI generation hold %s must be canonical UTC" % field
+            ) from exc
+        canonical = (
+            parsed.astimezone(timezone.utc)
+            .replace(microsecond=0)
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
+        if canonical != value:
+            raise ValueError("AI generation hold %s must be canonical UTC" % field)
+        return value
+
+    @classmethod
+    def _validated_ai_generation_hold(
+        cls, raw: Mapping[str, object]
+    ) -> Dict[str, object]:
+        expected = {
+            "hold_key",
+            "workload_kind",
+            "hold_class",
+            "descriptor",
+            "first_seen_at",
+            "last_seen_at",
+        }
+        if set(raw) != expected:
+            raise ValueError("AI generation hold has unexpected fields")
+        descriptor, descriptor_json = cls._canonical_hold_descriptor(
+            raw.get("descriptor")
+        )
+        workload_kind = raw.get("workload_kind")
+        if workload_kind not in {"article", "article_pair", "digest", "report"}:
+            raise ValueError("AI generation hold workload_kind is invalid")
+        if descriptor.get("workload_kind") != workload_kind:
+            raise ValueError("AI generation hold descriptor workload differs")
+        hold_class = raw.get("hold_class")
+        if hold_class not in {"ambiguous", "paid_failure"}:
+            raise ValueError("AI generation hold class is invalid")
+        hold_key = raw.get("hold_key")
+        expected_key = hashlib.sha256(descriptor_json.encode("utf-8")).hexdigest()
+        if hold_key != expected_key:
+            raise ValueError("AI generation hold key does not match descriptor")
+        first_seen = cls._canonical_hold_timestamp(
+            raw.get("first_seen_at"), "first_seen_at"
+        )
+        last_seen = cls._canonical_hold_timestamp(
+            raw.get("last_seen_at"), "last_seen_at"
+        )
+        if first_seen > last_seen:
+            raise ValueError("AI generation hold timestamps are inconsistent")
+        return {
+            "hold_key": expected_key,
+            "workload_kind": workload_kind,
+            "hold_class": hold_class,
+            "descriptor": descriptor,
+            "descriptor_json": descriptor_json,
+            "first_seen_at": first_seen,
+            "last_seen_at": last_seen,
+        }
+
+    @classmethod
+    def _replace_ai_generation_holds(
+        cls,
+        connection: sqlite3.Connection,
+        entries: Sequence[Mapping[str, object]],
+    ) -> None:
+        if len(entries) > 20_000:
+            raise ValueError("AI generation hold list has too many entries")
+        validated = [cls._validated_ai_generation_hold(entry) for entry in entries]
+        if len({str(entry["hold_key"]) for entry in validated}) != len(validated):
+            raise ValueError("AI generation hold keys must be unique")
+        connection.execute("DELETE FROM ai_generation_holds")
+        connection.executemany(
+            """
+            INSERT INTO ai_generation_holds(
+                hold_key, workload_kind, hold_class, descriptor_json,
+                first_seen_at, last_seen_at
+            ) VALUES(?, ?, ?, ?, ?, ?)
+            """,
+            [
+                (
+                    entry["hold_key"],
+                    entry["workload_kind"],
+                    entry["hold_class"],
+                    entry["descriptor_json"],
+                    entry["first_seen_at"],
+                    entry["last_seen_at"],
+                )
+                for entry in validated
+            ],
+        )
+
+    @classmethod
+    def _upsert_ai_generation_hold(
+        cls,
+        connection: sqlite3.Connection,
+        hold: Mapping[str, object],
+        *,
+        now: str,
+    ) -> None:
+        template_expected = {"hold_key", "workload_kind", "hold_class", "descriptor"}
+        if set(hold) != template_expected:
+            raise ValueError("AI generation hold template has unexpected fields")
+        validated = cls._validated_ai_generation_hold(
+            {
+                **dict(hold),
+                "first_seen_at": now,
+                "last_seen_at": now,
+            }
+        )
+        existing = connection.execute(
+            "SELECT descriptor_json, first_seen_at FROM ai_generation_holds WHERE hold_key=?",
+            (validated["hold_key"],),
+        ).fetchone()
+        if existing is not None and str(existing["descriptor_json"]) != str(
+            validated["descriptor_json"]
+        ):
+            raise sqlite3.IntegrityError("AI generation hold hash collision")
+        first_seen = (
+            str(existing["first_seen_at"])
+            if existing is not None
+            else str(validated["first_seen_at"])
+        )
+        hold_class = str(validated["hold_class"])
+        if existing is not None:
+            old_class = connection.execute(
+                "SELECT hold_class FROM ai_generation_holds WHERE hold_key=?",
+                (validated["hold_key"],),
+            ).fetchone()
+            if old_class is not None and str(old_class["hold_class"]) == "ambiguous":
+                hold_class = "ambiguous"
+        connection.execute(
+            """
+            INSERT INTO ai_generation_holds(
+                hold_key, workload_kind, hold_class, descriptor_json,
+                first_seen_at, last_seen_at
+            ) VALUES(?, ?, ?, ?, ?, ?)
+            ON CONFLICT(hold_key) DO UPDATE SET
+                hold_class=excluded.hold_class,
+                last_seen_at=excluded.last_seen_at
+            """,
+            (
+                validated["hold_key"],
+                validated["workload_kind"],
+                hold_class,
+                validated["descriptor_json"],
+                first_seen,
+                now,
+            ),
+        )
+
+    def replace_ai_generation_holds(
+        self, entries: Sequence[Mapping[str, object]]
+    ) -> None:
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            self._replace_ai_generation_holds(connection, entries)
+            connection.commit()
+
+    def list_ai_generation_holds(self) -> List[Dict[str, object]]:
+        with self.connect() as connection:
+            rows = connection.execute(
+                "SELECT * FROM ai_generation_holds ORDER BY hold_key ASC"
+            ).fetchall()
+        return [
+            {
+                "hold_key": str(row["hold_key"]),
+                "workload_kind": str(row["workload_kind"]),
+                "hold_class": str(row["hold_class"]),
+                "descriptor": json.loads(str(row["descriptor_json"])),
+                "first_seen_at": str(row["first_seen_at"]),
+                "last_seen_at": str(row["last_seen_at"]),
+            }
+            for row in rows
+        ]
+
+    def ai_generation_hold(self, hold_key: str) -> Optional[Dict[str, object]]:
+        with self.connect() as connection:
+            row = connection.execute(
+                "SELECT * FROM ai_generation_holds WHERE hold_key=?",
+                (str(hold_key),),
+            ).fetchone()
+        if row is None:
+            return None
+        return {
+            "hold_key": str(row["hold_key"]),
+            "workload_kind": str(row["workload_kind"]),
+            "hold_class": str(row["hold_class"]),
+            "descriptor": json.loads(str(row["descriptor_json"])),
+            "first_seen_at": str(row["first_seen_at"]),
+            "last_seen_at": str(row["last_seen_at"]),
+        }
+
+    def clear_ai_generation_hold(self, hold_key: str) -> bool:
+        with self.connect() as connection:
+            cursor = connection.execute(
+                "DELETE FROM ai_generation_holds WHERE hold_key=?",
+                (str(hold_key),),
+            )
+        return cursor.rowcount == 1
+
+    @staticmethod
     def _ai_usage_totals(
         connection: sqlite3.Connection, started_at: str
     ) -> Dict[str, int]:
-        row = connection.execute(
+        local = connection.execute(
             """
             SELECT COUNT(*) AS requests,
                 COALESCE(SUM(
@@ -1500,15 +1925,38 @@ class Database:
                         ELSE 0
                     END
                 ), 0) AS cost_micros
-            FROM ai_attempts
+            FROM ai_attempts AS attempt
             WHERE request_started_at >= ?
+              AND NOT EXISTS (
+                  SELECT 1 FROM ai_usage_ledger AS carried
+                  WHERE attempt.request_started_at >= carried.day_start
+                    AND attempt.request_started_at < carried.day_end
+                    AND attempt.request_started_at <= carried.covered_through
+              )
+            """,
+            (started_at,),
+        ).fetchone()
+        carried = connection.execute(
+            """
+            SELECT COALESCE(SUM(requests), 0) AS requests,
+                COALESCE(SUM(
+                    total_tokens + reserved_total_tokens_for_unconfirmed
+                ), 0) AS total_tokens,
+                COALESCE(SUM(
+                    cost_micros + reserved_cost_micros_for_unconfirmed
+                ), 0) AS cost_micros
+            FROM ai_usage_ledger
+            WHERE day_end > ?
             """,
             (started_at,),
         ).fetchone()
         return {
-            "requests": int(row["requests"] or 0),
-            "total_tokens": int(row["total_tokens"] or 0),
-            "cost_micros": int(row["cost_micros"] or 0),
+            "requests": int(local["requests"] or 0)
+            + int(carried["requests"] or 0),
+            "total_tokens": int(local["total_tokens"] or 0)
+            + int(carried["total_tokens"] or 0),
+            "cost_micros": int(local["cost_micros"] or 0)
+            + int(carried["cost_micros"] or 0),
         }
 
     def reserve_ai_attempt(
@@ -1710,9 +2158,11 @@ class Database:
         *,
         attempt_id: int,
         artifact: Dict[str, object],
+        additional_artifacts: Sequence[Dict[str, object]] = (),
         usage: Dict[str, int],
         actual_cost_micros: Optional[int] = None,
         usage_confirmed: bool = True,
+        clear_generation_hold_key: str = "",
     ) -> Dict[str, object]:
         now = utc_now()
         columns = (
@@ -1724,7 +2174,7 @@ class Database:
             "provider_response_id", "output_json", "output_text", "output_hash",
             "status", "input_truncated", "created_at",
         )
-        values = [artifact.get(column) for column in columns[:-1]] + [now]
+        artifacts = [artifact] + list(additional_artifacts)
         with self.connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
             attempt = connection.execute(
@@ -1736,18 +2186,31 @@ class Database:
             if attempt["state"] not in ("reserved", "sent"):
                 connection.rollback()
                 raise AIJobConflict("AI attempt is already in state %s" % attempt["state"])
-            connection.execute(
-                "INSERT OR IGNORE INTO ai_artifacts(%s) VALUES (%s)"
-                % (", ".join(columns), ", ".join("?" for _ in columns)),
-                values,
-            )
-            stored = connection.execute(
-                "SELECT * FROM ai_artifacts WHERE artifact_key=?",
-                (artifact["artifact_key"],),
-            ).fetchone()
-            if stored is None:
-                connection.rollback()
-                raise sqlite3.IntegrityError("AI artifact was not stored")
+            stored_rows = []
+            seen_keys = set()
+            for candidate in artifacts:
+                artifact_key = str(candidate.get("artifact_key") or "")
+                if not artifact_key or artifact_key in seen_keys:
+                    connection.rollback()
+                    raise AIJobConflict(
+                        "AI attempt artifacts require distinct cache keys"
+                    )
+                seen_keys.add(artifact_key)
+                values = [candidate.get(column) for column in columns[:-1]] + [now]
+                connection.execute(
+                    "INSERT OR IGNORE INTO ai_artifacts(%s) VALUES (%s)"
+                    % (", ".join(columns), ", ".join("?" for _ in columns)),
+                    values,
+                )
+                stored_candidate = connection.execute(
+                    "SELECT * FROM ai_artifacts WHERE artifact_key=?",
+                    (artifact_key,),
+                ).fetchone()
+                if stored_candidate is None:
+                    connection.rollback()
+                    raise sqlite3.IntegrityError("AI artifact was not stored")
+                stored_rows.append(stored_candidate)
+            stored = stored_rows[0]
             recorded_usage = usage if usage_confirmed else {}
             actual_total = recorded_usage.get("total_tokens")
             connection.execute(
@@ -1787,6 +2250,11 @@ class Database:
                 """,
                 (int(stored["id"]), now, int(attempt["job_id"])),
             )
+            if clear_generation_hold_key:
+                connection.execute(
+                    "DELETE FROM ai_generation_holds WHERE hold_key=?",
+                    (str(clear_generation_hold_key),),
+                )
             connection.commit()
         return dict(stored)
 
@@ -1878,6 +2346,19 @@ class Database:
             raise AIJobConflict("external AI reports require a digest artifact")
         if report.get("period") not in {"daily", "weekly"}:
             raise AIJobConflict("external AI report period is invalid")
+        expected_versions = {
+            int(article_id): str(content_hash or "")
+            for article_id, content_hash in article_versions.items()
+        }
+        expected_ids = list(expected_versions)
+        if not 1 <= len(expected_ids) <= 50:
+            raise AIJobConflict("AI report selected article count is invalid")
+        try:
+            supplied_ids = json.loads(str(report.get("article_ids_json") or ""))
+        except (TypeError, ValueError, json.JSONDecodeError) as exc:
+            raise AIJobConflict("AI report article IDs are invalid") from exc
+        if supplied_ids != expected_ids:
+            raise AIJobConflict("AI report article IDs differ")
 
         now = utc_now()
         artifact_columns = (
@@ -1905,17 +2386,17 @@ class Database:
                   AND julianday(COALESCE(published_at, discovered_at))
                           <= julianday(?)
                 ORDER BY COALESCE(published_at, discovered_at) DESC, id DESC
-                LIMIT 1000
+                LIMIT ?
                 """,
-                (report.get("period_start"), report.get("period_end")),
+                (
+                    report.get("period_start"),
+                    report.get("period_end"),
+                    len(expected_versions),
+                ),
             ).fetchall()
             current_versions = {
                 int(row["id"]): str(row["content_hash"] or "")
                 for row in current_rows
-            }
-            expected_versions = {
-                int(article_id): str(content_hash or "")
-                for article_id, content_hash in article_versions.items()
             }
             if (
                 list(current_versions) != list(expected_versions)
@@ -1995,6 +2476,173 @@ class Database:
         result["cache_hit"] = report_cursor.rowcount == 0
         return result
 
+    def store_existing_ai_reports(
+        self,
+        records: Sequence[
+            Tuple[Mapping[str, object], Mapping[str, object]]
+        ],
+        *,
+        article_versions: Mapping[int, str],
+    ) -> List[Dict[str, object]]:
+        """Atomically attach one or more report rows to committed artifacts.
+
+        Combined bilingual generation already commits both digest artifacts in
+        the audited attempt transaction.  This second, idempotent transaction
+        binds both language-specific report records together.  If the process
+        stops between the two transactions, the next run sees both artifacts,
+        makes zero provider calls, and safely completes this attachment.
+        """
+
+        if not records or len(records) > 2:
+            raise AIJobConflict("AI report attachment requires one or two records")
+        normalized = [(dict(artifact), dict(report)) for artifact, report in records]
+        first_report = normalized[0][1]
+        window = (
+            first_report.get("period"),
+            first_report.get("timezone"),
+            first_report.get("local_date"),
+            first_report.get("period_start"),
+            first_report.get("period_end"),
+        )
+        languages = set()
+        for artifact, report in normalized:
+            if artifact.get("article_id") is not None:
+                raise AIJobConflict("AI report artifact cannot belong to one article")
+            if artifact.get("task_type") != "digest" or artifact.get("input_scope") != "digest":
+                raise AIJobConflict("AI report attachment requires digest artifacts")
+            if report.get("period") not in {"daily", "weekly"}:
+                raise AIJobConflict("AI report period is invalid")
+            if (
+                report.get("period"),
+                report.get("timezone"),
+                report.get("local_date"),
+                report.get("period_start"),
+                report.get("period_end"),
+            ) != window:
+                raise AIJobConflict("AI report attachment windows differ")
+            language = str(report.get("target_language") or "")
+            if not language or language != str(artifact.get("target_language") or ""):
+                raise AIJobConflict("AI report artifact language differs")
+            if language in languages:
+                raise AIJobConflict("AI report attachment languages must be distinct")
+            languages.add(language)
+            if str(report.get("article_content_hash") or "") != str(
+                artifact.get("article_content_hash") or ""
+            ):
+                raise AIJobConflict("AI report artifact content hash differs")
+
+        expected_ids = list(article_versions)
+        if not 1 <= len(expected_ids) <= 50:
+            raise AIJobConflict("AI report selected article count is invalid")
+        for _, report in normalized:
+            try:
+                supplied_ids = json.loads(str(report.get("article_ids_json") or ""))
+            except (TypeError, ValueError, json.JSONDecodeError) as exc:
+                raise AIJobConflict("AI report article IDs are invalid") from exc
+            if supplied_ids != expected_ids:
+                raise AIJobConflict("AI report article IDs differ")
+
+        report_columns = (
+            "report_key", "period", "timezone", "local_date", "period_start",
+            "period_end", "target_language", "article_ids_json",
+            "article_content_hash", "artifact_id", "created_at",
+        )
+        now = utc_now()
+        results: List[Dict[str, object]] = []
+        expected_versions = {
+            int(article_id): str(content_hash or "")
+            for article_id, content_hash in article_versions.items()
+        }
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            current_rows = connection.execute(
+                """
+                SELECT id, content_hash
+                FROM articles
+                WHERE julianday(COALESCE(published_at, discovered_at))
+                          >= julianday(?)
+                  AND julianday(COALESCE(published_at, discovered_at))
+                          <= julianday(?)
+                ORDER BY COALESCE(published_at, discovered_at) DESC, id DESC
+                LIMIT ?
+                """,
+                (
+                    first_report.get("period_start"),
+                    first_report.get("period_end"),
+                    len(expected_versions),
+                ),
+            ).fetchall()
+            current_versions = {
+                int(row["id"]): str(row["content_hash"] or "")
+                for row in current_rows
+            }
+            if (
+                list(current_versions) != list(expected_versions)
+                or current_versions != expected_versions
+            ):
+                connection.rollback()
+                raise AIJobConflict(
+                    "the AI report article set changed before attachment"
+                )
+
+            for artifact, report in normalized:
+                artifact_id = artifact.get("id")
+                if isinstance(artifact_id, bool) or not isinstance(artifact_id, int):
+                    connection.rollback()
+                    raise AIJobConflict("AI report artifact ID is invalid")
+                stored_artifact = connection.execute(
+                    "SELECT * FROM ai_artifacts WHERE id=?",
+                    (int(artifact_id),),
+                ).fetchone()
+                if stored_artifact is None:
+                    connection.rollback()
+                    raise AIJobConflict("AI report artifact disappeared")
+                for field in (
+                    "artifact_key",
+                    "task_type",
+                    "input_scope",
+                    "target_language",
+                    "input_hash",
+                    "article_content_hash",
+                    "output_hash",
+                    "status",
+                ):
+                    if str(stored_artifact[field]) != str(artifact.get(field)):
+                        connection.rollback()
+                        raise AIJobConflict("AI report artifact changed before attachment")
+
+                values = [report.get(column) for column in report_columns[:-2]] + [
+                    int(artifact_id),
+                    now,
+                ]
+                cursor = connection.execute(
+                    "INSERT OR IGNORE INTO ai_reports(%s) VALUES (%s)"
+                    % (
+                        ", ".join(report_columns),
+                        ", ".join("?" for _ in report_columns),
+                    ),
+                    values,
+                )
+                stored_report = connection.execute(
+                    "SELECT * FROM ai_reports WHERE report_key=?",
+                    (report["report_key"],),
+                ).fetchone()
+                if stored_report is None:
+                    connection.rollback()
+                    raise sqlite3.IntegrityError("AI report record was not stored")
+                for column in report_columns[:-2]:
+                    if str(stored_report[column]) != str(report.get(column)):
+                        connection.rollback()
+                        raise AIJobConflict("AI report cache key collision")
+                if int(stored_report["artifact_id"]) != int(artifact_id):
+                    connection.rollback()
+                    raise AIJobConflict("AI report artifact cache key collision")
+                result = dict(stored_report)
+                result["cache_hit"] = cursor.rowcount == 0
+                results.append(result)
+            connection.commit()
+        return results
+
     def fail_ai_attempt(
         self,
         *,
@@ -2011,6 +2659,7 @@ class Database:
         provider_request_id: str = "",
         resolved_model: str = "",
         finish_reason: str = "",
+        generation_hold: Optional[Mapping[str, object]] = None,
     ) -> None:
         if job_state not in {"retryable", "unknown", "permanent_failed", "cancelled"}:
             raise ValueError("invalid failed AI job state: %s" % job_state)
@@ -2074,6 +2723,12 @@ class Database:
                     int(attempt["job_id"]),
                 ),
             )
+            if generation_hold is not None:
+                self._upsert_ai_generation_hold(
+                    connection,
+                    generation_hold,
+                    now=now,
+                )
             connection.commit()
 
     def cancel_ai_job(self, job_id: int, code: str, message: str) -> None:

@@ -39,10 +39,9 @@ class I18nTests(unittest.TestCase):
     def test_translation_fallback_and_formatting(self) -> None:
         self.assertEqual("Healthy", translate("health.healthy", "en").title())
         self.assertEqual("正常", translate("health.healthy", "zh-CN"))
-        self.assertIn("3", translate("notifier.new_articles", "en", total=3))
         self.assertEqual("missing.key", translate("missing.key", "zh-CN"))
         with self.assertRaisesRegex(ValueError, "invalid translation parameters"):
-            translate("notifier.new_articles", "en")
+            translate("cli.sync.summary", "en")
 
     def test_real_environment_is_not_required(self) -> None:
         with mock.patch.dict(os.environ, {"AARON_READER_LANG": "zh-CN"}, clear=True):

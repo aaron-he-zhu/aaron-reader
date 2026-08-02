@@ -166,7 +166,7 @@ class SyncTests(unittest.TestCase):
             adapter="rss",
             history_limit=10,
         )
-        self.config = AppConfig(sources=[self.source], notification_enabled=False)
+        self.config = AppConfig(sources=[self.source])
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
@@ -211,7 +211,7 @@ class SyncTests(unittest.TestCase):
             adapter="rss",
             enabled=False,
         )
-        config = AppConfig(sources=[disabled], notification_enabled=False)
+        config = AppConfig(sources=[disabled])
         with self.assertRaisesRegex(ValueError, "订阅源已禁用"):
             sync_all(
                 config,
@@ -241,40 +241,6 @@ class SyncTests(unittest.TestCase):
             with self.assertRaisesRegex(SyncAlreadyRunning, "另一个同步任务"):
                 with sync_lock(lock_path, language="zh-CN"):
                     pass
-
-    def test_notification_outbox_retries_after_delivery_failure(self) -> None:
-        config = AppConfig(sources=[self.source], notification_enabled=True)
-        first = rss([("one", "First", "Thu, 30 Jul 2026 09:00:00 GMT")])
-        second = rss(
-            [
-                ("two", "Second", "Fri, 31 Jul 2026 09:00:00 GMT"),
-                ("one", "First", "Thu, 30 Jul 2026 09:00:00 GMT"),
-            ]
-        )
-        client = FakeClient([first, second, None])
-        with mock.patch("aaron_reader.sync.notify_new_articles", return_value=False) as notify:
-            sync_all(config, self.database, client=client, notify=True)
-            sync_all(
-                config,
-                self.database,
-                client=client,
-                notify=True,
-                language="zh-CN",
-            )
-        self.assertEqual(1, notify.call_count)
-        notify.assert_called_once_with(1, {"example": 1}, language="zh-CN")
-        self.assertEqual(1, self.database.pending_notifications()["total"])
-        with self.database.connect() as connection:
-            failure = connection.execute(
-                "SELECT last_error FROM notification_outbox"
-            ).fetchone()[0]
-        self.assertIn("通知未送达", failure)
-
-        with mock.patch("aaron_reader.sync.notify_new_articles", return_value=True) as retry:
-            result = sync_all(config, self.database, client=client, notify=True)
-        self.assertEqual(0, result.unread_new)
-        retry.assert_called_once_with(1, {"example": 1}, language="en")
-        self.assertEqual(0, self.database.pending_notifications()["total"])
 
     def test_same_body_hash_is_noop(self) -> None:
         body = rss([("one", "First", "Thu, 30 Jul 2026 09:00:00 GMT")])
@@ -317,7 +283,7 @@ class SyncTests(unittest.TestCase):
             adapter="openai_developers",
             metadata_url="https://developers.openai.com/blog",
         )
-        config = AppConfig(sources=[source], notification_enabled=False)
+        config = AppConfig(sources=[source])
         index = (
             b"# Blog\n## Posts\n"
             b"- [One post](https://developers.openai.com/blog/one.md): Official summary.\n"
@@ -358,7 +324,7 @@ class SyncTests(unittest.TestCase):
             adapter="openai_developers",
             metadata_url="https://developers.openai.com/blog",
         )
-        config = AppConfig(sources=[source], notification_enabled=False)
+        config = AppConfig(sources=[source])
         index = (
             b"# Blog\n## Posts\n"
             b"- [One post](https://developers.openai.com/blog/one.md): Official summary.\n"
@@ -407,7 +373,7 @@ class SyncTests(unittest.TestCase):
 
     def test_failed_sitemap_hydration_survives_unchanged_sitemap(self) -> None:
         source = self._anthropic_source()
-        config = AppConfig(sources=[source], notification_enabled=False)
+        config = AppConfig(sources=[source])
         baseline = sitemap(
             [
                 ("https://www.anthropic.com/news/claude-opus-5", "2026-07-24"),
@@ -457,7 +423,7 @@ class SyncTests(unittest.TestCase):
 
     def test_more_than_25_sitemap_urls_drain_across_runs(self) -> None:
         source = self._anthropic_source()
-        config = AppConfig(sources=[source], notification_enabled=False)
+        config = AppConfig(sources=[source])
         baseline = sitemap(
             [("https://www.anthropic.com/news/investigating-incidents", "2026-07-30")]
         )
@@ -483,7 +449,7 @@ class SyncTests(unittest.TestCase):
 
     def test_lastmod_refresh_updates_without_new_notification(self) -> None:
         source = self._anthropic_source()
-        config = AppConfig(sources=[source], notification_enabled=False)
+        config = AppConfig(sources=[source])
         url = "https://www.anthropic.com/news/investigating-incidents"
         client = SitemapClient(
             source,
@@ -517,7 +483,7 @@ class SyncTests(unittest.TestCase):
 
     def test_429_stops_remaining_article_requests_and_persists_backoff(self) -> None:
         source = self._anthropic_source()
-        config = AppConfig(sources=[source], notification_enabled=False)
+        config = AppConfig(sources=[source])
         baseline_url = "https://www.anthropic.com/news/investigating-incidents"
         first_new = "https://www.anthropic.com/news/a-rate-limited"
         second_new = "https://www.anthropic.com/news/b-waiting"
