@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-02T06:40:21Z",
+  "generated_at": "2026-08-02T07:15:54Z",
   "language": "en",
   "supported_languages": [
     "en",
@@ -7,7 +7,7 @@
   ],
   "llm_tokens_used": 0,
   "render_llm_tokens_used": 0,
-  "cached_ai_artifact_count": 2,
+  "cached_ai_artifact_count": 220,
   "cached_ai_report_count": 2,
   "counts": {
     "total": 110
@@ -24,28 +24,28 @@
       "slug": "anthropic-news",
       "name": "Anthropic News",
       "health": "healthy",
-      "last_success_at": "2026-08-02T06:40:21Z",
+      "last_success_at": "2026-08-02T07:15:54Z",
       "article_count": 13
     },
     {
       "slug": "claude-blog",
       "name": "Claude Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-02T06:40:18Z",
+      "last_success_at": "2026-08-02T07:15:52Z",
       "article_count": 25
     },
     {
       "slug": "openai-developers",
       "name": "OpenAI Developer Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-02T06:40:17Z",
+      "last_success_at": "2026-08-02T07:15:51Z",
       "article_count": 21
     },
     {
       "slug": "openai-news",
       "name": "OpenAI News",
       "health": "healthy",
-      "last_success_at": "2026-08-02T06:40:15Z",
+      "last_success_at": "2026-08-02T07:15:49Z",
       "article_count": 51
     }
   ],
@@ -107,7 +107,44 @@
       "category": "Company",
       "published_at": "2026-07-31T15:00:00Z",
       "url": "https://openai.com/index/building-abundant-intelligence",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 6,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "采用全栈方法，让先进 AI 能力更强、价格更可负担，并得到更广泛的有效应用。",
+            "title": "构建充足可用的智能"
+          }
+        },
+        {
+          "id": 5,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "文章主题是构建更充足、可用的智能。",
+              "发布方强调同时改善能力、可负担性和普适性。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供正文，无法判断该全栈方法的具体技术、成本数据、实施范围或结果。",
+            "summary": "OpenAI 介绍一种全栈方法，目标是让先进 AI 具备更强能力、更低成本，并得到更广泛的应用。"
+          }
+        }
+      ]
     },
     {
       "id": 1,
@@ -118,7 +155,45 @@
       "category": "Global Affairs",
       "published_at": "2026-07-31T15:00:00Z",
       "url": "https://openai.com/index/advancing-responsible-ai-across-europe",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 8,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "OpenAI 分享其安全、安保、透明度和来源追溯实践如何支持欧洲负责任的 AI 治理。随着《欧盟人工智能法案》推进，这项工作将继续进行。",
+            "title": "推动欧洲负责任的 AI 发展"
+          }
+        },
+        {
+          "id": 7,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "涉及安全、安保、透明度和来源追溯实践。",
+              "主题是支持欧洲负责任的 AI 治理。",
+              "相关工作将随《欧盟人工智能法案》的推进而继续。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供正文，无法核验具体实践、合规解释、时间表或覆盖范围。",
+            "summary": "OpenAI 说明其安全、安保、透明度和来源追溯实践如何支持欧洲负责任的 AI 治理，并表示随着《欧盟人工智能法案》推进，这项工作还将继续。"
+          }
+        }
+      ]
     },
     {
       "id": 3,
@@ -129,7 +204,45 @@
       "category": "",
       "published_at": "2026-07-31T07:00:00Z",
       "url": "https://openai.com/index/unive",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 10,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "了解 Univé 如何将领导层推动、负责任的治理与员工主导的创新相结合，借助 ChatGPT Enterprise 打造面向 AI 的员工队伍，并规模化地转变工作方式。",
+            "title": "Univé 打造面向 AI 的员工队伍"
+          }
+        },
+        {
+          "id": 9,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "案例涉及 Univé 使用 ChatGPT Enterprise。",
+              "采用的要素包括领导层、负责任的治理和员工主导的创新。",
+              "目标是规模化建设 AI 就绪型员工队伍并转变工作方式。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供正文，无法判断具体部署过程、衡量指标、员工规模或实际成效。",
+            "summary": "Univé 通过结合领导层推动、负责任的治理和员工主导的创新，使用 ChatGPT Enterprise 培养面向 AI 的员工队伍，并以规模化方式改变工作。"
+          }
+        }
+      ]
     },
     {
       "id": 4,
@@ -140,7 +253,45 @@
       "category": "",
       "published_at": "2026-07-31T00:00:00Z",
       "url": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 12,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "OpenAI 打击了一个设在柬埔寨的诈骗行动；该行动使用 ChatGPT 支持投资、恋爱、赌博和冒充类骗局。",
+            "title": "打击一起犯罪诈骗行动"
+          }
+        },
+        {
+          "id": 11,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "事件涉及一个设在柬埔寨的诈骗行动。",
+              "发布方称 ChatGPT 被用于支持投资、恋爱、赌博和冒充类骗局。",
+              "OpenAI 表示已对该行动实施干扰。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供正文，无法核验行动规模、调查方法、处置措施、涉案主体或结果。",
+            "summary": "OpenAI 称其破坏了一个设在柬埔寨的诈骗行动，该行动使用 ChatGPT 支持投资、恋爱、赌博和冒充类骗局。"
+          }
+        }
+      ]
     },
     {
       "id": 5,
@@ -151,7 +302,45 @@
       "category": "Product",
       "published_at": "2026-07-30T10:00:00Z",
       "url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 14,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "了解 GPT‑5.6 Luna 和 Terra 的更低定价，以及 OpenAI 更高效的模型如何帮助企业规模化部署 AI 工作流。",
+            "title": "借助 GPT-5.6 推进价格性能前沿"
+          }
+        },
+        {
+          "id": 13,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "GPT-5.6 Luna 和 Terra 获得更低定价。",
+              "发布方将模型效率与企业规模化部署 AI 工作流联系起来。",
+              "文章聚焦价格与性能之间的关系。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供具体价格、性能数据、适用条件或正文，因此无法比较实际性价比。",
+            "summary": "OpenAI 介绍 GPT-5.6 Luna 和 Terra 的更低定价，并称更高效的模型可帮助企业规模化部署 AI 工作流。"
+          }
+        }
+      ]
     },
     {
       "id": 97,
@@ -162,7 +351,44 @@
       "category": "Frontier Red Team",
       "published_at": "2026-07-30T00:00:00Z",
       "url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 16,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "调查我们的网络安全评估中的三起真实世界事件"
+          }
+        },
+        {
+          "id": 15,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是网络安全评估中的三起真实世界事件。",
+              "标题将这些事件描述为调查对象。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断事件内容、调查方法、发现、影响或结论。",
+            "summary": "文章标题表明，Anthropic 调查了其网络安全评估中的三起真实世界事件。"
+          }
+        }
+      ]
     },
     {
       "id": 6,
@@ -173,7 +399,46 @@
       "category": "",
       "published_at": "2026-07-30T00:00:00Z",
       "url": "https://openai.com/index/avatarin",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 18,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "avatarin 使用 OpenAI 的 GPT-Realtime，为 Yamada Denki 的顾客提供全天候多语言支持。两周内有 30,000 人使用了该智能体，调查反馈中有 92% 为正面评价。",
+            "title": "avatarin 如何使用 GPT-Realtime 构建全天候零售智能体"
+          }
+        },
+        {
+          "id": 17,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "GPT-Realtime 被用于全天候多语言零售支持。",
+              "服务对象是 Yamada Denki 的顾客。",
+              "发布方报告两周内有 30,000 人使用该智能体。",
+              "发布方称调查反馈的 92% 为正面评价。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供调查样本、问题设计、部署细节或正文，无法独立核验使用量和满意度数据。",
+            "summary": "avatarin 使用 OpenAI 的 GPT-Realtime，为 Yamada Denki 顾客提供全天候多语言支持。发布方称，该智能体两周内有 30,000 人使用，调查反馈中 92% 为正面评价。"
+          }
+        }
+      ]
     },
     {
       "id": 7,
@@ -184,7 +449,45 @@
       "category": "Research",
       "published_at": "2026-07-29T15:00:00Z",
       "url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 20,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "两项 API 设置通过保留推理并启用压缩，提升了 GPT-5.6 在 ARC-AGI-3 上的表现，同时提高了得分和效率。",
+            "title": "启用两项设置如何让我们的 ARC-AGI-3 基准得分提升至三倍"
+          }
+        },
+        {
+          "id": 19,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "案例涉及 GPT-5.6 在 ARC-AGI-3 基准上的表现。",
+              "两项设置分别与保留推理和启用压缩有关。",
+              "发布方称这些设置提高了得分和效率，标题称得分增至三倍。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供设置名称、基线、实验方法、绝对得分或正文，无法独立复核三倍提升。",
+            "summary": "OpenAI 称，两项 API 设置通过保留推理和启用压缩，提高了 GPT-5.6 在 ARC-AGI-3 基准上的得分和效率，标题称得分提升至三倍。"
+          }
+        }
+      ]
     },
     {
       "id": 8,
@@ -195,7 +498,45 @@
       "category": "Company",
       "published_at": "2026-07-29T10:00:00Z",
       "url": "https://openai.com/index/chatgpt-for-academic-researchers",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 22,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "OpenAI 将向 100,000 名学术研究人员免费提供 ChatGPT 最先进 AI 模型的访问权限，以加速科学研究、协作和发现。",
+            "title": "通过面向学术研究人员的 ChatGPT 加速科学发现"
+          }
+        },
+        {
+          "id": 21,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "计划面向 100,000 名学术研究人员。",
+              "参与者将免费访问 ChatGPT 的最先进 AI 模型。",
+              "计划目标包括促进科学研究、协作与发现。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供资格条件、地区范围、申请方式、使用期限或正文。",
+            "summary": "OpenAI 将向 100,000 名学术研究人员免费提供 ChatGPT 最先进 AI 模型的访问权限，目标是加速科学研究、协作和发现。"
+          }
+        }
+      ]
     },
     {
       "id": 9,
@@ -206,7 +547,45 @@
       "category": "Engineering",
       "published_at": "2026-07-29T00:00:00Z",
       "url": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 24,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "GPT-5.6 在模型、推理和智能体工作流层面提升 AI 效率，帮助每一美元带来更多有用智能。",
+            "title": "GPT-5.6 如何融合前沿智能与前沿效率"
+          }
+        },
+        {
+          "id": 23,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "效率改进覆盖模型、推理和智能体工作流。",
+              "发布方强调 GPT-5.6 将前沿智能与前沿效率结合。",
+              "价值主张是提高每一美元所获得的有用智能。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供基准、价格、工作负载或正文，无法量化或独立验证效率提升。",
+            "summary": "OpenAI 称 GPT-5.6 在模型、推理和智能体工作流层面提升 AI 效率，从而以每一美元提供更多有用智能。"
+          }
+        }
+      ]
     },
     {
       "id": 10,
@@ -217,7 +596,45 @@
       "category": "Publication",
       "published_at": "2026-07-28T17:00:00Z",
       "url": "https://openai.com/index/scientific-computing-agentic-ai",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 26,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "一份新的实地报告展示了科学家如何使用 AI 编码智能体来现代化科学计算，从而加速基因组学等领域的软件开发和科学发现。",
+            "title": "智能体 AI 时代的科学计算"
+          }
+        },
+        {
+          "id": 25,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是智能体 AI 时代的科学计算。",
+              "科学家使用 AI 编码智能体来现代化科学计算。",
+              "发布方称这种做法可加快软件开发以及基因组学等领域的发现。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供报告正文、案例、衡量指标或研究方法，无法判断加速幅度和适用范围。",
+            "summary": "一份新的实地报告介绍科学家如何使用 AI 编码智能体来现代化科学计算，并称这可加快基因组学等领域的软件开发与科学发现。"
+          }
+        }
+      ]
     },
     {
       "id": 72,
@@ -228,7 +645,44 @@
       "category": "Product announcements",
       "published_at": "2026-07-28T00:00:00Z",
       "url": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 28,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "将 MCP 2026-07-28 引入 Claude"
+          }
+        },
+        {
+          "id": 27,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是 MCP 2026-07-28。",
+              "标题称其被引入 Claude。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断新增能力、兼容性、迁移要求或具体实现。",
+            "summary": "文章标题表明，MCP 2026-07-28 被引入 Claude。"
+          }
+        }
+      ]
     },
     {
       "id": 11,
@@ -239,7 +693,45 @@
       "category": "Company",
       "published_at": "2026-07-27T03:30:00Z",
       "url": "https://openai.com/index/how-ai-is-expanding-what-people-do-at-work",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 30,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "OpenAI 的新研究表明，AI 正在扩展员工所做的工作；ChatGPT 用户开始承担跨越不同岗位的任务，并重新塑造职位边界。",
+            "title": "AI 如何扩展人们在工作中的活动范围"
+          }
+        },
+        {
+          "id": 29,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "研究主题是 AI 如何扩展人们在工作中的活动范围。",
+              "发布方称 ChatGPT 用户正在承担跨岗位任务。",
+              "这种变化被描述为正在重塑职位边界。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供研究设计、样本、行业分布、数据或正文，无法评估结论的代表性。",
+            "summary": "OpenAI 的一项新研究称，AI 正在扩展员工所做的工作；ChatGPT 用户开始承担跨越不同岗位的任务，并重新塑造职位边界。"
+          }
+        }
+      ]
     },
     {
       "id": 99,
@@ -250,7 +742,45 @@
       "category": "Announcements",
       "published_at": "2026-07-27T00:00:00Z",
       "url": "https://www.anthropic.com/news/cognizant-anthropic",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 32,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "Cognizant 与 Anthropic 扩大合作，将 Claude 带给企业客户"
+          }
+        },
+        {
+          "id": 31,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "合作方是 Cognizant 与 Anthropic。",
+              "双方扩大现有合作关系。",
+              "标题所述目标是让企业客户使用 Claude。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断合作条款、产品范围、客户资格、地区或时间表。",
+            "summary": "文章标题表明，Cognizant 与 Anthropic 扩大合作伙伴关系，目标是将 Claude 带给企业客户。"
+          }
+        }
+      ]
     },
     {
       "id": 98,
@@ -261,7 +791,44 @@
       "category": "Announcements",
       "published_at": "2026-07-27T00:00:00Z",
       "url": "https://www.anthropic.com/news/position-open-weights-models",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 34,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "我们对开放权重模型的立场"
+          }
+        },
+        {
+          "id": 33,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是开放权重模型。",
+              "内容被定位为 Anthropic 的立场说明。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断具体立场、论据、条件、风险评估或政策建议。",
+            "summary": "文章标题表明，Anthropic 阐述了其对开放权重模型的立场。"
+          }
+        }
+      ]
     },
     {
       "id": 100,
@@ -272,7 +839,45 @@
       "category": "Product",
       "published_at": "2026-07-24T00:00:00Z",
       "url": "https://www.anthropic.com/news/claude-opus-5",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 36,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "Opus 5 是 Opus 层级的一次跃迁式改进，可为长时间运行的智能体提供支持，同时在编码和专业工作方面带来提升。",
+            "title": "推出 Claude Opus 5"
+          }
+        },
+        {
+          "id": 35,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "新模型名为 Claude Opus 5。",
+              "发布方称其支持长时间运行的智能体。",
+              "发布方还称其在编码和专业工作方面有所改进。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供基准、模型规格、价格、可用范围或正文，无法量化所称改进。",
+            "summary": "Anthropic 推出 Claude Opus 5，并将其描述为 Opus 层级的一次跃迁式改进，可支持长时间运行的智能体，同时提升编码和专业工作表现。"
+          }
+        }
+      ]
     },
     {
       "id": 75,
@@ -283,7 +888,44 @@
       "category": "Enterprise AI",
       "published_at": "2026-07-24T00:00:00Z",
       "url": "https://claude.com/blog/claude-models-explained-choosing-the-best-model-for-your-use-case",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 38,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "Claude 模型详解：为你的使用场景选择最佳模型"
+          }
+        },
+        {
+          "id": 37,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是 Claude 模型之间的选择。",
+              "选择依据被表述为具体使用场景。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断涵盖哪些模型、比较标准、建议或限制。",
+            "summary": "文章标题表明，内容将解释 Claude 的不同模型，并讨论如何为具体使用场景选择最合适的模型。"
+          }
+        }
+      ]
     },
     {
       "id": 74,
@@ -294,7 +936,45 @@
       "category": "Claude Code",
       "published_at": "2026-07-24T00:00:00Z",
       "url": "https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 40,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "面向 Claude 5 系列模型的上下文工程新规则"
+          }
+        },
+        {
+          "id": 39,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是上下文工程。",
+              "讨论对象是 Claude 5 系列模型。",
+              "标题将内容描述为一组新规则。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断规则内容、适用模型、示例、性能影响或迁移建议。",
+            "summary": "文章标题表明，内容讨论面向 Claude 5 系列模型进行上下文工程的新规则。"
+          }
+        }
+      ]
     },
     {
       "id": 73,
@@ -305,7 +985,44 @@
       "category": "Enterprise AI",
       "published_at": "2026-07-24T00:00:00Z",
       "url": "https://claude.com/blog/how-the-product-designer-who-built-claude-design-uses-it-to-explore-ideas-before-building-them",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 42,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "打造 Claude Design 的产品设计师如何在构建前用它探索想法"
+          }
+        },
+        {
+          "id": 41,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主体是打造 Claude Design 的产品设计师。",
+              "主题是在构建前探索想法的工作方式。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断具体流程、功能、示例、设计成果或评价。",
+            "summary": "文章标题表明，Claude Design 的产品设计师介绍了自己如何在实际构建之前使用该产品探索想法。"
+          }
+        }
+      ]
     },
     {
       "id": 77,
@@ -316,7 +1033,44 @@
       "category": "Product announcements",
       "published_at": "2026-07-23T00:00:00Z",
       "url": "https://claude.com/blog/think-through-hard-problems-in-voice-mode",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 44,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "在语音模式中深入思考难题"
+          }
+        },
+        {
+          "id": 43,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "功能场景是语音模式。",
+              "用途是梳理或思考困难问题。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断具体产品行为、操作方法、支持范围或效果。",
+            "summary": "文章标题介绍一种使用语音模式思考困难问题的方式。"
+          }
+        }
+      ]
     },
     {
       "id": 76,
@@ -327,7 +1081,45 @@
       "category": "Enterprise AI",
       "published_at": "2026-07-23T00:00:00Z",
       "url": "https://claude.com/blog/four-role-based-claude-certifications",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 46,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "面向为客户应用 Claude 的人员推出四项基于角色的认证"
+          }
+        },
+        {
+          "id": 45,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "共有四项认证。",
+              "认证按角色划分。",
+              "目标人群是为客户应用 Claude 的人员。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断认证名称、资格、课程内容、考试形式或费用。",
+            "summary": "文章标题介绍四项基于角色的认证，面向为客户部署或应用 Claude 的人员。"
+          }
+        }
+      ]
     },
     {
       "id": 12,
@@ -338,7 +1130,46 @@
       "category": "Product",
       "published_at": "2026-07-23T00:00:00Z",
       "url": "https://openai.com/index/health-in-chatgpt",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 48,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "ChatGPT 中的 Health 现已允许符合条件的美国用户安全连接医疗记录和 Apple Health，以获得更个性化的洞察，并更好地了解自己的健康状况。",
+            "title": "推出 ChatGPT 中的 Health"
+          }
+        },
+        {
+          "id": 47,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "功能名为 ChatGPT 中的 Health。",
+              "适用于符合条件的美国用户。",
+              "用户可以连接医疗记录和 Apple Health。",
+              "发布方称其用途是提供更个性化的洞察并帮助理解健康状况。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供资格标准、隐私和安全机制、医疗限制、支持机构或正文。",
+            "summary": "ChatGPT 中的 Health 功能允许符合条件的美国用户安全连接医疗记录和 Apple Health，以获得更个性化的洞察并更好地理解自身健康。"
+          }
+        }
+      ]
     },
     {
       "id": 14,
@@ -349,7 +1180,45 @@
       "category": "Company",
       "published_at": "2026-07-22T13:00:00Z",
       "url": "https://openai.com/index/how-news-organizations-are-using-ai",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 50,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "新闻机构正在使用 AI 加强报道、扩大受众并改进业务运营，OpenAI 的工具则为世界各地的记者和出版商提供支持。",
+            "title": "新闻机构如何使用 AI 推进其重要使命"
+          }
+        },
+        {
+          "id": 49,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "所述用途包括加强报道、扩大受众和改进业务运营。",
+              "相关使用者包括记者和出版商。",
+              "发布方称这些应用遍及全球。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供机构案例、工具清单、成效数据、风险说明或正文。",
+            "summary": "新闻机构正在使用 AI 加强报道、扩大受众并改进业务运营；发布方称 OpenAI 工具正在支持世界各地的记者和出版商。"
+          }
+        }
+      ]
     },
     {
       "id": 13,
@@ -360,7 +1229,45 @@
       "category": "Global Affairs",
       "published_at": "2026-07-22T13:00:00Z",
       "url": "https://openai.com/index/building-ai-infrastructure-with-the-effingham-county-community",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 52,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "OpenAI 宣布在佐治亚州 Effingham County 推进 Project Camellia，并承诺负责任地使用能源、投资社区、创造就业机会并提供 Codex 使用权。",
+            "title": "与 Effingham County 社区共同建设 AI 基础设施"
+          }
+        },
+        {
+          "id": 51,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "项目名为 Project Camellia，地点在佐治亚州 Effingham County。",
+              "相关承诺涉及负责任的能源使用与社区投资。",
+              "发布方还提到就业机会和 Codex 使用权。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供基础设施规模、能源数据、投资金额、岗位数量、Codex 访问条件或正文。",
+            "summary": "OpenAI 宣布在美国佐治亚州 Effingham County 推进 Project Camellia，并承诺关注负责任的能源使用、社区投资、就业机会以及 Codex 使用权。"
+          }
+        }
+      ]
     },
     {
       "id": 15,
@@ -371,7 +1278,45 @@
       "category": "Global Affairs",
       "published_at": "2026-07-22T12:00:00Z",
       "url": "https://openai.com/index/advancing-the-next-era-of-national-science",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 54,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "OpenAI 概述其推动美国科学发展的承诺，包括与美国能源部和国家实验室合作，利用前沿 AI 加速科学发现。",
+            "title": "推进国家科学发展的下一个时代"
+          }
+        },
+        {
+          "id": 53,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是推动美国科学进入下一阶段。",
+              "合作对象包括美国能源部和国家实验室。",
+              "发布方称将使用前沿 AI 加速发现。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供合作项目、资源投入、研究领域、时间表、评估方法或正文。",
+            "summary": "OpenAI 概述其推动美国科学发展的承诺，包括与美国能源部和国家实验室合作，使用前沿 AI 加速科学发现。"
+          }
+        }
+      ]
     },
     {
       "id": 16,
@@ -382,7 +1327,46 @@
       "category": "Product",
       "published_at": "2026-07-22T05:30:00Z",
       "url": "https://openai.com/index/introducing-openai-presence",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 56,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "推出 OpenAI Presence：一套经过验证的企业 AI 智能体平台，帮助组织为面向客户和内部的工作流部署可信的语音与聊天智能体。",
+            "title": "推出 OpenAI Presence"
+          }
+        },
+        {
+          "id": 55,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "新平台名为 OpenAI Presence。",
+              "定位是企业 AI 智能体平台。",
+              "支持为客户和内部工作流部署语音及聊天智能体。",
+              "发布方将这些智能体描述为可信。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供功能、验证依据、安全控制、集成方式、价格、可用范围或正文。",
+            "summary": "OpenAI 推出 Presence，并将其描述为一套经过验证的企业 AI 智能体平台，可帮助组织为面向客户和内部的工作流部署可信的语音与聊天智能体。"
+          }
+        }
+      ]
     },
     {
       "id": 102,
@@ -393,7 +1377,44 @@
       "category": "Product",
       "published_at": "2026-07-22T00:00:00Z",
       "url": "https://www.anthropic.com/news/anthropic-economic-index-connector",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 58,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "向 Claude 询问 Anthropic Economic Index"
+          }
+        },
+        {
+          "id": 57,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是 Anthropic Economic Index。",
+              "标题描述了一种通过 Claude 查询该指数的方式。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断连接器或功能的操作方式、数据范围、更新频率或可用条件。",
+            "summary": "文章标题表明，用户可以向 Claude 询问有关 Anthropic Economic Index 的内容。"
+          }
+        }
+      ]
     },
     {
       "id": 101,
@@ -404,7 +1425,44 @@
       "category": "Economic Research",
       "published_at": "2026-07-22T00:00:00Z",
       "url": "https://www.anthropic.com/news/economic-futures-research-fund-agenda",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 60,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "Economic Futures Research Fund 的研究议程"
+          }
+        },
+        {
+          "id": 59,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "对象是 Economic Futures Research Fund。",
+              "内容被定位为一项研究议程。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断研究主题、资助重点、方法、参与条件或时间安排。",
+            "summary": "文章标题表明，内容为 Economic Futures Research Fund 提出了一项研究议程。"
+          }
+        }
+      ]
     },
     {
       "id": 79,
@@ -415,7 +1473,45 @@
       "category": "Agents",
       "published_at": "2026-07-22T00:00:00Z",
       "url": "https://claude.com/blog/how-outtake-built-a-cyber-investigator-on-claude",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 62,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "Outtake 如何基于 Claude 构建网络安全调查工具"
+          }
+        },
+        {
+          "id": 61,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "案例主体是 Outtake。",
+              "所构建的产品被描述为网络安全调查工具。",
+              "该工具基于 Claude。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断该工具的功能、数据来源、工作流、安全控制、评估或结果。",
+            "summary": "文章标题表明，Outtake 使用 Claude 构建了一个网络安全调查工具。"
+          }
+        }
+      ]
     },
     {
       "id": 78,
@@ -426,7 +1522,45 @@
       "category": "Claude Code",
       "published_at": "2026-07-22T00:00:00Z",
       "url": "https://claude.com/blog/building-verification-loops-in-claude-code-with-skills",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 64,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "利用 skills 在 Claude Code 中构建验证循环"
+          }
+        },
+        {
+          "id": 63,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "环境是 Claude Code。",
+              "主题是构建验证循环。",
+              "标题称实现方式涉及 skills。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断具体 skill、验证步骤、代码示例、适用场景或效果。",
+            "summary": "文章标题表明，内容讨论如何利用 skills 在 Claude Code 中构建验证循环。"
+          }
+        }
+      ]
     },
     {
       "id": 17,
@@ -437,7 +1571,46 @@
       "category": "",
       "published_at": "2026-07-22T00:00:00Z",
       "url": "https://openai.com/index/ntt-data",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 66,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "NTT DATA Group 使用 ChatGPT Enterprise 和 Codex，帮助 9,000 名员工实现工作自动化、将事件分析缩短至 30 分钟，并推动 AI 的安全规模化采用。",
+            "title": "NTT DATA Group 借助 Codex 将事件分析缩短至 30 分钟"
+          }
+        },
+        {
+          "id": 65,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "部署涉及 ChatGPT Enterprise 和 Codex。",
+              "发布方称覆盖 9,000 名员工。",
+              "事件分析被称已缩短至 30 分钟。",
+              "目标还包括规模化、安全地采用 AI。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供原始分析耗时、测量方法、部署范围、安全控制或正文，无法独立核验成效。",
+            "summary": "NTT DATA Group 使用 ChatGPT Enterprise 和 Codex 帮助 9,000 名员工实现工作自动化。发布方称，这将事件分析时间缩短至 30 分钟，并推动 AI 的安全规模化采用。"
+          }
+        }
+      ]
     },
     {
       "id": 18,
@@ -448,7 +1621,45 @@
       "category": "AI Adoption",
       "published_at": "2026-07-21T17:00:00Z",
       "url": "https://openai.com/index/introducing-chatgpt-small-business-program",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 68,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "OpenAI 推出 ChatGPT for Small Businesses 计划，帮助创业者培养 AI 技能、实现工作自动化，并借助 ChatGPT Work 推动业务增长。",
+            "title": "推出 ChatGPT 小型企业计划"
+          }
+        },
+        {
+          "id": 67,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "计划面向小型企业和创业者。",
+              "目标包括培养 AI 技能和自动化工作。",
+              "发布方还将该计划与使用 ChatGPT Work 推动增长联系起来。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供参与资格、地区、课程或支持内容、价格、时间表或正文。",
+            "summary": "OpenAI 推出 ChatGPT for Small Businesses 计划，旨在帮助创业者培养 AI 技能、自动化工作，并使用 ChatGPT Work 促进业务增长。"
+          }
+        }
+      ]
     },
     {
       "id": 19,
@@ -459,7 +1670,45 @@
       "category": "Security",
       "published_at": "2026-07-21T07:00:00Z",
       "url": "https://openai.com/index/hugging-face-model-evaluation-security-incident",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 70,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；摘要将相关发现描述为初步信息，且未提供正文。",
+            "publisher_summary": "OpenAI 与 Hugging Face 分享了 AI 模型评估期间一起安全事件的初步发现，重点介绍先进网络能力以及防御者可汲取的经验。",
+            "title": "OpenAI 与 Hugging Face 合作应对模型评估期间的安全事件"
+          }
+        },
+        {
+          "id": 69,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "事件发生在 AI 模型评估期间。",
+              "OpenAI 与 Hugging Face 共同分享初步发现。",
+              "主题包括先进网络能力以及防御者可借鉴的经验。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；发现被明确描述为初步信息，且未提供正文，无法判断事件经过、影响、责任、处置或技术细节。",
+            "summary": "OpenAI 与 Hugging Face 分享了一起 AI 模型评估期间安全事件的初步发现，重点涉及先进网络能力及其给防御者带来的经验。"
+          }
+        }
+      ]
     },
     {
       "id": 103,
@@ -470,7 +1719,45 @@
       "category": "Announcements",
       "published_at": "2026-07-21T00:00:00Z",
       "url": "https://www.anthropic.com/news/donation-public-first-action",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 72,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "Anthropic 将再次向 Public First Action 捐赠 2,000 万美元"
+          }
+        },
+        {
+          "id": 71,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "捐赠方是 Anthropic。",
+              "接受方是 Public First Action。",
+              "标题所述金额为 2,000 万美元，并表明这是再次捐赠。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断捐赠用途、条件、此前金额、时间表或接受方背景。",
+            "summary": "文章标题表明，Anthropic 将再次向 Public First Action 捐赠 2,000 万美元。"
+          }
+        }
+      ]
     },
     {
       "id": 81,
@@ -481,7 +1768,45 @@
       "category": "Claude Code",
       "published_at": "2026-07-21T00:00:00Z",
       "url": "https://claude.com/blog/how-datadog-built-a-universal-machine-tool-for-claude-code",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 74,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "Datadog 如何为 Claude Code 构建“通用机床”"
+          }
+        },
+        {
+          "id": 73,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "案例主体是 Datadog。",
+              "工具面向 Claude Code。",
+              "标题将其描述为“通用机床”。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；“通用机床”是标题中的描述，元数据不足以说明其实际功能、架构、适用范围或效果。",
+            "summary": "文章标题表明，Datadog 为 Claude Code 构建了一个被称为“通用机床”的工具。"
+          }
+        }
+      ]
     },
     {
       "id": 80,
@@ -492,7 +1817,44 @@
       "category": "Claude Code",
       "published_at": "2026-07-21T00:00:00Z",
       "url": "https://claude.com/blog/how-anthropic-secures-its-ai-native-software-development-lifecycle",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 76,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+            "publisher_summary": "",
+            "title": "Anthropic 如何保护其 AI 原生软件开发生命周期"
+          }
+        },
+        {
+          "id": 75,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主体是 Anthropic。",
+              "主题是 AI 原生软件开发生命周期的安全保障。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断威胁模型、安全控制、开发阶段、工具、流程或验证结果。",
+            "summary": "文章标题表明，Anthropic 介绍了其保护 AI 原生软件开发生命周期的方法。"
+          }
+        }
+      ]
     },
     {
       "id": 20,
@@ -503,7 +1865,45 @@
       "category": "Company",
       "published_at": "2026-07-21T00:00:00Z",
       "url": "https://openai.com/index/david-velez-robin-vince-join-openai-boards",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 78,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译所提供的标题和发布方摘要；未提供正文。",
+            "publisher_summary": "David Vélez 和 Robin Vince 加入 OpenAI Foundation 与 OpenAI Group PBC 的董事会，带来金融、技术和治理方面的全球领导经验。",
+            "title": "David Vélez 和 Robin Vince 加入 OpenAI Foundation 与 OpenAI Group PBC 董事会"
+          }
+        },
+        {
+          "id": 77,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "新任董事为 David Vélez 和 Robin Vince。",
+              "他们加入 OpenAI Foundation 和 OpenAI Group PBC 的董事会。",
+              "发布方强调两人在金融、技术与治理方面的全球领导经验。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布方摘要；未提供任命生效时间、个人履历细节、职责、治理结构变化或正文。",
+            "summary": "David Vélez 和 Robin Vince 加入 OpenAI Foundation 与 OpenAI Group PBC 的董事会，带来金融、技术和治理方面的全球领导经验。"
+          }
+        }
+      ]
     },
     {
       "id": 21,
@@ -514,7 +1914,44 @@
       "category": "Safety",
       "published_at": "2026-07-20T10:00:00Z",
       "url": "https://openai.com/index/safety-alignment-long-horizon-models",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 80,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "OpenAI 分享了部署可长时间运行的 AI 模型所得的经验，重点介绍新的安全风险、观察到的失败，以及通过迭代部署改进的防护措施。",
+            "title": "长时程模型时代的安全与对齐"
+          }
+        },
+        {
+          "id": 79,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是长时程模型时代的安全与对齐。",
+              "内容涉及新风险、已观察到的失败和迭代改进的安全措施。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法核验具体失败案例、风险范围或防护措施的细节与效果。",
+            "summary": "OpenAI 分享了部署可长时间运行的 AI 模型时获得的经验，重点讨论由此出现的新安全风险、已观察到的失败，以及如何通过迭代部署改进防护措施。"
+          }
+        }
+      ]
     },
     {
       "id": 104,
@@ -525,7 +1962,43 @@
       "category": "Announcements",
       "published_at": "2026-07-20T00:00:00Z",
       "url": "https://www.anthropic.com/news/rare-disease-research-grants",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 82,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "请求中的发布者摘要为空字符串，故保持为空；仅翻译标题，未读取正文。",
+            "publisher_summary": "",
+            "title": "申请 Anthropic 的 AI for Science 罕见病研究资助"
+          }
+        },
+        {
+          "id": 81,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是 AI for Science 罕见病研究资助的申请。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅有标题、来源和发布日期等元数据，发布者摘要为空且未读取正文；无法判断资助金额、资格、截止日期或申请流程。",
+            "summary": "标题显示，该页面与申请 Anthropic 的 AI for Science 罕见病研究资助有关。"
+          }
+        }
+      ]
     },
     {
       "id": 82,
@@ -536,7 +2009,44 @@
       "category": "Enterprise AI",
       "published_at": "2026-07-20T00:00:00Z",
       "url": "https://claude.com/blog/working-at-the-frontier-rakuten",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 84,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "请求中的发布者摘要为空字符串，故保持为空；仅翻译标题，未读取正文。",
+            "publisher_summary": "",
+            "title": "在前沿工作：乐天如何利用 Claude Fable 5 在一夜之间构建智能体"
+          }
+        },
+        {
+          "id": 83,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是乐天使用 Claude Fable 5 构建智能体。",
+              "标题将构建时间描述为“一夜之间”。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅有标题、来源和发布日期等元数据，发布者摘要为空且未读取正文；无法判断智能体的用途、实现过程或实际成效。",
+            "summary": "标题显示，这篇 Claude Blog 文章讲述乐天如何使用 Claude Fable 5 在一夜之间构建智能体。"
+          }
+        }
+      ]
     },
     {
       "id": 53,
@@ -547,7 +2057,44 @@
       "category": "Codex",
       "published_at": "2026-07-20T00:00:00Z",
       "url": "https://developers.openai.com/blog/custom-code-review-rules-for-codex",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 86,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "为 Codex 提供更详细的规则，帮助它在代码审查期间发现问题并更好地遵循你的约定。",
+            "title": "Codex 的自定义代码审查规则"
+          }
+        },
+        {
+          "id": 85,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "可以为 Codex 配置更详细的代码审查规则。",
+              "目标是改善问题发现和约定遵循。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；未提供规则格式、配置步骤或效果数据。",
+            "summary": "文章介绍如何为 Codex 提供更详细的自定义代码审查规则，以帮助它发现问题并在审查时更好地遵循既有约定。"
+          }
+        }
+      ]
     },
     {
       "id": 22,
@@ -558,7 +2105,44 @@
       "category": "Company",
       "published_at": "2026-07-17T10:00:00Z",
       "url": "https://openai.com/index/a-scorecard-for-the-ai-age",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 88,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "OpenAI 首席财务官 Sarah Friar 提出一套实用的 AI 记分卡，通过有用工作、每项成功任务的成本、可靠性和算力回报来衡量投资回报率。",
+            "title": "AI 时代的记分卡"
+          }
+        },
+        {
+          "id": 87,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "该记分卡用于衡量 AI 投资回报率。",
+              "指标包括有用工作、成功任务成本、可靠性和算力回报。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明指标定义、计算方法或应用案例。",
+            "summary": "OpenAI 首席财务官 Sarah Friar 提出一套实用的 AI 记分卡，建议通过有用工作、每项成功任务的成本、可靠性和算力回报来衡量投资回报率。"
+          }
+        }
+      ]
     },
     {
       "id": 84,
@@ -569,7 +2153,44 @@
       "category": "Enterprise AI",
       "published_at": "2026-07-17T00:00:00Z",
       "url": "https://claude.com/blog/ciso-guide-to-agentic-ai",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 90,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "请求中的发布者摘要为空字符串，故保持为空；仅翻译标题，未读取正文。",
+            "publisher_summary": "",
+            "title": "零风险并非目标：CISO 的智能体 AI 指南"
+          }
+        },
+        {
+          "id": 89,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "面向首席信息安全官讨论智能体 AI。",
+              "标题明确提出“零风险并非目标”。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅有标题、来源和发布日期等元数据，发布者摘要为空且未读取正文；无法判断指南包含哪些风险、控制措施或建议。",
+            "summary": "标题显示，这是一份面向首席信息安全官的智能体 AI 指南，其主题强调工作的目标并非实现零风险。"
+          }
+        }
+      ]
     },
     {
       "id": 83,
@@ -580,7 +2201,44 @@
       "category": "Enterprise AI",
       "published_at": "2026-07-17T00:00:00Z",
       "url": "https://claude.com/blog/working-at-the-frontier-cursor",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 92,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "请求中的发布者摘要为空字符串，故保持为空；仅翻译标题，未读取正文。",
+            "publisher_summary": "",
+            "title": "在前沿工作：Cursor 如何确认 Claude Fable 5 已准备好应对最困难的 1% 问题"
+          }
+        },
+        {
+          "id": 91,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是 Cursor 对 Claude Fable 5 的评估。",
+              "标题聚焦于最困难的 1% 问题。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅有标题、来源和发布日期等元数据，发布者摘要为空且未读取正文；无法判断评估标准、问题集合或测试结果。",
+            "summary": "标题显示，这篇 Claude Blog 文章讨论 Cursor 如何判断 Claude Fable 5 已准备好处理最困难的 1% 问题。"
+          }
+        }
+      ]
     },
     {
       "id": 23,
@@ -591,7 +2249,44 @@
       "category": "Safety",
       "published_at": "2026-07-16T16:00:00Z",
       "url": "https://openai.com/index/why-teens-deserve-access-safe-ai",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 94,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "了解 OpenAI 如何通过适龄保护、学习工具、家长控制和专家合作，让 ChatGPT 对青少年更安全。",
+            "title": "为什么青少年应当能够使用安全的 AI"
+          }
+        },
+        {
+          "id": 93,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是青少年安全使用 AI。",
+              "措施涉及适龄保护、学习工具、家长控制和专家合作。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明各项保护的具体设计、适用地区或效果。",
+            "summary": "OpenAI 介绍其如何通过适龄保护、学习工具、家长控制和专家合作，让青少年更安全地使用 ChatGPT。"
+          }
+        }
+      ]
     },
     {
       "id": 24,
@@ -602,7 +2297,44 @@
       "category": "OpenAI on OpenAI",
       "published_at": "2026-07-16T07:00:00Z",
       "url": "https://openai.com/index/codex-collaborator-creative-team",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 96,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "OpenAI 创意团队如何使用 Codex 构建定制创意工具、加快构思，并利用具备上下文感知能力的 AI 更快制作原型。",
+            "title": "Codex 如何成为 OpenAI 创意团队的协作者"
+          }
+        },
+        {
+          "id": 95,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "Codex 被用于构建定制创意工具。",
+              "目标包括加快构思和原型制作。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明具体工具、工作流程或量化成效。",
+            "summary": "文章介绍 OpenAI 创意团队如何使用 Codex 构建定制创意工具、加快构思，并借助具备上下文感知能力的 AI 更快制作原型。"
+          }
+        }
+      ]
     },
     {
       "id": 86,
@@ -613,7 +2345,43 @@
       "category": "Enterprise AI",
       "published_at": "2026-07-16T00:00:00Z",
       "url": "https://claude.com/blog/working-with-claude-fable-5-in-claude-cowork",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 98,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "请求中的发布者摘要为空字符串，故保持为空；仅翻译标题，未读取正文。",
+            "publisher_summary": "",
+            "title": "在 Claude Cowork 中使用 Claude Fable 5"
+          }
+        },
+        {
+          "id": 97,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是在 Claude Cowork 中使用 Claude Fable 5。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅有标题、来源和发布日期等元数据，发布者摘要为空且未读取正文；无法判断功能、使用方法或示例。",
+            "summary": "标题显示，这篇文章介绍在 Claude Cowork 中使用 Claude Fable 5。"
+          }
+        }
+      ]
     },
     {
       "id": 85,
@@ -624,7 +2392,44 @@
       "category": "Claude Code",
       "published_at": "2026-07-16T00:00:00Z",
       "url": "https://claude.com/blog/ai-code-migration",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 100,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "请求中的发布者摘要为空字符串，故保持为空；仅翻译标题，未读取正文。",
+            "publisher_summary": "",
+            "title": "Anthropic 如何利用 Claude Code 开展大规模代码迁移"
+          }
+        },
+        {
+          "id": 99,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是使用 Claude Code 进行大规模代码迁移。",
+              "案例主体是 Anthropic。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅有标题、来源和发布日期等元数据，发布者摘要为空且未读取正文；无法判断迁移范围、方法、风险或结果。",
+            "summary": "标题显示，这篇文章讨论 Anthropic 如何利用 Claude Code 开展大规模代码迁移。"
+          }
+        }
+      ]
     },
     {
       "id": 25,
@@ -635,7 +2440,45 @@
       "category": "",
       "published_at": "2026-07-16T00:00:00Z",
       "url": "https://openai.com/index/cars24",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 102,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "Cars24 使用由 OpenAI 提供支持的语音和聊天智能体，每月处理超过 100 万分钟的对话、挽回 12% 的流失线索，并将智能体工作流带给公司各团队。",
+            "title": "Cars24 如何利用 OpenAI 扩展对话规模并加快构建"
+          }
+        },
+        {
+          "id": 101,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "每月处理超过 100 万分钟的对话。",
+              "挽回了 12% 的流失线索。",
+              "智能体工作流被推广到公司各团队。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法核验指标口径、实施周期或技术架构。",
+            "summary": "Cars24 使用由 OpenAI 提供支持的语音和聊天智能体，每月处理超过 100 万分钟的对话、挽回 12% 的流失线索，并将智能体工作流推广到公司各团队。"
+          }
+        }
+      ]
     },
     {
       "id": 26,
@@ -646,7 +2489,44 @@
       "category": "Global Affairs",
       "published_at": "2026-07-15T12:00:00Z",
       "url": "https://openai.com/index/advancing-ai-safety-through-state-and-federal-action",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 104,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "OpenAI 概述了一种 AI 治理的“反向联邦主义”路径，由州级法律帮助构建安全且民主的全国性 AI 框架。",
+            "title": "美国正通过州级和联邦行动推进 AI 安全"
+          }
+        },
+        {
+          "id": 103,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "讨论美国州级与联邦层面的 AI 安全行动。",
+              "提出由州级法律推动全国框架形成的“反向联邦主义”路径。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明具体法律、政策机制或潜在争议。",
+            "summary": "OpenAI 概述一种 AI 治理的“反向联邦主义”路径：由州级法律协助构建安全且民主的全国性框架。"
+          }
+        }
+      ]
     },
     {
       "id": 27,
@@ -657,7 +2537,45 @@
       "category": "Safety",
       "published_at": "2026-07-15T10:00:00Z",
       "url": "https://openai.com/index/unlocking-self-improvement-gpt-red",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 106,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "探索 GPT-Red——OpenAI 的自动化红队系统；它利用自我博弈来提升 AI 安全、对齐和对提示注入的稳健性。",
+            "title": "GPT-Red：释放自我改进能力以增强稳健性"
+          }
+        },
+        {
+          "id": 105,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "GPT-Red 是一个自动化红队系统。",
+              "系统使用自我博弈。",
+              "目标涉及安全、对齐和提示注入稳健性。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明系统实现、评测方法或改进幅度。",
+            "summary": "OpenAI 介绍自动化红队系统 GPT-Red。该系统利用自我博弈来改进 AI 安全、对齐和对提示注入的稳健性。"
+          }
+        }
+      ]
     },
     {
       "id": 28,
@@ -668,7 +2586,44 @@
       "category": "AI Adoption",
       "published_at": "2026-07-14T10:00:00Z",
       "url": "https://openai.com/index/managing-ai-investments-in-agentic-era",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 108,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "了解企业如何在智能体时代管理 AI 投资：衡量每美元产生的有用工作、提高效率并扩展高价值工作流。",
+            "title": "如何在智能体时代管理 AI 投资"
+          }
+        },
+        {
+          "id": 107,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "建议以每美元产生的有用工作衡量 AI 投资。",
+              "关注效率提升和高价值工作流的规模化。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明指标算法、投资框架或案例结果。",
+            "summary": "文章讨论企业在智能体时代如何管理 AI 投资，提出衡量每美元产生的有用工作、提升效率并扩展高价值工作流。"
+          }
+        }
+      ]
     },
     {
       "id": 106,
@@ -679,7 +2634,44 @@
       "category": "Announcements",
       "published_at": "2026-07-14T00:00:00Z",
       "url": "https://www.anthropic.com/news/canadian-ai-research",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 110,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "请求中的发布者摘要为空字符串，故保持为空；仅翻译标题，未读取正文。",
+            "publisher_summary": "",
+            "title": "Anthropic 承诺投入 1,000 万美元支持加拿大 AI 研究"
+          }
+        },
+        {
+          "id": 109,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "承诺金额为 1,000 万美元。",
+              "支持对象是加拿大 AI 研究。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅有标题、来源和发布日期等元数据，发布者摘要为空且未读取正文；无法判断资金分配、期限、受助方或条件。",
+            "summary": "标题显示，Anthropic 承诺投入 1,000 万美元支持加拿大 AI 研究。"
+          }
+        }
+      ]
     },
     {
       "id": 105,
@@ -690,7 +2682,43 @@
       "category": "Product",
       "published_at": "2026-07-14T00:00:00Z",
       "url": "https://www.anthropic.com/news/claude-for-teachers",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 112,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "请求中的发布者摘要为空字符串，故保持为空；仅翻译标题，未读取正文。",
+            "publisher_summary": "",
+            "title": "推出 Claude for Teachers"
+          }
+        },
+        {
+          "id": 111,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "发布内容名为 Claude for Teachers。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅有标题、来源和发布日期等元数据，发布者摘要为空且未读取正文；无法判断产品功能、可用范围、价格或发布时间。",
+            "summary": "标题宣布推出 Claude for Teachers。"
+          }
+        }
+      ]
     },
     {
       "id": 30,
@@ -701,7 +2729,44 @@
       "category": "OpenAI Academy",
       "published_at": "2026-07-14T00:00:00Z",
       "url": "https://openai.com/academy/codex-for-work/how-sales-teams-use-codex",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 114,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "了解销售团队如何使用 ChatGPT Work，基于真实工作输入创建销售管道简报、会前准备材料、预测审查、客户计划和停滞交易诊断。",
+            "title": "销售团队如何使用 ChatGPT Work"
+          }
+        },
+        {
+          "id": 113,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "面向销售团队的 ChatGPT Work 使用场景。",
+              "产出包括销售管道简报、会前材料、预测审查、客户计划和停滞交易诊断。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明操作步骤、输入要求或效果。",
+            "summary": "文章介绍销售团队如何使用 ChatGPT Work，基于真实工作输入制作销售管道简报、会前准备材料、预测审查、客户计划和停滞交易诊断。"
+          }
+        }
+      ]
     },
     {
       "id": 29,
@@ -712,7 +2777,44 @@
       "category": "OpenAI Academy",
       "published_at": "2026-07-14T00:00:00Z",
       "url": "https://openai.com/academy/codex-for-work/how-data-science-teams-use-codex",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 116,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "了解数据科学团队如何使用 ChatGPT Work，基于真实工作输入创建根因简报、影响解读、KPI 备忘录、范围明确的分析和仪表板规格。",
+            "title": "数据科学团队如何使用 ChatGPT Work"
+          }
+        },
+        {
+          "id": 115,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "面向数据科学团队的 ChatGPT Work 使用场景。",
+              "产出包括根因简报、影响解读、KPI 备忘录、分析和仪表板规格。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明操作步骤、数据要求或效果。",
+            "summary": "文章介绍数据科学团队如何使用 ChatGPT Work，基于真实工作输入制作根因简报、影响解读、KPI 备忘录、范围明确的分析和仪表板规格。"
+          }
+        }
+      ]
     },
     {
       "id": 31,
@@ -723,7 +2825,44 @@
       "category": "",
       "published_at": "2026-07-10T07:00:00Z",
       "url": "https://openai.com/index/deutsche-telekom",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 118,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "Deutsche Telekom 如何借助 OpenAI 成为 AI 原生电信公司，推动客户服务、员工工作流、网络运营和语音未来的转型。",
+            "title": "Deutsche Telekom 如何利用 AI 重塑电信业务"
+          }
+        },
+        {
+          "id": 117,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "Deutsche Telekom 的目标是成为 AI 原生电信公司。",
+              "转型范围涉及客户服务、员工工作流、网络运营和语音。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明具体部署、产品、时间线或成效。",
+            "summary": "文章介绍 Deutsche Telekom 如何借助 OpenAI 向 AI 原生电信公司转型，涉及客户服务、员工工作流、网络运营和语音的未来。"
+          }
+        }
+      ]
     },
     {
       "id": 32,
@@ -734,7 +2873,44 @@
       "category": "OpenAI Academy",
       "published_at": "2026-07-10T00:00:00Z",
       "url": "https://openai.com/academy/getting-started",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 120,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "了解如何使用 ChatGPT、开始第一次对话，并探索使用 AI 进行写作、头脑风暴和解决问题的简单方法。",
+            "title": "ChatGPT 入门"
+          }
+        },
+        {
+          "id": 119,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "介绍 ChatGPT 的基础使用。",
+              "示例方向包括写作、头脑风暴和解决问题。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法提供其中的具体步骤或示例。",
+            "summary": "这是一份 ChatGPT 入门内容，介绍如何开始第一次对话，以及使用 AI 进行写作、头脑风暴和解决问题的简单方法。"
+          }
+        }
+      ]
     },
     {
       "id": 33,
@@ -745,7 +2921,45 @@
       "category": "Product",
       "published_at": "2026-07-09T13:00:00Z",
       "url": "https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 122,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "了解 GPT-5.6 如何为 Microsoft 365 Copilot 提供支持，在 Word、Excel、PowerPoint、Chat 和 Cowork 中带来更强的 AI 能力，以实现更快、更高质量的工作。",
+            "title": "GPT-5.6 现已成为 Microsoft 365 Copilot 的首选模型"
+          }
+        },
+        {
+          "id": 121,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "GPT-5.6 成为 Microsoft 365 Copilot 的首选模型。",
+              "覆盖 Word、Excel、PowerPoint、Chat 和 Cowork。",
+              "目标是提升工作速度与质量。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明上线范围、对比基准或具体能力变化。",
+            "summary": "GPT-5.6 已成为 Microsoft 365 Copilot 的首选模型，为 Word、Excel、PowerPoint、Chat 和 Cowork 提供更强的 AI 能力，旨在实现更快、更高质量的工作。"
+          }
+        }
+      ]
     },
     {
       "id": 36,
@@ -756,7 +2970,44 @@
       "category": "Safety",
       "published_at": "2026-07-09T10:00:00Z",
       "url": "https://openai.com/index/bio-bug-bounty",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 124,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "有关 OpenAI Bio Bounty 计划的详细信息。",
+            "title": "GPT-5.5 Bio Bug Bounty（生物漏洞赏金计划）"
+          }
+        },
+        {
+          "id": 123,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是 GPT-5.5 Bio Bug Bounty。",
+              "发布者摘要称页面包含 OpenAI Bio Bounty 计划的详细信息。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和简短的发布者摘要，未读取文章正文；无法说明赏金范围、资格、奖励或报告流程。",
+            "summary": "该页面提供有关 GPT-5.5 Bio Bug Bounty 和 OpenAI Bio Bounty 计划的信息。"
+          }
+        }
+      ]
     },
     {
       "id": 35,
@@ -767,7 +3018,45 @@
       "category": "Product",
       "published_at": "2026-07-09T10:00:00Z",
       "url": "https://openai.com/index/gpt-5-6",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 126,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "每个 token 带来更多智能、每美元获得更强表现，并为你最困难的工作按需提供更多能力。",
+            "title": "GPT-5.6：随你的雄心扩展的前沿智能"
+          }
+        },
+        {
+          "id": 125,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "强调每个 token 提供更多智能。",
+              "强调每美元更强的表现。",
+              "面向高难度工作提供按需能力。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明评测、价格、可用性或能力细节。",
+            "summary": "OpenAI 将 GPT-5.6 描述为可随需求扩展的前沿智能，强调每个 token 带来更多智能、更强的单位成本表现，以及为最困难工作按需提供更多能力。"
+          }
+        }
+      ]
     },
     {
       "id": 34,
@@ -778,7 +3067,45 @@
       "category": "Product",
       "published_at": "2026-07-09T10:00:00Z",
       "url": "https://openai.com/index/chatgpt-for-your-most-ambitious-work",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 128,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "ChatGPT Work 是一个能够跨你的应用和文件执行操作、在需要时持续处理项目数小时，并把目标转化为已完成工作成果的智能体。",
+            "title": "ChatGPT 现已成为你开展宏大工作的合作伙伴"
+          }
+        },
+        {
+          "id": 127,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "能够跨应用和文件执行操作。",
+              "可在需要时持续处理项目数小时。",
+              "可把目标转化为已完成的工作成果。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明支持的应用、权限边界、可用性或安全机制。",
+            "summary": "ChatGPT Work 被描述为一个能够跨应用和文件执行操作、在需要时持续处理项目数小时，并把目标转化为已完成工作成果的智能体。"
+          }
+        }
+      ]
     },
     {
       "id": 107,
@@ -789,7 +3116,44 @@
       "category": "Announcements",
       "published_at": "2026-07-09T00:00:00Z",
       "url": "https://www.anthropic.com/news/hard-questions",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 130,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "我们正在向公众征集他们关于 AI 的最棘手问题，并承诺在处理这些问题时展示我们的工作过程。",
+            "title": "邀请提出棘手问题"
+          }
+        },
+        {
+          "id": 129,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "向公众征集关于 AI 的困难问题。",
+              "承诺在回应过程中展示工作。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明征集方式、选择标准或回应计划。",
+            "summary": "Anthropic 向公众征集关于 AI 的最棘手问题，并承诺在回应这些问题时展示其工作过程。"
+          }
+        }
+      ]
     },
     {
       "id": 37,
@@ -800,7 +3164,44 @@
       "category": "Global Affairs",
       "published_at": "2026-07-08T13:30:00Z",
       "url": "https://openai.com/index/government-national-security-partnerships",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 132,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "了解 OpenAI 如何处理政府和国家安全合作关系，包括负责任使用 AI、民主问责和公共安全方面的原则。",
+            "title": "我们处理政府和国家安全合作关系的方式"
+          }
+        },
+        {
+          "id": 131,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是政府和国家安全合作关系。",
+              "原则涉及负责任的 AI 使用、民主问责和公共安全。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明合作范围、具体原则或执行机制。",
+            "summary": "OpenAI 介绍其处理政府和国家安全合作关系的方式，所述原则涉及负责任地使用 AI、民主问责和公共安全。"
+          }
+        }
+      ]
     },
     {
       "id": 38,
@@ -811,7 +3212,44 @@
       "category": "Research",
       "published_at": "2026-07-08T13:00:00Z",
       "url": "https://openai.com/index/separating-signal-from-noise-coding-evaluations",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 134,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "OpenAI 的一项新分析揭示了流行编程基准 SWE-Bench Pro 中的问题，引发了对其评估 AI 模型时可靠性和准确性的担忧。",
+            "title": "在编程评估中分离信号与噪声"
+          }
+        },
+        {
+          "id": 133,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "分析对象是 SWE-Bench Pro 编程基准。",
+              "关注其评估 AI 模型时的可靠性和准确性。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明发现了哪些问题、分析方法或影响程度。",
+            "summary": "OpenAI 的一项新分析指出，流行的编程基准 SWE-Bench Pro 存在问题，并对其用于评估 AI 模型时的可靠性和准确性提出担忧。"
+          }
+        }
+      ]
     },
     {
       "id": 39,
@@ -822,7 +3260,45 @@
       "category": "Global Affairs",
       "published_at": "2026-07-08T10:00:00Z",
       "url": "https://openai.com/index/k-12-educators-practical-skills",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 136,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "OpenAI Academy 与 Walton Family Foundation 正在举办实践型 AI Skills Jams，帮助 K–12 教育工作者培养可用于课堂的实用 AI 技能。",
+            "title": "帮助 K–12 教育工作者培养实用 AI 技能"
+          }
+        },
+        {
+          "id": 135,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "合作方是 OpenAI Academy 与 Walton Family Foundation。",
+              "活动面向 K–12 教育工作者。",
+              "目标是培养课堂中的实用 AI 技能。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明活动地点、时间、课程或参与条件。",
+            "summary": "OpenAI Academy 与 Walton Family Foundation 正在面向 K–12 教育工作者开展实践型 AI Skills Jams，帮助他们培养可用于课堂的实用 AI 技能。"
+          }
+        }
+      ]
     },
     {
       "id": 40,
@@ -833,7 +3309,45 @@
       "category": "Product",
       "published_at": "2026-07-08T00:00:00Z",
       "url": "https://openai.com/index/introducing-gpt-live",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 138,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "面向自然人机交互的新一代语音模型，现已为 ChatGPT Voice 提供支持。",
+            "title": "推出 GPT-Live"
+          }
+        },
+        {
+          "id": 137,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "GPT-Live 是新一代语音模型。",
+              "目标是自然的人机交互。",
+              "现已为 ChatGPT Voice 提供支持。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明模型能力、可用性、价格或评测结果。",
+            "summary": "OpenAI 推出用于自然人机交互的新一代语音模型 GPT-Live，该模型现为 ChatGPT Voice 提供支持。"
+          }
+        }
+      ]
     },
     {
       "id": 42,
@@ -844,7 +3358,45 @@
       "category": "",
       "published_at": "2026-07-07T00:00:00Z",
       "url": "https://openai.com/index/mufg",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 140,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "MUFG 使用 ChatGPT Enterprise 建设 AI 原生组织、改进工作流，并大规模提供新的 AI 驱动金融服务。",
+            "title": "MUFG 希望借助 OpenAI 成为 AI 原生组织"
+          }
+        },
+        {
+          "id": 139,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "MUFG 使用 ChatGPT Enterprise。",
+              "目标包括建设 AI 原生组织和改进工作流。",
+              "计划大规模提供 AI 驱动的金融服务。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明具体服务、部署范围或成效。",
+            "summary": "MUFG 使用 ChatGPT Enterprise 建设 AI 原生组织、改进工作流，并大规模提供新的 AI 驱动金融服务。"
+          }
+        }
+      ]
     },
     {
       "id": 41,
@@ -855,7 +3407,45 @@
       "category": "",
       "published_at": "2026-07-07T00:00:00Z",
       "url": "https://openai.com/index/australian-payments-plus",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 142,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "了解 Australian Payments Plus 如何使用 ChatGPT Enterprise 和 Codex，更快应对支付业务的复杂性。AP+ 节省了时间、提高了质量，并继续让人类判断发挥核心作用。",
+            "title": "Australian Payments Plus 借助 ChatGPT 和 Codex 加速业务"
+          }
+        },
+        {
+          "id": 141,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "使用 ChatGPT Enterprise 和 Codex。",
+              "目标是节省时间并提高质量。",
+              "人类判断仍处于核心位置。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明具体流程、节省幅度或质量指标。",
+            "summary": "Australian Payments Plus 使用 ChatGPT Enterprise 和 Codex 应对支付业务的复杂性，以节省时间、提高质量，并继续让人类判断发挥核心作用。"
+          }
+        }
+      ]
     },
     {
       "id": 43,
@@ -866,7 +3456,45 @@
       "category": "Global Affairs",
       "published_at": "2026-06-30T09:00:00Z",
       "url": "https://openai.com/index/how-chatgpt-adoption-has-expanded",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 144,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "新的 OpenAI Signals 数据显示 ChatGPT 的采用正在全球增长，用户增加了使用量、探索更多能力，并推动不同地区和语言的增长。",
+            "title": "ChatGPT 的采用如何扩大"
+          }
+        },
+        {
+          "id": 143,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "OpenAI Signals 数据显示 ChatGPT 的全球采用在增长。",
+              "用户增加使用量并探索更多能力。",
+              "增长横跨不同地区和语言。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文或数据集；无法说明样本、时间范围或增长数值。",
+            "summary": "新的 OpenAI Signals 数据描述 ChatGPT 在全球的采用增长：用户增加使用量、探索更多能力，并推动不同地区和语言的增长。"
+          }
+        }
+      ]
     },
     {
       "id": 109,
@@ -877,7 +3505,45 @@
       "category": "Product",
       "published_at": "2026-06-30T00:00:00Z",
       "url": "https://www.anthropic.com/news/claude-sonnet-5",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 146,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "Sonnet 5 在编程、智能体和专业工作领域大规模提供前沿表现。",
+            "title": "推出 Claude Sonnet 5"
+          }
+        },
+        {
+          "id": 145,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "发布的产品是 Claude Sonnet 5。",
+              "所述领域包括编程、智能体和专业工作。",
+              "发布者称其可大规模提供前沿表现。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明评测、价格、可用性或具体能力。",
+            "summary": "Anthropic 推出 Claude Sonnet 5，并将其描述为在编程、智能体和专业工作领域大规模提供前沿表现。"
+          }
+        }
+      ]
     },
     {
       "id": 108,
@@ -888,7 +3554,45 @@
       "category": "Announcements",
       "published_at": "2026-06-30T00:00:00Z",
       "url": "https://www.anthropic.com/news/redeploying-fable-5",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 148,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文，且原摘要未注明 7 月 1 日的年份。",
+            "publisher_summary": "Fable 5 将于 7 月 1 日在全球重新上线。我们还与 Amazon、Microsoft、Google 及其他 Glasswing 合作伙伴共同提议一套全行业的越狱严重性评分框架。",
+            "title": "重新部署 Fable 5"
+          }
+        },
+        {
+          "id": 147,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "Fable 5 将于 7 月 1 日在全球重新上线。",
+              "提议建立全行业的越狱严重性评分框架。",
+              "所列合作方包括 Amazon、Microsoft、Google 和其他 Glasswing 合作伙伴。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；元数据未提供年份，也无法说明重新上线范围或评分框架细节。",
+            "summary": "Fable 5 将于 7 月 1 日在全球重新上线。Anthropic 还与 Amazon、Microsoft、Google 及其他 Glasswing 合作伙伴共同提议一套全行业的越狱严重性评分框架。"
+          }
+        }
+      ]
     },
     {
       "id": 46,
@@ -899,7 +3603,45 @@
       "category": "Research",
       "published_at": "2026-06-30T00:00:00Z",
       "url": "https://openai.com/index/introducing-genebench-pro",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 150,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布者摘要；未读取文章正文。",
+            "publisher_summary": "推出 GeneBench-Pro：一项使用复杂真实世界数据集，测试 AI 在基因组学、生物学和科学研究中表现的新基准。",
+            "title": "推出 GeneBench-Pro"
+          }
+        },
+        {
+          "id": 149,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "GeneBench-Pro 是一项新的 AI 基准。",
+              "涵盖基因组学、生物学和科学研究。",
+              "使用复杂的真实世界数据集。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据标题和发布者摘要等元数据，未读取文章正文；无法说明数据集、任务构成、评分方法或基准结果。",
+            "summary": "OpenAI 推出 GeneBench-Pro，这是一项使用复杂真实世界数据集测试 AI 在基因组学、生物学和科学研究中表现的新基准。"
+          }
+        }
+      ]
     },
     {
       "id": 45,
@@ -910,7 +3652,43 @@
       "category": "",
       "published_at": "2026-06-30T00:00:00Z",
       "url": "https://openai.com/index/genebench-pro/case-studies",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 152,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "请求中的发布者摘要为空字符串，故保持为空；仅翻译标题，未读取正文。",
+            "publisher_summary": "",
+            "title": "深入了解 Genebench-Pro"
+          }
+        },
+        {
+          "id": 151,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是 Genebench-Pro。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅有标题、来源和发布日期等元数据，发布者摘要为空且未读取正文；无法判断页面包含哪些案例、方法或结果。",
+            "summary": "标题显示，该页面介绍 Genebench-Pro 的内部情况。"
+          }
+        }
+      ]
     },
     {
       "id": 44,
@@ -921,7 +3699,45 @@
       "category": "Engineering",
       "published_at": "2026-06-30T00:00:00Z",
       "url": "https://openai.com/index/core-dump-epidemiology-data-infrastructure-bug",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 154,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "OpenAI 工程师通过大规模核心转储分析来调试罕见的基础设施崩溃，并发现了一个硬件故障和一个长期存在的软件错误。",
+            "title": "核心转储流行病学：修复一个存在 18 年的错误"
+          }
+        },
+        {
+          "id": 153,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "调查采用了大规模核心转储分析。",
+              "分析揭示了一个硬件故障和一个长期存在的软件错误。",
+              "标题称该软件错误已存在 18 年。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，因此没有关于分析方法、故障机制或修复过程的更多细节。",
+            "summary": "OpenAI 工程师通过大规模分析核心转储，排查罕见的基础设施崩溃，并发现了一个硬件故障和一个长期存在的软件错误；标题称该软件错误已存在 18 年。"
+          }
+        }
+      ]
     },
     {
       "id": 47,
@@ -932,7 +3748,44 @@
       "category": "Global Affairs",
       "published_at": "2026-06-29T07:00:00Z",
       "url": "https://openai.com/index/mapping-ai-jobs-transition-eu",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 156,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "OpenAI 的一份新报告描绘了 AI 可能如何重塑欧盟就业，并重点指出哪些职业可能面临自动化、增长或工作流程变化。",
+            "title": "描绘欧洲 AI 劳动力机遇"
+          }
+        },
+        {
+          "id": 155,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "报告关注 AI 对欧盟就业格局的潜在影响。",
+              "职业层面的可能变化包括自动化、增长和工作流程调整。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问报告正文，无法说明研究方法、职业分类或影响规模。",
+            "summary": "OpenAI 的一份新报告描绘了 AI 可能如何重塑欧盟就业，并指出哪些职业可能面临自动化、增长或工作流程变化。"
+          }
+        }
+      ]
     },
     {
       "id": 48,
@@ -943,7 +3796,44 @@
       "category": "Company",
       "published_at": "2026-06-28T17:00:00Z",
       "url": "https://openai.com/index/hp-frontier-partnership",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 158,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "惠普公司扩大其与 OpenAI Frontier 的合作关系，在客户体验、软件开发和企业运营中部署 AI。",
+            "title": "惠普公司与 OpenAI 启动 Frontier 战略合作伙伴关系"
+          }
+        },
+        {
+          "id": 157,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "惠普公司正在扩大其 OpenAI Frontier 合作关系。",
+              "部署领域包括客户体验、软件开发和企业运营。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，未提供合作规模、时间表或具体实施方案。",
+            "summary": "惠普公司扩大了与 OpenAI Frontier 的合作，计划在客户体验、软件开发和企业运营中部署 AI。"
+          }
+        }
+      ]
     },
     {
       "id": 49,
@@ -954,7 +3844,44 @@
       "category": "Product",
       "published_at": "2026-06-26T10:00:00Z",
       "url": "https://openai.com/index/previewing-gpt-5-6-sol",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 160,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "OpenAI 预览 GPT-5.6 Sol，这是一款在编程、科学和网络安全方面能力更强的下一代模型，并配备了其最先进的安全体系。",
+            "title": "GPT-5.6 Sol 预览：下一代模型"
+          }
+        },
+        {
+          "id": 159,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "GPT-5.6 Sol 被定位为下一代模型。",
+              "发布方强调其编程、科学、网络安全能力以及配套安全体系。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法核实具体能力、评测结果或安全措施。",
+            "summary": "OpenAI 预览了下一代模型 GPT-5.6 Sol，称其在编程、科学和网络安全方面能力更强，并配备了该公司的先进安全体系。"
+          }
+        }
+      ]
     },
     {
       "id": 60,
@@ -965,7 +3892,44 @@
       "category": "General",
       "published_at": "2026-06-26T00:00:00Z",
       "url": "https://developers.openai.com/blog/connect-private-mcp-servers-to-openai-products",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 162,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "我们如何在支持 MCP 流式传输、身份验证和可检查客户端的同时，维持私有网络边界。",
+            "title": "在不公开的情况下让私有 MCP 服务器可访问"
+          }
+        },
+        {
+          "id": 161,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "目标是在不公开服务器的情况下提供可达性。",
+              "方案涉及 MCP 流式传输、身份验证、可检查客户端和私有网络边界。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，因此没有网络架构、威胁模型或实现步骤。",
+            "summary": "文章介绍了如何在支持 MCP 流式传输、身份验证和可检查客户端的同时，维持私有网络边界，使私有 MCP 服务器无需公开即可访问。"
+          }
+        }
+      ]
     },
     {
       "id": 50,
@@ -976,7 +3940,44 @@
       "category": "Company",
       "published_at": "2026-06-25T02:00:00Z",
       "url": "https://openai.com/index/how-agents-are-transforming-work",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 164,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "OpenAI 的一篇新研究论文展示了 AI 智能体如何改变工作，使人们能够处理更长、更复杂的任务，并在不同岗位中扩大生产力。",
+            "title": "智能体如何改变工作"
+          }
+        },
+        {
+          "id": 163,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "研究关注 AI 智能体对工作的影响。",
+              "发布方称智能体可支持更长、更复杂的任务，并拓展不同岗位的生产力。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问论文正文，无法说明数据、研究设计或影响幅度。",
+            "summary": "OpenAI 的一篇新研究论文探讨 AI 智能体如何改变工作，包括承担更长、更复杂的任务，以及在不同岗位中拓展生产力。"
+          }
+        }
+      ]
     },
     {
       "id": 61,
@@ -987,7 +3988,44 @@
       "category": "Codex",
       "published_at": "2026-06-23T00:00:00Z",
       "url": "https://developers.openai.com/blog/mastering-codex-remote-for-engineering",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 166,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "在 ChatGPT 移动应用中使用 Remote，启动、引导、审查和整理工程工作。",
+            "title": "在手机上驾驭远程工程工作"
+          }
+        },
+        {
+          "id": 165,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "Remote 可在 ChatGPT 移动应用中使用。",
+              "支持的工作包括启动、引导、审查和整理工程任务。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，未提供功能限制、配置方式或完整工作流程。",
+            "summary": "文章介绍如何在 ChatGPT 移动应用中使用 Remote，从手机启动、引导、审查和整理工程工作。"
+          }
+        }
+      ]
     },
     {
       "id": 87,
@@ -998,7 +4036,43 @@
       "category": "",
       "published_at": "2026-06-18T00:00:00Z",
       "url": "https://claude.com/blog/artifacts-in-claude-code",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 168,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空；仅翻译标题，未访问文章正文。",
+            "publisher_summary": "",
+            "title": "Claude Code 现已支持 artifacts（工件）"
+          }
+        },
+        {
+          "id": 167,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "Claude Code 新增了对 artifacts 的支持。"
+            ],
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，只有标题可用；未访问文章正文，无法说明 artifacts 的定义、范围或使用方式。",
+            "summary": "标题表明 Claude Code 现已支持 artifacts（工件）。"
+          }
+        }
+      ]
     },
     {
       "id": 88,
@@ -1009,7 +4083,43 @@
       "category": "",
       "published_at": "2026-06-08T00:00:00Z",
       "url": "https://claude.com/blog/claude-for-foundation-models",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 170,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空；仅翻译标题，未访问文章正文。",
+            "publisher_summary": "",
+            "title": "在 Apple 平台的 Foundation Models 框架中使用 Claude 构建智能应用"
+          }
+        },
+        {
+          "id": 169,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是 Claude、Apple 平台与 Foundation Models 框架的应用开发。"
+            ],
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，只有标题可用；未访问文章正文，无法说明集成方法、平台要求或示例功能。",
+            "summary": "标题涉及在 Apple 平台的 Foundation Models 框架中使用 Claude 构建智能应用。"
+          }
+        }
+      ]
     },
     {
       "id": 90,
@@ -1020,7 +4130,43 @@
       "category": "",
       "published_at": "2026-05-19T00:00:00Z",
       "url": "https://claude.com/blog/new-in-claude-managed-agents",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 172,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空；仅翻译标题，未访问文章正文。",
+            "publisher_summary": "",
+            "title": "Claude Managed Agents 新功能：dreaming、outcomes 与多智能体编排"
+          }
+        },
+        {
+          "id": 171,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "Claude Managed Agents 增加了与 dreaming、outcomes 和多智能体编排相关的功能。"
+            ],
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，只有标题可用；未访问文章正文，无法确认这些功能的具体含义、可用范围或操作方式。",
+            "summary": "标题介绍 Claude Managed Agents 的新功能，涉及 dreaming、outcomes 和多智能体编排。"
+          }
+        }
+      ]
     },
     {
       "id": 89,
@@ -1031,7 +4177,43 @@
       "category": "",
       "published_at": "2026-05-19T00:00:00Z",
       "url": "https://claude.com/blog/claude-managed-agents-updates",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 174,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空；仅翻译标题，未访问文章正文。",
+            "publisher_summary": "",
+            "title": "Claude Managed Agents 新功能：自托管沙箱和 MCP 隧道"
+          }
+        },
+        {
+          "id": 173,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "更新主题包括自托管沙箱和 MCP 隧道。"
+            ],
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，只有标题可用；未访问文章正文，无法说明部署方式、安全边界或可用性。",
+            "summary": "标题介绍 Claude Managed Agents 的更新，涉及自托管沙箱和 MCP 隧道。"
+          }
+        }
+      ]
     },
     {
       "id": 92,
@@ -1042,7 +4224,43 @@
       "category": "",
       "published_at": "2026-04-23T00:00:00Z",
       "url": "https://claude.com/blog/claude-managed-agents-memory",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 176,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空；仅翻译标题，未访问文章正文。",
+            "publisher_summary": "",
+            "title": "Claude Managed Agents 的内置记忆"
+          }
+        },
+        {
+          "id": 175,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "Claude Managed Agents 提供内置记忆。"
+            ],
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，只有标题可用；未访问文章正文，无法说明记忆的范围、持久性、隐私或控制方式。",
+            "summary": "标题表明 Claude Managed Agents 增加了内置记忆功能。"
+          }
+        }
+      ]
     },
     {
       "id": 91,
@@ -1053,7 +4271,43 @@
       "category": "",
       "published_at": "2026-04-23T00:00:00Z",
       "url": "https://claude.com/blog/connectors-for-everyday-life",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 178,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空；仅翻译标题，未访问文章正文。",
+            "publisher_summary": "",
+            "title": "Claude 面向日常生活的新连接器"
+          }
+        },
+        {
+          "id": 177,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "Claude 增加了面向日常生活场景的连接器。"
+            ],
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，只有标题可用；未访问文章正文，无法列出连接器、支持的服务或使用条件。",
+            "summary": "标题介绍 Claude 面向日常生活的新连接器。"
+          }
+        }
+      ]
     },
     {
       "id": 93,
@@ -1064,7 +4318,43 @@
       "category": "",
       "published_at": "2026-04-14T00:00:00Z",
       "url": "https://claude.com/blog/claude-code-desktop-redesign",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 180,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空；仅翻译标题，未访问文章正文。",
+            "publisher_summary": "",
+            "title": "为并行智能体重新设计桌面版 Claude Code"
+          }
+        },
+        {
+          "id": 179,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "Claude Code 桌面版的重新设计聚焦并行智能体。"
+            ],
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，只有标题可用；未访问文章正文，无法说明界面变化、并发模型或使用限制。",
+            "summary": "标题介绍 Claude Code 桌面版为支持并行智能体而进行的重新设计。"
+          }
+        }
+      ]
     },
     {
       "id": 94,
@@ -1075,7 +4365,43 @@
       "category": "",
       "published_at": "2026-04-10T00:00:00Z",
       "url": "https://claude.com/blog/preparing-your-security-program-for-ai-accelerated-offense",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 182,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空；仅翻译标题，未访问文章正文。",
+            "publisher_summary": "",
+            "title": "让你的安全计划为 AI 加速的攻击做好准备"
+          }
+        },
+        {
+          "id": 181,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是针对 AI 加速攻击调整安全计划。"
+            ],
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，只有标题可用；未访问文章正文，无法说明威胁模型、建议措施或适用组织。",
+            "summary": "标题讨论如何让安全计划为 AI 加速的攻击活动做好准备。"
+          }
+        }
+      ]
     },
     {
       "id": 95,
@@ -1086,7 +4412,43 @@
       "category": "",
       "published_at": "2026-04-08T00:00:00Z",
       "url": "https://claude.com/blog/claude-managed-agents",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 184,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空；仅翻译标题，未访问文章正文，也未核实标题中的“10 倍”主张。",
+            "publisher_summary": "",
+            "title": "Claude Managed Agents：以 10 倍速度进入生产环境"
+          }
+        },
+        {
+          "id": 183,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "标题宣称 Claude Managed Agents 可帮助用户以 10 倍速度进入生产环境。"
+            ],
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，只有标题中的宣传性主张可用；未访问文章正文，无法核实“10 倍”的基准、证据或适用条件。",
+            "summary": "标题将 Claude Managed Agents 定位为一种可将生产落地速度提升 10 倍的方案。"
+          }
+        }
+      ]
     },
     {
       "id": 96,
@@ -1097,7 +4459,44 @@
       "category": "",
       "published_at": "2026-04-02T00:00:00Z",
       "url": "https://claude.com/blog/harnessing-claudes-intelligence",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 186,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空；仅翻译标题，未访问文章正文。",
+            "publisher_summary": "",
+            "title": "智能体 Harness 设计：发挥 Claude 智能的 3 种模式"
+          }
+        },
+        {
+          "id": 185,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是智能体 Harness 设计。",
+              "文章标题承诺介绍 3 种利用 Claude 智能的模式。"
+            ],
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，只有标题可用；未访问文章正文，无法列出或解释这 3 种模式。",
+            "summary": "标题介绍智能体 Harness 设计，并提出发挥 Claude 智能的 3 种模式。"
+          }
+        }
+      ]
     },
     {
       "id": 59,
@@ -1108,7 +4507,45 @@
       "category": "Audio",
       "published_at": "2026-03-25T00:00:00Z",
       "url": "https://developers.openai.com/blog/realtime-perplexity-computer",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 188,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "Perplexity Computer 的语音智能体如何使用 Realtime API 构建的经验。",
+            "title": "Perplexity 如何使用 Realtime API 将语音搜索带给数百万用户"
+          }
+        },
+        {
+          "id": 187,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "案例聚焦 Perplexity Computer 的语音智能体。",
+              "实现使用了 Realtime API。",
+              "标题称相关语音搜索已覆盖数百万用户。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法说明架构、用户规模依据或具体经验。",
+            "summary": "标题称 Perplexity 使用 Realtime API 将语音搜索带给数百万用户；发布方摘要聚焦 Perplexity Computer 语音智能体的构建经验。"
+          }
+        }
+      ]
     },
     {
       "id": 54,
@@ -1119,7 +4556,44 @@
       "category": "General",
       "published_at": "2026-03-20T00:00:00Z",
       "url": "https://developers.openai.com/blog/designing-delightful-frontends-with-gpt-5-4",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 190,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "引导 GPT-5.4 生成精致、可投入生产的前端设计的实用技巧。",
+            "title": "使用 GPT-5.4 设计令人愉悦的前端"
+          }
+        },
+        {
+          "id": 189,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "内容聚焦使用 GPT-5.4 设计前端。",
+              "目标是获得更精致且可投入生产的结果。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法列出具体技巧、示例或评估标准。",
+            "summary": "文章介绍引导 GPT-5.4 生成精致、可投入生产的前端设计的实用技巧。"
+          }
+        }
+      ]
     },
     {
       "id": 56,
@@ -1130,7 +4604,44 @@
       "category": "API",
       "published_at": "2026-03-11T00:00:00Z",
       "url": "https://developers.openai.com/blog/one-year-of-responses",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 192,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "Responses API 推出第一年中，开发者构建智能体产品的五个故事。",
+            "title": "从提示词到产品：Responses API 一周年"
+          }
+        },
+        {
+          "id": 191,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "文章回顾 Responses API 的第一年。",
+              "内容包含五个开发者构建智能体产品的案例。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法描述五个案例的产品、成果或技术细节。",
+            "summary": "在 Responses API 推出一周年之际，文章汇集了开发者使用它构建智能体产品的五个故事。"
+          }
+        }
+      ]
     },
     {
       "id": 69,
@@ -1141,7 +4652,44 @@
       "category": "Codex",
       "published_at": "2026-03-09T00:00:00Z",
       "url": "https://developers.openai.com/blog/skills-agents-sdk",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 194,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "在 OpenAI Agents SDK 仓库中使用 skills 和 GitHub Actions 优化 Codex 工作流程。",
+            "title": "使用 skills 加速开源软件维护"
+          }
+        },
+        {
+          "id": 193,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "案例场景是 OpenAI Agents SDK 仓库的开源维护。",
+              "优化手段包括 skills 和 GitHub Actions。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法说明具体工作流、指标或维护结果。",
+            "summary": "文章介绍在 OpenAI Agents SDK 仓库中使用 skills 和 GitHub Actions 优化 Codex 工作流程，以加速开源维护。"
+          }
+        }
+      ]
     },
     {
       "id": 52,
@@ -1152,7 +4700,44 @@
       "category": "Codex",
       "published_at": "2026-02-26T00:00:00Z",
       "url": "https://developers.openai.com/blog/building-frontend-uis-with-codex-and-figma",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 196,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "使用 Codex 和 Figma 将真实运行的界面带入 Figma，完善这些界面，再将变更带回 Codex。",
+            "title": "使用 Codex 和 Figma 构建前端 UI"
+          }
+        },
+        {
+          "id": 195,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "工作流连接 Codex、运行中的界面和 Figma。",
+              "设计可在 Figma 中完善，再把变更带回 Codex。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法说明集成步骤、支持范围或同步限制。",
+            "summary": "文章介绍结合 Codex 与 Figma 的前端 UI 工作流：把真实运行的界面带入 Figma 进行完善，再将修改带回 Codex。"
+          }
+        }
+      ]
     },
     {
       "id": 63,
@@ -1163,7 +4748,43 @@
       "category": "Codex",
       "published_at": "2026-02-23T00:00:00Z",
       "url": "https://developers.openai.com/blog/run-long-horizon-tasks-with-codex",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 198,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空；仅翻译标题，未访问文章正文。",
+            "publisher_summary": "",
+            "title": "使用 Codex 运行长周期任务"
+          }
+        },
+        {
+          "id": 197,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是 Codex 的长周期任务执行。"
+            ],
+            "language": "zh-CN",
+            "limitations": "发布方摘要为空，只有标题可用；未访问文章正文，无法说明任务类型、持续时间、配置或可靠性机制。",
+            "summary": "标题介绍如何使用 Codex 运行长周期任务。"
+          }
+        }
+      ]
     },
     {
       "id": 64,
@@ -1174,7 +4795,44 @@
       "category": "API",
       "published_at": "2026-02-11T00:00:00Z",
       "url": "https://developers.openai.com/blog/skills-shell-tips",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 200,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "在 Responses API 中使用 skills、托管 shell 和服务端压缩进行构建的实用模式。",
+            "title": "Shell + Skills + Compaction：构建真正执行工作的长时间运行智能体的技巧"
+          }
+        },
+        {
+          "id": 199,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "涉及 skills、托管 shell 和服务端压缩。",
+              "目标是支持长时间运行并执行实际工作的智能体。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法列出具体模式、代码或运行约束。",
+            "summary": "文章提供在 Responses API 中结合 skills、托管 shell 和服务端压缩来构建长时间运行、执行实际工作的智能体的实用模式。"
+          }
+        }
+      ]
     },
     {
       "id": 51,
@@ -1185,7 +4843,44 @@
       "category": "Apps SDK",
       "published_at": "2026-02-04T00:00:00Z",
       "url": "https://developers.openai.com/blog/15-lessons-building-chatgpt-apps",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 202,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文，也未核实其中的“10 倍”主张。",
+            "publisher_summary": "以及我们如何将这些经验整合进一个 Codex Skill，帮助你以 10 倍速度构建 ChatGPT Apps。",
+            "title": "构建 ChatGPT Apps 得出的 15 条经验"
+          }
+        },
+        {
+          "id": 201,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "内容包含构建 ChatGPT Apps 的 15 条经验。",
+              "这些经验被整合进一个 Codex Skill；发布方称其可带来 10 倍构建速度。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法列出 15 条经验，也无法核实“10 倍”的基准或证据。",
+            "summary": "文章总结了构建 ChatGPT Apps 的 15 条经验，并说明这些经验被纳入一个 Codex Skill，旨在帮助用户以 10 倍速度构建 ChatGPT Apps。"
+          }
+        }
+      ]
     },
     {
       "id": 66,
@@ -1196,7 +4891,44 @@
       "category": "Codex",
       "published_at": "2026-01-22T00:00:00Z",
       "url": "https://developers.openai.com/blog/eval-skills",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 204,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "一份实用指南，帮助你将 Agent Skills 转变为可测试、可评分并能随时间持续改进的对象。",
+            "title": "使用 Evals 系统化测试 Agent Skills"
+          }
+        },
+        {
+          "id": 203,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "指南聚焦系统化测试 Agent Skills。",
+              "目标包括测试、评分和持续改进。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法说明评测设计、指标或示例。",
+            "summary": "文章提供一份实用指南，说明如何借助 Evals 将 Agent Skills 转化为可测试、可评分并能持续改进的对象。"
+          }
+        }
+      ]
     },
     {
       "id": 65,
@@ -1207,7 +4939,44 @@
       "category": "Codex",
       "published_at": "2026-01-11T00:00:00Z",
       "url": "https://developers.openai.com/blog/skyscanner-codex-jetbrains-mcp",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 206,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "Skyscanner 如何将 Codex CLI 与 JetBrains IDE 集成，以加快调试、测试和开发工作流程。",
+            "title": "Skyscanner 如何使用 JetBrains MCP 增强 Codex"
+          }
+        },
+        {
+          "id": 205,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "案例来自 Skyscanner。",
+              "Codex CLI 与 JetBrains IDE 的集成用于加速调试、测试和开发。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法说明集成架构、成效指标或限制。",
+            "summary": "文章介绍 Skyscanner 如何将 Codex CLI 与 JetBrains IDE 集成，以加快调试、测试和开发工作流程。"
+          }
+        }
+      ]
     },
     {
       "id": 62,
@@ -1218,7 +4987,44 @@
       "category": "General",
       "published_at": "2025-12-30T00:00:00Z",
       "url": "https://developers.openai.com/blog/openai-for-developers-2025",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 208,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "年终盘点构建生产级智能体所涉及的重大模型、API 和平台变化。",
+            "title": "面向开发者的 OpenAI：2025 年回顾"
+          }
+        },
+        {
+          "id": 207,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "回顾范围包括模型、API 和平台变化。",
+              "主题聚焦构建生产级智能体。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法列出具体发布、变化或建议。",
+            "summary": "文章年终回顾了 2025 年面向开发者的重要模型、API 和平台变化，重点关注生产级智能体的构建。"
+          }
+        }
+      ]
     },
     {
       "id": 67,
@@ -1229,7 +5035,44 @@
       "category": "Audio",
       "published_at": "2025-12-22T00:00:00Z",
       "url": "https://developers.openai.com/blog/updates-audio-models",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 210,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "新的音频模型快照，以及面向生产级语音应用更广泛开放的 Custom Voices。",
+            "title": "面向语音应用开发者的更新"
+          }
+        },
+        {
+          "id": 209,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "更新包含新的音频模型快照。",
+              "Custom Voices 向更多生产级语音应用开放。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法说明模型版本、访问条件或功能限制。",
+            "summary": "文章介绍面向生产级语音应用的更新，包括新的音频模型快照以及更广泛开放的 Custom Voices。"
+          }
+        }
+      ]
     },
     {
       "id": 70,
@@ -1240,7 +5083,44 @@
       "category": "Apps SDK",
       "published_at": "2025-11-24T00:00:00Z",
       "url": "https://developers.openai.com/blog/what-makes-a-great-chatgpt-app",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 212,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "如何构建让对话体验变得更好的功能。",
+            "title": "什么造就了优秀的 ChatGPT 应用"
+          }
+        },
+        {
+          "id": 211,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是优秀 ChatGPT 应用的设计。",
+              "关注能够让对话变得更好的功能。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法列出具体设计原则、功能或评价标准。",
+            "summary": "文章讨论优秀 ChatGPT 应用的特征，重点是构建能够改善对话体验的功能。"
+          }
+        }
+      ]
     },
     {
       "id": 68,
@@ -1251,7 +5131,44 @@
       "category": "Codex",
       "published_at": "2025-10-27T00:00:00Z",
       "url": "https://developers.openai.com/blog/codex-for-documentation-dagster",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 214,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "了解 Dagster 如何在其开源项目中使用 Codex 来加速文档编写、跨媒介转换内容，甚至衡量文档的完整程度。",
+            "title": "Dagster Labs 如何使用 Codex 开展教育工作"
+          }
+        },
+        {
+          "id": 213,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "案例来自 Dagster Labs 的开源项目。",
+              "Codex 被用于文档、跨媒介内容转换和文档完整度衡量。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法说明具体工作流、衡量方法或成效。",
+            "summary": "文章介绍 Dagster Labs 如何在开源项目中使用 Codex，加速文档工作、跨媒介转换内容，并衡量文档完整度。"
+          }
+        }
+      ]
     },
     {
       "id": 58,
@@ -1262,7 +5179,44 @@
       "category": "Codex",
       "published_at": "2025-10-10T00:00:00Z",
       "url": "https://developers.openai.com/blog/codex-at-devday",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 216,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "了解 Codex 如何帮助我们构建体验、演示、产品等。",
+            "title": "Codex 如何助力 OpenAI DevDay 2025"
+          }
+        },
+        {
+          "id": 215,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "案例场景是 OpenAI DevDay 2025。",
+              "Codex 被用于构建体验、演示、产品等。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法说明具体项目、工作流程或成果。",
+            "summary": "文章介绍 Codex 如何帮助 OpenAI 为 DevDay 2025 构建体验、演示、产品等内容。"
+          }
+        }
+      ]
     },
     {
       "id": 71,
@@ -1273,7 +5227,44 @@
       "category": "API",
       "published_at": "2025-09-22T00:00:00Z",
       "url": "https://developers.openai.com/blog/responses-api",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 218,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "Responses API 如何为 GPT-5 解锁持久推理、托管工具和多模态工作流。",
+            "title": "我们为何构建 Responses API"
+          }
+        },
+        {
+          "id": 217,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "Responses API 面向 GPT-5 工作流。",
+              "发布方强调持久推理、托管工具和多模态工作流。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法说明 API 设计、能力边界或使用方式。",
+            "summary": "文章解释构建 Responses API 的原因，并指出它为 GPT-5 提供持久推理、托管工具和多模态工作流能力。"
+          }
+        }
+      ]
     },
     {
       "id": 55,
@@ -1284,7 +5275,44 @@
       "category": "Audio",
       "published_at": "2025-09-12T00:00:00Z",
       "url": "https://developers.openai.com/blog/realtime-api",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 220,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "近期实时语音到语音更新中值得注意的细节。",
+            "title": "Realtime API 开发者笔记"
+          }
+        },
+        {
+          "id": 219,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "主题是 Realtime API 的近期语音到语音更新。",
+              "内容聚焦开发者值得注意的细节。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和发布方摘要；未访问文章正文，无法列出具体更新或开发注意事项。",
+            "summary": "文章记录近期 Realtime API 语音到语音更新中值得关注的细节。"
+          }
+        }
+      ]
     },
     {
       "id": 57,
@@ -1295,7 +5323,43 @@
       "category": "General",
       "published_at": "2025-09-11T00:00:00Z",
       "url": "https://developers.openai.com/blog/intro",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 222,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "language": "zh-CN",
+            "limitations": "仅翻译请求中提供的标题和发布方摘要；未访问文章正文。",
+            "publisher_summary": "介绍我们的开发者博客。",
+            "title": "你好，世界！"
+          }
+        },
+        {
+          "id": 221,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-02T07:12:37Z",
+          "input_truncated": false,
+          "provider": "chatgpt-codex-subscription",
+          "model": "gpt-5.6-luna",
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "这是开发者博客的介绍文章。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅依据请求中提供的标题和简短发布方摘要；未访问文章正文，无法说明博客范围、栏目或后续内容。",
+            "summary": "文章用于介绍 OpenAI 的开发者博客。"
+          }
+        }
+      ]
     }
   ],
   "ai_reports": [
