@@ -9,7 +9,7 @@ authors = [{ name = "Aaron Zhu" }]
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/aaron-he-zhu/aaron-reader"
+Homepage = "https://aaron-reader.zhuhe1983.workers.dev/"
 Repository = "https://github.com/aaron-he-zhu/aaron-reader"
 Issues = "https://github.com/aaron-he-zhu/aaron-reader/issues"
 

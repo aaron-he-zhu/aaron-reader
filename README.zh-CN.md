@@ -2,6 +2,9 @@
 
 [English](README.md)
 
+[Cloudflare 线上站点](https://aaron-reader.zhuhe1983.workers.dev/) ·
+[GitHub 开源仓库](https://github.com/aaron-he-zhu/aaron-reader)
+
 一个本地运行、确定性抓取、默认使用 **0 LLM token** 的博客订阅器。它目前订阅：
 
 - [OpenAI News](https://openai.com/news/rss.xml)
@@ -105,6 +108,11 @@ AARON_READER_LANG=zh-CN ./scripts/status-launchd.sh
 卸载时 plist 会移到废纸篓，已安装运行环境、数据库、文章、静态输出和日志都不会被删除。标准输出保存在 `~/Library/Application Support/Aaron Reader/data/launchd.log`，错误和警告保存在同目录的 `launchd.error.log`。launchd 不会替本项目轮转这两个文件；长期运行时请定期检查、归档或清理日志。
 
 ### GitHub 与 Cloudflare 发布边界
+
+公开生产站点是
+[aaron-reader.zhuhe1983.workers.dev](https://aaron-reader.zhuhe1983.workers.dev/)。
+Cloudflare Workers Builds 跟踪 GitHub `main` 分支，从 `/site` 构建，并且只在
+GitHub push 成功后发布；非生产分支构建已经关闭。
 
 `site/` 是当前仓库内的 vinext/Cloudflare Worker 发布面，只包含只读双语界面，
 以及 JSON、RSS 和 Markdown 的明确公开投影。进入 Git 历史或 Cloudflare 前，

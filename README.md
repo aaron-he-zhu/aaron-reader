@@ -2,6 +2,9 @@
 
 [简体中文](README.zh-CN.md)
 
+[Live Cloudflare site](https://aaron-reader.zhuhe1983.workers.dev/) ·
+[GitHub repository](https://github.com/aaron-he-zhu/aaron-reader)
+
 A local, deterministic blog reader that uses **zero LLM tokens by default**. It currently subscribes to:
 
 - [OpenAI News](https://openai.com/news/rss.xml)
@@ -118,6 +121,12 @@ The generated LaunchAgent explicitly sets `AARON_READER_LANG=en`, keeping unatte
 Uninstalling moves the plist to the Trash. It does not delete the installed runtime, database, articles, generated static files, or logs. Standard output is written to `~/Library/Application Support/Aaron Reader/data/launchd.log`, while errors and warnings are written to the adjacent `launchd.error.log`. launchd does not rotate these files for this project; inspect, archive, or remove old logs periodically during long-term use.
 
 ### GitHub and Cloudflare release boundary
+
+The public production deployment is
+[aaron-reader.zhuhe1983.workers.dev](https://aaron-reader.zhuhe1983.workers.dev/).
+Cloudflare Workers Builds tracks the GitHub `main` branch, builds from `/site`,
+and deploys only after a successful GitHub push. Non-production branch builds
+are disabled.
 
 `site/` is the vinext/Cloudflare Worker surface inside this repository. It
 contains the read-only bilingual interface and an explicit public projection of
