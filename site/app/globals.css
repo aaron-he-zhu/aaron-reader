@@ -115,13 +115,6 @@ h1 span { display: block; font-style: italic; font-weight: 400; }
 .ai-translation-note time { white-space: nowrap; }
 .ai-state { display: inline-flex; align-items: center; gap: 6px; padding: 4px 7px; border: 1px solid #d9d4c9; background: rgba(251, 250, 247, .62); color: #62645e; font-size: 9px; font-weight: 720; letter-spacing: .055em; line-height: 1; text-transform: uppercase; }
 .ai-state i { width: 5px; height: 5px; border-radius: 50%; background: var(--ai); box-shadow: 0 0 0 3px rgba(112, 71, 184, .09); }
-.ai-summary-card { max-width: 810px; margin-top: 19px; padding: 15px 0 0; border-top: 1px solid var(--line); }
-.ai-summary-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
-.ai-summary-heading > strong { font-size: 10px; font-weight: 790; letter-spacing: .09em; text-transform: uppercase; }
-.ai-summary-card > p { margin: 0; color: #454742; font-size: 13px; line-height: 1.67; }
-.ai-summary-card ul { display: grid; gap: 6px; margin: 12px 0 0; padding: 0 0 0 17px; color: #555750; font-size: 12px; line-height: 1.55; }
-.ai-summary-card li::marker { color: var(--ai); }
-.ai-summary-meta { display: flex; flex-wrap: wrap; gap: 6px 15px; margin-top: 14px; padding-top: 11px; border-top: 1px solid #ded9cf; color: var(--muted); font-size: 9px; font-weight: 670; letter-spacing: .055em; text-transform: uppercase; }
 .ai-warning { color: #a35f13; }
 .article-links { display: flex; align-items: center; max-width: 810px; margin-top: 15px; }
 .read-link { display: inline-flex; align-items: center; gap: 7px; min-height: 28px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .04em; text-decoration: none; text-transform: uppercase; }
@@ -187,8 +180,6 @@ footer { display: flex; justify-content: space-between; padding: 25px clamp(22px
   .article { grid-template-columns: 28px 1fr; gap: 10px; padding: 25px 0 27px; }
   .article h2 { font-size: 28px; }
   .article-body > p { font-size: 13px; }
-  .ai-summary-card { padding: 14px 0 0; }
-  .ai-summary-heading { align-items: flex-start; flex-direction: column; gap: 9px; }
   .system-panel { grid-template-columns: 1fr; }
   footer { flex-direction: column; gap: 9px; }
 }

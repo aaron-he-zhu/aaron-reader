@@ -1,7 +1,7 @@
 [project]
 name = "aaron-reader"
 version = "1.1.0"
-description = "Cloud-native AI lab subscriptions with deterministic crawling and cached DeepSeek enrichment"
+description = "Cloud-native AI lab subscriptions with deterministic crawling and audited OpenRouter-to-DeepSeek fallback"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }

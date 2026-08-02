@@ -9,6 +9,12 @@ from pathlib import Path
 from typing import List, Optional, Sequence
 from zoneinfo import ZoneInfo
 
+from .ai_profiles import (
+    DEFAULT_AI_FALLBACK_PROVIDER,
+    DEFAULT_AI_PROVIDER,
+    SUPPORTED_AI_PROVIDERS,
+    ai_provider_profile,
+)
 from .config import load_config, resolve_project_path
 from .crawler_state import export_crawler_state, import_crawler_state
 from .database import Database
@@ -99,7 +105,22 @@ def build_parser(language: str = "en") -> argparse.ArgumentParser:
 
     cloud_run_parser = ai_subparsers.add_parser(
         "cloud-run",
-        help="Run the fixed DeepSeek enrichment cycle for GitHub Actions",
+        help="Run a fixed cloud AI enrichment cycle for GitHub Actions",
+    )
+    cloud_run_parser.add_argument(
+        "--provider",
+        choices=SUPPORTED_AI_PROVIDERS,
+        default=None,
+        help="Fixed AI provider profile (defaults to config.ai.provider)",
+    )
+    cloud_run_parser.add_argument(
+        "--fallback-provider",
+        choices=("none",) + SUPPORTED_AI_PROVIDERS,
+        default=None,
+        help=(
+            "One-way fallback profile (defaults to config.ai.fallback_provider; "
+            "production supports only openrouter -> deepseek)"
+        ),
     )
     cloud_run_parser.add_argument(
         "--limit",
@@ -497,29 +518,48 @@ def _run_ai_command(
 ) -> int:
     """Run the opt-in AI command tree without importing it on normal paths."""
 
-    from .ai_provider import (
-        DEEPSEEK_API_KEY_ENVIRONMENT,
-        DEEPSEEK_MODEL,
-        ProviderConfigError,
-    )
+    from .ai_provider import ProviderConfigError
     from .ai_service import (
+        AIFallbackEligibleError,
         AIGenerationHeld,
         AIService,
         AIServiceError,
     )
 
     command = args.ai_command
+    fallback_service = None
+    fallback_profile = None
     if command == "cloud-run":
+        profile = ai_provider_profile(args.provider or config.ai.provider)
+        requested_fallback = args.fallback_provider
+        if requested_fallback is None:
+            fallback_name = (
+                config.ai.fallback_provider
+                if profile.provider == config.ai.provider
+                else ""
+            )
+        else:
+            fallback_name = "" if requested_fallback == "none" else requested_fallback
+        if fallback_name and not (
+            profile.provider == DEFAULT_AI_PROVIDER
+            and fallback_name == DEFAULT_AI_FALLBACK_PROVIDER
+        ):
+            raise ValueError(
+                "automatic AI fallback only supports openrouter -> deepseek"
+            )
+        if fallback_name:
+            fallback_profile = ai_provider_profile(fallback_name)
         ai = replace(
             config.ai,
             enabled=True,
-            provider="deepseek",
-            translation_model=DEEPSEEK_MODEL,
-            summary_model=DEEPSEEK_MODEL,
-            digest_model=DEEPSEEK_MODEL,
+            provider=profile.provider,
+            fallback_provider=fallback_name,
+            translation_model=profile.model,
+            summary_model=profile.model,
+            digest_model=profile.model,
             reasoning_effort="none",
             store=False,
-            api_key_environment=DEEPSEEK_API_KEY_ENVIRONMENT,
+            api_key_environment=profile.api_key_environment,
             input_policy="metadata_only",
             max_input_chars_per_article=12_000,
             max_output_tokens_summary=400,
@@ -527,7 +567,7 @@ def _run_ai_command(
             max_output_tokens_digest=1_200,
             timeout_seconds=60,
             max_response_bytes=2_000_000,
-            summary_enabled=True,
+            summary_enabled=False,
             translation_enabled=True,
             digest_enabled=True,
             full_text_enabled=False,
@@ -537,7 +577,28 @@ def _run_ai_command(
             ),
         )
         config = replace(config, ai=ai)
-    service = AIService(config, database)
+    service = AIService(
+        config,
+        database,
+        automatic_fallback_provider=(
+            fallback_profile.provider if fallback_profile is not None else ""
+        ),
+    )
+    if fallback_profile is not None:
+        fallback_ai = replace(
+            ai,
+            provider=fallback_profile.provider,
+            fallback_provider="",
+            translation_model=fallback_profile.model,
+            summary_model=fallback_profile.model,
+            digest_model=fallback_profile.model,
+            api_key_environment=fallback_profile.api_key_environment,
+        )
+        fallback_service = AIService(
+            replace(config, ai=fallback_ai),
+            database,
+            allow_fallback_pending_from=profile.provider,
+        )
     try:
         if command == "cloud-run":
             from .ai_subscription import generate_cloud_report_pair
@@ -555,9 +616,21 @@ def _run_ai_command(
                 force=bool(args.force_weekly),
             )
             result = {
-                "provider": "deepseek",
-                "model": DEEPSEEK_MODEL,
-                "api_key_environment": DEEPSEEK_API_KEY_ENVIRONMENT,
+                "provider": ai.provider,
+                "model": ai.translation_model,
+                "api_key_environment": ai.api_key_environment,
+                "primary_provider": ai.provider,
+                "fallback_provider": (
+                    fallback_profile.provider
+                    if fallback_profile is not None
+                    else ""
+                ),
+                "fallback_enabled": fallback_service is not None,
+                "fallback_activated": False,
+                "fallback_events": [],
+                "active_provider": ai.provider,
+                "degraded": False,
+                "provider_api_calls_by_provider": {},
                 "model_preflight": {
                     "extra_network_call": False,
                     "validation": "fixed chat-completions request",
@@ -573,21 +646,73 @@ def _run_ai_command(
                 "reports": [],
                 "failures": [],
             }
+            active_service = service
+
+            def latest_attempt_id() -> int:
+                attempts = database.list_ai_attempts(1)
+                return int(attempts[0]["id"]) if attempts else 0
+
+            def execute_provider_operation(operation, workload):
+                nonlocal active_service
+                before_attempt_id = latest_attempt_id()
+                selected = active_service
+                try:
+                    value = operation(selected, selected is service)
+                except AIFallbackEligibleError as exc:
+                    if selected is not service or fallback_service is None:
+                        raise
+                    active_service = fallback_service
+                    selected = fallback_service
+                    event = {
+                        **dict(workload),
+                        "from_provider": service.config.provider,
+                        "to_provider": fallback_service.config.provider,
+                        "reason": exc.reason_code,
+                        "primary_call_made": exc.provider_call_made,
+                        "detail": str(exc)[:300],
+                    }
+                    if exc.generation_hold_key:
+                        event["generation_hold"] = exc.generation_hold_key[:12]
+                    result["fallback_events"].append(event)
+                    result["fallback_activated"] = True
+                    result["degraded"] = True
+                    result["active_provider"] = selected.config.provider
+                    # Automatic fallback never receives the broad force-held
+                    # override.  It may continue only a narrowly classified
+                    # fallback_pending hold created by the OpenRouter policy.
+                    value = operation(selected, False)
+                calls = sum(
+                    int(attempt["id"]) > before_attempt_id
+                    for attempt in database.list_ai_attempts(1000)
+                )
+                return value, selected.config.provider, calls
+
             budget_exhausted = False
             run_failed = False
             report_periods = ["daily"] + (["weekly"] if weekly_due else [])
             for period in report_periods:
                 try:
-                    period_result = generate_cloud_report_pair(
-                        service,
-                        period=period,
-                        now=now,
-                        force_held=bool(args.force_held),
+                    period_result, used_provider, calls = execute_provider_operation(
+                        lambda selected, is_primary: generate_cloud_report_pair(
+                            selected,
+                            period=period,
+                            now=now,
+                            force_held=(
+                                bool(args.force_held) if is_primary else False
+                            ),
+                        ),
+                        {"kind": "report", "period": period},
                     )
+                    period_result["provider_api_calls"] = calls
+                    report_rows = period_result.get("reports")
+                    if isinstance(report_rows, list):
+                        for index, report_row in enumerate(report_rows):
+                            if isinstance(report_row, dict):
+                                report_row["provider_api_calls"] = (
+                                    calls if index == 0 else 0
+                                )
                     result["reports"].extend(period_result["reports"])
-                    result["provider_api_calls"] += int(
-                        period_result.get("provider_api_calls") or 0
-                    )
+                    result["provider_api_calls"] += calls
                     result["generation_holds_skipped"] += int(
                         period_result.get("generation_holds_skipped") or 0
                     )
@@ -607,7 +732,7 @@ def _run_ai_command(
                                 "detail": str(exc)[:200],
                             }
                         )
-                except (AIServiceError, AIBudgetExceeded) as exc:
+                except (AIServiceError, AIBudgetExceeded, ProviderConfigError) as exc:
                     result["failures"].append(
                         {
                             "kind": "report",
@@ -628,43 +753,46 @@ def _run_ai_command(
             if not run_failed:
                 for article in articles:
                     article_id = int(article["id"])
-                    summary = service.current_article_artifact(
-                        article_id,
-                        task_type="summary",
-                        target_language="zh-CN",
-                    )
                     translation = service.current_article_artifact(
                         article_id,
                         task_type="translation",
                         target_language="zh-CN",
                     )
-                    if summary is not None and translation is not None:
+                    if translation is not None:
                         result["coverage_cache_hits"] += 1
                         continue
                     if missing_seen >= int(args.limit):
                         continue
                     missing_seen += 1
                     try:
-                        article_result = service.generate_article_pair(
-                            article_id,
-                            target_language="zh-CN",
-                            trigger_kind="cloud-run",
-                            force_held=bool(args.force_held),
+                        article_result, used_provider, calls = execute_provider_operation(
+                            lambda selected, is_primary: selected.generate_article(
+                                article_id,
+                                task_type="translation",
+                                target_language="zh-CN",
+                                input_scope="metadata",
+                                translated_fields=("title", "publisher_summary"),
+                                trigger_kind="cloud-run",
+                                force_held=(
+                                    bool(args.force_held) if is_primary else False
+                                ),
+                            ),
+                            {"kind": "article", "article_id": article_id},
                         )
-                        calls = int(article_result.get("provider_api_calls") or 0)
                         result["provider_api_calls"] += calls
                         result["article_results"].append(
                             {
                                 "article_id": article_id,
+                                "provider": str(
+                                    article_result.get("provider")
+                                    or used_provider
+                                ),
                                 "provider_api_calls": calls,
                                 "cache_hit": bool(
                                     article_result.get("cache_hit")
                                 ),
-                                "summary_artifact_id": int(
-                                    article_result["summary"]["id"]
-                                ),
                                 "translation_artifact_id": int(
-                                    article_result["translation"]["id"]
+                                    article_result["id"]
                                 ),
                             }
                         )
@@ -679,7 +807,7 @@ def _run_ai_command(
                                 "detail": str(exc)[:200],
                             }
                         )
-                    except (AIServiceError, AIBudgetExceeded) as exc:
+                    except (AIServiceError, AIBudgetExceeded, ProviderConfigError) as exc:
                         result["failures"].append(
                             {
                                 "kind": "article",
@@ -701,6 +829,21 @@ def _run_ai_command(
                 not result["failures"]
                 and int(result["generation_holds_skipped"]) == 0
             )
+            audited_attempts = _ai_attempts_after(
+                database,
+                baseline_attempt_id,
+            )
+            provider_counts = {}
+            for attempt in audited_attempts:
+                requested_provider = str(
+                    attempt.get("requested_provider") or "unknown"
+                )
+                provider_counts[requested_provider] = (
+                    int(provider_counts.get(requested_provider, 0)) + 1
+                )
+            result["provider_api_calls"] = len(audited_attempts)
+            result["provider_api_calls_by_provider"] = provider_counts
+            result["active_provider"] = active_service.config.provider
             result["usage"] = _ai_usage_after(
                 database,
                 baseline_attempt_id,
@@ -717,9 +860,10 @@ def _run_ai_command(
                 )
             else:
                 print(
-                    "DeepSeek cloud run: %d API call(s), %d cached article(s), "
+                    "%s cloud run: %d API call(s), %d cached article(s), "
                     "%d failure(s)"
                     % (
+                        ai.provider,
                         result["provider_api_calls"],
                         result["coverage_cache_hits"],
                         len(result["failures"]),
@@ -734,12 +878,16 @@ def _run_ai_command(
         raise ValueError(str(exc)) from exc
 
 
-def _ai_usage_after(database: Database, baseline_attempt_id: int) -> dict:
-    attempts = [
+def _ai_attempts_after(database: Database, baseline_attempt_id: int) -> list:
+    return [
         attempt
         for attempt in database.list_ai_attempts(1000)
         if int(attempt["id"]) > int(baseline_attempt_id)
     ]
+
+
+def _ai_usage_after(database: Database, baseline_attempt_id: int) -> dict:
+    attempts = _ai_attempts_after(database, baseline_attempt_id)
     usage = {
         "requests": len(attempts),
         "confirmed_requests": 0,

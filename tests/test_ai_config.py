@@ -34,7 +34,7 @@ class AIConfigTests(unittest.TestCase):
             path.write_text(json.dumps(payload), encoding="utf-8")
             return load_config(str(path))
 
-    def test_default_ai_configuration_is_fixed_deepseek_nonthinking(self):
+    def test_default_ai_configuration_is_openrouter_with_deepseek_fallback(self):
         configurations = (
             AIConfig(),
             self.load(base_payload()).ai,
@@ -43,29 +43,108 @@ class AIConfigTests(unittest.TestCase):
         for configuration in configurations:
             with self.subTest(configuration=configuration):
                 self.assertFalse(configuration.enabled)
-                self.assertEqual("deepseek", configuration.provider)
-                self.assertEqual("deepseek-v4-flash", configuration.translation_model)
-                self.assertEqual("deepseek-v4-flash", configuration.summary_model)
-                self.assertEqual("deepseek-v4-flash", configuration.digest_model)
+                self.assertEqual("openrouter", configuration.provider)
+                self.assertEqual("deepseek", configuration.fallback_provider)
+                self.assertEqual("openrouter/free", configuration.translation_model)
+                self.assertEqual("openrouter/free", configuration.summary_model)
+                self.assertEqual("openrouter/free", configuration.digest_model)
                 self.assertEqual("none", configuration.reasoning_effort)
-                self.assertEqual("DEEPSEEK_API_KEY", configuration.api_key_environment)
+                self.assertEqual("OPENROUTER_API_KEY", configuration.api_key_environment)
                 self.assertEqual(
                     "America/Los_Angeles", configuration.budget.timezone
                 )
 
-    def test_openai_and_mutable_deepseek_profiles_are_rejected(self):
-        invalid_fields = (
-            ("provider", "openai"),
-            ("summary_model", "deepseek-v4-pro"),
-            ("translation_model", "gpt-5.6-luna"),
-            ("digest_model", "another-model"),
-            ("reasoning_effort", "low"),
-            ("api_key_environment", "OPENAI_API_KEY"),
+    def test_production_generates_article_translations_without_article_summaries(self):
+        production = load_config(
+            str(REPOSITORY_ROOT / "config" / "sources.json")
+        ).ai
+
+        self.assertFalse(production.summary_enabled)
+        self.assertTrue(production.translation_enabled)
+        self.assertTrue(production.digest_enabled)
+
+    def test_exact_openrouter_free_profile_is_accepted(self):
+        payload = base_payload()
+        payload["ai"].update(
+            {
+                "provider": "openrouter",
+                "translation_model": "openrouter/free",
+                "summary_model": "openrouter/free",
+                "digest_model": "openrouter/free",
+                "reasoning_effort": "none",
+                "api_key_environment": "OPENROUTER_API_KEY",
+            }
         )
-        for field, value in invalid_fields:
-            with self.subTest(field=field):
+
+        configuration = self.load(payload).ai
+
+        self.assertEqual("openrouter", configuration.provider)
+        self.assertEqual("openrouter/free", configuration.translation_model)
+        self.assertEqual("openrouter/free", configuration.summary_model)
+        self.assertEqual("openrouter/free", configuration.digest_model)
+        self.assertEqual("none", configuration.reasoning_effort)
+        self.assertEqual(
+            "OPENROUTER_API_KEY",
+            configuration.api_key_environment,
+        )
+
+    def test_explicit_deepseek_profile_is_deepseek_only(self):
+        payload = base_payload()
+        payload["ai"].update(
+            {
+                "provider": "deepseek",
+                "translation_model": "deepseek-v4-flash",
+                "summary_model": "deepseek-v4-flash",
+                "digest_model": "deepseek-v4-flash",
+                "reasoning_effort": "none",
+                "api_key_environment": "DEEPSEEK_API_KEY",
+            }
+        )
+
+        configuration = self.load(payload).ai
+
+        self.assertEqual("deepseek", configuration.provider)
+        self.assertEqual("", configuration.fallback_provider)
+        self.assertEqual("deepseek-v4-flash", configuration.digest_model)
+        self.assertEqual("DEEPSEEK_API_KEY", configuration.api_key_environment)
+
+    def test_unsupported_or_mismatched_fixed_profiles_are_rejected(self):
+        deepseek_profile = {
+            "provider": "deepseek",
+            "translation_model": "deepseek-v4-flash",
+            "summary_model": "deepseek-v4-flash",
+            "digest_model": "deepseek-v4-flash",
+            "reasoning_effort": "none",
+            "api_key_environment": "DEEPSEEK_API_KEY",
+        }
+        openrouter_profile = {
+            "provider": "openrouter",
+            "translation_model": "openrouter/free",
+            "summary_model": "openrouter/free",
+            "digest_model": "openrouter/free",
+            "reasoning_effort": "none",
+            "api_key_environment": "OPENROUTER_API_KEY",
+        }
+        invalid_profiles = (
+            {**deepseek_profile, "provider": "openai"},
+            {**deepseek_profile, "summary_model": "deepseek-v4-pro"},
+            {**deepseek_profile, "translation_model": "openrouter/free"},
+            {**deepseek_profile, "digest_model": "another-model"},
+            {**deepseek_profile, "reasoning_effort": "low"},
+            {**deepseek_profile, "api_key_environment": "OPENROUTER_API_KEY"},
+            {**deepseek_profile, "fallback_provider": "deepseek"},
+            {**deepseek_profile, "fallback_provider": "openrouter"},
+            {**openrouter_profile, "summary_model": "deepseek-v4-flash"},
+            {**openrouter_profile, "translation_model": "openrouter/auto"},
+            {**openrouter_profile, "digest_model": "another-model"},
+            {**openrouter_profile, "reasoning_effort": "low"},
+            {**openrouter_profile, "api_key_environment": "DEEPSEEK_API_KEY"},
+            {**openrouter_profile, "fallback_provider": "openrouter"},
+        )
+        for profile in invalid_profiles:
+            with self.subTest(profile=profile):
                 payload = base_payload()
-                payload["ai"][field] = value
+                payload["ai"].update(profile)
                 with self.assertRaises(ValueError):
                     self.load(payload)
 

@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import {
   artifactPayload,
-  artifactSearchText,
   findArtifact,
+  translationSearchText,
   type AIArtifact,
 } from "./ai-artifacts";
 import {
@@ -70,28 +70,25 @@ const copy = {
     more: "Show more",
     system: "System",
     collection: "Collection",
-    deterministic: "GitHub Actions · 10:00 & 22:00 San Francisco",
+    deterministic: "GitHub Actions · 09:15 & 21:15 San Francisco",
     enrichment: "AI enrichment",
-    enrichmentValue: "DeepSeek V4 Flash · automatic twice daily",
+    enrichmentValue: "Default · OpenRouter Free → DeepSeek V4 Flash",
     language: "Language",
     sourceHealth: "Source health",
     healthy: "Healthy",
     degraded: "Degraded",
     error: "Error",
     never_synced: "Awaiting first sync",
-    cached: "cached AI results",
-    aiSummary: "AI summary",
-    aiTranslation: "AI translation",
+    cached: "cached article translations",
+    aiTranslation: "Publisher metadata translation",
     generatedCached: "AI-generated · cached",
-    metadataBasis: "Publisher metadata",
-    fullTextBasis: "Extracted full text",
     generatedOn: "Generated",
     inputTruncated: "Input truncated",
     feed: "RSS feed",
     digest: "Markdown digest",
     coverage: "Chinese AI automation coverage",
-    coverageSuffix: "Cloud automation will fill missing summaries and translations on its next run.",
-    coverageCompleteSuffix: "All articles have a cached Chinese summary and translation.",
+    coverageSuffix: "Cloud automation will fill missing article translations on its next run.",
+    coverageCompleteSuffix: "All articles have a cached Chinese translation.",
     reports: "AI briefs",
     dailyReport: "Daily brief",
     weeklyReport: "Weekly brief",
@@ -100,7 +97,7 @@ const copy = {
     noReports: "No daily or weekly AI brief has been published yet.",
     reportLimitations: "Scope note",
     policy:
-      "DeepSeek refreshes cached Chinese summaries, translations, and the daily brief twice daily; the weekly brief is generated once on Sunday evening. The browser only reads the latest verified snapshot and never calls a model or AI API.",
+      "By default, each scheduled cloud run starts with the fixed OpenRouter Free profile and can switch once to DeepSeek V4 Flash only when the OpenRouter credential is missing before transmission, after an explicit OpenRouter 401, 402, 404, or 429 response, or after a closed, non-policy availability/profile failure or locally invalid result with fully audited usage. An explicitly selected DeepSeek-only run receives no OpenRouter credential and never falls back in reverse. Ambiguous network results, unknown or future error codes, and safety or policy refusals never fall back. The active profile refreshes cached Chinese article translations and the daily brief twice daily; the weekly brief is generated once on Sunday evening. OpenRouter Free may resolve to and internally route among different eligible free providers; Aaron Reader's one-way rule covers only its separate DeepSeek continuation. The browser only reads the latest verified snapshot and never calls a model or AI API.",
     footer: "Built for signal, not engagement.",
   },
   "zh-CN": {
@@ -123,28 +120,25 @@ const copy = {
     more: "显示更多",
     system: "系统",
     collection: "订阅采集",
-    deterministic: "GitHub Actions · 旧金山时间 10:00、22:00",
+    deterministic: "GitHub Actions · 旧金山时间 09:15、21:15",
     enrichment: "AI 增强",
-    enrichmentValue: "DeepSeek V4 Flash · 每天自动运行两次",
+    enrichmentValue: "默认 · OpenRouter Free → DeepSeek V4 Flash",
     language: "语言",
     sourceHealth: "来源状态",
     healthy: "正常",
     degraded: "降级",
     error: "错误",
     never_synced: "等待首次同步",
-    cached: "个已缓存 AI 结果",
-    aiSummary: "AI 摘要",
-    aiTranslation: "AI 翻译",
+    cached: "个已缓存文章翻译",
+    aiTranslation: "发布方元数据翻译",
     generatedCached: "AI 生成 · 已缓存",
-    metadataBasis: "仅发布方元数据",
-    fullTextBasis: "已提取文章全文",
     generatedOn: "生成于",
     inputTruncated: "输入已截断",
     feed: "RSS 订阅",
     digest: "Markdown 摘要",
     coverage: "中文 AI 自动覆盖",
-    coverageSuffix: "缺失的摘要和翻译会由云端自动化在下一轮补齐。",
-    coverageCompleteSuffix: "全部文章都已有缓存的中文摘要和翻译。",
+    coverageSuffix: "缺失的文章翻译会由云端自动化在下一轮补齐。",
+    coverageCompleteSuffix: "全部文章都已有缓存的中文翻译。",
     reports: "AI 简报",
     dailyReport: "今日简报",
     weeklyReport: "本周简报",
@@ -152,7 +146,7 @@ const copy = {
     reportItems: "本期文章",
     noReports: "目前还没有已发布的日报或周报。",
     reportLimitations: "范围说明",
-    policy: "DeepSeek 每天两次更新缓存的中文摘要、翻译和日报；周报仅在周日晚上生成一次。浏览器只读取最新的已验证快照，不会调用模型或 AI API。",
+    policy: "每轮定时云端任务默认从固定的 OpenRouter Free profile 开始；只有发送前缺少 OpenRouter 凭据、OpenRouter 明确返回 401、402、404 或 429，或封闭白名单内的非政策可用性/profile 失败或本地无效结果已完整落账时，才会单向切换一次到 DeepSeek V4 Flash。显式选择的 DeepSeek-only 任务不会接收 OpenRouter 凭据，也绝不会反向兜底。网络结果不明、用量未知、未来未知错误码以及安全或政策拒答绝不会兜底。当前 profile 每天两次更新缓存的中文文章翻译和日报；周报仅在周日晚上生成一次。OpenRouter Free 每次请求都可能解析到不同的合格免费模型，也可能在内部上游间路由；Aaron Reader 的单向规则只约束它自己后续发起的 DeepSeek 调用。浏览器只读取最新的已验证快照，不会调用模型或 AI API。",
     footer: "为信号而建，而非为互动量而建。",
   },
 } as const;
@@ -231,7 +225,7 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
         article.source_name,
         translated.title,
         translated.publisherSummary,
-        ...artifactSearchText(article.ai_artifacts),
+        ...translationSearchText(article.ai_artifacts),
       ].filter(Boolean).join(" ").toLocaleLowerCase(language);
       return haystack.includes(needle);
     });
@@ -241,18 +235,24 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
     () => new Map(snapshot.articles.map((article) => [article.id, article])),
     [snapshot.articles],
   );
-  const chineseCompleteArticleCount = useMemo(
+  const cachedTranslationArtifactCount = useMemo(
+    () => snapshot.articles.reduce(
+      (count, article) => count + article.ai_artifacts.filter(
+        (artifact) => artifact.task === "translation",
+      ).length,
+      0,
+    ),
+    [snapshot.articles],
+  );
+  const chineseTranslatedArticleCount = useMemo(
     () => snapshot.articles.filter(
-      (article) => (
-        Boolean(findArtifact(article.ai_artifacts, "summary", "zh-CN"))
-        && Boolean(findArtifact(article.ai_artifacts, "translation", "zh-CN"))
-      ),
+      (article) => Boolean(findArtifact(article.ai_artifacts, "translation", "zh-CN")),
     ).length,
     [snapshot.articles],
   );
-  const chineseCoverageComplete = (
+  const translationCoverageComplete = (
     snapshot.articles.length > 0
-    && chineseCompleteArticleCount === snapshot.articles.length
+    && chineseTranslatedArticleCount === snapshot.articles.length
   );
   const publishedReports = reportPeriods.flatMap((period) => {
     const report = findLatestReport(snapshot.ai_reports, period, language);
@@ -395,12 +395,9 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
               {filtered.slice(0, visible).map((article, index) => {
                 const translationArtifact = findArtifact(article.ai_artifacts, "translation", language);
                 const translation = artifactPayload(translationArtifact);
-                const summaryArtifact = findArtifact(article.ai_artifacts, "summary", language);
-                const aiSummary = artifactPayload(summaryArtifact);
                 const title = translation.title || article.title;
                 const publisherSummary = translation.publisherSummary || article.summary;
                 const hasTranslation = Boolean(translation.title || translation.publisherSummary);
-                const hasAISummary = Boolean(aiSummary.summary || aiSummary.keyPoints.length);
                 return (
                   <article className="article" key={article.id} style={{ "--source-color": sourceColor[article.source] || "#171717" } as React.CSSProperties}>
                     <span className="article-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
@@ -423,31 +420,6 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
                         </div>
                       )}
                       {publisherSummary && <p>{publisherSummary}</p>}
-                      {hasAISummary && (
-                        <section className="ai-summary-card" aria-label={t.aiSummary}>
-                          <div className="ai-summary-heading">
-                            <strong>{t.aiSummary}</strong>
-                            <span className="ai-state"><i />{t.generatedCached}</span>
-                          </div>
-                          {aiSummary.summary && <p>{aiSummary.summary}</p>}
-                          {aiSummary.keyPoints.length > 0 && (
-                            <ul>
-                              {aiSummary.keyPoints.map((point, pointIndex) => (
-                                <li key={`${summaryArtifact?.id || article.id}-${pointIndex}`}>{point}</li>
-                              ))}
-                            </ul>
-                          )}
-                          <div className="ai-summary-meta">
-                            <span>{summaryArtifact?.input_scope === "full_text" ? t.fullTextBasis : t.metadataBasis}</span>
-                            {summaryArtifact?.generated_at && (
-                              <time dateTime={summaryArtifact.generated_at}>
-                                {t.generatedOn} {formatDate(summaryArtifact.generated_at, language)}
-                              </time>
-                            )}
-                            {summaryArtifact?.input_truncated && <span className="ai-warning">{t.inputTruncated}</span>}
-                          </div>
-                        </section>
-                      )}
                       <div className="article-links">
                         <a className="read-link" href={article.url} target="_blank" rel="noopener noreferrer">{t.read}<span aria-hidden="true">↗</span></a>
                       </div>
@@ -469,8 +441,8 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
               <div>
                 <dt>{t.coverage}</dt>
                 <dd className="coverage-value">
-                  <strong>{chineseCompleteArticleCount}/{snapshot.articles.length}</strong>
-                  <span>{chineseCoverageComplete ? t.coverageCompleteSuffix : t.coverageSuffix}</span>
+                  <strong>{chineseTranslatedArticleCount}/{snapshot.articles.length}</strong>
+                  <span>{translationCoverageComplete ? t.coverageCompleteSuffix : t.coverageSuffix}</span>
                 </dd>
               </div>
               <div><dt>{t.language}</dt><dd>English / 简体中文</dd></div>
@@ -485,7 +457,7 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
                 </div>
               ))}
             </div>
-            <p className="cache-note">{snapshot.cached_ai_artifact_count} {t.cached}</p>
+            <p className="cache-note">{cachedTranslationArtifactCount} {t.cached}</p>
           </aside>
         </section>
       </div>

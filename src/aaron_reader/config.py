@@ -3,6 +3,12 @@ import math
 from pathlib import Path
 from typing import Dict, Mapping, Optional
 
+from .ai_profiles import (
+    DEFAULT_AI_FALLBACK_PROVIDER,
+    DEFAULT_AI_PROVIDER,
+    ai_provider_profile,
+)
+from .i18n import normalize_language
 from .models import (
     AIConfig,
     AIBatchConfig,
@@ -11,7 +17,6 @@ from .models import (
     AppConfig,
     SourceConfig,
 )
-from .i18n import normalize_language
 
 
 SUPPORTED_ADAPTERS = {
@@ -134,10 +139,10 @@ def _nonempty(value: object, name: str) -> str:
     return result
 
 
-def _fixed_deepseek_model(value: object, name: str) -> str:
+def _fixed_provider_model(value: object, name: str, expected_model: str) -> str:
     result = _nonempty(value, name)
-    if result != "deepseek-v4-flash":
-        raise ValueError("%s must be deepseek-v4-flash" % name)
+    if result != expected_model:
+        raise ValueError("%s must be %s" % (name, expected_model))
     return result
 
 
@@ -148,15 +153,42 @@ def _load_ai_config(raw_value: object) -> AIConfig:
     budgets = _object(raw.get("budget"), "config.ai.budget")
     batch = _object(raw.get("batch"), "config.ai.batch")
 
-    provider = _nonempty(raw.get("provider", "deepseek"), "config.ai.provider")
-    if provider != "deepseek":
-        raise ValueError("config.ai.provider must be 'deepseek'")
+    provider = _nonempty(
+        raw.get("provider", DEFAULT_AI_PROVIDER),
+        "config.ai.provider",
+    )
+    try:
+        profile = ai_provider_profile(provider)
+    except ValueError as exc:
+        raise ValueError(
+            "config.ai.provider must be 'deepseek' or 'openrouter'"
+        ) from exc
+    fallback_default = (
+        DEFAULT_AI_FALLBACK_PROVIDER if provider == DEFAULT_AI_PROVIDER else ""
+    )
+    fallback_provider = str(
+        raw.get("fallback_provider", fallback_default) or ""
+    ).strip()
+    if fallback_provider:
+        try:
+            ai_provider_profile(fallback_provider)
+        except ValueError as exc:
+            raise ValueError(
+                "config.ai.fallback_provider must be empty or 'deepseek'"
+            ) from exc
+        if not (
+            provider == DEFAULT_AI_PROVIDER
+            and fallback_provider == DEFAULT_AI_FALLBACK_PROVIDER
+        ):
+            raise ValueError(
+                "automatic AI fallback only supports openrouter -> deepseek"
+            )
     reasoning = _nonempty(
         raw.get("reasoning_effort", "none"), "config.ai.reasoning_effort"
     )
     if reasoning != "none":
         raise ValueError(
-            "config.ai.reasoning_effort must be 'none'; DeepSeek thinking is disabled"
+            "config.ai.reasoning_effort must be 'none'; cloud reasoning is disabled"
         )
     input_policy = _nonempty(
         raw.get("input_policy", "metadata_only"), "config.ai.input_policy"
@@ -168,12 +200,13 @@ def _load_ai_config(raw_value: object) -> AIConfig:
     }:
         raise ValueError("unsupported config.ai.input_policy: %s" % input_policy)
     api_key_environment = _nonempty(
-        raw.get("api_key_environment", "DEEPSEEK_API_KEY"),
+        raw.get("api_key_environment", profile.api_key_environment),
         "config.ai.api_key_environment",
     )
-    if api_key_environment != "DEEPSEEK_API_KEY":
+    if api_key_environment != profile.api_key_environment:
         raise ValueError(
-            "config.ai.api_key_environment must be DEEPSEEK_API_KEY"
+            "config.ai.api_key_environment must be %s for provider %s"
+            % (profile.api_key_environment, profile.provider)
         )
     store = _boolean(raw.get("store", False), "config.ai.store")
     if store:
@@ -261,17 +294,21 @@ def _load_ai_config(raw_value: object) -> AIConfig:
     return AIConfig(
         enabled=_boolean(raw.get("enabled", False), "config.ai.enabled"),
         provider=provider,
-        translation_model=_fixed_deepseek_model(
-            raw.get("translation_model", "deepseek-v4-flash"),
+        fallback_provider=fallback_provider,
+        translation_model=_fixed_provider_model(
+            raw.get("translation_model", profile.model),
             "config.ai.translation_model",
+            profile.model,
         ),
-        summary_model=_fixed_deepseek_model(
-            raw.get("summary_model", "deepseek-v4-flash"),
+        summary_model=_fixed_provider_model(
+            raw.get("summary_model", profile.model),
             "config.ai.summary_model",
+            profile.model,
         ),
-        digest_model=_fixed_deepseek_model(
-            raw.get("digest_model", "deepseek-v4-flash"),
+        digest_model=_fixed_provider_model(
+            raw.get("digest_model", profile.model),
             "config.ai.digest_model",
+            profile.model,
         ),
         reasoning_effort=reasoning,
         store=store,

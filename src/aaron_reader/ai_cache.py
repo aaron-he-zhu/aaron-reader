@@ -542,7 +542,11 @@ def _validate_generation_hold_entry(
     workload_kind = entry["workload_kind"]
     if workload_kind not in {"article", "article_pair", "digest", "report"}:
         raise ValueError("AI cache generation hold workload_kind is invalid")
-    if entry["hold_class"] not in {"ambiguous", "paid_failure"}:
+    if entry["hold_class"] not in {
+        "ambiguous",
+        "paid_failure",
+        "fallback_pending",
+    }:
         raise ValueError("AI cache generation hold class is invalid")
 
     expected_descriptor_keys = set(_GENERATION_HOLD_DESCRIPTOR_KEYS)
@@ -1235,14 +1239,14 @@ def _selected_report_rows(
     return selected
 
 
-def _stored_report_key(
+def _legacy_stored_report_key(
     artifact: Mapping[str, object], window: Mapping[str, str]
 ) -> str:
-    """Recompute a historical report key from its stored artifact provenance.
+    """Recompute the provider-specific v1 report key for compatibility.
 
-    Using the stored artifact key is important here: provider/model migrations
-    intentionally change the *current* PreparedTask key, while the old report
-    record must still prove that it was internally coherent when published.
+    Existing public handoff databases may contain this key.  New report rows use
+    the provider-neutral v2 identity from ``ai_subscription._report_key`` so a
+    valid DeepSeek fallback result remains visible to the next OpenRouter run.
     """
 
     return stable_hash(
@@ -1337,9 +1341,11 @@ def _report_entries(
                 != legacy_prepared.article_content_hash
             ):
                 continue
-            if str(report.get("report_key") or "") != _stored_report_key(
-                artifact, window
-            ):
+            accepted_report_keys = {
+                _legacy_stored_report_key(artifact, window),
+                _report_key(legacy_prepared, window),
+            }
+            if str(report.get("report_key") or "") not in accepted_report_keys:
                 continue
             validated, _ = _validated_db_output(artifact, legacy_prepared)
             validated_by_id = {
@@ -1708,6 +1714,10 @@ def export_ai_cache(
         ),
         "paid_failure_holds": sum(
             entry["hold_class"] == "paid_failure" for entry in generation_holds
+        ),
+        "fallback_pending_holds": sum(
+            entry["hold_class"] == "fallback_pending"
+            for entry in generation_holds
         ),
         "skipped_generation_holds": skipped_generation_holds,
         "skipped_duplicate_artifacts": skipped_duplicate_artifacts,
@@ -2119,6 +2129,10 @@ def import_ai_cache(
         ),
         "paid_failure_holds": sum(
             entry["hold_class"] == "paid_failure" for entry in generation_holds
+        ),
+        "fallback_pending_holds": sum(
+            entry["hold_class"] == "fallback_pending"
+            for entry in generation_holds
         ),
         "artifacts": len(artifacts) + len(reports),
         "inserted_artifacts": inserted_artifacts,

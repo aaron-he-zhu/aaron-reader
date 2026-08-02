@@ -1,6 +1,11 @@
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
+from .ai_profiles import (
+    DEFAULT_AI_FALLBACK_PROVIDER,
+    OPENROUTER_PROFILE,
+)
+
 
 @dataclass(frozen=True)
 class SourceConfig:
@@ -56,13 +61,13 @@ class AIConfig:
     """Explicitly opt-in settings for token-consuming enrichment."""
 
     enabled: bool = False
-    provider: str = "deepseek"
-    translation_model: str = "deepseek-v4-flash"
-    summary_model: str = "deepseek-v4-flash"
-    digest_model: str = "deepseek-v4-flash"
+    provider: str = OPENROUTER_PROFILE.provider
+    translation_model: str = OPENROUTER_PROFILE.model
+    summary_model: str = OPENROUTER_PROFILE.model
+    digest_model: str = OPENROUTER_PROFILE.model
     reasoning_effort: str = "none"
     store: bool = False
-    api_key_environment: str = "DEEPSEEK_API_KEY"
+    api_key_environment: str = OPENROUTER_PROFILE.api_key_environment
     input_policy: str = "metadata_only"
     max_input_chars_per_article: int = 12_000
     max_full_text_chars: int = 60_000
@@ -78,6 +83,9 @@ class AIConfig:
     budget: AIBudgetConfig = field(default_factory=AIBudgetConfig)
     batch: AIBatchConfig = field(default_factory=AIBatchConfig)
     prices: Dict[str, AIModelPrice] = field(default_factory=dict)
+    # Keep new options after the established positional fields. Configuration
+    # loading uses keywords, while this preserves older direct constructors.
+    fallback_provider: str = DEFAULT_AI_FALLBACK_PROVIDER
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,6 @@
 """Cloud report scheduling and strict historical-cache compatibility helpers.
 
-Production calls only the fixed DeepSeek report functions in this module.
+Production calls only the fixed cloud-provider report functions in this module.
 The external-JSON parsers remain internal so existing public cache fixtures can
 be verified and migrated; they have no CLI, scheduler, provider client, API-key
 access, or billable-attempt path.
@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Dict, List, Mapping, Optional, Sequence, Tuple
 from zoneinfo import ZoneInfo
 
+from .ai_profiles import matches_ai_provider_profile
 from .ai_prompts import canonical_json, parse_and_validate_output, stable_hash, task_definition
 from .ai_service import AIGenerationHeld, AIInputError, AIService, PreparedTask
 from .i18n import normalize_language
@@ -523,14 +524,28 @@ def _prepare_report(
 
 
 def _report_key(prepared: PreparedTask, window: Mapping[str, str]) -> str:
+    """Return a provider-neutral cache identity for one semantic report.
+
+    Provider, requested model, and provider-specific generation parameters are
+    provenance.  They must not make a valid DeepSeek fallback report invisible
+    when the next scheduled run starts from OpenRouter again.
+    """
+
     return stable_hash(
         {
-            "protocol": SUBSCRIPTION_REPORT_PROTOCOL,
+            "protocol": "aaron-reader-cloud-report-cache/v2",
             "period": window["period"],
             "timezone": window["timezone"],
             "period_start": window["period_start"],
-            "artifact_key": prepared.artifact_key,
+            "period_end": window["period_end"],
+            "target_language": prepared.target_language,
+            "input_hash": prepared.input_hash,
             "article_content_hash": prepared.article_content_hash,
+            "prompt_version": prepared.definition.prompt_version,
+            "prompt_hash": prepared.definition.prompt_hash,
+            "schema_version": prepared.definition.schema_version,
+            "schema_hash": prepared.definition.schema_hash,
+            "max_output_tokens": prepared.max_output_tokens,
         }
     )
 
@@ -670,6 +685,23 @@ def export_subscription_report(
     }
 
 
+def _uses_fixed_cloud_profile(service: AIService) -> bool:
+    config = service.config
+    return bool(
+        config.reasoning_effort == "none"
+        and not config.store
+        and matches_ai_provider_profile(
+            config.provider,
+            (
+                config.summary_model,
+                config.translation_model,
+                config.digest_model,
+            ),
+            config.api_key_environment,
+        )
+    )
+
+
 def generate_cloud_report(
     service: AIService,
     *,
@@ -678,10 +710,10 @@ def generate_cloud_report(
     now: Optional[datetime] = None,
     force_held: bool = False,
 ) -> Dict[str, object]:
-    """Generate and persist one audited DeepSeek daily or weekly report."""
+    """Generate and persist one audited cloud-AI daily or weekly report."""
 
-    if service.config.provider != "deepseek":
-        raise AIInputError("cloud reports require the fixed DeepSeek provider")
+    if not _uses_fixed_cloud_profile(service):
+        raise AIInputError("cloud reports require a fixed cloud AI profile")
     language = normalize_language(target_language)
     window = report_period_window(period, now=now)
     articles, prepared = _prepare_report(service, window, language)
@@ -705,15 +737,15 @@ def generate_cloud_report(
             "provider_api_calls": 0,
             "artifact_id": int(existing["artifact_id"]),
             "report_record_id": int(existing["id"]),
+            "provider": str(existing.get("artifact_provider") or ""),
+            "requested_model": str(
+                existing.get("artifact_requested_model") or ""
+            ),
+            "resolved_model": str(
+                existing.get("artifact_resolved_model") or ""
+            ),
         }
 
-    artifact = service.generate_digest(
-        articles,
-        target_language=language,
-        trigger_kind="cloud-report",
-        report_context=_report_context(window),
-        force_held=force_held,
-    )
     article_versions = _prepared_article_versions(articles, prepared)
     report = {
         "report_key": report_key,
@@ -722,12 +754,20 @@ def generate_cloud_report(
         "article_ids_json": canonical_json(list(prepared.expected_article_ids)),
         "article_content_hash": prepared.article_content_hash,
     }
-    stored = service.database.store_external_ai_report(
-        dict(artifact),
-        report,
-        article_versions=article_versions,
+    artifact = service.generate_digest(
+        articles,
+        target_language=language,
+        trigger_kind="cloud-report",
+        report_context=_report_context(window),
+        report_record=report,
+        report_article_versions=article_versions,
+        force_held=force_held,
     )
-    cache_hit = bool(stored.get("cache_hit"))
+    stored = service.database.store_existing_ai_reports(
+        [(dict(artifact), report)],
+        article_versions=article_versions,
+    )[0]
+    cache_hit = bool(artifact.get("cache_hit"))
     return {
         "period": window["period"],
         "target_language": language,
@@ -736,6 +776,9 @@ def generate_cloud_report(
         "provider_api_calls": 0 if artifact.get("cache_hit") else 1,
         "artifact_id": int(stored["artifact_id"]),
         "report_record_id": int(stored["id"]),
+        "provider": str(artifact.get("provider") or ""),
+        "requested_model": str(artifact.get("requested_model") or ""),
+        "resolved_model": str(artifact.get("resolved_model") or ""),
     }
 
 
@@ -754,8 +797,8 @@ def generate_cloud_report_pair(
     for the period and must be counted once by callers.
     """
 
-    if service.config.provider != "deepseek":
-        raise AIInputError("cloud reports require the fixed DeepSeek provider")
+    if not _uses_fixed_cloud_profile(service):
+        raise AIInputError("cloud reports require a fixed cloud AI profile")
     window = report_period_window(period, now=now)
     articles = service.database.list_articles_between(
         window["period_start"], window["period_end"], limit=1000
@@ -809,6 +852,13 @@ def generate_cloud_report_pair(
             "provider_api_calls": 0,
             "artifact_id": int(record["artifact_id"]),
             "report_record_id": int(record["id"]),
+            "provider": str(record.get("artifact_provider") or ""),
+            "requested_model": str(
+                record.get("artifact_requested_model") or ""
+            ),
+            "resolved_model": str(
+                record.get("artifact_resolved_model") or ""
+            ),
         }
 
     missing = [language for language in languages if existing[language] is None]
@@ -863,10 +913,27 @@ def generate_cloud_report_pair(
             "generation_holds_skipped": 0,
         }
 
+    article_versions = _prepared_article_versions(articles, prepared["en"])
+    if list(article_versions) != list(prepared["zh-CN"].expected_article_ids):
+        raise AIInputError("bilingual report selected article order differs")
+    report_records = {
+        language: {
+            "report_key": report_keys[language],
+            **window,
+            "target_language": language,
+            "article_ids_json": canonical_json(
+                list(prepared[language].expected_article_ids)
+            ),
+            "article_content_hash": prepared[language].article_content_hash,
+        }
+        for language in languages
+    }
     try:
         generated_pair = service.generate_digest_pair(
             articles,
             report_context=report_context,
+            report_records=report_records,
+            report_article_versions=article_versions,
             trigger_kind="cloud-report-bilingual",
             force_held=force_held,
         )
@@ -893,24 +960,12 @@ def generate_cloud_report_pair(
     artifacts = generated_pair.get("artifacts")
     if not isinstance(artifacts, Mapping) or set(artifacts) != set(languages):
         raise AIInputError("bilingual report generation returned invalid artifacts")
-    article_versions = _prepared_article_versions(articles, prepared["en"])
-    if list(article_versions) != list(prepared["zh-CN"].expected_article_ids):
-        raise AIInputError("bilingual report selected article order differs")
     records = []
     for language in languages:
         artifact = artifacts[language]
         if not isinstance(artifact, Mapping):
             raise AIInputError("bilingual report artifact is invalid")
-        report = {
-            "report_key": report_keys[language],
-            **window,
-            "target_language": language,
-            "article_ids_json": canonical_json(
-                list(prepared[language].expected_article_ids)
-            ),
-            "article_content_hash": prepared[language].article_content_hash,
-        }
-        records.append((artifact, report))
+        records.append((artifact, report_records[language]))
     stored_records = service.database.store_existing_ai_reports(
         records,
         article_versions=article_versions,
@@ -927,13 +982,20 @@ def generate_cloud_report_pair(
                 "period": window["period"],
                 "target_language": language,
                 "articles": len(prepared[language].expected_article_ids),
-                "cache_hit": bool(stored.get("cache_hit")),
+                "cache_hit": bool(artifacts[language].get("cache_hit")),
                 # Attribute the single shared call once so summing report rows
                 # remains accurate for older consumers.
                 "provider_api_calls": provider_calls if index == 0 else 0,
                 "generation_mode": "bilingual_shared",
                 "artifact_id": int(stored["artifact_id"]),
                 "report_record_id": int(stored["id"]),
+                "provider": str(artifacts[language].get("provider") or ""),
+                "requested_model": str(
+                    artifacts[language].get("requested_model") or ""
+                ),
+                "resolved_model": str(
+                    artifacts[language].get("resolved_model") or ""
+                ),
             }
         )
     return {
