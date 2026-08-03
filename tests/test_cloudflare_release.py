@@ -79,6 +79,7 @@ class CloudflareReleaseTests(unittest.TestCase):
     def test_public_projection_removes_private_reader_state(self):
         original = {
             "counts": {"total": 1, "unread": 1, "starred": 1},
+            "cached_ai_artifact_count": 2,
             "sources": [
                 {
                     "slug": "example",
@@ -92,12 +93,20 @@ class CloudflareReleaseTests(unittest.TestCase):
                     "id": 7,
                     "unread": True,
                     "starred": True,
-                    "ai_artifacts": [{
-                        "task": "summary",
-                        "provider": "private-provenance",
-                        "model": "private-model",
-                        "output": "public",
-                    }],
+                    "ai_artifacts": [
+                        {
+                            "task": "summary",
+                            "provider": "private-provenance",
+                            "model": "private-model",
+                            "output": "legacy summary",
+                        },
+                        {
+                            "task": "translation",
+                            "provider": "private-provenance",
+                            "model": "private-model",
+                            "output": "public translation",
+                        },
+                    ],
                 }
             ],
             "ai_reports": [{
@@ -113,9 +122,15 @@ class CloudflareReleaseTests(unittest.TestCase):
         self.assertEqual({"total": 1}, public["counts"])
         self.assertEqual({"slug": "example"}, public["sources"][0])
         self.assertEqual(
-            {"id": 7, "ai_artifacts": [{"task": "summary", "output": "public"}]},
+            {
+                "id": 7,
+                "ai_artifacts": [
+                    {"task": "translation", "output": "public translation"}
+                ],
+            },
             public["articles"][0],
         )
+        self.assertEqual(1, public["cached_ai_artifact_count"])
         self.assertEqual(
             {"period": "daily", "output": {"headline": "public"}},
             public["ai_reports"][0],

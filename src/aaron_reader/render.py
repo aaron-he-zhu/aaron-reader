@@ -66,8 +66,7 @@ _TRANSLATIONS = {
             "Send this object to an LLM only when necessary; fixed programs have "
             "already fetched, deduplicated, and filtered the articles."
         ),
-        "ai_summary": "AI summary",
-        "machine_translation": "Machine translation",
+        "machine_translation": "Publisher metadata translation",
         "metadata_basis": "Publisher metadata only",
         "full_text_basis": "Extracted full text",
         "ai_generated": "AI generated · {basis} · {language} · {generated}",
@@ -98,8 +97,7 @@ _TRANSLATIONS = {
         "digest_summary": "列出最近 {returned} / {total} 篇未读文章（上限 {limit}）。",
         "feed_description": "确定性的 AI 实验室订阅",
         "packet_instruction": "仅在确有需要时把本对象交给 LLM；抓取、去重和筛选已由固定程序完成。",
-        "ai_summary": "AI 摘要",
-        "machine_translation": "机器翻译",
+        "machine_translation": "发布方元数据翻译",
         "metadata_basis": "仅发布方元数据",
         "full_text_basis": "已提取文章全文",
         "ai_generated": "AI 生成 · {basis} · {language} · {generated}",
@@ -124,7 +122,12 @@ def render_outputs(
     )
     ai_reports = database.latest_ai_reports()
     recent_articles = [
-        dict(article, ai_artifacts=artifact_map.get(int(article["id"]), []))
+        dict(
+            article,
+            ai_artifacts=_translation_ai_artifacts(
+                artifact_map.get(int(article["id"]), [])
+            ),
+        )
         for article in recent_articles
     ]
     page_articles = recent_articles[:PAGE_ARTICLE_LIMIT]
@@ -185,7 +188,12 @@ def render_index(
         [int(article["id"]) for article in articles]
     )
     articles = [
-        dict(article, ai_artifacts=artifact_map.get(int(article["id"]), []))
+        dict(
+            article,
+            ai_artifacts=_translation_ai_artifacts(
+                artifact_map.get(int(article["id"]), [])
+            ),
+        )
         for article in articles
     ]
     return render_html(
@@ -428,9 +436,8 @@ def render_json(
     )
     omitted_count = max(0, resolved_counts["total"] - returned_count)
     cached_ai_artifact_count = sum(
-        len(article.get("ai_artifacts") or [])
+        len(_translation_ai_artifacts(article.get("ai_artifacts")))
         for article in articles
-        if isinstance(article.get("ai_artifacts"), list)
     )
     payload = {
         "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
@@ -716,6 +723,20 @@ def _finalize_packet(
     return packet
 
 
+def _translation_ai_artifacts(value: object) -> List[Dict[str, object]]:
+    """Expose only per-article translations while accepting legacy caches."""
+
+    if not isinstance(value, list):
+        return []
+    return [
+        item
+        for item in value
+        if isinstance(item, dict)
+        and _output_text(item.get("task_type") or item.get("task"))
+        == "translation"
+    ]
+
+
 def _public_article(article: Dict[str, object]) -> Dict[str, object]:
     result = {
         "id": article["id"],
@@ -729,13 +750,10 @@ def _public_article(article: Dict[str, object]) -> Dict[str, object]:
         "unread": not bool(article.get("read_at")),
         "starred": bool(article.get("starred_at")),
     }
-    artifacts = article.get("ai_artifacts")
-    if isinstance(artifacts, list):
-        result["ai_artifacts"] = [
-            _public_ai_artifact(item) for item in artifacts if isinstance(item, dict)
-        ]
-    else:
-        result["ai_artifacts"] = []
+    result["ai_artifacts"] = [
+        _public_ai_artifact(item)
+        for item in _translation_ai_artifacts(article.get("ai_artifacts"))
+    ]
     return result
 
 
@@ -748,7 +766,9 @@ def _public_ai_artifact(artifact: Dict[str, object]) -> Dict[str, object]:
         output = {}
     return {
         "id": int(artifact.get("id") or 0),
-        "task": _output_text(artifact.get("task_type") or ""),
+        "task": _output_text(
+            artifact.get("task_type") or artifact.get("task") or ""
+        ),
         "input_scope": _output_text(artifact.get("input_scope") or ""),
         "target_language": _output_text(artifact.get("target_language") or ""),
         "generated_at": _output_text(artifact.get("created_at") or "") or None,
@@ -786,46 +806,27 @@ def _render_ai_artifacts(
     translations = _TRANSLATIONS[language]
     markup: List[str] = []
     search_parts: List[str] = []
-    for raw_artifact in value:
-        if not isinstance(raw_artifact, dict):
-            continue
+    for raw_artifact in _translation_ai_artifacts(value):
         artifact = _public_ai_artifact(raw_artifact)
         task = str(artifact["task"])
-        if task not in ("summary", "translation"):
-            continue
         scope = str(artifact["input_scope"])
         basis_key = "full_text_basis" if scope == "full_text" else "metadata_basis"
-        label_key = "ai_summary" if task == "summary" else "machine_translation"
+        label_key = "machine_translation"
         output = artifact["output"]
         if not isinstance(output, dict):
             output = {}
         body = ""
-        if task == "summary":
-            summary = _output_text(output.get("summary") or "")
-            points = output.get("key_points")
-            point_values = (
-                [_output_text(item) for item in points if isinstance(item, str)]
-                if isinstance(points, list)
-                else []
+        translated_title = _output_text(output.get("title") or "")
+        translated_summary = _output_text(output.get("publisher_summary") or "")
+        search_parts.extend((translated_title, translated_summary))
+        if translated_title:
+            body += '<h3 class="translated-title">%s</h3>' % html.escape(
+                translated_title
             )
-            search_parts.extend([summary] + point_values)
-            body = '<p class="ai-output">%s</p>' % html.escape(summary)
-            if point_values:
-                body += '<ul class="ai-points">%s</ul>' % "".join(
-                    "<li>%s</li>" % html.escape(point) for point in point_values
-                )
-        else:
-            translated_title = _output_text(output.get("title") or "")
-            translated_summary = _output_text(output.get("publisher_summary") or "")
-            search_parts.extend((translated_title, translated_summary))
-            if translated_title:
-                body += '<h3 class="translated-title">%s</h3>' % html.escape(
-                    translated_title
-                )
-            if translated_summary:
-                body += '<p class="ai-output">%s</p>' % html.escape(
-                    translated_summary
-                )
+        if translated_summary:
+            body += '<p class="ai-output">%s</p>' % html.escape(
+                translated_summary
+            )
         if not body:
             continue
         generated = str(artifact.get("generated_at") or "")[:10]

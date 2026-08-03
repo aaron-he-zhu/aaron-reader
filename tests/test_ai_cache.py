@@ -2,6 +2,7 @@ import copy
 import json
 import sys
 import tempfile
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
@@ -29,7 +30,18 @@ from aaron_reader.ai_prompts import (  # noqa: E402
     parse_and_validate_output,
     stable_hash,
 )
-from aaron_reader.ai_service import AIGenerationHeld, AIService  # noqa: E402
+from aaron_reader.ai_provider import (  # noqa: E402
+    DEEPSEEK_MODEL,
+    OPENROUTER_MODEL,
+    ProviderHTTPError,
+    ProviderResponse,
+    ProviderUsage,
+)
+from aaron_reader.ai_service import (  # noqa: E402
+    AIFallbackEligibleError,
+    AIGenerationHeld,
+    AIService,
+)
 from aaron_reader.ai_subscription import (  # noqa: E402
     export_subscription_batch,
     export_subscription_report,
@@ -796,6 +808,12 @@ class PublicAICacheTests(unittest.TestCase):
                 task_type="translation",
                 hold_class="paid_failure",
             ),
+            self.generation_hold_entry(
+                self.source_database,
+                self.new_config,
+                "https://example.com/blog/monday",
+                hold_class="fallback_pending",
+            ),
         ]
         self.source_database.replace_ai_generation_holds(holds)
         hold_bundle = self.root / "generation-holds.json"
@@ -806,11 +824,12 @@ class PublicAICacheTests(unittest.TestCase):
         )
         payload = json.loads(hold_bundle.read_text(encoding="utf-8"))
         self.assertEqual(
-            (2, 1, 1),
+            (3, 1, 1, 1),
             (
                 exported["generation_holds"],
                 exported["ambiguous_holds"],
                 exported["paid_failure_holds"],
+                exported["fallback_pending_holds"],
             ),
         )
         self.assertEqual(0, exported["skipped_generation_holds"])
@@ -847,11 +866,12 @@ class PublicAICacheTests(unittest.TestCase):
         target = self.target_database("generation-hold-target.sqlite3")
         imported = import_ai_cache(target, self.new_config, hold_bundle)
         self.assertEqual(
-            (2, 1, 1),
+            (3, 1, 1, 1),
             (
                 imported["generation_holds"],
                 imported["ambiguous_holds"],
                 imported["paid_failure_holds"],
+                imported["fallback_pending_holds"],
             ),
         )
         self.assertEqual(payload["generation_holds"], target.list_ai_generation_holds())
@@ -888,6 +908,335 @@ class PublicAICacheTests(unittest.TestCase):
             payload["generation_holds"],
             round_trip_payload["generation_holds"],
         )
+
+    def test_hard_crash_hold_survives_public_cache_and_blocks_fresh_runner(self):
+        class FatalProvider:
+            def __init__(self):
+                self.requests = []
+
+            def generate(self, request):
+                self.requests.append(request)
+                raise KeyboardInterrupt("simulated runner termination")
+
+        enabled_config = replace(
+            self.new_config,
+            ai=replace(self.new_config.ai, enabled=True),
+        )
+        crash_candidate = self.candidate(
+            "hard-crash", "2026-08-01T09:00:00Z"
+        )
+        self.source_database.commit_candidates(
+            self.source,
+            [crash_candidate],
+            started_at="2026-08-01T17:01:00Z",
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="hard-crash-article",
+        )
+        source_article = self.source_database.article_by_url(
+            self.source.slug,
+            "https://example.com/blog/hard-crash",
+        )
+        fatal = FatalProvider()
+        source_service = AIService(
+            enabled_config,
+            self.source_database,
+            provider=fatal,
+        )
+        with mock.patch.dict(
+            "os.environ", {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            with self.assertRaises(KeyboardInterrupt):
+                source_service.generate_article(
+                    int(source_article["id"]),
+                    task_type="summary",
+                )
+        self.assertEqual(1, len(fatal.requests))
+        self.assertEqual(
+            "ambiguous",
+            self.source_database.list_ai_generation_holds()[0]["hold_class"],
+        )
+
+        crash_bundle = self.root / "hard-crash-cache.json"
+        exported = export_ai_cache(
+            self.source_database,
+            enabled_config,
+            crash_bundle,
+        )
+        self.assertEqual(1, exported["ambiguous_holds"])
+
+        target = self.database(
+            "hard-crash-target.sqlite3",
+            self.candidates + [crash_candidate],
+            reverse=True,
+            shift_ids=True,
+        )
+        imported = import_ai_cache(target, enabled_config, crash_bundle)
+        self.assertEqual(1, imported["ambiguous_holds"])
+        target_article = target.article_by_url(
+            self.source.slug,
+            "https://example.com/blog/hard-crash",
+        )
+
+        class MustNotRun:
+            def __init__(self):
+                self.requests = []
+
+            def generate(self, request):
+                self.requests.append(request)
+                raise AssertionError("fresh runner must not replay the request")
+
+        blocked = MustNotRun()
+        target_service = AIService(enabled_config, target, provider=blocked)
+        with self.assertRaises(AIGenerationHeld):
+            target_service.generate_article(
+                int(target_article["id"]),
+                task_type="summary",
+            )
+        self.assertEqual([], blocked.requests)
+
+    def test_fallback_pending_continues_on_deepseek_across_fresh_runner(self):
+        openrouter_config = replace(
+            self.new_config,
+            ai=replace(
+                self.new_config.ai,
+                enabled=True,
+                provider="openrouter",
+                fallback_provider="deepseek",
+                summary_model=OPENROUTER_MODEL,
+                translation_model=OPENROUTER_MODEL,
+                digest_model=OPENROUTER_MODEL,
+                api_key_environment="OPENROUTER_API_KEY",
+            ),
+        )
+        fallback_candidate = self.candidate(
+            "fallback-pending", "2026-08-01T09:30:00Z"
+        )
+        self.source_database.commit_candidates(
+            self.source,
+            [fallback_candidate],
+            started_at="2026-08-01T17:02:00Z",
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="fallback-pending-article",
+        )
+        source_article = self.source_database.article_by_url(
+            self.source.slug,
+            "https://example.com/blog/fallback-pending",
+        )
+
+        class RejectedOpenRouter:
+            def __init__(self):
+                self.requests = []
+
+            def generate(self, request):
+                self.requests.append(request)
+                raise ProviderHTTPError(
+                    "OpenRouter returned HTTP 429",
+                    status=429,
+                    retryable=True,
+                )
+
+        rejected = RejectedOpenRouter()
+        primary = AIService(
+            openrouter_config,
+            self.source_database,
+            provider=rejected,
+            automatic_fallback_provider="deepseek",
+        )
+        with mock.patch.dict(
+            "os.environ", {"OPENROUTER_API_KEY": "test-key"}, clear=True
+        ):
+            with self.assertRaises(AIFallbackEligibleError):
+                primary.generate_article(
+                    int(source_article["id"]), task_type="summary"
+                )
+        self.assertEqual(1, len(rejected.requests))
+        self.assertEqual(
+            "fallback_pending",
+            self.source_database.list_ai_generation_holds()[0]["hold_class"],
+        )
+
+        pending_bundle = self.root / "fallback-pending-cache.json"
+        exported = export_ai_cache(
+            self.source_database,
+            openrouter_config,
+            pending_bundle,
+        )
+        self.assertEqual(1, exported["fallback_pending_holds"])
+        target = self.database(
+            "fallback-pending-target.sqlite3",
+            self.candidates + [fallback_candidate],
+            reverse=True,
+            shift_ids=True,
+        )
+        imported = import_ai_cache(target, openrouter_config, pending_bundle)
+        self.assertEqual(1, imported["fallback_pending_holds"])
+        target_article = target.article_by_url(
+            self.source.slug,
+            "https://example.com/blog/fallback-pending",
+        )
+
+        class MustNotRun:
+            def __init__(self):
+                self.requests = []
+
+            def generate(self, request):
+                self.requests.append(request)
+                raise AssertionError("pending fallback must not replay OpenRouter")
+
+        must_not_run = MustNotRun()
+        fresh_primary = AIService(
+            openrouter_config,
+            target,
+            provider=must_not_run,
+            automatic_fallback_provider="deepseek",
+        )
+        with self.assertRaises(AIFallbackEligibleError) as pending:
+            fresh_primary.generate_article(
+                int(target_article["id"]), task_type="summary"
+            )
+        self.assertEqual("fallback_pending", pending.exception.reason_code)
+        self.assertFalse(pending.exception.provider_call_made)
+        self.assertEqual([], must_not_run.requests)
+
+        deepseek_config = replace(
+            openrouter_config,
+            ai=replace(
+                openrouter_config.ai,
+                provider="deepseek",
+                fallback_provider="",
+                summary_model=DEEPSEEK_MODEL,
+                translation_model=DEEPSEEK_MODEL,
+                digest_model=DEEPSEEK_MODEL,
+                api_key_environment="DEEPSEEK_API_KEY",
+            ),
+        )
+
+        class SuccessfulDeepSeek:
+            def __init__(self):
+                self.requests = []
+
+            def generate(self, request):
+                self.requests.append(request)
+                return ProviderResponse(
+                    output_text=json.dumps(
+                        {
+                            "summary": "Grounded summary.",
+                            "key_points": ["Grounded point."],
+                            "language": "zh-CN",
+                            "basis": "metadata",
+                            "limitations": "Metadata only.",
+                        }
+                    ),
+                    usage=ProviderUsage(
+                        input_tokens=20,
+                        output_tokens=10,
+                        total_tokens=30,
+                    ),
+                    model=DEEPSEEK_MODEL,
+                    request_id="deepseek-fallback",
+                )
+
+        deepseek = SuccessfulDeepSeek()
+        continuation = AIService(
+            deepseek_config,
+            target,
+            provider=deepseek,
+            allow_fallback_pending_from="openrouter",
+        )
+        with mock.patch.dict(
+            "os.environ", {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            result = continuation.generate_article(
+                int(target_article["id"]), task_type="summary"
+            )
+        self.assertEqual("succeeded", result["status"])
+        self.assertEqual(1, len(deepseek.requests))
+        self.assertEqual([], target.list_ai_generation_holds())
+
+        crash_target = self.database(
+            "fallback-pending-crash-target.sqlite3",
+            self.candidates + [fallback_candidate],
+            reverse=True,
+            shift_ids=True,
+        )
+        import_ai_cache(crash_target, openrouter_config, pending_bundle)
+        crash_article = crash_target.article_by_url(
+            self.source.slug,
+            "https://example.com/blog/fallback-pending",
+        )
+
+        class FatalDeepSeek:
+            def __init__(self):
+                self.requests = []
+
+            def generate(self, request):
+                self.requests.append(request)
+                raise KeyboardInterrupt("simulated fallback runner termination")
+
+        fatal_deepseek = FatalDeepSeek()
+        crashing_continuation = AIService(
+            deepseek_config,
+            crash_target,
+            provider=fatal_deepseek,
+            allow_fallback_pending_from="openrouter",
+        )
+        with mock.patch.dict(
+            "os.environ", {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            with self.assertRaises(KeyboardInterrupt):
+                crashing_continuation.generate_article(
+                    int(crash_article["id"]), task_type="summary"
+                )
+        self.assertEqual(1, len(fatal_deepseek.requests))
+        self.assertEqual(
+            {"fallback_pending", "ambiguous"},
+            {
+                str(hold["hold_class"])
+                for hold in crash_target.list_ai_generation_holds()
+            },
+        )
+
+        crash_bundle = self.root / "fallback-inflight-cache.json"
+        export_ai_cache(crash_target, deepseek_config, crash_bundle)
+        final_target = self.database(
+            "fallback-inflight-final-target.sqlite3",
+            self.candidates + [fallback_candidate],
+            reverse=True,
+            shift_ids=True,
+        )
+        import_ai_cache(final_target, openrouter_config, crash_bundle)
+        final_article = final_target.article_by_url(
+            self.source.slug,
+            "https://example.com/blog/fallback-pending",
+        )
+        final_openrouter = MustNotRun()
+        final_primary = AIService(
+            openrouter_config,
+            final_target,
+            provider=final_openrouter,
+            automatic_fallback_provider="deepseek",
+        )
+        with self.assertRaises(AIGenerationHeld):
+            final_primary.generate_article(
+                int(final_article["id"]), task_type="summary"
+            )
+        final_deepseek = MustNotRun()
+        final_continuation = AIService(
+            deepseek_config,
+            final_target,
+            provider=final_deepseek,
+            allow_fallback_pending_from="openrouter",
+        )
+        with self.assertRaises(AIGenerationHeld):
+            final_continuation.generate_article(
+                int(final_article["id"]), task_type="summary"
+            )
+        self.assertEqual([], final_openrouter.requests)
+        self.assertEqual([], final_deepseek.requests)
 
     def test_generation_hold_descriptor_and_hash_tampering_are_rejected(self) -> None:
         hold = self.generation_hold_entry(
@@ -1213,10 +1562,9 @@ class TrackedPublicAICacheTests(unittest.TestCase):
         # Production state evolves every cycle.  Test structural coverage and
         # uniqueness, never one historical snapshot's exact count or hash.
         self.assertTrue(payload["artifacts"])
-        self.assertEqual(
-            {"summary", "translation"},
-            {entry["task_type"] for entry in payload["artifacts"]},
-        )
+        tasks = {entry["task_type"] for entry in payload["artifacts"]}
+        self.assertIn("translation", tasks)
+        self.assertLessEqual(tasks, {"summary", "translation"})
         bindings = {
             (
                 entry["article"]["source_slug"],

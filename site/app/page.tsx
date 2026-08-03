@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Aaron Reader",
     description:
-      "The work behind the AI frontier, collected at 10:00 and 22:00 San Francisco time.",
+      "The work behind the AI frontier, collected at 09:15 and 21:15 San Francisco time.",
     url: "/",
     images: [{ url: "/og.png", width: 1200, height: 630 }],
     type: "website",
