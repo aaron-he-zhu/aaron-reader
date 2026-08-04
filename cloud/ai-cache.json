@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v2",
-  "exported_at": "2026-08-03T18:47:51Z",
-  "bundle_hash": "cdf79c5c4870a982e73c9dde308a31be8ea80fb0067347364a95aadf98da5ba8",
+  "exported_at": "2026-08-04T07:34:40Z",
+  "bundle_hash": "7f389ef51756a0e9a5a52cba95518a1a82d9a898a1641eecc914cfae10ac1f73",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -4228,6 +4228,71 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "c3b8fb3e822082bc3eed09cc7cb0d3ffbb48032094b9b83555d8f758bbe64ce5",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/apple-is-getting-this-wrong",
+        "canonical_url": "https://openai.com/index/apple-is-getting-this-wrong",
+        "content_hash": "72982dd27a7d677855da45e33c73f3a8311d246a0ccffe6ea0a993c62e1ee704"
+      },
+      "task_type": "summary",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "6abf07589f8da482dc357d12b9c55f0055ede5f3d3b6e25053d562317890ec1c",
+      "output": {
+        "summary": "OpenAI就苹果公司提起的诉讼发表回应，指出该诉讼毫无根据，并纠正了关于其员工的不实指控，同时分享了相关消息记录以说明事实。",
+        "key_points": [
+          "OpenAI回应苹果的诉讼，称其毫无根据",
+          "OpenAI纠正了关于其员工的不实说法",
+          "OpenAI分享了消息记录以说明事件经过"
+        ],
+        "language": "zh-CN",
+        "basis": "metadata",
+        "limitations": "本摘要基于文章元数据，未获取全文内容，可能遗漏细节。"
+      },
+      "output_hash": "120dda25a54ae2cab92eb3acf00a4ea4cd1e949c6fe56586ce361c27e102951b",
+      "input_truncated": false,
+      "created_at": "2026-08-04T07:34:34Z"
+    },
+    {
+      "cache_key": "52a8c869af6ff4001c5a51f779fed1262e9aa071ea048a0d6c0356d2e5f2b932",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/apple-is-getting-this-wrong",
+        "canonical_url": "https://openai.com/index/apple-is-getting-this-wrong",
+        "content_hash": "72982dd27a7d677855da45e33c73f3a8311d246a0ccffe6ea0a993c62e1ee704"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "翻译基于元数据，可能未完全反映原文细节。",
+        "title": "苹果搞错了这件事",
+        "publisher_summary": "OpenAI回应苹果毫无根据的诉讼，纠正其关于员工的指控，并分享消息记录以说明事情真相。"
+      },
+      "output_hash": "498f8c3509093b6eed03fb53bccf9c212b4cc9267a1d4675954d090d803a7339",
+      "input_truncated": false,
+      "created_at": "2026-08-04T07:34:34Z"
+    },
+    {
       "cache_key": "23806bcf3ca26467d07481254783a36d0c9a53dec279b73f15c2405487135685",
       "article": {
         "source_slug": "openai-news",
@@ -4747,6 +4812,73 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "9c72ac60a85930a3f038aa005b0ce488d6dc98f88934a17e24396bac7a2d3333",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/circles",
+        "canonical_url": "https://openai.com/index/circles",
+        "content_hash": "72052f704c4d92df6f25ca722994faae0dfe0e403febdab45e6961164bec2dbb"
+      },
+      "task_type": "summary",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "6abf07589f8da482dc357d12b9c55f0055ede5f3d3b6e25053d562317890ec1c",
+      "output": {
+        "summary": "Circles利用OpenAI API和Codex来提供AI原生的电信体验，使ARPU提升22%，客户流失率降低9%，并提高了开发效率。",
+        "key_points": [
+          "Circles使用OpenAI API和Codex。",
+          "增强AI原生的电信体验。",
+          "ARPU提升22%。",
+          "客户流失率降低9%。",
+          "开发效率得到提高。"
+        ],
+        "language": "zh-CN",
+        "basis": "metadata",
+        "limitations": "此摘要基于元数据，可能未涵盖文章的全部内容。"
+      },
+      "output_hash": "7900cd75d50183ee70f2b86b3f49b09b7f4d539689d76e1a11d501c120c8597e",
+      "input_truncated": false,
+      "created_at": "2026-08-04T07:34:39Z"
+    },
+    {
+      "cache_key": "fc3c2179a51a95316b91881b780078a23c625a5c3578f0cc94c2de50cfc88cf9",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/circles",
+        "canonical_url": "https://openai.com/index/circles",
+        "content_hash": "72052f704c4d92df6f25ca722994faae0dfe0e403febdab45e6961164bec2dbb"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "翻译仅基于提供的元数据，可能未完全反映文章内容。",
+        "title": "Circles借助OpenAI技术实现电信个性化",
+        "publisher_summary": "Circles利用OpenAI API和Codex提供AI原生的电信体验，将ARPU提升22%，客户流失率降低9%，并提高开发效率。"
+      },
+      "output_hash": "c68590378aab926e145b8236d3dd7603c8196f25c92df05ce2445bed338b7ab2",
+      "input_truncated": false,
+      "created_at": "2026-08-04T07:34:39Z"
+    },
+    {
       "cache_key": "df1af492724c3340b40faed93e3053cf00442b9bcc8106a0ff05e02778119a71",
       "article": {
         "source_slug": "openai-news",
@@ -4809,6 +4941,72 @@
       "output_hash": "8bafe67102fa53a27e23bcd5b5aff42e57d08e68bd6fa8e6b9aead15d55a5629",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "ca4e0a2f6a1b6b02d907d2b406ec6f31c5f499ad69ccf5d496fa7ccc349ff9d4",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/continuous-voice-interaction-with-gpt-live",
+        "canonical_url": "https://openai.com/index/continuous-voice-interaction-with-gpt-live",
+        "content_hash": "fd9fadf4766271b26520d0cf8315df78be7bd66866c98affc5deae8a42c0e0da"
+      },
+      "task_type": "summary",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "6abf07589f8da482dc357d12b9c55f0055ede5f3d3b6e25053d562317890ec1c",
+      "output": {
+        "summary": "GPT-Live是一个实现与AI持续语音交互的系统，采用了无轮次语音模型和低延迟架构，使对话更快、更自然。该系统由OpenAI News发布，标题为“How we built a realtime system for responsive voice AI in six months”，发布日期为2026年8月3日。源信息来自OpenAI News，文章URL为https://openai.com/index/continuous-voice-interaction-with-gpt-live。",
+        "key_points": [
+          "GPT-Live支持与AI的连续语音交互",
+          "采用无轮次语音模型",
+          "低延迟架构使对话更快更自然",
+          "文章由OpenAI News发布"
+        ],
+        "language": "zh-CN",
+        "basis": "metadata",
+        "limitations": "此摘要仅基于发布者摘要，未涵盖文章全部内容。"
+      },
+      "output_hash": "4e6cfd043f5b4ee5250ddefb21c4899a25136ac4126df6cb0cf921225fc2b380",
+      "input_truncated": false,
+      "created_at": "2026-08-04T07:34:37Z"
+    },
+    {
+      "cache_key": "0d3f8fe756034b76fa7c019f6bbce664b25b29361c3e720dfe584f6a9e4f6592",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/continuous-voice-interaction-with-gpt-live",
+        "canonical_url": "https://openai.com/index/continuous-voice-interaction-with-gpt-live",
+        "content_hash": "fd9fadf4766271b26520d0cf8315df78be7bd66866c98affc5deae8a42c0e0da"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "此翻译仅基于发布者摘要，未覆盖文章全部内容。",
+        "title": "我们如何在六个月内构建响应式语音AI的实时系统",
+        "publisher_summary": "GPT-Live实现了与AI的连续语音交互，采用无轮次语音模型和低延迟架构，使对话更快速、更自然。"
+      },
+      "output_hash": "13e78ecb47ec670f911bb6a476ee13e573efddc4403a1a97f162835ab9efcfde",
+      "input_truncated": false,
+      "created_at": "2026-08-04T07:34:37Z"
     },
     {
       "cache_key": "49a14a313dc9e6bc0d879103c4a8456ec5efb0b5516a7a2393b97fb9eeeddc36",
@@ -7014,11 +7212,11 @@
   "reports": [],
   "usage_ledger": [
     {
-      "ledger_key": "a9e26421a46a86065c4f5ed0440d4827196be46763f7812781f2b51ad3dce9c4",
+      "ledger_key": "c1c0daa61d1fd5d935feee3032353674b29d77d883677daaa8e0ba701c963ed9",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-03T18:47:51Z",
+      "covered_through": "2026-08-04T07:34:40Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -7029,6 +7227,26 @@
       "output_tokens": 251,
       "reasoning_tokens": 0,
       "total_tokens": 841,
+      "reserved_total_tokens_for_unconfirmed": 0,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "b02c7f427de2634c8ad39f5b760088b2b1e1e1937a679ee765da7a2ccdc07000",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-04T07:00:00Z",
+      "day_end": "2026-08-05T07:00:00Z",
+      "covered_through": "2026-08-04T07:34:40Z",
+      "requests": 3,
+      "confirmed_requests": 3,
+      "unconfirmed_requests": 0,
+      "input_tokens": 1839,
+      "cached_input_tokens": 768,
+      "cache_miss_input_tokens": 1071,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 606,
+      "reasoning_tokens": 0,
+      "total_tokens": 2445,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
