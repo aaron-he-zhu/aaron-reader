@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v2",
-  "exported_at": "2026-08-04T07:34:40Z",
-  "bundle_hash": "7f389ef51756a0e9a5a52cba95518a1a82d9a898a1641eecc914cfae10ac1f73",
+  "exported_at": "2026-08-04T18:26:00Z",
+  "bundle_hash": "5488cf8f2f78069e729de8d11326eecfa23b92f2e3d06107384ec4696e48836a",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -7212,11 +7212,11 @@
   "reports": [],
   "usage_ledger": [
     {
-      "ledger_key": "c1c0daa61d1fd5d935feee3032353674b29d77d883677daaa8e0ba701c963ed9",
+      "ledger_key": "e118be8084ac2364df1edb078cb4b80f7d6df397ccd8d172e149afee62208d7f",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-04T07:34:40Z",
+      "covered_through": "2026-08-04T18:26:00Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -7232,21 +7232,21 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b02c7f427de2634c8ad39f5b760088b2b1e1e1937a679ee765da7a2ccdc07000",
+      "ledger_key": "420485329b041b9cdacc07b93e5fbcdca39c8df5f099eedae8d5e28e966fe2d1",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-04T07:34:40Z",
-      "requests": 3,
-      "confirmed_requests": 3,
+      "covered_through": "2026-08-04T18:26:00Z",
+      "requests": 4,
+      "confirmed_requests": 4,
       "unconfirmed_requests": 0,
-      "input_tokens": 1839,
+      "input_tokens": 2437,
       "cached_input_tokens": 768,
-      "cache_miss_input_tokens": 1071,
+      "cache_miss_input_tokens": 1669,
       "cache_write_input_tokens": 0,
-      "output_tokens": 606,
+      "output_tokens": 835,
       "reasoning_tokens": 0,
-      "total_tokens": 2445,
+      "total_tokens": 3272,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
@@ -7254,15 +7254,15 @@
   ],
   "generation_holds": [
     {
-      "hold_key": "d4973519756979796e5249b7e406afc628444ba2373bd95d7da9414c0022f187",
+      "hold_key": "2585fe65788d73248c463206918a60b2d88a15fde8edd313550567e58c48a27d",
       "workload_kind": "article_pair",
       "hold_class": "paid_failure",
       "descriptor": {
         "article_identities": [
           {
-            "canonical_url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
-            "content_hash": "84de4adce794315b9912e09a367602dca6df47b01564eab5e4e4624a7678bc36",
-            "external_id": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+            "canonical_url": "https://www.anthropic.com/news/tino-cuellar",
+            "content_hash": "260cb4e38c53a6620d45d72a4c46407ccf60895f87b5ee2dd8a6c7d78fde093f",
+            "external_id": "https://www.anthropic.com/news/tino-cuellar",
             "source_slug": "anthropic-news"
           }
         ],
@@ -7270,7 +7270,7 @@
         "input_scope": "metadata",
         "max_output_tokens": 1200,
         "model": "deepseek-v4-flash",
-        "portable_input_hash": "5fb90be6f82875e4feed7fa0634f7821ab56f39502420dc480bcc4d318eedf05",
+        "portable_input_hash": "b08caa18139d6d72ff9637b3d78ed3c9e3fce032652752c7fa74bcaa5a2fa8c7",
         "prompt_hash": "840fd030fa203d76dfbd985dda88b572794a5adebd340e835aa5748c62531538",
         "prompt_version": "ai-enrichment-pair-v2",
         "protocol": "aaron-reader-ai-generation-hold/v1",
@@ -7282,8 +7282,8 @@
         "task_type": "summary",
         "workload_kind": "article_pair"
       },
-      "first_seen_at": "2026-08-03T18:47:51Z",
-      "last_seen_at": "2026-08-03T18:47:51Z"
+      "first_seen_at": "2026-08-04T18:25:59Z",
+      "last_seen_at": "2026-08-04T18:25:59Z"
     }
   ]
 }
