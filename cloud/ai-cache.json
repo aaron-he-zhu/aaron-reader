@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v2",
-  "exported_at": "2026-08-05T07:35:48Z",
-  "bundle_hash": "e84690fe32cfb1d91f8b7515adb60acb82795933ac9881a8b795779962be57d9",
+  "exported_at": "2026-08-05T18:17:30Z",
+  "bundle_hash": "d8fe362480b7706a2a7a416770bb7dc0c6906de349d911e0c2fbb08ceb536bae",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -7276,11 +7276,11 @@
   "reports": [],
   "usage_ledger": [
     {
-      "ledger_key": "0ceba02bef4f45d1baed03ac6e652afa3d38d5876cea69ad8ee92f903494137c",
+      "ledger_key": "cdb1b1550525a70eb93969dec6c3378db71c3ce29d4239057d6a80c38ab8807a",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-05T07:35:48Z",
+      "covered_through": "2026-08-05T18:17:30Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -7296,11 +7296,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "8abcdb514e5e2b071249cc6eb643b51131a069f7cd161e4a369e5910e9e820a0",
+      "ledger_key": "c7e57e8a219a33521304de72d142fc81514184e591de4edf8889d722573ba00b",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-05T07:35:48Z",
+      "covered_through": "2026-08-05T18:17:30Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -7316,21 +7316,21 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "997e5aa0e7c1ddb52faa462b308b86c4784d02ef859356751d84c6bd852587f6",
+      "ledger_key": "3529364505b28322d1fecaf09da20ed338639392711fa494c5b77a89060f3c96",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-05T07:35:48Z",
-      "requests": 2,
-      "confirmed_requests": 2,
+      "covered_through": "2026-08-05T18:17:30Z",
+      "requests": 3,
+      "confirmed_requests": 3,
       "unconfirmed_requests": 0,
-      "input_tokens": 1196,
-      "cached_input_tokens": 768,
-      "cache_miss_input_tokens": 428,
+      "input_tokens": 1782,
+      "cached_input_tokens": 1152,
+      "cache_miss_input_tokens": 630,
       "cache_write_input_tokens": 0,
-      "output_tokens": 439,
+      "output_tokens": 553,
       "reasoning_tokens": 0,
-      "total_tokens": 1635,
+      "total_tokens": 2335,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
@@ -7368,6 +7368,38 @@
       },
       "first_seen_at": "2026-08-04T18:25:59Z",
       "last_seen_at": "2026-08-04T18:25:59Z"
+    },
+    {
+      "hold_key": "7794f3e91ec5da95b5faae651e0c541b0b60280384d7af1e4d88417fd896ae86",
+      "workload_kind": "article_pair",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://claude.com/blog/claude-enterprise-inference-hooks",
+            "content_hash": "b24b45fc67747124bd5965beeb7741d7f48c8b164a30562747d1fb782f3343ca",
+            "external_id": "https://claude.com/blog/claude-enterprise-inference-hooks",
+            "source_slug": "claude-blog"
+          }
+        ],
+        "generation_params_hash": "034fdacdb4908246cd8f4cb60d602cb3f3756a58bb6d9a3e38f4b0ef3cb54b41",
+        "input_scope": "metadata",
+        "max_output_tokens": 1200,
+        "model": "deepseek-v4-flash",
+        "portable_input_hash": "dca83c4124492f218580b5da67f907e9260cd74479cbcbe34803d664f63b3907",
+        "prompt_hash": "840fd030fa203d76dfbd985dda88b572794a5adebd340e835aa5748c62531538",
+        "prompt_version": "ai-enrichment-pair-v2",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "deepseek",
+        "schema_hash": "b7fb3cd18ef674abcb0b2a6f15771654463d3ceeeb775f8aad87da9cb16deb92",
+        "schema_name": "article_summary_translation",
+        "schema_version": "ai-output-pair-v1",
+        "target_language": "zh-CN",
+        "task_type": "summary",
+        "workload_kind": "article_pair"
+      },
+      "first_seen_at": "2026-08-05T18:17:30Z",
+      "last_seen_at": "2026-08-05T18:17:30Z"
     },
     {
       "hold_key": "ddc1f168f04573502f769440d4543a9773b84aede0fef770458f694f916e6c8a",
