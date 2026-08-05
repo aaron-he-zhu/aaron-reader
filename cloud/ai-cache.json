@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v2",
-  "exported_at": "2026-08-04T18:26:00Z",
-  "bundle_hash": "5488cf8f2f78069e729de8d11326eecfa23b92f2e3d06107384ec4696e48836a",
+  "exported_at": "2026-08-05T07:35:48Z",
+  "bundle_hash": "e84690fe32cfb1d91f8b7515adb60acb82795933ac9881a8b795779962be57d9",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -7015,6 +7015,70 @@
       "created_at": "2026-08-01T08:09:47Z"
     },
     {
+      "cache_key": "584b12488de25d0a54ae0809a9ae3a830089801b856ff1358f7f15ae0e10b64e",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/third-party-cyber-evaluations-involving-openai-models",
+        "canonical_url": "https://openai.com/index/third-party-cyber-evaluations-involving-openai-models",
+        "content_hash": "5a2d655ad83e6ef47364440e688ac72545d7ad38ef26b2a66ea047099d2b4a3c"
+      },
+      "task_type": "summary",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "6abf07589f8da482dc357d12b9c55f0055ede5f3d3b6e25053d562317890ec1c",
+      "output": {
+        "summary": "OpenAI就近期涉及第三方网络安全评估的事件进行说明，并概述了加强AI模型测试与评估的新保障措施。",
+        "key_points": [
+          "OpenAI就第三方网络安全评估事件进行说明。",
+          "OpenAI概述了加强AI模型测试和评估的新保障措施。"
+        ],
+        "language": "zh-CN",
+        "basis": "metadata",
+        "limitations": "总结仅基于提供的发布摘要，未涵盖完整文章内容。"
+      },
+      "output_hash": "c8b5ecfa89152f6792e95f5aaaaba2f0fdb1040cb0710d9a8f8de2111af83688",
+      "input_truncated": false,
+      "created_at": "2026-08-05T07:35:44Z"
+    },
+    {
+      "cache_key": "28187836fbe6b04c38d64cb83cd8b543fef6ab8dff88a87490bd7adea0780deb",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/third-party-cyber-evaluations-involving-openai-models",
+        "canonical_url": "https://openai.com/index/third-party-cyber-evaluations-involving-openai-models",
+        "content_hash": "5a2d655ad83e6ef47364440e688ac72545d7ad38ef26b2a66ea047099d2b4a3c"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "翻译仅基于提供的元数据，可能未完全反映原文细节。",
+        "title": "涉及OpenAI模型的第三方网络安全评估",
+        "publisher_summary": "OpenAI就近期涉及第三方网络安全评估的事件进行说明，并概述了加强AI模型测试与评估的新保障措施。"
+      },
+      "output_hash": "71cb98a675d273e272a83f6114436c2c15c6cea686a47f441d07a7f4bf6783f2",
+      "input_truncated": false,
+      "created_at": "2026-08-05T07:35:44Z"
+    },
+    {
       "cache_key": "ee16e3ae5b6b7af8a755fbec2b56f43a1bb4ea98e0aa2acdf4a4d5be3efa4746",
       "article": {
         "source_slug": "openai-news",
@@ -7212,11 +7276,11 @@
   "reports": [],
   "usage_ledger": [
     {
-      "ledger_key": "e118be8084ac2364df1edb078cb4b80f7d6df397ccd8d172e149afee62208d7f",
+      "ledger_key": "0ceba02bef4f45d1baed03ac6e652afa3d38d5876cea69ad8ee92f903494137c",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-04T18:26:00Z",
+      "covered_through": "2026-08-05T07:35:48Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -7232,11 +7296,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "420485329b041b9cdacc07b93e5fbcdca39c8df5f099eedae8d5e28e966fe2d1",
+      "ledger_key": "8abcdb514e5e2b071249cc6eb643b51131a069f7cd161e4a369e5910e9e820a0",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-04T18:26:00Z",
+      "covered_through": "2026-08-05T07:35:48Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -7247,6 +7311,26 @@
       "output_tokens": 835,
       "reasoning_tokens": 0,
       "total_tokens": 3272,
+      "reserved_total_tokens_for_unconfirmed": 0,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "997e5aa0e7c1ddb52faa462b308b86c4784d02ef859356751d84c6bd852587f6",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-05T07:00:00Z",
+      "day_end": "2026-08-06T07:00:00Z",
+      "covered_through": "2026-08-05T07:35:48Z",
+      "requests": 2,
+      "confirmed_requests": 2,
+      "unconfirmed_requests": 0,
+      "input_tokens": 1196,
+      "cached_input_tokens": 768,
+      "cache_miss_input_tokens": 428,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 439,
+      "reasoning_tokens": 0,
+      "total_tokens": 1635,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
@@ -7284,6 +7368,38 @@
       },
       "first_seen_at": "2026-08-04T18:25:59Z",
       "last_seen_at": "2026-08-04T18:25:59Z"
+    },
+    {
+      "hold_key": "ddc1f168f04573502f769440d4543a9773b84aede0fef770458f694f916e6c8a",
+      "workload_kind": "article_pair",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://claude.com/blog/a-guide-to-cost-visibility-and-control-in-claude",
+            "content_hash": "fb552f87dad34117ae2ddea9e5b5a9d4d53df5c865b5642389b23af2faf321ce",
+            "external_id": "https://claude.com/blog/a-guide-to-cost-visibility-and-control-in-claude",
+            "source_slug": "claude-blog"
+          }
+        ],
+        "generation_params_hash": "034fdacdb4908246cd8f4cb60d602cb3f3756a58bb6d9a3e38f4b0ef3cb54b41",
+        "input_scope": "metadata",
+        "max_output_tokens": 1200,
+        "model": "deepseek-v4-flash",
+        "portable_input_hash": "597d2c080af5a49689427b1e7d7b97ef2039a2a9bd26b10c3d8f0b58eacfaec6",
+        "prompt_hash": "840fd030fa203d76dfbd985dda88b572794a5adebd340e835aa5748c62531538",
+        "prompt_version": "ai-enrichment-pair-v2",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "deepseek",
+        "schema_hash": "b7fb3cd18ef674abcb0b2a6f15771654463d3ceeeb775f8aad87da9cb16deb92",
+        "schema_name": "article_summary_translation",
+        "schema_version": "ai-output-pair-v1",
+        "target_language": "zh-CN",
+        "task_type": "summary",
+        "workload_kind": "article_pair"
+      },
+      "first_seen_at": "2026-08-05T07:35:47Z",
+      "last_seen_at": "2026-08-05T07:35:47Z"
     }
   ]
 }
