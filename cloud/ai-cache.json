@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v2",
-  "exported_at": "2026-08-05T18:17:30Z",
-  "bundle_hash": "d8fe362480b7706a2a7a416770bb7dc0c6906de349d911e0c2fbb08ceb536bae",
+  "exported_at": "2026-08-06T07:36:13Z",
+  "bundle_hash": "0ca03fe77a8bc353cac2c7e098f1f11346d62962db9c9a4a6e326a1d744bc011",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -6435,6 +6435,71 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "b6ed9d5e54ee72c1f20eb82271a7508d4db49f1e4fa32fca854542c55ed7beaa",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/learn-teach-chatgpt-work-codex",
+        "canonical_url": "https://openai.com/index/learn-teach-chatgpt-work-codex",
+        "content_hash": "6317ef582d7e505377913ea7e7f8fcd05b2becd2368be8631262dc6861be95eb"
+      },
+      "task_type": "summary",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "6abf07589f8da482dc357d12b9c55f0055ede5f3d3b6e25053d562317890ec1c",
+      "output": {
+        "summary": "本文介绍了ChatGPT Work和Codex的新教育插件，旨在帮助K-12教师、大学教育者和学生学习、教学、研究和构建。",
+        "key_points": [
+          "介绍ChatGPT Work和Codex的新教育插件",
+          "帮助K-12教师、大学教育者和学生",
+          "支持学习、教学、研究和构建"
+        ],
+        "language": "zh-CN",
+        "basis": "metadata",
+        "limitations": "摘要基于提供的信息，未涵盖完整文章细节。"
+      },
+      "output_hash": "51a8e00af01b385d8d2efa9ba0328362c6f729373a51e52dceba4427178be891",
+      "input_truncated": false,
+      "created_at": "2026-08-06T07:36:10Z"
+    },
+    {
+      "cache_key": "7cf600e156614a5d01b6f224c9151921dde769d4afd09734da3495ed2ad46600",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/learn-teach-chatgpt-work-codex",
+        "canonical_url": "https://openai.com/index/learn-teach-chatgpt-work-codex",
+        "content_hash": "6317ef582d7e505377913ea7e7f8fcd05b2becd2368be8631262dc6861be95eb"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "翻译仅基于提供的标题和摘要。",
+        "title": "使用ChatGPT Work和Codex学习与教学的新方式",
+        "publisher_summary": "探索ChatGPT Work和Codex的新教育插件，帮助K-12教师、大学教育者和学生学习、教学、研究和构建。"
+      },
+      "output_hash": "5f5bef10531138b9a084a012f85fe434929e3d3e349a1de9fc305e08e8df9ade",
+      "input_truncated": false,
+      "created_at": "2026-08-06T07:36:10Z"
+    },
+    {
       "cache_key": "6d5057420d7dde9ef8baa94ed399978a700be75182c4afeb6250d86c9af407c4",
       "article": {
         "source_slug": "openai-news",
@@ -7276,11 +7341,11 @@
   "reports": [],
   "usage_ledger": [
     {
-      "ledger_key": "cdb1b1550525a70eb93969dec6c3378db71c3ce29d4239057d6a80c38ab8807a",
+      "ledger_key": "8d7b2f554a55ebb922baa4def7d88c770ed264ec02b4b000ebf59f2250cecf0e",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-05T18:17:30Z",
+      "covered_through": "2026-08-06T07:36:13Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -7296,11 +7361,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "c7e57e8a219a33521304de72d142fc81514184e591de4edf8889d722573ba00b",
+      "ledger_key": "18fab768cef65a70f1ed021efaefc0f3e3abac6e13c18fd961ee2138774e9d84",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-05T18:17:30Z",
+      "covered_through": "2026-08-06T07:36:13Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -7316,11 +7381,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "3529364505b28322d1fecaf09da20ed338639392711fa494c5b77a89060f3c96",
+      "ledger_key": "427451b720661d917b9ac37393f87d512baf0457089d3bb03c08504387ace5e5",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-05T18:17:30Z",
+      "covered_through": "2026-08-06T07:36:13Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -7331,6 +7396,26 @@
       "output_tokens": 553,
       "reasoning_tokens": 0,
       "total_tokens": 2335,
+      "reserved_total_tokens_for_unconfirmed": 0,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "2f4a3a3e9d2641cee3fb1bf6555a45d8900b0b450c1a458c649b9cfc59b2d499",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-06T07:00:00Z",
+      "day_end": "2026-08-07T07:00:00Z",
+      "covered_through": "2026-08-06T07:36:13Z",
+      "requests": 2,
+      "confirmed_requests": 2,
+      "unconfirmed_requests": 0,
+      "input_tokens": 1210,
+      "cached_input_tokens": 768,
+      "cache_miss_input_tokens": 442,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 354,
+      "reasoning_tokens": 0,
+      "total_tokens": 1564,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
@@ -7400,6 +7485,38 @@
       },
       "first_seen_at": "2026-08-05T18:17:30Z",
       "last_seen_at": "2026-08-05T18:17:30Z"
+    },
+    {
+      "hold_key": "d4973519756979796e5249b7e406afc628444ba2373bd95d7da9414c0022f187",
+      "workload_kind": "article_pair",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+            "content_hash": "84de4adce794315b9912e09a367602dca6df47b01564eab5e4e4624a7678bc36",
+            "external_id": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
+            "source_slug": "anthropic-news"
+          }
+        ],
+        "generation_params_hash": "034fdacdb4908246cd8f4cb60d602cb3f3756a58bb6d9a3e38f4b0ef3cb54b41",
+        "input_scope": "metadata",
+        "max_output_tokens": 1200,
+        "model": "deepseek-v4-flash",
+        "portable_input_hash": "5fb90be6f82875e4feed7fa0634f7821ab56f39502420dc480bcc4d318eedf05",
+        "prompt_hash": "840fd030fa203d76dfbd985dda88b572794a5adebd340e835aa5748c62531538",
+        "prompt_version": "ai-enrichment-pair-v2",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "deepseek",
+        "schema_hash": "b7fb3cd18ef674abcb0b2a6f15771654463d3ceeeb775f8aad87da9cb16deb92",
+        "schema_name": "article_summary_translation",
+        "schema_version": "ai-output-pair-v1",
+        "target_language": "zh-CN",
+        "task_type": "summary",
+        "workload_kind": "article_pair"
+      },
+      "first_seen_at": "2026-08-06T07:36:13Z",
+      "last_seen_at": "2026-08-06T07:36:13Z"
     },
     {
       "hold_key": "ddc1f168f04573502f769440d4543a9773b84aede0fef770458f694f916e6c8a",

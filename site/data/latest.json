@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-05T18:17:31Z",
+  "generated_at": "2026-08-06T07:36:14Z",
   "language": "en",
   "supported_languages": [
     "en",
@@ -7,7 +7,7 @@
   ],
   "llm_tokens_used": 0,
   "render_llm_tokens_used": 0,
-  "cached_ai_artifact_count": 226,
+  "cached_ai_artifact_count": 228,
   "cached_ai_report_count": 0,
   "counts": {
     "total": 119
@@ -24,28 +24,28 @@
       "slug": "anthropic-news",
       "name": "Anthropic News",
       "health": "healthy",
-      "last_success_at": "2026-08-05T18:17:28Z",
+      "last_success_at": "2026-08-06T07:36:07Z",
       "article_count": 14
     },
     {
       "slug": "claude-blog",
       "name": "Claude Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-05T18:17:28Z",
+      "last_success_at": "2026-08-06T07:36:07Z",
       "article_count": 27
     },
     {
       "slug": "openai-developers",
       "name": "OpenAI Developer Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-05T18:17:27Z",
+      "last_success_at": "2026-08-06T07:36:06Z",
       "article_count": 21
     },
     {
       "slug": "openai-news",
       "name": "OpenAI News",
       "health": "healthy",
-      "last_success_at": "2026-08-05T18:17:27Z",
+      "last_success_at": "2026-08-06T07:36:05Z",
       "article_count": 57
     }
   ],
@@ -72,7 +72,7 @@
       "url": "https://openai.com/index/third-party-cyber-evaluations-involving-openai-models",
       "ai_artifacts": [
         {
-          "id": 220,
+          "id": 222,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -86,7 +86,7 @@
           }
         },
         {
-          "id": 219,
+          "id": 221,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -114,7 +114,41 @@
       "category": "Product",
       "published_at": "2026-08-04T00:00:00Z",
       "url": "https://openai.com/index/learn-teach-chatgpt-work-codex",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 202,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-06T07:36:10Z",
+          "input_truncated": false,
+          "output": {
+            "language": "zh-CN",
+            "limitations": "翻译仅基于提供的标题和摘要。",
+            "publisher_summary": "探索ChatGPT Work和Codex的新教育插件，帮助K-12教师、大学教育者和学生学习、教学、研究和构建。",
+            "title": "使用ChatGPT Work和Codex学习与教学的新方式"
+          }
+        },
+        {
+          "id": 201,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-06T07:36:10Z",
+          "input_truncated": false,
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "介绍ChatGPT Work和Codex的新教育插件",
+              "帮助K-12教师、大学教育者和学生",
+              "支持学习、教学、研究和构建"
+            ],
+            "language": "zh-CN",
+            "limitations": "摘要基于提供的信息，未涵盖完整文章细节。",
+            "summary": "本文介绍了ChatGPT Work和Codex的新教育插件，旨在帮助K-12教师、大学教育者和学生学习、教学、研究和构建。"
+          }
+        }
+      ]
     },
     {
       "id": 15,
@@ -287,7 +321,7 @@
       "url": "https://openai.com/index/ten-advances-in-mathematics",
       "ai_artifacts": [
         {
-          "id": 218,
+          "id": 220,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -301,7 +335,7 @@
           }
         },
         {
-          "id": 217,
+          "id": 219,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -420,7 +454,7 @@
       "url": "https://openai.com/index/unive",
       "ai_artifacts": [
         {
-          "id": 222,
+          "id": 224,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -434,7 +468,7 @@
           }
         },
         {
-          "id": 221,
+          "id": 223,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -595,7 +629,7 @@
       "source": "anthropic-news",
       "source_name": "Anthropic News",
       "title": "Investigating three real-world incidents in our cybersecurity evaluations",
-      "summary": "In a review of our cybersecurity evaluation transcripts, we found three incidents in which a Claude model reached the internet from within or while interacting with a third-party evaluation environment, and then gained unauthorized access to the real systems of three different organizations. Below we describe what happened, how it happened, and what we’re changing. We encourage other AI labs to perform similar reviews.",
+      "summary": "",
       "category": "",
       "published_at": "2026-07-30T00:00:00Z",
       "url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
@@ -747,7 +781,7 @@
       "url": "https://openai.com/index/scientific-computing-agentic-ai",
       "ai_artifacts": [
         {
-          "id": 214,
+          "id": 216,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -761,7 +795,7 @@
           }
         },
         {
-          "id": 213,
+          "id": 215,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1464,7 +1498,7 @@
       "url": "https://openai.com/index/ntt-data",
       "ai_artifacts": [
         {
-          "id": 208,
+          "id": 210,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1478,7 +1512,7 @@
           }
         },
         {
-          "id": 207,
+          "id": 209,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1957,7 +1991,7 @@
       "url": "https://openai.com/index/safety-alignment-long-horizon-models",
       "ai_artifacts": [
         {
-          "id": 212,
+          "id": 214,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1971,7 +2005,7 @@
           }
         },
         {
-          "id": 211,
+          "id": 213,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2264,7 +2298,7 @@
       "url": "https://openai.com/index/why-teens-deserve-access-safe-ai",
       "ai_artifacts": [
         {
-          "id": 226,
+          "id": 228,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2278,7 +2312,7 @@
           }
         },
         {
-          "id": 225,
+          "id": 227,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2528,7 +2562,7 @@
       "url": "https://openai.com/index/unlocking-self-improvement-gpt-red",
       "ai_artifacts": [
         {
-          "id": 224,
+          "id": 226,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2542,7 +2576,7 @@
           }
         },
         {
-          "id": 223,
+          "id": 225,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2573,7 +2607,7 @@
       "url": "https://openai.com/index/managing-ai-investments-in-agentic-era",
       "ai_artifacts": [
         {
-          "id": 202,
+          "id": 204,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2587,7 +2621,7 @@
           }
         },
         {
-          "id": 201,
+          "id": 203,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3147,7 +3181,7 @@
       "url": "https://openai.com/index/separating-signal-from-noise-coding-evaluations",
       "ai_artifacts": [
         {
-          "id": 216,
+          "id": 218,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3161,7 +3195,7 @@
           }
         },
         {
-          "id": 215,
+          "id": 217,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3281,7 +3315,7 @@
       "url": "https://openai.com/index/mufg",
       "ai_artifacts": [
         {
-          "id": 206,
+          "id": 208,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3295,7 +3329,7 @@
           }
         },
         {
-          "id": 205,
+          "id": 207,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3639,7 +3673,7 @@
       "url": "https://openai.com/index/mapping-ai-jobs-transition-eu",
       "ai_artifacts": [
         {
-          "id": 204,
+          "id": 206,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3653,7 +3687,7 @@
           }
         },
         {
-          "id": 203,
+          "id": 205,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3727,7 +3761,7 @@
       "url": "https://openai.com/index/previewing-gpt-5-6-sol",
       "ai_artifacts": [
         {
-          "id": 210,
+          "id": 212,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3741,7 +3775,7 @@
           }
         },
         {
-          "id": 209,
+          "id": 211,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
