@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T06:07:33Z",
+  "generated_at": "2026-08-07T17:44:59Z",
   "language": "en",
   "supported_languages": [
     "en",
@@ -7,14 +7,14 @@
   ],
   "llm_tokens_used": 0,
   "render_llm_tokens_used": 0,
-  "cached_ai_artifact_count": 228,
+  "cached_ai_artifact_count": 238,
   "cached_ai_report_count": 2,
   "counts": {
-    "total": 125
+    "total": 127
   },
   "articles_page": {
     "order": "newest_first",
-    "returned_count": 125,
+    "returned_count": 127,
     "limit": 500,
     "omitted_count": 0,
     "truncated": false
@@ -24,32 +24,122 @@
       "slug": "anthropic-news",
       "name": "Anthropic News",
       "health": "healthy",
-      "last_success_at": "2026-08-07T06:07:24Z",
+      "last_success_at": "2026-08-07T17:44:36Z",
       "article_count": 15
     },
     {
       "slug": "claude-blog",
       "name": "Claude Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-07T06:07:24Z",
+      "last_success_at": "2026-08-07T17:44:35Z",
       "article_count": 29
     },
     {
       "slug": "openai-developers",
       "name": "OpenAI Developer Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-07T06:07:23Z",
+      "last_success_at": "2026-08-07T17:44:34Z",
       "article_count": 21
     },
     {
       "slug": "openai-news",
       "name": "OpenAI News",
       "health": "healthy",
-      "last_success_at": "2026-08-07T06:07:23Z",
-      "article_count": 60
+      "last_success_at": "2026-08-07T17:44:34Z",
+      "article_count": 62
     }
   ],
   "articles": [
+    {
+      "id": 119,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Responding to the next frontier of critical cyber capabilities",
+      "summary": "OpenAI is sharing preliminary cybersecurity evaluations for Astra and the steps we’re taking to strengthen safeguards and security controls.",
+      "category": "Security",
+      "published_at": "2026-08-07T15:20:00Z",
+      "url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
+      "ai_artifacts": [
+        {
+          "id": 222,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-07T17:44:44Z",
+          "input_truncated": false,
+          "output": {
+            "language": "zh-CN",
+            "limitations": "翻译基于提供的元数据，可能未完全反映原文内容。",
+            "publisher_summary": "OpenAI正在分享Astra的初步网络安全评估，以及我们为加强安全保障和安全控制所采取的步骤。",
+            "title": "应对关键的下一代网络能力"
+          }
+        },
+        {
+          "id": 221,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-07T17:44:44Z",
+          "input_truncated": false,
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "OpenAI分享了Astra的初步网络安全评估。",
+              "OpenAI正在采取措施强化安全防护和安全控制。"
+            ],
+            "language": "zh-CN",
+            "limitations": "仅基于元数据，未阅读全文，信息有限。",
+            "summary": "OpenAI发布了针对Astra的初步网络安全评估，并介绍了加强安全保障和安全控制的措施。"
+          }
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "How HSP GRUPPE builds AI capabilities for tax advisory",
+      "summary": "Discover how HSP GRUPPE uses ChatGPT Enterprise to boost productivity, improve work quality, and create more capacity for tax advisory and client service.",
+      "category": "",
+      "published_at": "2026-08-07T09:00:00Z",
+      "url": "https://openai.com/index/hsp-gruppe",
+      "ai_artifacts": [
+        {
+          "id": 192,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-07T17:44:46Z",
+          "input_truncated": false,
+          "output": {
+            "language": "zh-CN",
+            "limitations": "翻译仅基于提供的元数据，可能未涵盖全文内容。",
+            "publisher_summary": "了解HSP GRUPPE如何使用ChatGPT Enterprise提高生产力、改善工作质量，并创造更多容量用于税务咨询和客户服务。",
+            "title": "HSP GRUPPE如何为税务咨询构建AI能力"
+          }
+        },
+        {
+          "id": 191,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-07T17:44:46Z",
+          "input_truncated": false,
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "HSP GRUPPE使用ChatGPT Enterprise。",
+              "目标是提高生产力。",
+              "改善工作质量。",
+              "为税务咨询和客户服务创造更多容量。"
+            ],
+            "language": "zh-CN",
+            "limitations": "本摘要基于文章元数据（出版商摘要），未包含全文细节。",
+            "summary": "OpenAI News报道了HSP GRUPPE如何利用ChatGPT Enterprise提高生产力、改善工作质量，并为税务咨询和客户服务创造更多容量。"
+          }
+        }
+      ]
+    },
     {
       "id": 10,
       "source": "anthropic-news",
@@ -62,7 +152,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 104,
+      "id": 105,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Improving GPT‑5.6 Sol in ChatGPT—and expanding access to GPT-5.6 Luna for free users",
@@ -70,10 +160,44 @@
       "category": "Product",
       "published_at": "2026-08-06T10:00:00Z",
       "url": "https://openai.com/index/improving-gpt-5-6-sol-in-chatgpt",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 196,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-07T17:44:49Z",
+          "input_truncated": false,
+          "output": {
+            "language": "zh-CN",
+            "limitations": "翻译基于发布者摘要和标题，可能未涵盖完整文章内容。",
+            "publisher_summary": "ChatGPT 引入改进的 GPT-5.6 Sol，提高准确性和一致性，并扩大免费用户的访问，提供无限制的日常聊天，使用 GPT-5.6 Luna。",
+            "title": "改进 ChatGPT 中的 GPT-5.6 Sol——并扩大免费用户对 GPT-5.6 Luna 的访问"
+          }
+        },
+        {
+          "id": 195,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-07T17:44:49Z",
+          "input_truncated": false,
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "ChatGPT 引入改进的 GPT-5.6 Sol，提高准确性和一致性。",
+              "免费用户可扩展访问 GPT-5.6 Luna。",
+              "免费用户可享受无限制的日常聊天。"
+            ],
+            "language": "zh-CN",
+            "limitations": "摘要基于发布者摘要，可能未涵盖完整文章细节。",
+            "summary": "OpenAI 宣布改进 ChatGPT 中的 GPT-5.6 Sol，提高准确性和一致性，并扩大免费用户对 GPT-5.6 Luna 的访问，提供无限制的日常聊天。"
+          }
+        }
+      ]
     },
     {
-      "id": 116,
+      "id": 117,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Working with the American Psychological Association on youth mental health and AI",
@@ -81,7 +205,40 @@
       "category": "Company",
       "published_at": "2026-08-06T06:00:00Z",
       "url": "https://openai.com/index/openai-and-apa-partner-to-advance-responsible-ai",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 218,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-07T17:44:51Z",
+          "input_truncated": false,
+          "output": {
+            "language": "zh-CN",
+            "limitations": "此翻译仅针对标题和摘要，未覆盖完整文章。",
+            "publisher_summary": "OpenAI和美国心理学会推进负责任的AI使用和青少年心理健康的循证指南、资源和保障措施。",
+            "title": "与APA合作关注青少年心理健康和AI"
+          }
+        },
+        {
+          "id": 217,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-07T17:44:51Z",
+          "input_truncated": false,
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "OpenAI与APA合作，专注于负责任AI使用和青少年心理健康。",
+              "合作将推进基于证据的指南、资源和安全措施。"
+            ],
+            "language": "zh-CN",
+            "limitations": "此摘要基于提供的元数据，未覆盖完整文章内容。",
+            "summary": "OpenAI和APA（美国心理学会）合作，推进基于证据的指南、资源和保障措施，以促进负责任的AI使用和青少年心理健康。"
+          }
+        }
+      ]
     },
     {
       "id": 100,
@@ -92,7 +249,42 @@
       "category": "Company",
       "published_at": "2026-08-06T00:00:00Z",
       "url": "https://openai.com/index/how-the-world-is-putting-chatgpt-to-work",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 186,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-07T17:44:54Z",
+          "input_truncated": false,
+          "output": {
+            "language": "zh-CN",
+            "limitations": "翻译仅基于提供的标题和摘要，未包括文章全文。",
+            "publisher_summary": "新的OpenAI Signals数据展示了全球人们如何使用ChatGPT，提供了采用率、使用趋势和行为演变的国别洞察。",
+            "title": "从提问到行动：世界如何将ChatGPT应用于工作"
+          }
+        },
+        {
+          "id": 185,
+          "task": "summary",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-07T17:44:54Z",
+          "input_truncated": false,
+          "output": {
+            "basis": "metadata",
+            "key_points": [
+              "OpenAI Signals数据揭示了全球ChatGPT使用情况",
+              "提供国家层面的采用率洞察",
+              "展示使用趋势",
+              "反映用户行为的演变"
+            ],
+            "language": "zh-CN",
+            "limitations": "本摘要基于提供的元数据（标题和摘要），未涵盖文章全文内容。",
+            "summary": "OpenAI Signals数据显示了全球人们在ChatGPT上的使用情况，提供了国家层面的采用率、使用趋势和行为演变的见解。"
+          }
+        }
+      ]
     },
     {
       "id": 39,
@@ -128,7 +320,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 122,
+      "id": 124,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Third-party cyber evaluations involving OpenAI models",
@@ -138,7 +330,7 @@
       "url": "https://openai.com/index/third-party-cyber-evaluations-involving-openai-models",
       "ai_artifacts": [
         {
-          "id": 222,
+          "id": 232,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -152,7 +344,7 @@
           }
         },
         {
-          "id": 221,
+          "id": 231,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -172,7 +364,7 @@
       ]
     },
     {
-      "id": 111,
+      "id": 112,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "New ways to learn and teach with ChatGPT Work and Codex",
@@ -182,7 +374,7 @@
       "url": "https://openai.com/index/learn-teach-chatgpt-work-codex",
       "ai_artifacts": [
         {
-          "id": 202,
+          "id": 208,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -196,7 +388,7 @@
           }
         },
         {
-          "id": 201,
+          "id": 207,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -377,7 +569,7 @@
       ]
     },
     {
-      "id": 121,
+      "id": 123,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Ten advances in mathematics and theoretical computer science",
@@ -387,7 +579,7 @@
       "url": "https://openai.com/index/ten-advances-in-mathematics",
       "ai_artifacts": [
         {
-          "id": 220,
+          "id": 230,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -401,7 +593,7 @@
           }
         },
         {
-          "id": 219,
+          "id": 229,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -510,7 +702,7 @@
       ]
     },
     {
-      "id": 123,
+      "id": 125,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Univé builds an AI-ready workforce",
@@ -520,7 +712,7 @@
       "url": "https://openai.com/index/unive",
       "ai_artifacts": [
         {
-          "id": 224,
+          "id": 234,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -534,7 +726,7 @@
           }
         },
         {
-          "id": 223,
+          "id": 233,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -712,7 +904,7 @@
       "url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
       "ai_artifacts": [
         {
-          "id": 186,
+          "id": 188,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -726,7 +918,7 @@
           }
         },
         {
-          "id": 185,
+          "id": 187,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -837,7 +1029,7 @@
       ]
     },
     {
-      "id": 119,
+      "id": 121,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Scientific computing in the age of agentic AI",
@@ -847,7 +1039,7 @@
       "url": "https://openai.com/index/scientific-computing-agentic-ai",
       "ai_artifacts": [
         {
-          "id": 216,
+          "id": 226,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -861,7 +1053,7 @@
           }
         },
         {
-          "id": 215,
+          "id": 225,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1508,7 +1700,7 @@
       ]
     },
     {
-      "id": 108,
+      "id": 109,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing OpenAI Presence",
@@ -1518,7 +1710,7 @@
       "url": "https://openai.com/index/introducing-openai-presence",
       "ai_artifacts": [
         {
-          "id": 198,
+          "id": 204,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1532,7 +1724,7 @@
           }
         },
         {
-          "id": 197,
+          "id": 203,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1554,7 +1746,7 @@
       ]
     },
     {
-      "id": 115,
+      "id": 116,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "NTT DATA Group cuts incident analysis to 30 minutes with Codex",
@@ -1564,7 +1756,7 @@
       "url": "https://openai.com/index/ntt-data",
       "ai_artifacts": [
         {
-          "id": 210,
+          "id": 216,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1578,7 +1770,7 @@
           }
         },
         {
-          "id": 209,
+          "id": 215,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1778,7 +1970,7 @@
       ]
     },
     {
-      "id": 105,
+      "id": 106,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing the ChatGPT for small business program",
@@ -1788,7 +1980,7 @@
       "url": "https://openai.com/index/introducing-chatgpt-small-business-program",
       "ai_artifacts": [
         {
-          "id": 192,
+          "id": 198,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1802,7 +1994,7 @@
           }
         },
         {
-          "id": 191,
+          "id": 197,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1823,7 +2015,7 @@
       ]
     },
     {
-      "id": 103,
+      "id": 104,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "OpenAI and Hugging Face partner to address security incident during model evaluation",
@@ -1833,7 +2025,7 @@
       "url": "https://openai.com/index/hugging-face-model-evaluation-security-incident",
       "ai_artifacts": [
         {
-          "id": 190,
+          "id": 194,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1847,7 +2039,7 @@
           }
         },
         {
-          "id": 189,
+          "id": 193,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2047,7 +2239,7 @@
       ]
     },
     {
-      "id": 118,
+      "id": 120,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Safety and alignment in an era of long-horizon models",
@@ -2057,7 +2249,7 @@
       "url": "https://openai.com/index/safety-alignment-long-horizon-models",
       "ai_artifacts": [
         {
-          "id": 214,
+          "id": 224,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2071,7 +2263,7 @@
           }
         },
         {
-          "id": 213,
+          "id": 223,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2354,7 +2546,7 @@
       ]
     },
     {
-      "id": 125,
+      "id": 127,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Why teens deserve access to safe AI",
@@ -2364,7 +2556,7 @@
       "url": "https://openai.com/index/why-teens-deserve-access-safe-ai",
       "ai_artifacts": [
         {
-          "id": 228,
+          "id": 238,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2378,7 +2570,7 @@
           }
         },
         {
-          "id": 227,
+          "id": 237,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2618,7 +2810,7 @@
       ]
     },
     {
-      "id": 124,
+      "id": 126,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "GPT-Red: Unlocking Self-Improvement for Robustness",
@@ -2628,7 +2820,7 @@
       "url": "https://openai.com/index/unlocking-self-improvement-gpt-red",
       "ai_artifacts": [
         {
-          "id": 226,
+          "id": 236,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2642,7 +2834,7 @@
           }
         },
         {
-          "id": 225,
+          "id": 235,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2663,7 +2855,7 @@
       ]
     },
     {
-      "id": 112,
+      "id": 113,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How to manage AI investments in the agentic era",
@@ -2673,7 +2865,7 @@
       "url": "https://openai.com/index/managing-ai-investments-in-agentic-era",
       "ai_artifacts": [
         {
-          "id": 204,
+          "id": 210,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2687,7 +2879,7 @@
           }
         },
         {
-          "id": 203,
+          "id": 209,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3237,7 +3429,7 @@
       ]
     },
     {
-      "id": 120,
+      "id": 122,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Separating signal from noise in coding evaluations",
@@ -3247,7 +3439,7 @@
       "url": "https://openai.com/index/separating-signal-from-noise-coding-evaluations",
       "ai_artifacts": [
         {
-          "id": 218,
+          "id": 228,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3261,7 +3453,7 @@
           }
         },
         {
-          "id": 217,
+          "id": 227,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3281,7 +3473,7 @@
       ]
     },
     {
-      "id": 110,
+      "id": 111,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Helping K–12 educators build practical AI skills",
@@ -3291,7 +3483,7 @@
       "url": "https://openai.com/index/k-12-educators-practical-skills",
       "ai_artifacts": [
         {
-          "id": 200,
+          "id": 206,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3305,7 +3497,7 @@
           }
         },
         {
-          "id": 199,
+          "id": 205,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3326,7 +3518,7 @@
       ]
     },
     {
-      "id": 107,
+      "id": 108,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing GPT-Live",
@@ -3336,7 +3528,7 @@
       "url": "https://openai.com/index/introducing-gpt-live",
       "ai_artifacts": [
         {
-          "id": 196,
+          "id": 202,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3350,7 +3542,7 @@
           }
         },
         {
-          "id": 195,
+          "id": 201,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3371,7 +3563,7 @@
       ]
     },
     {
-      "id": 114,
+      "id": 115,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "MUFG aims to become AI-native with OpenAI",
@@ -3381,7 +3573,7 @@
       "url": "https://openai.com/index/mufg",
       "ai_artifacts": [
         {
-          "id": 208,
+          "id": 214,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3395,7 +3587,7 @@
           }
         },
         {
-          "id": 207,
+          "id": 213,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3506,7 +3698,7 @@
       ]
     },
     {
-      "id": 106,
+      "id": 107,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing GeneBench-Pro",
@@ -3516,7 +3708,7 @@
       "url": "https://openai.com/index/introducing-genebench-pro",
       "ai_artifacts": [
         {
-          "id": 194,
+          "id": 200,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3530,7 +3722,7 @@
           }
         },
         {
-          "id": 193,
+          "id": 199,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3729,7 +3921,7 @@
       ]
     },
     {
-      "id": 113,
+      "id": 114,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Mapping Europe’s AI Workforce Opportunity",
@@ -3739,7 +3931,7 @@
       "url": "https://openai.com/index/mapping-ai-jobs-transition-eu",
       "ai_artifacts": [
         {
-          "id": 206,
+          "id": 212,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3753,7 +3945,7 @@
           }
         },
         {
-          "id": 205,
+          "id": 211,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3783,7 +3975,7 @@
       "url": "https://openai.com/index/hp-frontier-partnership",
       "ai_artifacts": [
         {
-          "id": 188,
+          "id": 190,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3797,7 +3989,7 @@
           }
         },
         {
-          "id": 187,
+          "id": 189,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3817,7 +4009,7 @@
       ]
     },
     {
-      "id": 117,
+      "id": 118,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Previewing GPT-5.6 Sol: a next-generation model",
@@ -3827,7 +4019,7 @@
       "url": "https://openai.com/index/previewing-gpt-5-6-sol",
       "ai_artifacts": [
         {
-          "id": 212,
+          "id": 220,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3841,7 +4033,7 @@
           }
         },
         {
-          "id": 211,
+          "id": 219,
           "task": "summary",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4036,7 +4228,7 @@
       ]
     },
     {
-      "id": 109,
+      "id": 110,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing the OpenAI Economic Research Exchange",
@@ -5231,58 +5423,58 @@
       "id": 1,
       "period": "daily",
       "timezone": "America/Los_Angeles",
-      "local_date": "2026-08-06",
-      "period_start": "2026-08-06T07:00:00Z",
-      "period_end": "2026-08-07T06:07:24Z",
+      "local_date": "2026-08-07",
+      "period_start": "2026-08-07T07:00:00Z",
+      "period_end": "2026-08-07T17:44:36Z",
       "target_language": "en",
-      "generated_at": "2026-08-07T06:07:29Z",
+      "generated_at": "2026-08-07T17:44:41Z",
       "input_truncated": false,
       "output": {
-        "headline": "AI News Digest: Anthropic and OpenAI Updates",
+        "headline": "OpenAI Cybersecurity Updates and HSP GRUPPE Case Study",
         "items": [
           {
-            "article_id": 10,
-            "summary": "Anthropic has published an article about improving biology safeguards for Fable 5. Specific details are not provided in the summary.",
-            "title": "Improving Fable 5's biology safeguards"
+            "article_id": 119,
+            "summary": "OpenAI is sharing preliminary cybersecurity evaluations for Astra and the steps we’re taking to strengthen safeguards and security controls.",
+            "title": "Responding to the next frontier of critical cyber capabilities"
           },
           {
-            "article_id": 104,
-            "summary": "OpenAI announces improved GPT-5.6 Sol with better accuracy and consistency, and expands access to GPT-5.6 Luna for free users, including unlimited everyday chats.",
-            "title": "Improving GPT‑5.6 Sol in ChatGPT—and expanding access to GPT-5.6 Luna for free users"
+            "article_id": 103,
+            "summary": "Discover how HSP GRUPPE uses ChatGPT Enterprise to boost productivity, improve work quality, and create more capacity for tax advisory and client service.",
+            "title": "How HSP GRUPPE builds AI capabilities for tax advisory"
           }
         ],
         "language": "en",
-        "limitations": "This digest is based solely on the provided article titles and summaries; full article content was not analyzed. The Anthropic article lacks a summary, so details are limited.",
-        "overview": "Today's digest covers two announcements from major AI labs. Anthropic reports improvements to biology safeguards for Fable 5, while OpenAI introduces GPT-5.6 Sol with better accuracy and consistency, and expands access to GPT-5.6 Luna for free users, including unlimited everyday chats."
+        "limitations": "This digest covers only the publisher summaries, not the full article text. Details may be preliminary or incomplete.",
+        "overview": "On August 7, 2026, OpenAI published two articles. The first, titled 'Responding to the next frontier of critical cyber capabilities', shares preliminary cybersecurity evaluations for Astra and outlines steps to strengthen safeguards and security controls. The second, 'How HSP GRUPPE builds AI capabilities for tax advisory', describes how HSP GRUPPE uses ChatGPT Enterprise to boost productivity, improve work quality, and create more capacity for tax advisory and client service."
       }
     },
     {
       "id": 2,
       "period": "daily",
       "timezone": "America/Los_Angeles",
-      "local_date": "2026-08-06",
-      "period_start": "2026-08-06T07:00:00Z",
-      "period_end": "2026-08-07T06:07:24Z",
+      "local_date": "2026-08-07",
+      "period_start": "2026-08-07T07:00:00Z",
+      "period_end": "2026-08-07T17:44:36Z",
       "target_language": "zh-CN",
-      "generated_at": "2026-08-07T06:07:29Z",
+      "generated_at": "2026-08-07T17:44:41Z",
       "input_truncated": false,
       "output": {
-        "headline": "AI 新闻摘要：Anthropic 与 OpenAI 更新",
+        "headline": "OpenAI 网络安全更新与 HSP GRUPPE 案例研究",
         "items": [
           {
-            "article_id": 10,
-            "summary": "Anthropic 发布了一篇关于改进 Fable 5 生物安全措施的文章。摘要中未提供具体细节。",
-            "title": "改进 Fable 5 的生物安全措施"
+            "article_id": 119,
+            "summary": "OpenAI 正在分享针对 Astra 的初步网络安全评估，以及我们为加强保障和安全控制所采取的步骤。",
+            "title": "应对关键网络能力的新前沿"
           },
           {
-            "article_id": 104,
-            "summary": "OpenAI 宣布改进的 GPT-5.6 Sol，具有更好的准确性和一致性，并扩大 GPT-5.6 Luna 对免费用户的访问，包括无限日常聊天。",
-            "title": "改进 ChatGPT 中的 GPT‑5.6 Sol——并扩大 GPT-5.6 Luna 对免费用户的访问"
+            "article_id": 103,
+            "summary": "了解 HSP GRUPPE 如何利用 ChatGPT Enterprise 提升生产力、改善工作质量，并为税务咨询和客户服务创造更多容量。",
+            "title": "HSP GRUPPE 如何构建税务咨询的 AI 能力"
           }
         ],
         "language": "zh-CN",
-        "limitations": "本摘要仅基于提供的文章标题和摘要；未分析全文内容。Anthropic 文章缺少摘要，因此详细信息有限。",
-        "overview": "今日摘要涵盖两家主要 AI 实验室的公告。Anthropic 报告了 Fable 5 生物安全措施的改进，而 OpenAI 推出了改进的 GPT-5.6 Sol（准确性和一致性更好），并扩大了 GPT-5.6 Luna 对免费用户的访问权限，包括无限日常聊天。"
+        "limitations": "本摘要仅涵盖出版商摘要，而非完整文章文本。细节可能为初步或不完整。",
+        "overview": "2026年8月7日，OpenAI 发布了两篇文章。第一篇题为《应对关键网络能力的新前沿》，分享了针对 Astra 的初步网络安全评估，并概述了加强保障和安全控制的步骤。第二篇《HSP GRUPPE 如何构建税务咨询的 AI 能力》描述了 HSP GRUPPE 如何利用 ChatGPT Enterprise 提升生产力、改善工作质量，并为税务咨询和客户服务创造更多容量。"
       }
     }
   ]
