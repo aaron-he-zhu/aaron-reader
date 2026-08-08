@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T17:44:59Z",
+  "generated_at": "2026-08-08T05:39:17Z",
   "language": "en",
   "supported_languages": [
     "en",
@@ -10,11 +10,11 @@
   "cached_ai_artifact_count": 238,
   "cached_ai_report_count": 2,
   "counts": {
-    "total": 127
+    "total": 129
   },
   "articles_page": {
     "order": "newest_first",
-    "returned_count": 127,
+    "returned_count": 129,
     "limit": 500,
     "omitted_count": 0,
     "truncated": false
@@ -24,34 +24,34 @@
       "slug": "anthropic-news",
       "name": "Anthropic News",
       "health": "healthy",
-      "last_success_at": "2026-08-07T17:44:36Z",
+      "last_success_at": "2026-08-08T05:39:13Z",
       "article_count": 15
     },
     {
       "slug": "claude-blog",
       "name": "Claude Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-07T17:44:35Z",
-      "article_count": 29
+      "last_success_at": "2026-08-08T05:39:12Z",
+      "article_count": 31
     },
     {
       "slug": "openai-developers",
       "name": "OpenAI Developer Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-07T17:44:34Z",
+      "last_success_at": "2026-08-08T05:39:12Z",
       "article_count": 21
     },
     {
       "slug": "openai-news",
       "name": "OpenAI News",
       "health": "healthy",
-      "last_success_at": "2026-08-07T17:44:34Z",
+      "last_success_at": "2026-08-08T05:39:12Z",
       "article_count": 62
     }
   ],
   "articles": [
     {
-      "id": 119,
+      "id": 121,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Responding to the next frontier of critical cyber capabilities",
@@ -95,7 +95,7 @@
       ]
     },
     {
-      "id": 103,
+      "id": 105,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How HSP GRUPPE builds AI capabilities for tax advisory",
@@ -141,6 +141,28 @@
       ]
     },
     {
+      "id": 20,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Running auto mode in production",
+      "summary": "",
+      "category": "Claude Code",
+      "published_at": "2026-08-07T00:00:00Z",
+      "url": "https://claude.com/blog/auto-mode-in-production",
+      "ai_artifacts": []
+    },
+    {
+      "id": 19,
+      "source": "claude-blog",
+      "source_name": "Claude Blog",
+      "title": "Auto mode is now the default in Claude Code for Pro, Max, and Team plans",
+      "summary": "",
+      "category": "Claude Code",
+      "published_at": "2026-08-07T00:00:00Z",
+      "url": "https://claude.com/blog/auto-mode-default-in-claude-code",
+      "ai_artifacts": []
+    },
+    {
       "id": 10,
       "source": "anthropic-news",
       "source_name": "Anthropic News",
@@ -152,7 +174,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 105,
+      "id": 107,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Improving GPT‑5.6 Sol in ChatGPT—and expanding access to GPT-5.6 Luna for free users",
@@ -197,7 +219,7 @@
       ]
     },
     {
-      "id": 117,
+      "id": 119,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Working with the American Psychological Association on youth mental health and AI",
@@ -241,7 +263,7 @@
       ]
     },
     {
-      "id": 100,
+      "id": 102,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "From asking to doing: How the world is putting ChatGPT to work",
@@ -287,7 +309,7 @@
       ]
     },
     {
-      "id": 39,
+      "id": 41,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Run Claude Code sessions on your own compute",
@@ -298,7 +320,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 36,
+      "id": 38,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Millennium and Anthropic are building a digital risk analyst with Claude",
@@ -309,7 +331,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 23,
+      "id": 25,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Inference hooks: inline data loss prevention for Claude Enterprise",
@@ -320,7 +342,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 124,
+      "id": 126,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Third-party cyber evaluations involving OpenAI models",
@@ -364,7 +386,7 @@
       ]
     },
     {
-      "id": 112,
+      "id": 114,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "New ways to learn and teach with ChatGPT Work and Codex",
@@ -431,7 +453,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 74,
+      "id": 76,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Apple is getting this wrong",
@@ -476,7 +498,7 @@
       ]
     },
     {
-      "id": 85,
+      "id": 87,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How we built a realtime system for responsive voice AI in six months",
@@ -522,7 +544,7 @@
       ]
     },
     {
-      "id": 83,
+      "id": 85,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Circles powers telco personalization with OpenAI technology",
@@ -569,7 +591,7 @@
       ]
     },
     {
-      "id": 123,
+      "id": 125,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Ten advances in mathematics and theoretical computer science",
@@ -613,7 +635,7 @@
       ]
     },
     {
-      "id": 78,
+      "id": 80,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Building abundant intelligence",
@@ -657,7 +679,7 @@
       ]
     },
     {
-      "id": 71,
+      "id": 73,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Advancing responsible AI across Europe",
@@ -702,7 +724,7 @@
       ]
     },
     {
-      "id": 125,
+      "id": 127,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Univé builds an AI-ready workforce",
@@ -747,7 +769,7 @@
       ]
     },
     {
-      "id": 89,
+      "id": 91,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Disrupting a Criminal Scam Operation",
@@ -792,7 +814,7 @@
       ]
     },
     {
-      "id": 73,
+      "id": 75,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Advancing the price-performance frontier with GPT-5.6",
@@ -837,7 +859,7 @@
       ]
     },
     {
-      "id": 76,
+      "id": 78,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How avatarin built a 24/7 retail agent with GPT-Realtime",
@@ -894,7 +916,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 101,
+      "id": 103,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How enabling two settings tripled our scores on the ARC-AGI-3 benchmark",
@@ -939,7 +961,7 @@
       ]
     },
     {
-      "id": 81,
+      "id": 83,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Accelerating scientific discovery with ChatGPT for Academic Researchers",
@@ -984,7 +1006,7 @@
       ]
     },
     {
-      "id": 93,
+      "id": 95,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How GPT-5.6 fuses frontier intelligence with frontier efficiency",
@@ -1029,7 +1051,7 @@
       ]
     },
     {
-      "id": 121,
+      "id": 123,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Scientific computing in the age of agentic AI",
@@ -1074,7 +1096,7 @@
       ]
     },
     {
-      "id": 19,
+      "id": 21,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Bringing MCP 2026-07-28 to Claude",
@@ -1118,7 +1140,7 @@
       ]
     },
     {
-      "id": 97,
+      "id": 99,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How AI is expanding what people do at work",
@@ -1252,7 +1274,7 @@
       ]
     },
     {
-      "id": 40,
+      "id": 42,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "The new rules of context engineering for Claude 5 generation models",
@@ -1297,7 +1319,7 @@
       ]
     },
     {
-      "id": 35,
+      "id": 37,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "How the product designer who built Claude Design uses it to explore ideas before building them",
@@ -1341,7 +1363,7 @@
       ]
     },
     {
-      "id": 28,
+      "id": 30,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Claude models explained: choosing the best model for your use case",
@@ -1430,7 +1452,7 @@
       ]
     },
     {
-      "id": 95,
+      "id": 97,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Launching Health in ChatGPT",
@@ -1476,7 +1498,7 @@
       ]
     },
     {
-      "id": 41,
+      "id": 43,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Think through hard problems in voice mode",
@@ -1520,7 +1542,7 @@
       ]
     },
     {
-      "id": 30,
+      "id": 32,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Four role-based certifications for the people who put Claude to work for customers",
@@ -1565,7 +1587,7 @@
       ]
     },
     {
-      "id": 99,
+      "id": 101,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How news organizations are using AI to advance their vital missions",
@@ -1610,7 +1632,7 @@
       ]
     },
     {
-      "id": 79,
+      "id": 81,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Building AI infrastructure with the Effingham County community",
@@ -1655,7 +1677,7 @@
       ]
     },
     {
-      "id": 72,
+      "id": 74,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Advancing the next era of national science",
@@ -1700,7 +1722,7 @@
       ]
     },
     {
-      "id": 109,
+      "id": 111,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing OpenAI Presence",
@@ -1746,7 +1768,7 @@
       ]
     },
     {
-      "id": 116,
+      "id": 118,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "NTT DATA Group cuts incident analysis to 30 minutes with Codex",
@@ -1792,7 +1814,7 @@
       ]
     },
     {
-      "id": 34,
+      "id": 36,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "How Outtake built a cyber investigator on Claude",
@@ -1837,7 +1859,7 @@
       ]
     },
     {
-      "id": 20,
+      "id": 22,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Building verification loops in Claude Code with skills",
@@ -1970,7 +1992,7 @@
       ]
     },
     {
-      "id": 106,
+      "id": 108,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing the ChatGPT for small business program",
@@ -2015,7 +2037,7 @@
       ]
     },
     {
-      "id": 104,
+      "id": 106,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "OpenAI and Hugging Face partner to address security incident during model evaluation",
@@ -2060,7 +2082,7 @@
       ]
     },
     {
-      "id": 87,
+      "id": 89,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "David Vélez and Robin Vince join the boards of the OpenAI Foundation and OpenAI Group PBC",
@@ -2105,7 +2127,7 @@
       ]
     },
     {
-      "id": 33,
+      "id": 35,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "How Datadog built a “universal machine tool” for Claude Code",
@@ -2150,7 +2172,7 @@
       ]
     },
     {
-      "id": 32,
+      "id": 34,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "How Anthropic secures its AI-native software development lifecycle",
@@ -2239,7 +2261,7 @@
       ]
     },
     {
-      "id": 120,
+      "id": 122,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Safety and alignment in an era of long-horizon models",
@@ -2283,7 +2305,7 @@
       ]
     },
     {
-      "id": 50,
+      "id": 52,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Custom Code Review rules for Codex",
@@ -2327,7 +2349,7 @@
       ]
     },
     {
-      "id": 43,
+      "id": 45,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Working at the frontier: How Rakuten builds agents overnight with Claude Fable 5",
@@ -2414,7 +2436,7 @@
       ]
     },
     {
-      "id": 69,
+      "id": 71,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "A scorecard for the AI age",
@@ -2458,7 +2480,7 @@
       ]
     },
     {
-      "id": 42,
+      "id": 44,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Working at the frontier: How Cursor knew Claude Fable 5 was ready for the hardest 1% of problems",
@@ -2502,7 +2524,7 @@
       ]
     },
     {
-      "id": 21,
+      "id": 23,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Zero risk isn't the job: a CISO's guide to agentic AI",
@@ -2546,7 +2568,7 @@
       ]
     },
     {
-      "id": 127,
+      "id": 129,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Why teens deserve access to safe AI",
@@ -2590,7 +2612,7 @@
       ]
     },
     {
-      "id": 84,
+      "id": 86,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How Codex became a collaborator for OpenAI’s creative team",
@@ -2634,7 +2656,7 @@
       ]
     },
     {
-      "id": 80,
+      "id": 82,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How Cars24 scales conversations and builds faster with OpenAI",
@@ -2679,7 +2701,7 @@
       ]
     },
     {
-      "id": 44,
+      "id": 46,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Working with Claude Fable 5 in Claude Cowork",
@@ -2766,7 +2788,7 @@
       ]
     },
     {
-      "id": 70,
+      "id": 72,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "The US is advancing AI safety through state and federal action",
@@ -2810,7 +2832,7 @@
       ]
     },
     {
-      "id": 126,
+      "id": 128,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "GPT-Red: Unlocking Self-Improvement for Robustness",
@@ -2855,7 +2877,7 @@
       ]
     },
     {
-      "id": 113,
+      "id": 115,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How to manage AI investments in the agentic era",
@@ -2899,7 +2921,7 @@
       ]
     },
     {
-      "id": 67,
+      "id": 69,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How sales teams use ChatGPT Work",
@@ -2943,7 +2965,7 @@
       ]
     },
     {
-      "id": 66,
+      "id": 68,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How data science teams use ChatGPT Work",
@@ -3074,7 +3096,7 @@
       ]
     },
     {
-      "id": 88,
+      "id": 90,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How Deutsche Telekom is rewiring telecommunications with AI",
@@ -3118,7 +3140,7 @@
       ]
     },
     {
-      "id": 68,
+      "id": 70,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Getting started with ChatGPT",
@@ -3162,7 +3184,7 @@
       ]
     },
     {
-      "id": 94,
+      "id": 96,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot",
@@ -3207,7 +3229,7 @@
       ]
     },
     {
-      "id": 92,
+      "id": 94,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "GPT-5.6: Frontier intelligence that scales with your ambition",
@@ -3252,7 +3274,7 @@
       ]
     },
     {
-      "id": 82,
+      "id": 84,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "ChatGPT is now a partner for your most ambitious work",
@@ -3297,7 +3319,7 @@
       ]
     },
     {
-      "id": 77,
+      "id": 79,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "GPT-5.5 Bio Bug Bounty",
@@ -3385,7 +3407,7 @@
       ]
     },
     {
-      "id": 91,
+      "id": 93,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Our approach to government and national security partnerships",
@@ -3429,7 +3451,7 @@
       ]
     },
     {
-      "id": 122,
+      "id": 124,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Separating signal from noise in coding evaluations",
@@ -3473,7 +3495,7 @@
       ]
     },
     {
-      "id": 111,
+      "id": 113,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Helping K–12 educators build practical AI skills",
@@ -3518,7 +3540,7 @@
       ]
     },
     {
-      "id": 108,
+      "id": 110,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing GPT-Live",
@@ -3563,7 +3585,7 @@
       ]
     },
     {
-      "id": 115,
+      "id": 117,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "MUFG aims to become AI-native with OpenAI",
@@ -3608,7 +3630,7 @@
       ]
     },
     {
-      "id": 75,
+      "id": 77,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Australian Payments Plus moves faster with ChatGPT and Codex",
@@ -3653,7 +3675,7 @@
       ]
     },
     {
-      "id": 98,
+      "id": 100,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How ChatGPT adoption has expanded",
@@ -3698,7 +3720,7 @@
       ]
     },
     {
-      "id": 107,
+      "id": 109,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing GeneBench-Pro",
@@ -3743,7 +3765,7 @@
       ]
     },
     {
-      "id": 90,
+      "id": 92,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Inside Genebench-Pro",
@@ -3786,7 +3808,7 @@
       ]
     },
     {
-      "id": 86,
+      "id": 88,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Core dump epidemiology: fixing an 18-year-old bug",
@@ -3921,7 +3943,7 @@
       ]
     },
     {
-      "id": 114,
+      "id": 116,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Mapping Europe’s AI Workforce Opportunity",
@@ -3965,7 +3987,7 @@
       ]
     },
     {
-      "id": 102,
+      "id": 104,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "HP Inc. launches Frontier strategic partnership with OpenAI",
@@ -4009,7 +4031,7 @@
       ]
     },
     {
-      "id": 118,
+      "id": 120,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Previewing GPT-5.6 Sol: a next-generation model",
@@ -4053,7 +4075,7 @@
       ]
     },
     {
-      "id": 49,
+      "id": 51,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Making private MCP servers reachable without making them public",
@@ -4097,7 +4119,7 @@
       ]
     },
     {
-      "id": 96,
+      "id": 98,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How agents are transforming work",
@@ -4141,7 +4163,7 @@
       ]
     },
     {
-      "id": 54,
+      "id": 56,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Mastering remote engineering work from your phone",
@@ -4228,7 +4250,7 @@
       ]
     },
     {
-      "id": 110,
+      "id": 112,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing the OpenAI Economic Research Exchange",
@@ -4239,7 +4261,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 24,
+      "id": 26,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Building intelligent apps for Apple platforms with Claude in the Foundation Models framework",
@@ -4282,7 +4304,7 @@
       ]
     },
     {
-      "id": 37,
+      "id": 39,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "New in Claude Managed Agents: dreaming, outcomes, and multiagent orchestration",
@@ -4325,7 +4347,7 @@
       ]
     },
     {
-      "id": 27,
+      "id": 29,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "New in Claude Managed Agents: self-hosted sandboxes and MCP tunnels",
@@ -4368,7 +4390,7 @@
       ]
     },
     {
-      "id": 29,
+      "id": 31,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "New connectors in Claude for everyday life",
@@ -4411,7 +4433,7 @@
       ]
     },
     {
-      "id": 26,
+      "id": 28,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Built-in memory for Claude Managed Agents",
@@ -4454,7 +4476,7 @@
       ]
     },
     {
-      "id": 22,
+      "id": 24,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Redesigning Claude Code on desktop for parallel agents",
@@ -4497,7 +4519,7 @@
       ]
     },
     {
-      "id": 38,
+      "id": 40,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Preparing your security program for AI-accelerated offense",
@@ -4540,7 +4562,7 @@
       ]
     },
     {
-      "id": 25,
+      "id": 27,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Claude Managed Agents: get to production 10x faster",
@@ -4583,7 +4605,7 @@
       ]
     },
     {
-      "id": 31,
+      "id": 33,
       "source": "claude-blog",
       "source_name": "Claude Blog",
       "title": "Agent Harness Design: 3 Patterns for Harnessing Claude's Intelligence",
@@ -4627,7 +4649,7 @@
       ]
     },
     {
-      "id": 58,
+      "id": 60,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "How Perplexity Brought Voice Search to Millions Using the Realtime API",
@@ -4672,7 +4694,7 @@
       ]
     },
     {
-      "id": 51,
+      "id": 53,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Designing delightful frontends with GPT-5.4",
@@ -4716,7 +4738,7 @@
       ]
     },
     {
-      "id": 55,
+      "id": 57,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "From prompts to products: One year of Responses",
@@ -4760,7 +4782,7 @@
       ]
     },
     {
-      "id": 61,
+      "id": 63,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Using skills to accelerate OSS maintenance",
@@ -4804,7 +4826,7 @@
       ]
     },
     {
-      "id": 46,
+      "id": 48,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Building frontend UIs with Codex and Figma",
@@ -4848,7 +4870,7 @@
       ]
     },
     {
-      "id": 60,
+      "id": 62,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Run long horizon tasks with Codex",
@@ -4891,7 +4913,7 @@
       ]
     },
     {
-      "id": 62,
+      "id": 64,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Shell + Skills + Compaction: Tips for long-running agents that do real work",
@@ -4935,7 +4957,7 @@
       ]
     },
     {
-      "id": 45,
+      "id": 47,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "15 lessons learned building ChatGPT Apps",
@@ -4979,7 +5001,7 @@
       ]
     },
     {
-      "id": 52,
+      "id": 54,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Testing Agent Skills Systematically with Evals",
@@ -5023,7 +5045,7 @@
       ]
     },
     {
-      "id": 63,
+      "id": 65,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Supercharging Codex with JetBrains MCP at Skyscanner",
@@ -5067,7 +5089,7 @@
       ]
     },
     {
-      "id": 56,
+      "id": 58,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "OpenAI for Developers in 2025",
@@ -5111,7 +5133,7 @@
       ]
     },
     {
-      "id": 64,
+      "id": 66,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Updates for developers building with voice",
@@ -5155,7 +5177,7 @@
       ]
     },
     {
-      "id": 65,
+      "id": 67,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "What makes a great ChatGPT app",
@@ -5199,7 +5221,7 @@
       ]
     },
     {
-      "id": 48,
+      "id": 50,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Using Codex for education at Dagster Labs",
@@ -5243,7 +5265,7 @@
       ]
     },
     {
-      "id": 47,
+      "id": 49,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "How Codex ran OpenAI DevDay 2025",
@@ -5287,7 +5309,7 @@
       ]
     },
     {
-      "id": 59,
+      "id": 61,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Why we built the Responses API",
@@ -5331,7 +5353,7 @@
       ]
     },
     {
-      "id": 57,
+      "id": 59,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Developer notes on the Realtime API",
@@ -5375,7 +5397,7 @@
       ]
     },
     {
-      "id": 53,
+      "id": 55,
       "source": "openai-developers",
       "source_name": "OpenAI Developer Blog",
       "title": "Hello, world!",
@@ -5433,12 +5455,12 @@
         "headline": "OpenAI Cybersecurity Updates and HSP GRUPPE Case Study",
         "items": [
           {
-            "article_id": 119,
+            "article_id": 121,
             "summary": "OpenAI is sharing preliminary cybersecurity evaluations for Astra and the steps we’re taking to strengthen safeguards and security controls.",
             "title": "Responding to the next frontier of critical cyber capabilities"
           },
           {
-            "article_id": 103,
+            "article_id": 105,
             "summary": "Discover how HSP GRUPPE uses ChatGPT Enterprise to boost productivity, improve work quality, and create more capacity for tax advisory and client service.",
             "title": "How HSP GRUPPE builds AI capabilities for tax advisory"
           }
@@ -5462,12 +5484,12 @@
         "headline": "OpenAI 网络安全更新与 HSP GRUPPE 案例研究",
         "items": [
           {
-            "article_id": 119,
+            "article_id": 121,
             "summary": "OpenAI 正在分享针对 Astra 的初步网络安全评估，以及我们为加强保障和安全控制所采取的步骤。",
             "title": "应对关键网络能力的新前沿"
           },
           {
-            "article_id": 103,
+            "article_id": 105,
             "summary": "了解 HSP GRUPPE 如何利用 ChatGPT Enterprise 提升生产力、改善工作质量，并为税务咨询和客户服务创造更多容量。",
             "title": "HSP GRUPPE 如何构建税务咨询的 AI 能力"
           }
