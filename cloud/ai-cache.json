@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v2",
-  "exported_at": "2026-08-08T05:39:16Z",
-  "bundle_hash": "4884ee19dfb076131fc2c4d22e9ad5c59a931dd0d61dc7d35d884b3631d9ba58",
+  "exported_at": "2026-08-08T17:24:46Z",
+  "bundle_hash": "6c865c388b28c52871b26bbb32a5ed57c1b42659eef393c50d84520753a76248",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -7835,11 +7835,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "26e9bb556ce35542d761c2b2d1701080f651bac2ab393a53d47ac57925993e73",
+      "ledger_key": "b1667c05e82d2954e5818e22bd63c2bee7897b728cd823dcebdd30654073118f",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-08T05:39:16Z",
+      "covered_through": "2026-08-08T17:24:46Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -7855,11 +7855,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "bf8c0b5134c8790d081fa36ea3a45877bfbed6da9f5daf6a7f9f90b56adbdfb6",
+      "ledger_key": "78405f4377188d79e3f3ab459834a8b22fea8a8f0ead4d7555c9b76f156fe52c",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-08T05:39:16Z",
+      "covered_through": "2026-08-08T17:24:46Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -7875,11 +7875,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "81d1c3102032dbd8f81d8f2e46cf7e60a68175355f4b96a2117f0b7624dd2e87",
+      "ledger_key": "98392e6750842fc1cfcb59d29804739995fdac13b12d24004ab0f90258364224",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-08T05:39:16Z",
+      "covered_through": "2026-08-08T17:24:46Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -7895,11 +7895,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b61970d0976d550ff480485c8cfdb974061802179e0afc67e47b12e15430472a",
+      "ledger_key": "a96b1988122397e7b6d1d290dfba5ebbf82bc4a31928efd2d0c58d8cf363abb7",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-08T05:39:16Z",
+      "covered_through": "2026-08-08T17:24:46Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -7915,11 +7915,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "02130db83d8823b15b6ebca93f90eb2daf8484473cfd89aec7a45bfc3f735ea1",
+      "ledger_key": "d77b3c818b28ee0753e154c56936007176bde04697499f993d7ac68e80f5dbe8",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-08T05:39:16Z",
+      "covered_through": "2026-08-08T17:24:46Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -7930,6 +7930,26 @@
       "output_tokens": 1977,
       "reasoning_tokens": 0,
       "total_tokens": 7135,
+      "reserved_total_tokens_for_unconfirmed": 0,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "3fecf3e86b2304f23318d54ef41fcb90c64357cb183cd359f914678951d46a6f",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-08T07:00:00Z",
+      "day_end": "2026-08-09T07:00:00Z",
+      "covered_through": "2026-08-08T17:24:46Z",
+      "requests": 1,
+      "confirmed_requests": 1,
+      "unconfirmed_requests": 0,
+      "input_tokens": 591,
+      "cached_input_tokens": 384,
+      "cache_miss_input_tokens": 207,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 163,
+      "reasoning_tokens": 0,
+      "total_tokens": 754,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
@@ -7999,6 +8019,38 @@
       },
       "first_seen_at": "2026-08-07T17:44:57Z",
       "last_seen_at": "2026-08-07T17:44:57Z"
+    },
+    {
+      "hold_key": "3bc73cdf7915ff9e01400b984857529a7a89cf0cbaa74be51f008ee1f84a5cdc",
+      "workload_kind": "article_pair",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://claude.com/blog/auto-mode-default-in-claude-code",
+            "content_hash": "ce9bc51f07df0dbd51060dc42bf7ebeb9d40e28db3964d926159d216be78ad7b",
+            "external_id": "https://claude.com/blog/auto-mode-default-in-claude-code",
+            "source_slug": "claude-blog"
+          }
+        ],
+        "generation_params_hash": "034fdacdb4908246cd8f4cb60d602cb3f3756a58bb6d9a3e38f4b0ef3cb54b41",
+        "input_scope": "metadata",
+        "max_output_tokens": 1200,
+        "model": "deepseek-v4-flash",
+        "portable_input_hash": "47036217ae53260415f764b35132a7d9d098a7debd46205b06ffb0aa15d42a5e",
+        "prompt_hash": "840fd030fa203d76dfbd985dda88b572794a5adebd340e835aa5748c62531538",
+        "prompt_version": "ai-enrichment-pair-v2",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "deepseek",
+        "schema_hash": "b7fb3cd18ef674abcb0b2a6f15771654463d3ceeeb775f8aad87da9cb16deb92",
+        "schema_name": "article_summary_translation",
+        "schema_version": "ai-output-pair-v1",
+        "target_language": "zh-CN",
+        "task_type": "summary",
+        "workload_kind": "article_pair"
+      },
+      "first_seen_at": "2026-08-08T17:24:45Z",
+      "last_seen_at": "2026-08-08T17:24:45Z"
     },
     {
       "hold_key": "72bd1af723f53b8a6bc52453335dab15ad062be35e02af8409ddbb092ac3568a",
