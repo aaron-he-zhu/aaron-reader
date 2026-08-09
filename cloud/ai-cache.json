@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v2",
-  "exported_at": "2026-08-09T05:43:34Z",
-  "bundle_hash": "c08acd7245c1a9738888e791ac623793d285c4ad5dc87cfdbb2bdaa8ed3164ca",
+  "exported_at": "2026-08-09T17:26:57Z",
+  "bundle_hash": "e07b8e3046dbfb1ce669148e9ddf6e672b6e322c1e5b19aaf5fb0b393f359ad4",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -6567,6 +6567,71 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "5ace30ddd2082730c8c99ddd0e4009ed3c1e0ae0a445ab31228a843ca8ec01fb",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/introducing-the-openai-economic-research-exchange",
+        "canonical_url": "https://openai.com/index/introducing-the-openai-economic-research-exchange",
+        "content_hash": "ef0f9e46a64723ea7511eafbe538137dada5f5af1c53bcf418d2222132a80f47"
+      },
+      "task_type": "summary",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "6abf07589f8da482dc357d12b9c55f0055ede5f3d3b6e25053d562317890ec1c",
+      "output": {
+        "summary": "OpenAI宣布启动经济研究交流项目，旨在研究AI对就业、生产力和经济的影响。目前正在接受选定研究项目的申请。",
+        "key_points": [
+          "OpenAI发起经济研究交流项目",
+          "研究AI对就业、生产力和经济的影响",
+          "申请现已开放，面向选定研究项目"
+        ],
+        "language": "zh-CN",
+        "basis": "metadata",
+        "limitations": "此摘要仅基于提供的元数据（发布摘要），未涵盖文章全文的细节。"
+      },
+      "output_hash": "fa0eba46272ab6ef85ac369afbd3c8ed455c29d0d78c0afc50b45bfc8dddbc75",
+      "input_truncated": false,
+      "created_at": "2026-08-09T17:26:57Z"
+    },
+    {
+      "cache_key": "1408b8bd0e50d16e592a8cb2798ac9e0c420ae88779321632c055dccdbca50c4",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/introducing-the-openai-economic-research-exchange",
+        "canonical_url": "https://openai.com/index/introducing-the-openai-economic-research-exchange",
+        "content_hash": "ef0f9e46a64723ea7511eafbe538137dada5f5af1c53bcf418d2222132a80f47"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "翻译仅基于提供的元数据，可能未完全反映原文的上下文或细节。",
+        "title": "介绍OpenAI经济研究交流项目",
+        "publisher_summary": "OpenAI启动经济研究交流项目，以研究AI对就业、生产力和经济的影响。目前正在接受选定研究项目的申请。"
+      },
+      "output_hash": "ea4703ff4f3af1fa819c8b1aa7d7dd8b3107889be7473a168b4ce73f6db9a21d",
+      "input_truncated": false,
+      "created_at": "2026-08-09T17:26:57Z"
+    },
+    {
       "cache_key": "26bbf1099f816b25a5e9c7cef8f8f965e87565d6fa8e3009e5abc1f96eda99a7",
       "article": {
         "source_slug": "openai-news",
@@ -7835,11 +7900,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "e558f6235b25a967d1b59c7878d482950d4ce9b3d60647e9eb16fb246c704067",
+      "ledger_key": "44a323f81c4ba014e2b6485f1fb39e82c0d7bfcd0d212512040904964cbb3caa",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-09T05:43:34Z",
+      "covered_through": "2026-08-09T17:26:57Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -7855,11 +7920,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1ccecc580a09ea81a80d6d3826432f26bb60d938ff260b9d3e3ca1184c457fb3",
+      "ledger_key": "48f59b7206849f689b7a2a2770603e9bddcf00c77ddf7d043ffdf52fc4572d3b",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-09T05:43:34Z",
+      "covered_through": "2026-08-09T17:26:57Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -7875,11 +7940,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "41ddda0c20f52f1ccbe1c50793b1f774598f1e16bb3a0aa6d3c4b243d663c658",
+      "ledger_key": "168e16200e25c2d8f2330073a6b19546347a6a9df957e57ee04bb3da68ef0909",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-09T05:43:34Z",
+      "covered_through": "2026-08-09T17:26:57Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -7895,11 +7960,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "50fa7c5aa7366733b9c146934b5025cea30fb4cfb39b5a4e4ffb8d2419f2dde7",
+      "ledger_key": "c14c2685b0cb2d24bddf55d29d71e2226cd4ebd84cdd248aec19ab90c13010b7",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-09T05:43:34Z",
+      "covered_through": "2026-08-09T17:26:57Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -7915,11 +7980,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "6f7ae125ab14dfbcea4a8ce8616a49fd165c3c2efbeebc5cb3bca0d05b1f35e3",
+      "ledger_key": "79500c3bf9f4285dc502c3d77ccf4c97602538618a9b406423fc4a142d0f472a",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-09T05:43:34Z",
+      "covered_through": "2026-08-09T17:26:57Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -7935,11 +8000,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "5b0e725069f9eb1a4f416af31c8d4666ac28e2c35cd8bc6ff27e510e1e81a35c",
+      "ledger_key": "4165b4783facccba41fbc4254e13df3159f609d10a6669e7a06654d8b6e17681",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-09T05:43:34Z",
+      "covered_through": "2026-08-09T17:26:57Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -7950,6 +8015,26 @@
       "output_tokens": 367,
       "reasoning_tokens": 0,
       "total_tokens": 1556,
+      "reserved_total_tokens_for_unconfirmed": 0,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "fcf957e4ab4c3f29615a6cd885bcddb705725efbd30678655ad77a10fb1e8cf1",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-09T07:00:00Z",
+      "day_end": "2026-08-10T07:00:00Z",
+      "covered_through": "2026-08-09T17:26:57Z",
+      "requests": 1,
+      "confirmed_requests": 1,
+      "unconfirmed_requests": 0,
+      "input_tokens": 614,
+      "cached_input_tokens": 384,
+      "cache_miss_input_tokens": 230,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 172,
+      "reasoning_tokens": 0,
+      "total_tokens": 786,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
