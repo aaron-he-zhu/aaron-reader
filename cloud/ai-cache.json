@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v2",
-  "exported_at": "2026-08-08T17:24:46Z",
-  "bundle_hash": "6c865c388b28c52871b26bbb32a5ed57c1b42659eef393c50d84520753a76248",
+  "exported_at": "2026-08-09T05:43:34Z",
+  "bundle_hash": "c08acd7245c1a9738888e791ac623793d285c4ad5dc87cfdbb2bdaa8ed3164ca",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -7835,11 +7835,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "b1667c05e82d2954e5818e22bd63c2bee7897b728cd823dcebdd30654073118f",
+      "ledger_key": "e558f6235b25a967d1b59c7878d482950d4ce9b3d60647e9eb16fb246c704067",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-08T17:24:46Z",
+      "covered_through": "2026-08-09T05:43:34Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -7855,11 +7855,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "78405f4377188d79e3f3ab459834a8b22fea8a8f0ead4d7555c9b76f156fe52c",
+      "ledger_key": "1ccecc580a09ea81a80d6d3826432f26bb60d938ff260b9d3e3ca1184c457fb3",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-08T17:24:46Z",
+      "covered_through": "2026-08-09T05:43:34Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -7875,11 +7875,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "98392e6750842fc1cfcb59d29804739995fdac13b12d24004ab0f90258364224",
+      "ledger_key": "41ddda0c20f52f1ccbe1c50793b1f774598f1e16bb3a0aa6d3c4b243d663c658",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-08T17:24:46Z",
+      "covered_through": "2026-08-09T05:43:34Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -7895,11 +7895,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "a96b1988122397e7b6d1d290dfba5ebbf82bc4a31928efd2d0c58d8cf363abb7",
+      "ledger_key": "50fa7c5aa7366733b9c146934b5025cea30fb4cfb39b5a4e4ffb8d2419f2dde7",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-08T17:24:46Z",
+      "covered_through": "2026-08-09T05:43:34Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -7915,11 +7915,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "d77b3c818b28ee0753e154c56936007176bde04697499f993d7ac68e80f5dbe8",
+      "ledger_key": "6f7ae125ab14dfbcea4a8ce8616a49fd165c3c2efbeebc5cb3bca0d05b1f35e3",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-08T17:24:46Z",
+      "covered_through": "2026-08-09T05:43:34Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -7935,21 +7935,21 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "3fecf3e86b2304f23318d54ef41fcb90c64357cb183cd359f914678951d46a6f",
+      "ledger_key": "5b0e725069f9eb1a4f416af31c8d4666ac28e2c35cd8bc6ff27e510e1e81a35c",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-08T17:24:46Z",
-      "requests": 1,
-      "confirmed_requests": 1,
+      "covered_through": "2026-08-09T05:43:34Z",
+      "requests": 2,
+      "confirmed_requests": 2,
       "unconfirmed_requests": 0,
-      "input_tokens": 591,
-      "cached_input_tokens": 384,
-      "cache_miss_input_tokens": 207,
+      "input_tokens": 1189,
+      "cached_input_tokens": 768,
+      "cache_miss_input_tokens": 421,
       "cache_write_input_tokens": 0,
-      "output_tokens": 163,
+      "output_tokens": 367,
       "reasoning_tokens": 0,
-      "total_tokens": 754,
+      "total_tokens": 1556,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
@@ -8019,6 +8019,38 @@
       },
       "first_seen_at": "2026-08-07T17:44:57Z",
       "last_seen_at": "2026-08-07T17:44:57Z"
+    },
+    {
+      "hold_key": "2dc539f8fe71573c4223104e527927ca6677a9d979d183c1090e0b5c144f1b58",
+      "workload_kind": "article_pair",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://claude.com/blog/millennium-and-anthropic-are-building-a-digital-risk-analyst-with-claude",
+            "content_hash": "05a0d2904efd5f98845af1091f2ba132169edb7ebf7d1448c5b4f28daccc080e",
+            "external_id": "https://claude.com/blog/millennium-and-anthropic-are-building-a-digital-risk-analyst-with-claude",
+            "source_slug": "claude-blog"
+          }
+        ],
+        "generation_params_hash": "034fdacdb4908246cd8f4cb60d602cb3f3756a58bb6d9a3e38f4b0ef3cb54b41",
+        "input_scope": "metadata",
+        "max_output_tokens": 1200,
+        "model": "deepseek-v4-flash",
+        "portable_input_hash": "670ee9da6f6f61e3099d0d703a76774395899af951cd0554cf4ea26c9872e46c",
+        "prompt_hash": "840fd030fa203d76dfbd985dda88b572794a5adebd340e835aa5748c62531538",
+        "prompt_version": "ai-enrichment-pair-v2",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "deepseek",
+        "schema_hash": "b7fb3cd18ef674abcb0b2a6f15771654463d3ceeeb775f8aad87da9cb16deb92",
+        "schema_name": "article_summary_translation",
+        "schema_version": "ai-output-pair-v1",
+        "target_language": "zh-CN",
+        "task_type": "summary",
+        "workload_kind": "article_pair"
+      },
+      "first_seen_at": "2026-08-09T05:43:34Z",
+      "last_seen_at": "2026-08-09T05:43:34Z"
     },
     {
       "hold_key": "3bc73cdf7915ff9e01400b984857529a7a89cf0cbaa74be51f008ee1f84a5cdc",
