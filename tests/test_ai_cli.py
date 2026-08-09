@@ -1,8 +1,10 @@
 import io
 import json
 import os
+import subprocess
 import sys
 import tempfile
+import textwrap
 from contextlib import redirect_stderr, redirect_stdout
 from datetime import datetime, timezone
 from pathlib import Path
@@ -777,14 +779,103 @@ class AICliTests(unittest.TestCase):
         self.assertNotIn('cron: "0 10,22 * * *"', workflow)
         self.assertIn('--provider "$AI_PROVIDER"', workflow)
         self.assertIn("arguments+=(--fallback-provider deepseek)", workflow)
-        self.assertEqual(2, workflow.count("| tee"))
-        self.assertGreaterEqual(workflow.count("set -o pipefail"), 2)
-        self.assertGreaterEqual(workflow.count("shell: bash"), 2)
         self.assertNotIn("AI_API_KEY", workflow)
         self.assertNotIn(
             "secrets.OPENROUTER_API_KEY || secrets.DEEPSEEK_API_KEY",
             workflow,
         )
+
+    def test_production_workflow_preserves_ai_failure_through_tee(self):
+        workflow = (
+            REPOSITORY_ROOT / ".github" / "workflows" / "update.yml"
+        ).read_text(encoding="utf-8")
+
+        def step(name):
+            marker = "      - name: %s\n" % name
+            start = workflow.index(marker)
+            end = workflow.find("\n      - name: ", start + len(marker))
+            return workflow[start:] if end < 0 else workflow[start:end]
+
+        ai_name = "Generate only missing or changed language artifacts"
+        ai_step = step(ai_name)
+        self.assertIn("        id: ai\n", ai_step)
+        self.assertIn("        continue-on-error: true\n", ai_step)
+        self.assertIn("        shell: bash\n", ai_step)
+        self.assertIn("          set -o pipefail\n", ai_step)
+        self.assertIn(
+            '          ./aaron-reader "${arguments[@]}" | tee '
+            "data/cloud-ai-run.json\n",
+            ai_step,
+        )
+
+        release_step = step("Build and commit the exact public state")
+        self.assertIn("        shell: bash\n", release_step)
+        self.assertIn("          set -o pipefail\n", release_step)
+        self.assertIn(
+            "            | tee data/cloud-release.json\n",
+            release_step,
+        )
+
+        sentinel_name = "Mark an incomplete AI cycle after preserving valid progress"
+        sentinel_step = step(sentinel_name)
+        self.assertIn("        if: steps.ai.outcome == 'failure'\n", sentinel_step)
+        self.assertIn("          exit 1\n", sentinel_step)
+        ordered_steps = [
+            ai_name,
+            "Export and independently validate both public handoffs",
+            "Build and commit the exact public state",
+            "Push only the verified commit",
+            "Verify Cloudflare published the exact snapshot",
+            "Write a redacted run summary",
+            sentinel_name,
+        ]
+        self.assertEqual(
+            sorted(workflow.index("      - name: %s" % name) for name in ordered_steps),
+            [workflow.index("      - name: %s" % name) for name in ordered_steps],
+        )
+
+        run_marker = "        run: |\n"
+        run_script = textwrap.dedent(
+            "\n".join(
+                line[10:] if line.startswith("          ") else line
+                for line in ai_step.split(run_marker, 1)[1].splitlines()
+            )
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "data").mkdir()
+            executable = root / "aaron-reader"
+            executable.write_text(
+                "#!/usr/bin/env bash\n"
+                "printf '%s\\n' '{\"completed\":false}'\n"
+                "exit 1\n",
+                encoding="utf-8",
+            )
+            executable.chmod(0o700)
+            environment = {
+                **os.environ,
+                "AI_PROVIDER": "deepseek",
+                "FORCE_WEEKLY": "false",
+                "FORCE_HELD": "false",
+            }
+            completed = subprocess.run(
+                ["bash", "--noprofile", "--norc", "-e", "-c", run_script],
+                cwd=root,
+                env=environment,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            self.assertEqual(1, completed.returncode)
+            self.assertEqual(
+                {"completed": False},
+                json.loads(
+                    (root / "data" / "cloud-ai-run.json").read_text(
+                        encoding="utf-8"
+                    )
+                ),
+            )
 
     def test_cloud_run_requires_confirmation_and_fails_fast_after_one_error(self):
         with mock.patch.dict(

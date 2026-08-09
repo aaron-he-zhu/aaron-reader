@@ -143,6 +143,17 @@ class PreparedTask:
         }
 
 
+@dataclass(frozen=True)
+class _ObservedGenerationHold:
+    hold_key: str
+    hold_class: str
+    revision: int
+    legacy_pair: bool
+
+    def delete_guard(self) -> Tuple[str, str, int]:
+        return (self.hold_key, self.hold_class, self.revision)
+
+
 def _utc_datetime(value: datetime) -> datetime:
     if value.tzinfo is None:
         return value.replace(tzinfo=timezone.utc)
@@ -527,58 +538,150 @@ class AIService:
             return []
         identity = self._generation_hold_semantic_identity(descriptor)
         matches = []
-        for hold in self.database.list_ai_generation_holds():
+        for hold in self.database.list_ai_generation_holds(
+            include_revision=True
+        ):
             candidate = hold.get("descriptor")
             if (
                 isinstance(candidate, Mapping)
-                and self._generation_hold_semantic_identity(candidate) == identity
+                and (
+                    self._generation_hold_semantic_identity(candidate) == identity
+                    or self._legacy_pair_hold_covers_translation(
+                        descriptor,
+                        candidate,
+                    )
+                )
             ):
                 matches.append(hold)
         return matches
+
+    @staticmethod
+    def _legacy_pair_hold_covers_translation(
+        requested: Mapping[str, object],
+        candidate: Mapping[str, object],
+    ) -> bool:
+        """Bridge an older article-pair hold to its translation-only successor.
+
+        The public product no longer generates per-article summaries, but an
+        already billed pair request included the same title/summary translation.
+        Matching the exact portable article version prevents that overlapping
+        work from being replayed merely because the workload became narrower.
+        """
+
+        return bool(
+            requested.get("workload_kind") == "article"
+            and requested.get("task_type") == "translation"
+            and requested.get("input_scope") == "metadata"
+            and candidate.get("workload_kind") == "article_pair"
+            and candidate.get("task_type") == "summary"
+            and candidate.get("input_scope") == "metadata"
+            and candidate.get("schema_name") == "article_summary_translation"
+            and candidate.get("prompt_version") == "ai-enrichment-pair-v2"
+            and candidate.get("target_language") == requested.get("target_language")
+            and candidate.get("article_identities")
+            == requested.get("article_identities")
+        )
+
+    @staticmethod
+    def _generation_holds_cleared_after_success(
+        prepared: PreparedTask,
+        observed_holds: Sequence[_ObservedGenerationHold],
+    ) -> Tuple[Tuple[str, str, int], ...]:
+        """Select preflight holds that a successful result fully settles.
+
+        A direct fallback-pending hold represents exactly the requested task,
+        so a successful continuation settles it.  A legacy article-pair hold
+        is broader and may be settled only by the complete production
+        translation (title plus publisher summary), never by a title-only or
+        publisher-summary-only request.
+        """
+
+        complete_translation = bool(
+            prepared.task_type == "translation"
+            and set(prepared.translated_fields)
+            == {"title", "publisher_summary"}
+        )
+        return tuple(
+            observation.delete_guard()
+            for observation in observed_holds
+            if (
+                complete_translation
+                if observation.legacy_pair
+                else observation.hold_class == "fallback_pending"
+            )
+        )
 
     def _check_generation_hold(
         self,
         template: Mapping[str, object],
         *,
         force_held: bool,
-    ) -> Tuple[Tuple[str, str], ...]:
+    ) -> Tuple[_ObservedGenerationHold, ...]:
         holds = self._equivalent_generation_holds(template)
-        exact = self.database.ai_generation_hold(str(template["hold_key"]))
+        exact = self.database.ai_generation_hold(
+            str(template["hold_key"]),
+            include_revision=True,
+        )
         if exact is not None and not any(
             str(hold.get("hold_key")) == str(exact.get("hold_key"))
             for hold in holds
         ):
             holds.append(exact)
-        observed_holds = tuple(
-            dict.fromkeys(
-                (
-                    str(hold.get("hold_key") or ""),
-                    str(hold.get("hold_class") or ""),
-                )
-                for hold in holds
-                if str(hold.get("hold_key") or "")
-                and str(hold.get("hold_class") or "")
+        descriptor = template.get("descriptor")
+        observed_by_key: Dict[str, _ObservedGenerationHold] = {}
+        for hold in holds:
+            hold_key = str(hold.get("hold_key") or "")
+            hold_class = str(hold.get("hold_class") or "")
+            revision = hold.get("revision")
+            candidate_descriptor = hold.get("descriptor")
+            if (
+                not hold_key
+                or not hold_class
+                or isinstance(revision, bool)
+                or not isinstance(revision, int)
+                or revision < 1
+            ):
+                continue
+            observed_by_key[hold_key] = _ObservedGenerationHold(
+                hold_key=hold_key,
+                hold_class=hold_class,
+                revision=revision,
+                legacy_pair=bool(
+                    isinstance(descriptor, Mapping)
+                    and isinstance(candidate_descriptor, Mapping)
+                    and self._legacy_pair_hold_covers_translation(
+                        descriptor,
+                        candidate_descriptor,
+                    )
+                ),
             )
-        )
-        if not holds or force_held:
+        observed_holds = tuple(observed_by_key.values())
+        if not holds:
             return observed_holds
 
         risk = {"fallback_pending": 0, "paid_failure": 1, "ambiguous": 2}
-        hold = max(
-            holds,
-            key=lambda candidate: risk.get(
-                str(candidate.get("hold_class") or ""), 3
-            ),
-        )
-        only_pending = all(
-            str(candidate.get("hold_class")) == "fallback_pending"
+        direct_holds = [
+            candidate
             for candidate in holds
+            if not (
+                isinstance(descriptor, Mapping)
+                and isinstance(candidate.get("descriptor"), Mapping)
+                and self._legacy_pair_hold_covers_translation(
+                    descriptor,
+                    candidate["descriptor"],
+                )
+            )
+        ]
+        controlling_holds = direct_holds or holds
+        only_pending = bool(controlling_holds) and all(
+            str(candidate.get("hold_class")) == "fallback_pending"
+            for candidate in controlling_holds
         )
         pending_from_expected_provider = only_pending and all(
             isinstance(candidate.get("descriptor"), Mapping)
             and str(candidate["descriptor"].get("provider") or "")
             == self._allow_fallback_pending_from
-            for candidate in holds
+            for candidate in controlling_holds
         )
         if (
             pending_from_expected_provider
@@ -586,13 +689,34 @@ class AIService:
             and self._allow_fallback_pending_from == DEFAULT_AI_PROVIDER
         ):
             return observed_holds
-        if only_pending and self._automatic_fallback_enabled():
+        pending_from_primary_provider = only_pending and all(
+            isinstance(candidate.get("descriptor"), Mapping)
+            and str(candidate["descriptor"].get("provider") or "")
+            == self.config.provider
+            for candidate in controlling_holds
+        )
+        if (
+            pending_from_primary_provider
+            and self._automatic_fallback_enabled()
+        ):
+            hold = min(
+                controlling_holds,
+                key=lambda candidate: str(candidate.get("hold_key") or ""),
+            )
             raise AIFallbackEligibleError(
                 "AI generation is waiting for the configured DeepSeek fallback",
                 reason_code="fallback_pending",
                 provider_call_made=False,
                 generation_hold_key=str(hold.get("hold_key") or ""),
             )
+        if force_held:
+            return observed_holds
+        hold = max(
+            controlling_holds,
+            key=lambda candidate: risk.get(
+                str(candidate.get("hold_class") or ""), 3
+            ),
+        )
         raise AIGenerationHeld(
             "AI generation is held against automatic replay (%s, %s)"
             % (hold.get("hold_class"), str(hold["hold_key"])[:12])
@@ -600,7 +724,7 @@ class AIService:
 
     def _clear_observed_generation_holds(
         self,
-        holds: Sequence[Tuple[str, str]],
+        holds: Sequence[_ObservedGenerationHold],
     ) -> None:
         """Clear only holds present before this provider request began.
 
@@ -612,12 +736,11 @@ class AIService:
         snapshot (for example, the primary fallback-pending hold).
         """
 
-        for hold_key, hold_class in dict.fromkeys(holds):
-            if hold_class != "fallback_pending":
+        for observation in holds:
+            if observation.hold_class != "fallback_pending":
                 continue
-            self.database.clear_ai_generation_hold_if_class(
-                hold_key,
-                hold_class,
+            self.database.clear_ai_generation_hold_if_snapshot(
+                *observation.delete_guard(),
             )
 
     def _source_hosts(self, article: Mapping[str, object]) -> Tuple[str, ...]:
@@ -1481,6 +1604,7 @@ class AIService:
                 input_scope="metadata",
                 expected_article_ids=(int(article_id),),
                 translated_fields=("title", "publisher_summary"),
+                translation_input=translation.input_payload,
             )
         except ValueError as exc:
             fallback_eligible = bool(
@@ -1545,6 +1669,12 @@ class AIService:
             actual_cost_micros=actual_cost,
             usage_confirmed=usage_confirmed,
             clear_generation_hold_key=str(generation_hold["hold_key"]),
+            clear_generation_hold_snapshots=(
+                self._generation_holds_cleared_after_success(
+                    bundle,
+                    observed_generation_holds,
+                )
+            ),
         )
         self._settleable_generation_hold_attempts.discard(attempt_id)
         stored_translation = self.database.ai_artifact_by_key(
@@ -1552,7 +1682,6 @@ class AIService:
         )
         if stored_translation is None:
             raise AIServiceError("combined translation artifact was not committed")
-        self._clear_observed_generation_holds(observed_generation_holds)
         return {
             "summary": self._artifact_result(
                 stored_summary, cache_hit=False
@@ -2006,12 +2135,17 @@ class AIService:
             actual_cost_micros=actual_cost,
             usage_confirmed=usage_confirmed,
             clear_generation_hold_key=str(generation_hold["hold_key"]),
+            clear_generation_hold_snapshots=(
+                self._generation_holds_cleared_after_success(
+                    english,
+                    observed_generation_holds,
+                )
+            ),
         )
         self._settleable_generation_hold_attempts.discard(attempt_id)
         stored_chinese = self.database.ai_artifact_by_key(chinese.artifact_key)
         if stored_chinese is None:
             raise AIServiceError("bilingual Chinese report artifact was not committed")
-        self._clear_observed_generation_holds(observed_generation_holds)
         return {
             "artifacts": {
                 "en": self._artifact_result(stored_english, cache_hit=False),
@@ -2422,6 +2556,11 @@ class AIService:
                 input_scope=prepared.input_scope,
                 expected_article_ids=prepared.expected_article_ids,
                 translated_fields=prepared.translated_fields,
+                translation_input=(
+                    prepared.input_payload
+                    if prepared.task_type == "translation"
+                    else None
+                ),
             )
         except ValueError as exc:
             current = self.database.ai_job(int(job_id)) or job
@@ -2490,9 +2629,14 @@ class AIService:
             actual_cost_micros=actual_cost,
             usage_confirmed=usage_confirmed,
             clear_generation_hold_key=str(generation_hold["hold_key"]),
+            clear_generation_hold_snapshots=(
+                self._generation_holds_cleared_after_success(
+                    prepared,
+                    observed_generation_holds,
+                )
+            ),
         )
         self._settleable_generation_hold_attempts.discard(attempt_id)
-        self._clear_observed_generation_holds(observed_generation_holds)
         return self._artifact_result(stored, cache_hit=False)
 
     def _provider_artifact(

@@ -353,6 +353,11 @@ def import_subscription_results(
                     input_scope="metadata",
                     expected_article_ids=(article_id,),
                     translated_fields=("title", "publisher_summary"),
+                    translation_input=(
+                        prepared.input_payload
+                        if task_name == "translation"
+                        else None
+                    ),
                 )
             except ValueError as exc:
                 raise AIInputError(

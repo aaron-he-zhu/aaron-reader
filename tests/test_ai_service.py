@@ -23,7 +23,10 @@ from aaron_reader.ai_provider import (  # noqa: E402
     ProviderUnknownError,
     ProviderUsage,
 )
-from aaron_reader.ai_prompts import canonical_json  # noqa: E402
+from aaron_reader.ai_prompts import (  # noqa: E402
+    canonical_json,
+    parse_and_validate_output,
+)
 from aaron_reader.ai_service import (  # noqa: E402
     AIDisabledError,
     AIFallbackEligibleError,
@@ -239,6 +242,22 @@ class InvalidMissingUsageProvider(MissingUsageProvider):
         return replace(super().generate(request), output_text="{}")
 
 
+class NullPublisherSummaryProvider(FakeProvider):
+    """Model fixture that chooses the nullable schema branch for a summary."""
+
+    def generate(self, request):
+        response = super().generate(request)
+        output = json.loads(response.output_text)
+        if request.schema_name == "article_translation":
+            output["publisher_summary"] = None
+        elif request.schema_name == "article_summary_translation":
+            output["translation"]["publisher_summary"] = None
+        return replace(
+            response,
+            output_text=json.dumps(output, ensure_ascii=False),
+        )
+
+
 class AIServiceTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -392,7 +411,13 @@ class AIServiceTests(unittest.TestCase):
             openrouter_hold,
             force_held=True,
         )
-        openrouter_service._clear_observed_generation_holds(observed)
+        self.assertEqual(
+            (),
+            openrouter_service._generation_holds_cleared_after_success(
+                openrouter_prepared,
+                observed,
+            ),
+        )
         self.assertEqual(
             "ambiguous",
             self.database.ai_generation_hold(str(deepseek_hold["hold_key"]))[
@@ -516,10 +541,10 @@ class AIServiceTests(unittest.TestCase):
             fallback_hold,
             force_held=False,
         )
-        self.assertEqual(
-            ((str(hold["hold_key"]), "fallback_pending"),),
-            observed,
-        )
+        self.assertEqual(1, len(observed))
+        self.assertEqual(str(hold["hold_key"]), observed[0].hold_key)
+        self.assertEqual("fallback_pending", observed[0].hold_class)
+        self.assertFalse(observed[0].legacy_pair)
 
         self.database.replace_ai_generation_holds(
             [
@@ -593,12 +618,11 @@ class AIServiceTests(unittest.TestCase):
             ]
         )
 
-        continuation._clear_observed_generation_holds(
-            (
-                (str(primary_hold["hold_key"]), "fallback_pending"),
-                (str(fallback_hold["hold_key"]), "ambiguous"),
-            )
+        observed = continuation._check_generation_hold(
+            fallback_hold,
+            force_held=True,
         )
+        continuation._clear_observed_generation_holds(observed)
         self.assertIsNone(
             self.database.ai_generation_hold(str(primary_hold["hold_key"]))
         )
@@ -1077,6 +1101,394 @@ class AIServiceTests(unittest.TestCase):
         self.assertIsNone(title["output"]["publisher_summary"])
         self.assertEqual("译文简介", both["output"]["publisher_summary"])
         self.assertNotEqual(title["artifact_key"], both["artifact_key"])
+
+    def test_empty_publisher_summary_null_is_losslessly_normalized(self):
+        output = json.dumps(
+            {
+                "title": "译文标题",
+                "publisher_summary": None,
+                "language": "zh-CN",
+                "limitations": "",
+            },
+            ensure_ascii=False,
+        )
+        validated, readable = parse_and_validate_output(
+            "translation",
+            output,
+            target_language="zh-CN",
+            input_scope="metadata",
+            translation_input={
+                "title": "Article",
+                "publisher_summary": "",
+            },
+        )
+        self.assertEqual("", validated["publisher_summary"])
+        self.assertEqual("译文标题\n\n", readable)
+
+        with self.assertRaisesRegex(ValueError, "must be a string"):
+            parse_and_validate_output(
+                "translation",
+                output,
+                target_language="zh-CN",
+                input_scope="metadata",
+                translation_input={
+                    "title": "Article",
+                    "publisher_summary": "Non-empty source summary",
+                },
+            )
+
+    def test_empty_publisher_summary_null_succeeds_for_single_and_pair_calls(self):
+        empty_candidates = [
+            candidate("empty-single", summary=""),
+            candidate("empty-pair", summary=""),
+        ]
+        self.database.commit_candidates(
+            SOURCE,
+            empty_candidates,
+            started_at=utc_now(),
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="empty-summary-articles",
+        )
+        articles = {
+            str(article["external_id"]): article
+            for article in self.database.list_articles(limit=20)
+        }
+
+        single_provider = NullPublisherSummaryProvider()
+        single_service = AIService(
+            self.app(),
+            self.database,
+            provider=single_provider,
+        )
+        single = single_service.generate_article(
+            int(articles["empty-single"]["id"]),
+            task_type="translation",
+        )
+        self.assertEqual("", single["output"]["publisher_summary"])
+        self.assertEqual(1, len(single_provider.requests))
+
+        pair_provider = NullPublisherSummaryProvider()
+        pair_service = AIService(
+            self.app(),
+            self.database,
+            provider=pair_provider,
+        )
+        pair = pair_service.generate_article_pair(
+            int(articles["empty-pair"]["id"]),
+        )
+        self.assertEqual("", pair["translation"]["output"]["publisher_summary"])
+        self.assertEqual(1, len(pair_provider.requests))
+        self.assertEqual([], self.database.list_ai_generation_holds())
+
+        rejecting_provider = NullPublisherSummaryProvider()
+        rejecting_service = AIService(
+            self.app(),
+            self.database,
+            provider=rejecting_provider,
+        )
+        with self.assertRaisesRegex(
+            AIServiceError,
+            "publisher_summary must be a string",
+        ):
+            rejecting_service.generate_article(
+                int(self.article["id"]),
+                task_type="translation",
+            )
+        self.assertEqual(1, len(rejecting_provider.requests))
+        self.assertEqual(
+            "paid_failure",
+            self.database.list_ai_generation_holds()[0]["hold_class"],
+        )
+
+    def test_legacy_pair_hold_blocks_narrower_translation_until_forced(self):
+        deepseek_ai = enabled_ai(
+            provider="deepseek",
+            translation_model=DEEPSEEK_MODEL,
+            summary_model=DEEPSEEK_MODEL,
+            digest_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+            fallback_provider="",
+        )
+        failed_pair = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=InvalidThenValidProvider(),
+        )
+        with self.assertRaises(AIServiceError):
+            failed_pair.generate_article_pair(int(self.article["id"]))
+        hold = self.database.list_ai_generation_holds()[0]
+        self.assertEqual("article_pair", hold["workload_kind"])
+        self.assertEqual("paid_failure", hold["hold_class"])
+
+        translation_provider = FakeProvider()
+        translation_service = AIService(
+            self.app(),
+            self.database,
+            provider=translation_provider,
+        )
+        with self.assertRaises(AIGenerationHeld):
+            translation_service.generate_article(
+                int(self.article["id"]),
+                task_type="translation",
+            )
+        self.assertEqual([], translation_provider.requests)
+
+        title_only = translation_service.generate_article(
+            int(self.article["id"]),
+            task_type="translation",
+            translated_fields=("title",),
+            force_held=True,
+        )
+        self.assertEqual("译文标题", title_only["output"]["title"])
+        self.assertEqual(1, len(translation_provider.requests))
+        self.assertEqual(1, len(self.database.list_ai_generation_holds()))
+
+        with self.assertRaises(AIGenerationHeld):
+            translation_service.generate_article(
+                int(self.article["id"]),
+                task_type="translation",
+            )
+        self.assertEqual(1, len(translation_provider.requests))
+
+        recovered = translation_service.generate_article(
+            int(self.article["id"]),
+            task_type="translation",
+            force_held=True,
+        )
+        self.assertEqual("译文简介", recovered["output"]["publisher_summary"])
+        self.assertEqual(2, len(translation_provider.requests))
+        self.assertEqual([], self.database.list_ai_generation_holds())
+
+    def test_legacy_fallback_pending_continues_without_replaying_openrouter(self):
+        openrouter_ai = enabled_ai(
+            provider="openrouter",
+            fallback_provider="deepseek",
+            summary_model=OPENROUTER_MODEL,
+            translation_model=OPENROUTER_MODEL,
+            digest_model=OPENROUTER_MODEL,
+            reasoning_effort="none",
+            api_key_environment="OPENROUTER_API_KEY",
+        )
+        failed_provider = FakeProvider(
+            ProviderHTTPError("rate limited", status=429, retryable=True)
+        )
+        failed_pair = AIService(
+            self.app(openrouter_ai),
+            self.database,
+            provider=failed_provider,
+            automatic_fallback_provider="deepseek",
+        )
+        with mock.patch.dict(
+            os.environ,
+            {"OPENROUTER_API_KEY": "test-key"},
+            clear=True,
+        ):
+            with self.assertRaises(AIFallbackEligibleError):
+                failed_pair.generate_article_pair(int(self.article["id"]))
+        legacy_hold = self.database.list_ai_generation_holds()[0]
+        self.assertEqual("article_pair", legacy_hold["workload_kind"])
+        self.assertEqual("fallback_pending", legacy_hold["hold_class"])
+
+        replay_provider = FakeProvider()
+        primary = AIService(
+            self.app(openrouter_ai),
+            self.database,
+            provider=replay_provider,
+            automatic_fallback_provider="deepseek",
+        )
+        with self.assertRaises(AIFallbackEligibleError) as raised:
+            primary.generate_article(
+                int(self.article["id"]),
+                task_type="translation",
+                force_held=True,
+            )
+        self.assertFalse(raised.exception.provider_call_made)
+        self.assertEqual(legacy_hold["hold_key"], raised.exception.generation_hold_key)
+        self.assertEqual([], replay_provider.requests)
+
+        deepseek_ai = enabled_ai(
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            digest_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        continuation_provider = FakeProvider()
+        continuation = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=continuation_provider,
+            allow_fallback_pending_from="openrouter",
+        )
+        with mock.patch.dict(
+            os.environ,
+            {"DEEPSEEK_API_KEY": "test-key"},
+            clear=True,
+        ):
+            recovered = continuation.generate_article(
+                int(self.article["id"]),
+                task_type="translation",
+            )
+        self.assertEqual("译文简介", recovered["output"]["publisher_summary"])
+        self.assertEqual(1, len(continuation_provider.requests))
+        self.assertEqual([], self.database.list_ai_generation_holds())
+
+    def test_direct_pending_controls_fallback_and_clears_legacy_paid_hold(self):
+        deepseek_ai = enabled_ai(
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            digest_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        failed_pair = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=InvalidThenValidProvider(),
+        )
+        with self.assertRaises(AIServiceError):
+            failed_pair.generate_article_pair(int(self.article["id"]))
+        legacy_hold = self.database.list_ai_generation_holds()[0]
+
+        openrouter_ai = enabled_ai(
+            provider="openrouter",
+            fallback_provider="deepseek",
+            summary_model=OPENROUTER_MODEL,
+            translation_model=OPENROUTER_MODEL,
+            digest_model=OPENROUTER_MODEL,
+            reasoning_effort="none",
+            api_key_environment="OPENROUTER_API_KEY",
+        )
+        primary_provider = FakeProvider()
+        primary = AIService(
+            self.app(openrouter_ai),
+            self.database,
+            provider=primary_provider,
+            automatic_fallback_provider="deepseek",
+        )
+        prepared = primary.prepare_article(
+            int(self.article["id"]),
+            task_type="translation",
+        )
+        direct_template = primary._generation_hold_template(
+            prepared,
+            workload_kind="article",
+        )
+        held_at = utc_now()
+        direct_hold = {
+            **primary._classified_generation_hold(
+                direct_template,
+                "fallback_pending",
+            ),
+            "first_seen_at": held_at,
+            "last_seen_at": held_at,
+        }
+        self.database.replace_ai_generation_holds([legacy_hold, direct_hold])
+
+        with self.assertRaises(AIFallbackEligibleError) as raised:
+            primary.generate_article(
+                int(self.article["id"]),
+                task_type="translation",
+            )
+        self.assertEqual(direct_hold["hold_key"], raised.exception.generation_hold_key)
+        self.assertEqual([], primary_provider.requests)
+
+        continuation_provider = FakeProvider()
+        continuation = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=continuation_provider,
+            allow_fallback_pending_from="openrouter",
+        )
+        with mock.patch.dict(
+            os.environ,
+            {"DEEPSEEK_API_KEY": "test-key"},
+            clear=True,
+        ):
+            continuation.generate_article(
+                int(self.article["id"]),
+                task_type="translation",
+            )
+        self.assertEqual(1, len(continuation_provider.requests))
+        self.assertEqual([], self.database.list_ai_generation_holds())
+
+    def test_same_second_legacy_hold_upsert_after_preflight_is_not_cleared(self):
+        deepseek_ai = enabled_ai(
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            digest_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        failed_pair = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=InvalidThenValidProvider(),
+        )
+        with self.assertRaises(AIServiceError):
+            failed_pair.generate_article_pair(int(self.article["id"]))
+        legacy_hold = self.database.list_ai_generation_holds()[0]
+        legacy_snapshot = self.database.ai_generation_hold(
+            str(legacy_hold["hold_key"]),
+            include_revision=True,
+        )
+        self.assertIsNotNone(legacy_snapshot)
+
+        database = self.database
+        hold_key = str(legacy_hold["hold_key"])
+        hold_template = {
+            key: legacy_hold[key]
+            for key in (
+                "hold_key",
+                "workload_kind",
+                "hold_class",
+                "descriptor",
+            )
+        }
+        original_seen_at = str(legacy_hold["last_seen_at"])
+        original_revision = int(legacy_snapshot["revision"])
+
+        class ConcurrentHoldProvider(FakeProvider):
+            def generate(self, request):
+                with database.connect() as connection:
+                    connection.execute("BEGIN IMMEDIATE")
+                    database._upsert_ai_generation_hold(
+                        connection,
+                        hold_template,
+                        now=original_seen_at,
+                    )
+                    connection.commit()
+                return super().generate(request)
+
+        provider = ConcurrentHoldProvider()
+        service = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=provider,
+        )
+        with mock.patch.dict(
+            os.environ,
+            {"DEEPSEEK_API_KEY": "test-key"},
+            clear=True,
+        ):
+            service.generate_article(
+                int(self.article["id"]),
+                task_type="translation",
+                force_held=True,
+            )
+
+        remaining = self.database.ai_generation_hold(
+            hold_key,
+            include_revision=True,
+        )
+        self.assertIsNotNone(remaining)
+        self.assertEqual(original_seen_at, remaining["last_seen_at"])
+        self.assertGreater(remaining["revision"], original_revision)
 
     def test_budget_is_reserved_before_any_provider_call(self):
         provider = FakeProvider()

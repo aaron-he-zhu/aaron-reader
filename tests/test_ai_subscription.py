@@ -217,7 +217,7 @@ class AISubscriptionTests(unittest.TestCase):
         artifacts = self.database.latest_ai_artifacts([int(article["id"])])
         self.assertEqual("translation", artifacts[int(article["id"])][0]["task_type"])
 
-    def test_translation_preserves_an_empty_requested_publisher_summary(self):
+    def test_translation_normalizes_null_for_an_empty_requested_summary(self):
         url = "https://example.com/blog/empty-summary"
         title = "An article without a publisher summary"
         self.database.commit_candidates(
@@ -256,7 +256,7 @@ class AISubscriptionTests(unittest.TestCase):
             include_summary=False,
             include_translation=True,
         )
-        payload["items"][0]["translation"]["publisher_summary"] = ""
+        payload["items"][0]["translation"]["publisher_summary"] = None
 
         result = import_subscription_results(self.service, payload)
 
@@ -264,6 +264,29 @@ class AISubscriptionTests(unittest.TestCase):
         artifacts = self.database.latest_ai_artifacts([int(article["id"])])
         output = json.loads(artifacts[int(article["id"])][0]["output_json"])
         self.assertEqual("", output["publisher_summary"])
+
+    def test_translation_rejects_null_for_a_nonempty_requested_summary(self):
+        article = self.database.list_articles(limit=1)[0]
+        request = export_subscription_batch(
+            self.service,
+            [article],
+            target_language="zh-CN",
+            tasks=("translation",),
+        )
+        self.assertTrue(request["items"][0]["input"]["publisher_summary"])
+        payload = self.article_result(
+            request,
+            include_summary=False,
+            include_translation=True,
+        )
+        payload["items"][0]["translation"]["publisher_summary"] = None
+
+        with self.assertRaisesRegex(
+            AIInputError,
+            "publisher_summary must be a string",
+        ):
+            import_subscription_results(self.service, payload)
+        self.assertEqual({}, self.database.latest_ai_artifacts([int(article["id"])]))
 
     def test_san_francisco_daily_weekly_and_dst_boundaries(self):
         daily = report_period_window("daily", now=self.now)

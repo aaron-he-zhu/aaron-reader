@@ -10,7 +10,7 @@ from .i18n import translate
 from .models import ArticleCandidate, SourceConfig
 
 
-SCHEMA_VERSION = 7
+SCHEMA_VERSION = 8
 
 
 class AIBudgetExceeded(ValueError):
@@ -339,6 +339,7 @@ class Database:
                     descriptor_json TEXT NOT NULL,
                     first_seen_at TEXT NOT NULL,
                     last_seen_at TEXT NOT NULL,
+                    revision INTEGER NOT NULL DEFAULT 1 CHECK(revision >= 1),
                     CHECK(length(hold_key) = 64),
                     CHECK(first_seen_at <= last_seen_at)
                 );
@@ -350,6 +351,8 @@ class Database:
                 self._migrate_ai_attempts_v4(connection)
             if stored_version < 7:
                 self._migrate_ai_schema_v7(connection)
+            if stored_version < 8:
+                self._migrate_ai_schema_v8(connection)
             pending_columns = {
                 str(row[1])
                 for row in connection.execute("PRAGMA table_info(pending_urls)").fetchall()
@@ -505,6 +508,23 @@ class Database:
             "CREATE INDEX idx_ai_generation_holds_seen "
             "ON ai_generation_holds(last_seen_at DESC)"
         )
+
+    @staticmethod
+    def _migrate_ai_schema_v8(connection: sqlite3.Connection) -> None:
+        """Add an internal monotonic revision for hold snapshot CAS."""
+
+        hold_columns = {
+            str(row[1])
+            for row in connection.execute(
+                "PRAGMA table_info(ai_generation_holds)"
+            ).fetchall()
+        }
+        if "revision" not in hold_columns:
+            connection.execute(
+                "ALTER TABLE ai_generation_holds ADD COLUMN "
+                "revision INTEGER NOT NULL DEFAULT 1 CHECK(revision >= 1)"
+            )
+        Database._ensure_ai_generation_hold_revision_sequence(connection)
 
     def sync_source_configs(
         self, sources: Iterable[SourceConfig], language: str = "en"
@@ -1857,13 +1877,17 @@ class Database:
         validated = [cls._validated_ai_generation_hold(entry) for entry in entries]
         if len({str(entry["hold_key"]) for entry in validated}) != len(validated):
             raise ValueError("AI generation hold keys must be unique")
+        revisions = cls._reserve_ai_generation_hold_revisions(
+            connection,
+            len(validated),
+        )
         connection.execute("DELETE FROM ai_generation_holds")
         connection.executemany(
             """
             INSERT INTO ai_generation_holds(
                 hold_key, workload_kind, hold_class, descriptor_json,
-                first_seen_at, last_seen_at
-            ) VALUES(?, ?, ?, ?, ?, ?)
+                first_seen_at, last_seen_at, revision
+            ) VALUES(?, ?, ?, ?, ?, ?, ?)
             """,
             [
                 (
@@ -1873,10 +1897,62 @@ class Database:
                     entry["descriptor_json"],
                     entry["first_seen_at"],
                     entry["last_seen_at"],
+                    revision,
                 )
-                for entry in validated
+                for entry, revision in zip(validated, revisions)
             ],
         )
+
+    @staticmethod
+    def _ensure_ai_generation_hold_revision_sequence(
+        connection: sqlite3.Connection,
+    ) -> int:
+        maximum = int(
+            connection.execute(
+                "SELECT COALESCE(MAX(revision), 0) FROM ai_generation_holds"
+            ).fetchone()[0]
+        )
+        row = connection.execute(
+            "SELECT value FROM app_meta "
+            "WHERE key='ai_generation_hold_revision'"
+        ).fetchone()
+        stored = 0
+        if row is not None:
+            try:
+                stored = int(row[0])
+            except (TypeError, ValueError) as exc:
+                raise ValueError(
+                    "invalid ai_generation_hold_revision"
+                ) from exc
+            if stored < 0:
+                raise ValueError("invalid ai_generation_hold_revision")
+        current = max(maximum, stored)
+        connection.execute(
+            "INSERT INTO app_meta(key, value) "
+            "VALUES('ai_generation_hold_revision', ?) "
+            "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+            (str(current),),
+        )
+        return current
+
+    @classmethod
+    def _reserve_ai_generation_hold_revisions(
+        cls,
+        connection: sqlite3.Connection,
+        count: int,
+    ) -> Tuple[int, ...]:
+        if count < 0:
+            raise ValueError("AI generation hold revision count is invalid")
+        if count == 0:
+            return ()
+        current = cls._ensure_ai_generation_hold_revision_sequence(connection)
+        final = current + int(count)
+        connection.execute(
+            "UPDATE app_meta SET value=? "
+            "WHERE key='ai_generation_hold_revision'",
+            (str(final),),
+        )
+        return tuple(range(current + 1, final + 1))
 
     @classmethod
     def _upsert_ai_generation_hold(
@@ -1928,15 +2004,20 @@ class Database:
                     and risk.get(previous, 2) > risk.get(hold_class, 2)
                 ):
                     hold_class = previous
+        revision = cls._reserve_ai_generation_hold_revisions(
+            connection,
+            1,
+        )[0]
         connection.execute(
             """
             INSERT INTO ai_generation_holds(
                 hold_key, workload_kind, hold_class, descriptor_json,
-                first_seen_at, last_seen_at
-            ) VALUES(?, ?, ?, ?, ?, ?)
+                first_seen_at, last_seen_at, revision
+            ) VALUES(?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(hold_key) DO UPDATE SET
                 hold_class=excluded.hold_class,
-                last_seen_at=excluded.last_seen_at
+                last_seen_at=excluded.last_seen_at,
+                revision=excluded.revision
             """,
             (
                 validated["hold_key"],
@@ -1945,6 +2026,7 @@ class Database:
                 validated["descriptor_json"],
                 first_seen,
                 now,
+                revision,
             ),
         )
 
@@ -1956,12 +2038,16 @@ class Database:
             self._replace_ai_generation_holds(connection, entries)
             connection.commit()
 
-    def list_ai_generation_holds(self) -> List[Dict[str, object]]:
+    def list_ai_generation_holds(
+        self,
+        *,
+        include_revision: bool = False,
+    ) -> List[Dict[str, object]]:
         with self.connect() as connection:
             rows = connection.execute(
                 "SELECT * FROM ai_generation_holds ORDER BY hold_key ASC"
             ).fetchall()
-        return [
+        result = [
             {
                 "hold_key": str(row["hold_key"]),
                 "workload_kind": str(row["workload_kind"]),
@@ -1972,8 +2058,17 @@ class Database:
             }
             for row in rows
         ]
+        if include_revision:
+            for item, row in zip(result, rows):
+                item["revision"] = int(row["revision"])
+        return result
 
-    def ai_generation_hold(self, hold_key: str) -> Optional[Dict[str, object]]:
+    def ai_generation_hold(
+        self,
+        hold_key: str,
+        *,
+        include_revision: bool = False,
+    ) -> Optional[Dict[str, object]]:
         with self.connect() as connection:
             row = connection.execute(
                 "SELECT * FROM ai_generation_holds WHERE hold_key=?",
@@ -1981,7 +2076,7 @@ class Database:
             ).fetchone()
         if row is None:
             return None
-        return {
+        result = {
             "hold_key": str(row["hold_key"]),
             "workload_kind": str(row["workload_kind"]),
             "hold_class": str(row["hold_class"]),
@@ -1989,6 +2084,9 @@ class Database:
             "first_seen_at": str(row["first_seen_at"]),
             "last_seen_at": str(row["last_seen_at"]),
         }
+        if include_revision:
+            result["revision"] = int(row["revision"])
+        return result
 
     def clear_ai_generation_hold(self, hold_key: str) -> bool:
         with self.connect() as connection:
@@ -2012,6 +2110,28 @@ class Database:
                 WHERE hold_key=? AND hold_class=?
                 """,
                 (str(hold_key), str(hold_class)),
+            )
+        return cursor.rowcount == 1
+
+    def clear_ai_generation_hold_if_snapshot(
+        self,
+        hold_key: str,
+        hold_class: str,
+        revision: int,
+    ) -> bool:
+        """Delete a hold only when its preflight snapshot is unchanged."""
+
+        with self.connect() as connection:
+            cursor = connection.execute(
+                """
+                DELETE FROM ai_generation_holds
+                WHERE hold_key=? AND hold_class=? AND revision=?
+                """,
+                (
+                    str(hold_key),
+                    str(hold_class),
+                    int(revision),
+                ),
             )
         return cursor.rowcount == 1
 
@@ -2304,6 +2424,9 @@ class Database:
         actual_cost_micros: Optional[int] = None,
         usage_confirmed: bool = True,
         clear_generation_hold_key: str = "",
+        clear_generation_hold_snapshots: Sequence[
+            Tuple[str, str, int]
+        ] = (),
     ) -> Dict[str, object]:
         now = utc_now()
         columns = (
@@ -2422,6 +2545,20 @@ class Database:
                 connection.execute(
                     "DELETE FROM ai_generation_holds WHERE hold_key=?",
                     (str(clear_generation_hold_key),),
+                )
+            for hold_key, hold_class, revision in dict.fromkeys(
+                clear_generation_hold_snapshots
+            ):
+                connection.execute(
+                    """
+                    DELETE FROM ai_generation_holds
+                    WHERE hold_key=? AND hold_class=? AND revision=?
+                    """,
+                    (
+                        str(hold_key),
+                        str(hold_class),
+                        int(revision),
+                    ),
                 )
             connection.commit()
         return dict(stored)

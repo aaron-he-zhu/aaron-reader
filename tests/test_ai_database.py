@@ -264,6 +264,10 @@ class AIDatabaseTests(unittest.TestCase):
             legacy_hold_sql = hold_table_sql.replace(
                 ", 'fallback_pending'", ""
             )
+            legacy_hold_sql = legacy_hold_sql.replace(
+                "revision INTEGER NOT NULL DEFAULT 1 CHECK(revision >= 1),",
+                "",
+            )
             self.assertNotEqual(hold_table_sql, legacy_hold_sql)
             connection.execute("DROP INDEX idx_ai_generation_holds_seen")
             connection.execute(
@@ -285,6 +289,10 @@ class AIDatabaseTests(unittest.TestCase):
             connection.execute(
                 "UPDATE app_meta SET value='6' WHERE key='schema_version'"
             )
+            connection.execute(
+                "DELETE FROM app_meta "
+                "WHERE key='ai_generation_hold_revision'"
+            )
 
         self.database.initialize()
 
@@ -305,8 +313,20 @@ class AIDatabaseTests(unittest.TestCase):
                 "SELECT sql FROM sqlite_master "
                 "WHERE type='table' AND name='ai_generation_holds'"
             ).fetchone()[0]
+            hold_columns = {
+                str(row[1])
+                for row in connection.execute(
+                    "PRAGMA table_info(ai_generation_holds)"
+                ).fetchall()
+            }
         self.assertEqual(str(SCHEMA_VERSION), version)
         self.assertIn("fallback_pending", hold_table_sql)
+        self.assertIn("revision", hold_columns)
+        migrated_hold = self.database.ai_generation_hold(
+            legacy_hold["hold_key"],
+            include_revision=True,
+        )
+        self.assertEqual(1, migrated_hold["revision"])
 
     def test_fallback_pending_hold_validation_and_risk_priority(self):
         pending = self.generation_hold("fallback_pending")
@@ -345,6 +365,26 @@ class AIDatabaseTests(unittest.TestCase):
         self.assertEqual("paid_failure", upsert("fallback_pending"))
         self.assertEqual("ambiguous", upsert("ambiguous"))
         self.assertEqual("ambiguous", upsert("paid_failure"))
+
+    def test_hold_revision_is_internal_and_never_reused_after_replace(self):
+        hold = self.generation_hold("paid_failure")
+        self.database.replace_ai_generation_holds([hold])
+        first = self.database.ai_generation_hold(
+            hold["hold_key"],
+            include_revision=True,
+        )
+        self.assertNotIn(
+            "revision",
+            self.database.ai_generation_hold(hold["hold_key"]),
+        )
+
+        self.assertTrue(self.database.clear_ai_generation_hold(hold["hold_key"]))
+        self.database.replace_ai_generation_holds([hold])
+        second = self.database.ai_generation_hold(
+            hold["hold_key"],
+            include_revision=True,
+        )
+        self.assertGreater(second["revision"], first["revision"])
 
     def test_mark_sent_and_provisional_hold_are_atomic_and_settleable(self):
         job = self.job("atomic-provisional-hold")
