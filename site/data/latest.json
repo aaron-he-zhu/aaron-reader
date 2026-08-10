@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T15:56:08Z",
+  "generated_at": "2026-08-10T17:12:08Z",
   "language": "en",
   "supported_languages": [
     "en",
@@ -10,11 +10,11 @@
   "cached_ai_artifact_count": 120,
   "cached_ai_report_count": 2,
   "counts": {
-    "total": 129
+    "total": 135
   },
   "articles_page": {
     "order": "newest_first",
-    "returned_count": 129,
+    "returned_count": 135,
     "limit": 500,
     "omitted_count": 0,
     "truncated": false
@@ -24,34 +24,78 @@
       "slug": "anthropic-news",
       "name": "Anthropic News",
       "health": "healthy",
-      "last_success_at": "2026-08-10T06:08:42Z",
+      "last_success_at": "2026-08-10T17:11:15Z",
       "article_count": 15
     },
     {
       "slug": "claude-blog",
       "name": "Claude Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-10T06:08:41Z",
+      "last_success_at": "2026-08-10T17:11:15Z",
       "article_count": 31
     },
     {
       "slug": "openai-developers",
       "name": "OpenAI Developer Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-10T06:08:40Z",
+      "last_success_at": "2026-08-10T17:11:15Z",
       "article_count": 21
     },
     {
       "slug": "openai-news",
       "name": "OpenAI News",
       "health": "healthy",
-      "last_success_at": "2026-08-10T06:08:40Z",
-      "article_count": 62
+      "last_success_at": "2026-08-10T17:11:15Z",
+      "article_count": 68
     }
   ],
   "articles": [
     {
-      "id": 121,
+      "id": 83,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "What building an AI-native finance function taught me",
+      "summary": "OpenAI CFO Sarah Friar shares five lessons for building an AI-native finance function, from automated forecasting to stronger controls and AI ROI.",
+      "category": "Company",
+      "published_at": "2026-08-10T17:00:00Z",
+      "url": "https://openai.com/index/building-an-ai-native-finance-function",
+      "ai_artifacts": []
+    },
+    {
+      "id": 127,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "OpenAI’s letter to Governor Abbott on responsible AI infrastructure in Texas",
+      "summary": "OpenAI sent Governor Greg Abbott a letter outlining its commitment to responsible AI infrastructure in Texas. The letter supports reliable, transparent growth that benefits Texans.",
+      "category": "Global Affairs",
+      "published_at": "2026-08-10T14:00:00Z",
+      "url": "https://openai.com/index/responsible-ai-infrastructure-texas",
+      "ai_artifacts": []
+    },
+    {
+      "id": 119,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Model ML completes finance work more efficiently with GPT-5.6 Sol",
+      "summary": "Model ML uses GPT-5.6 Sol to carry finance work from research and analysis through editable, traceable PowerPoint decks and Excel workbooks.",
+      "category": "Startup",
+      "published_at": "2026-08-10T12:00:00Z",
+      "url": "https://openai.com/index/model-ml",
+      "ai_artifacts": []
+    },
+    {
+      "id": 123,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Premium seats are coming to ChatGPT Business",
+      "summary": "Premium seats are coming to ChatGPT Business. Sign up by August 20 to get $100 in workspace credits and unlock higher usage for your team's most demanding work.",
+      "category": "Product",
+      "published_at": "2026-08-10T00:00:00Z",
+      "url": "https://openai.com/index/premium-seats-chatgpt-business",
+      "ai_artifacts": []
+    },
+    {
+      "id": 126,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Responding to the next frontier of critical cyber capabilities",
@@ -77,7 +121,7 @@
       ]
     },
     {
-      "id": 105,
+      "id": 107,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How HSP GRUPPE builds AI capabilities for tax advisory",
@@ -136,7 +180,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 107,
+      "id": 109,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Improving GPT‑5.6 Sol in ChatGPT—and expanding access to GPT-5.6 Luna for free users",
@@ -162,7 +206,7 @@
       ]
     },
     {
-      "id": 119,
+      "id": 122,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Working with the American Psychological Association on youth mental health and AI",
@@ -188,7 +232,7 @@
       ]
     },
     {
-      "id": 102,
+      "id": 104,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "From asking to doing: How the world is putting ChatGPT to work",
@@ -236,6 +280,28 @@
       "ai_artifacts": []
     },
     {
+      "id": 125,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Putting frontier cyber models in more trusted hands",
+      "summary": "Approved Daybreak partners can use OpenAI’s frontier cyber models to deliver authorized, governed cybersecurity services to customers.",
+      "category": "Security",
+      "published_at": "2026-08-05T10:00:00Z",
+      "url": "https://openai.com/index/putting-frontier-cyber-models-in-more-trusted-hands",
+      "ai_artifacts": []
+    },
+    {
+      "id": 72,
+      "source": "openai-news",
+      "source_name": "OpenAI News",
+      "title": "Introducing GPT-Daybreak to accelerate defenders",
+      "summary": "Frontier cyber models for defenders, from broad defensive work to advanced security research.",
+      "category": "Security",
+      "published_at": "2026-08-05T10:00:00Z",
+      "url": "https://openai.com/index/accelerating-defenders-with-gpt-daybreak-legacy",
+      "ai_artifacts": []
+    },
+    {
       "id": 25,
       "source": "claude-blog",
       "source_name": "Claude Blog",
@@ -247,7 +313,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 126,
+      "id": 132,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Third-party cyber evaluations involving OpenAI models",
@@ -273,7 +339,7 @@
       ]
     },
     {
-      "id": 114,
+      "id": 116,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "New ways to learn and teach with ChatGPT Work and Codex",
@@ -321,7 +387,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 76,
+      "id": 77,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Apple is getting this wrong",
@@ -347,7 +413,7 @@
       ]
     },
     {
-      "id": 87,
+      "id": 89,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How we built a realtime system for responsive voice AI in six months",
@@ -373,7 +439,7 @@
       ]
     },
     {
-      "id": 85,
+      "id": 87,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Circles powers telco personalization with OpenAI technology",
@@ -399,7 +465,7 @@
       ]
     },
     {
-      "id": 125,
+      "id": 131,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Ten advances in mathematics and theoretical computer science",
@@ -425,7 +491,7 @@
       ]
     },
     {
-      "id": 80,
+      "id": 81,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Building abundant intelligence",
@@ -451,7 +517,7 @@
       ]
     },
     {
-      "id": 73,
+      "id": 74,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Advancing responsible AI across Europe",
@@ -477,7 +543,7 @@
       ]
     },
     {
-      "id": 127,
+      "id": 133,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Univé builds an AI-ready workforce",
@@ -503,7 +569,7 @@
       ]
     },
     {
-      "id": 91,
+      "id": 93,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Disrupting a Criminal Scam Operation",
@@ -529,7 +595,7 @@
       ]
     },
     {
-      "id": 75,
+      "id": 76,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Advancing the price-performance frontier with GPT-5.6",
@@ -555,7 +621,7 @@
       ]
     },
     {
-      "id": 78,
+      "id": 79,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How avatarin built a 24/7 retail agent with GPT-Realtime",
@@ -592,7 +658,7 @@
       "ai_artifacts": []
     },
     {
-      "id": 103,
+      "id": 105,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How enabling two settings tripled our scores on the ARC-AGI-3 benchmark",
@@ -618,7 +684,7 @@
       ]
     },
     {
-      "id": 83,
+      "id": 85,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Accelerating scientific discovery with ChatGPT for Academic Researchers",
@@ -644,7 +710,7 @@
       ]
     },
     {
-      "id": 95,
+      "id": 97,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How GPT-5.6 fuses frontier intelligence with frontier efficiency",
@@ -670,7 +736,7 @@
       ]
     },
     {
-      "id": 123,
+      "id": 129,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Scientific computing in the age of agentic AI",
@@ -722,7 +788,7 @@
       ]
     },
     {
-      "id": 99,
+      "id": 101,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How AI is expanding what people do at work",
@@ -904,7 +970,7 @@
       ]
     },
     {
-      "id": 97,
+      "id": 99,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Launching Health in ChatGPT",
@@ -982,7 +1048,7 @@
       ]
     },
     {
-      "id": 101,
+      "id": 103,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How news organizations are using AI to advance their vital missions",
@@ -1008,7 +1074,7 @@
       ]
     },
     {
-      "id": 81,
+      "id": 82,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Building AI infrastructure with the Effingham County community",
@@ -1034,7 +1100,7 @@
       ]
     },
     {
-      "id": 74,
+      "id": 75,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Advancing the next era of national science",
@@ -1060,7 +1126,7 @@
       ]
     },
     {
-      "id": 111,
+      "id": 113,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing OpenAI Presence",
@@ -1086,7 +1152,7 @@
       ]
     },
     {
-      "id": 118,
+      "id": 121,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "NTT DATA Group cuts incident analysis to 30 minutes with Codex",
@@ -1216,7 +1282,7 @@
       ]
     },
     {
-      "id": 108,
+      "id": 110,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing the ChatGPT for small business program",
@@ -1242,7 +1308,7 @@
       ]
     },
     {
-      "id": 106,
+      "id": 108,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "OpenAI and Hugging Face partner to address security incident during model evaluation",
@@ -1268,7 +1334,7 @@
       ]
     },
     {
-      "id": 89,
+      "id": 91,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "David Vélez and Robin Vince join the boards of the OpenAI Foundation and OpenAI Group PBC",
@@ -1372,7 +1438,7 @@
       ]
     },
     {
-      "id": 122,
+      "id": 128,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Safety and alignment in an era of long-horizon models",
@@ -1554,7 +1620,7 @@
       ]
     },
     {
-      "id": 129,
+      "id": 135,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Why teens deserve access to safe AI",
@@ -1580,7 +1646,7 @@
       ]
     },
     {
-      "id": 86,
+      "id": 88,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How Codex became a collaborator for OpenAI’s creative team",
@@ -1606,7 +1672,7 @@
       ]
     },
     {
-      "id": 82,
+      "id": 84,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How Cars24 scales conversations and builds faster with OpenAI",
@@ -1684,7 +1750,7 @@
       ]
     },
     {
-      "id": 72,
+      "id": 73,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "The US is advancing AI safety through state and federal action",
@@ -1710,7 +1776,7 @@
       ]
     },
     {
-      "id": 128,
+      "id": 134,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "GPT-Red: Unlocking Self-Improvement for Robustness",
@@ -1736,7 +1802,7 @@
       ]
     },
     {
-      "id": 115,
+      "id": 117,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How to manage AI investments in the agentic era",
@@ -1866,7 +1932,7 @@
       ]
     },
     {
-      "id": 90,
+      "id": 92,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How Deutsche Telekom is rewiring telecommunications with AI",
@@ -1918,7 +1984,7 @@
       ]
     },
     {
-      "id": 96,
+      "id": 98,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "GPT-5.6 is now the preferred model in Microsoft 365 Copilot",
@@ -1944,7 +2010,7 @@
       ]
     },
     {
-      "id": 94,
+      "id": 96,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "GPT-5.6: Frontier intelligence that scales with your ambition",
@@ -1970,7 +2036,7 @@
       ]
     },
     {
-      "id": 84,
+      "id": 86,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "ChatGPT is now a partner for your most ambitious work",
@@ -1996,7 +2062,7 @@
       ]
     },
     {
-      "id": 79,
+      "id": 80,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "GPT-5.5 Bio Bug Bounty",
@@ -2048,7 +2114,7 @@
       ]
     },
     {
-      "id": 93,
+      "id": 95,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Our approach to government and national security partnerships",
@@ -2074,7 +2140,7 @@
       ]
     },
     {
-      "id": 124,
+      "id": 130,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Separating signal from noise in coding evaluations",
@@ -2100,7 +2166,7 @@
       ]
     },
     {
-      "id": 113,
+      "id": 115,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Helping K–12 educators build practical AI skills",
@@ -2126,7 +2192,7 @@
       ]
     },
     {
-      "id": 110,
+      "id": 112,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing GPT-Live",
@@ -2152,7 +2218,7 @@
       ]
     },
     {
-      "id": 117,
+      "id": 120,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "MUFG aims to become AI-native with OpenAI",
@@ -2178,7 +2244,7 @@
       ]
     },
     {
-      "id": 77,
+      "id": 78,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Australian Payments Plus moves faster with ChatGPT and Codex",
@@ -2204,7 +2270,7 @@
       ]
     },
     {
-      "id": 100,
+      "id": 102,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How ChatGPT adoption has expanded",
@@ -2230,7 +2296,7 @@
       ]
     },
     {
-      "id": 109,
+      "id": 111,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing GeneBench-Pro",
@@ -2256,7 +2322,7 @@
       ]
     },
     {
-      "id": 92,
+      "id": 94,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Inside Genebench-Pro",
@@ -2282,7 +2348,7 @@
       ]
     },
     {
-      "id": 88,
+      "id": 90,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Core dump epidemiology: fixing an 18-year-old bug",
@@ -2360,7 +2426,7 @@
       ]
     },
     {
-      "id": 116,
+      "id": 118,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Mapping Europe’s AI Workforce Opportunity",
@@ -2386,7 +2452,7 @@
       ]
     },
     {
-      "id": 104,
+      "id": 106,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "HP Inc. launches Frontier strategic partnership with OpenAI",
@@ -2412,7 +2478,7 @@
       ]
     },
     {
-      "id": 120,
+      "id": 124,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Previewing GPT-5.6 Sol: a next-generation model",
@@ -2464,7 +2530,7 @@
       ]
     },
     {
-      "id": 98,
+      "id": 100,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "How agents are transforming work",
@@ -2542,7 +2608,7 @@
       ]
     },
     {
-      "id": 112,
+      "id": 114,
       "source": "openai-news",
       "source_name": "OpenAI News",
       "title": "Introducing the OpenAI Economic Research Exchange",
@@ -3275,58 +3341,68 @@
       "id": 1,
       "period": "daily",
       "timezone": "America/Los_Angeles",
-      "local_date": "2026-08-07",
-      "period_start": "2026-08-07T07:00:00Z",
-      "period_end": "2026-08-07T17:44:36Z",
+      "local_date": "2026-08-10",
+      "period_start": "2026-08-10T07:00:00Z",
+      "period_end": "2026-08-10T17:11:15Z",
       "target_language": "en",
-      "generated_at": "2026-08-07T17:44:41Z",
+      "generated_at": "2026-08-10T17:11:33Z",
       "input_truncated": false,
       "output": {
-        "headline": "OpenAI Cybersecurity Updates and HSP GRUPPE Case Study",
+        "headline": "Daily OpenAI News Digest: August 10, 2026",
         "items": [
           {
-            "article_id": 121,
-            "summary": "OpenAI is sharing preliminary cybersecurity evaluations for Astra and the steps we’re taking to strengthen safeguards and security controls.",
-            "title": "Responding to the next frontier of critical cyber capabilities"
+            "article_id": 83,
+            "summary": "OpenAI CFO Sarah Friar discusses five lessons learned while building an AI-native finance function, covering topics such as automated forecasting, stronger controls, and AI ROI.",
+            "title": "What building an AI-native finance function taught me"
           },
           {
-            "article_id": 105,
-            "summary": "Discover how HSP GRUPPE uses ChatGPT Enterprise to boost productivity, improve work quality, and create more capacity for tax advisory and client service.",
-            "title": "How HSP GRUPPE builds AI capabilities for tax advisory"
+            "article_id": 127,
+            "summary": "OpenAI issued a letter to Governor Greg Abbott expressing commitment to responsible AI infrastructure in Texas to support reliable and transparent growth for Texans.",
+            "title": "OpenAI’s letter to Governor Abbott on responsible AI infrastructure in Texas"
+          },
+          {
+            "article_id": 119,
+            "summary": "Model ML utilizes GPT-5.6 Sol to streamline finance tasks, moving from research and analysis to editable and traceable PowerPoint decks and Excel workbooks.",
+            "title": "Model ML completes finance work more efficiently with GPT-5.6 Sol"
           }
         ],
         "language": "en",
-        "limitations": "This digest covers only the publisher summaries, not the full article text. Details may be preliminary or incomplete.",
-        "overview": "On August 7, 2026, OpenAI published two articles. The first, titled 'Responding to the next frontier of critical cyber capabilities', shares preliminary cybersecurity evaluations for Astra and outlines steps to strengthen safeguards and security controls. The second, 'How HSP GRUPPE builds AI capabilities for tax advisory', describes how HSP GRUPPE uses ChatGPT Enterprise to boost productivity, improve work quality, and create more capacity for tax advisory and client service."
+        "limitations": "The report is based on provided article summaries and contains only the information present in those summaries.",
+        "overview": "This digest covers news from OpenAI on August 10, 2026, including insights from CFO Sarah Friar on AI-native finance, a letter to Texas Governor Greg Abbott regarding AI infrastructure, and Model ML's use of GPT-5.6 Sol for finance workflows."
       }
     },
     {
       "id": 2,
       "period": "daily",
       "timezone": "America/Los_Angeles",
-      "local_date": "2026-08-07",
-      "period_start": "2026-08-07T07:00:00Z",
-      "period_end": "2026-08-07T17:44:36Z",
+      "local_date": "2026-08-10",
+      "period_start": "2026-08-10T07:00:00Z",
+      "period_end": "2026-08-10T17:11:15Z",
       "target_language": "zh-CN",
-      "generated_at": "2026-08-07T17:44:41Z",
+      "generated_at": "2026-08-10T17:11:33Z",
       "input_truncated": false,
       "output": {
-        "headline": "OpenAI 网络安全更新与 HSP GRUPPE 案例研究",
+        "headline": "OpenAI 新闻日报：2026年8月10日",
         "items": [
           {
-            "article_id": 121,
-            "summary": "OpenAI 正在分享针对 Astra 的初步网络安全评估，以及我们为加强保障和安全控制所采取的步骤。",
-            "title": "应对关键网络能力的新前沿"
+            "article_id": 83,
+            "summary": "OpenAI 首席财务官 Sarah Friar 分享了构建 AI 原生财务职能的五点经验，涵盖了从自动化预测到更强的控制和 AI 投资回报率等内容。",
+            "title": "构建 AI 原生财务职能给我的启示"
           },
           {
-            "article_id": 105,
-            "summary": "了解 HSP GRUPPE 如何利用 ChatGPT Enterprise 提升生产力、改善工作质量，并为税务咨询和客户服务创造更多容量。",
-            "title": "HSP GRUPPE 如何构建税务咨询的 AI 能力"
+            "article_id": 127,
+            "summary": "OpenAI 向州长 Greg Abbott 致信，概述了其对德克萨斯州负责任 AI 基础设施建设的承诺，旨在支持造福德州人的可靠、透明的增长。",
+            "title": "OpenAI 给 Abbott 州长关于德克萨斯州负责任 AI 基础设施的信函"
+          },
+          {
+            "article_id": 119,
+            "summary": "Model ML 利用 GPT-5.6 Sol 将财务工作从研究与分析延伸至可编辑、可追溯的 PowerPoint 演示文稿和 Excel 工作簿。",
+            "title": "Model ML 利用 GPT-5.6 Sol 更高效地完成财务工作"
           }
         ],
         "language": "zh-CN",
-        "limitations": "本摘要仅涵盖出版商摘要，而非完整文章文本。细节可能为初步或不完整。",
-        "overview": "2026年8月7日，OpenAI 发布了两篇文章。第一篇题为《应对关键网络能力的新前沿》，分享了针对 Astra 的初步网络安全评估，并概述了加强保障和安全控制的步骤。第二篇《HSP GRUPPE 如何构建税务咨询的 AI 能力》描述了 HSP GRUPPE 如何利用 ChatGPT Enterprise 提升生产力、改善工作质量，并为税务咨询和客户服务创造更多容量。"
+        "limitations": "本报告基于提供的文章摘要，仅包含摘要中存在的信息。",
+        "overview": "本摘要涵盖了 2026 年 8 月 10 日的 OpenAI 相关新闻，包括 CFO Sarah Friar 关于 AI 原生财务职能的见解、关于德克萨斯州 AI 基础设施给 Abbott 州长的信函，以及 Model ML 使用 GPT-5.6 Sol 处理财务工作流的情况。"
       }
     }
   ]

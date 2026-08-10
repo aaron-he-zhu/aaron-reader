@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v2",
-  "exported_at": "2026-08-10T06:08:58Z",
-  "bundle_hash": "648d5062e2d8d53d384a57730bd32f7e15128fd27cec78310d6e66b30afe3e39",
+  "exported_at": "2026-08-10T17:12:07Z",
+  "bundle_hash": "0b9c34044699cf6cbe8b1ed23d4ee8bacbeac2c7d0cee7c6891c1593cb80c721",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -7730,42 +7730,54 @@
   ],
   "reports": [
     {
-      "cache_key": "7981f6e55ee21db6429f21dd801a9a95cd7806fac98cfd81116fdd876566e26b",
+      "cache_key": "4bfb5a851fd1a0385118bf533fd67c5bee72c6cf82a4c8ce64c84c5d85ca7c13",
       "period": "daily",
       "timezone": "America/Los_Angeles",
-      "local_date": "2026-08-07",
-      "period_start": "2026-08-07T07:00:00Z",
-      "period_end": "2026-08-07T17:44:36Z",
+      "local_date": "2026-08-10",
+      "period_start": "2026-08-10T07:00:00Z",
+      "period_end": "2026-08-10T17:11:15Z",
       "target_language": "en",
       "window_articles": [
         {
           "source_slug": "openai-news",
-          "external_id": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-          "canonical_url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-          "content_hash": "5e360b082517339cd8c8045d5cfe014ee859240263812d4bed27c225c393c1aa"
+          "external_id": "https://openai.com/index/building-an-ai-native-finance-function",
+          "canonical_url": "https://openai.com/index/building-an-ai-native-finance-function",
+          "content_hash": "5c2e0096ed48890e0aa2b892903493db03fc5df3dd65ad66b7ead3efb341d4a2"
         },
         {
           "source_slug": "openai-news",
-          "external_id": "https://openai.com/index/hsp-gruppe",
-          "canonical_url": "https://openai.com/index/hsp-gruppe",
-          "content_hash": "d43b308df9546f7cfdd8d5ed3efdec2f6788eb0052cb50ff4f4f04b1a34f581f"
+          "external_id": "https://openai.com/index/responsible-ai-infrastructure-texas",
+          "canonical_url": "https://openai.com/index/responsible-ai-infrastructure-texas",
+          "content_hash": "74740d1ed97a8f5d65375d01650a1de0d1e6189d231724fd90075d3505500a5d"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/model-ml",
+          "canonical_url": "https://openai.com/index/model-ml",
+          "content_hash": "3f1fde4002e985b92d72cc7fb6d50652fc58267c611712d44730c028915a1692"
         }
       ],
       "articles": [
         {
           "source_slug": "openai-news",
-          "external_id": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-          "canonical_url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-          "content_hash": "5e360b082517339cd8c8045d5cfe014ee859240263812d4bed27c225c393c1aa"
+          "external_id": "https://openai.com/index/building-an-ai-native-finance-function",
+          "canonical_url": "https://openai.com/index/building-an-ai-native-finance-function",
+          "content_hash": "5c2e0096ed48890e0aa2b892903493db03fc5df3dd65ad66b7ead3efb341d4a2"
         },
         {
           "source_slug": "openai-news",
-          "external_id": "https://openai.com/index/hsp-gruppe",
-          "canonical_url": "https://openai.com/index/hsp-gruppe",
-          "content_hash": "d43b308df9546f7cfdd8d5ed3efdec2f6788eb0052cb50ff4f4f04b1a34f581f"
+          "external_id": "https://openai.com/index/responsible-ai-infrastructure-texas",
+          "canonical_url": "https://openai.com/index/responsible-ai-infrastructure-texas",
+          "content_hash": "74740d1ed97a8f5d65375d01650a1de0d1e6189d231724fd90075d3505500a5d"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/model-ml",
+          "canonical_url": "https://openai.com/index/model-ml",
+          "content_hash": "3f1fde4002e985b92d72cc7fb6d50652fc58267c611712d44730c028915a1692"
         }
       ],
-      "articles_hash": "fb15d3eb82589bd28188191ef90cc64d78d396cf8c7c23b5423309bab97ab221",
+      "articles_hash": "9bab383556848f284b727a0151b5895c2d1e8b1cb516ba83eb7fd515b5168412",
       "artifact": {
         "task_type": "digest",
         "input_scope": "digest",
@@ -7775,81 +7787,103 @@
         "prompt_hash": "c7de63d573807b12fa9115c7b16078ad49be95de955b459be3ea403f45e79811",
         "response_schema_version": "ai-output-v1",
         "response_schema_hash": "e3b3cf36cf1a0f621d818dade80daea5b074ccc3747e1088076ff2dfb261df1f",
-        "provider": "deepseek",
-        "requested_model": "deepseek-v4-flash",
-        "resolved_model": "deepseek-v4-flash",
+        "provider": "openrouter",
+        "requested_model": "openrouter/free",
+        "resolved_model": "google/gemma-4-26b-a4b-it:free",
         "generation_params_hash": "b9436b5a22dbb777cca5c86696a0984e63df460980a46071e9492578efa86937",
         "output": {
-          "headline": "OpenAI Cybersecurity Updates and HSP GRUPPE Case Study",
-          "overview": "On August 7, 2026, OpenAI published two articles. The first, titled 'Responding to the next frontier of critical cyber capabilities', shares preliminary cybersecurity evaluations for Astra and outlines steps to strengthen safeguards and security controls. The second, 'How HSP GRUPPE builds AI capabilities for tax advisory', describes how HSP GRUPPE uses ChatGPT Enterprise to boost productivity, improve work quality, and create more capacity for tax advisory and client service.",
+          "headline": "Daily OpenAI News Digest: August 10, 2026",
+          "overview": "This digest covers news from OpenAI on August 10, 2026, including insights from CFO Sarah Friar on AI-native finance, a letter to Texas Governor Greg Abbott regarding AI infrastructure, and Model ML's use of GPT-5.6 Sol for finance workflows.",
           "items": [
             {
               "article": {
                 "source_slug": "openai-news",
-                "external_id": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-                "canonical_url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-                "content_hash": "5e360b082517339cd8c8045d5cfe014ee859240263812d4bed27c225c393c1aa"
+                "external_id": "https://openai.com/index/building-an-ai-native-finance-function",
+                "canonical_url": "https://openai.com/index/building-an-ai-native-finance-function",
+                "content_hash": "5c2e0096ed48890e0aa2b892903493db03fc5df3dd65ad66b7ead3efb341d4a2"
               },
-              "title": "Responding to the next frontier of critical cyber capabilities",
-              "summary": "OpenAI is sharing preliminary cybersecurity evaluations for Astra and the steps we’re taking to strengthen safeguards and security controls."
+              "title": "What building an AI-native finance function taught me",
+              "summary": "OpenAI CFO Sarah Friar discusses five lessons learned while building an AI-native finance function, covering topics such as automated forecasting, stronger controls, and AI ROI."
             },
             {
               "article": {
                 "source_slug": "openai-news",
-                "external_id": "https://openai.com/index/hsp-gruppe",
-                "canonical_url": "https://openai.com/index/hsp-gruppe",
-                "content_hash": "d43b308df9546f7cfdd8d5ed3efdec2f6788eb0052cb50ff4f4f04b1a34f581f"
+                "external_id": "https://openai.com/index/responsible-ai-infrastructure-texas",
+                "canonical_url": "https://openai.com/index/responsible-ai-infrastructure-texas",
+                "content_hash": "74740d1ed97a8f5d65375d01650a1de0d1e6189d231724fd90075d3505500a5d"
               },
-              "title": "How HSP GRUPPE builds AI capabilities for tax advisory",
-              "summary": "Discover how HSP GRUPPE uses ChatGPT Enterprise to boost productivity, improve work quality, and create more capacity for tax advisory and client service."
+              "title": "OpenAI’s letter to Governor Abbott on responsible AI infrastructure in Texas",
+              "summary": "OpenAI issued a letter to Governor Greg Abbott expressing commitment to responsible AI infrastructure in Texas to support reliable and transparent growth for Texans."
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/model-ml",
+                "canonical_url": "https://openai.com/index/model-ml",
+                "content_hash": "3f1fde4002e985b92d72cc7fb6d50652fc58267c611712d44730c028915a1692"
+              },
+              "title": "Model ML completes finance work more efficiently with GPT-5.6 Sol",
+              "summary": "Model ML utilizes GPT-5.6 Sol to streamline finance tasks, moving from research and analysis to editable and traceable PowerPoint decks and Excel workbooks."
             }
           ],
           "language": "en",
-          "limitations": "This digest covers only the publisher summaries, not the full article text. Details may be preliminary or incomplete."
+          "limitations": "The report is based on provided article summaries and contains only the information present in those summaries."
         },
-        "output_hash": "8458baf6b3c500d4423881e8b7ddcfecfddba291522c797fca417823c3272f9b",
+        "output_hash": "3e1a6fef842e042b47b74c5e910c4afe46178597f322dbbb51bd75424979facb",
         "input_truncated": false,
-        "created_at": "2026-08-07T17:44:41Z"
+        "created_at": "2026-08-10T17:11:33Z"
       },
-      "created_at": "2026-08-07T17:44:41Z"
+      "created_at": "2026-08-10T17:11:33Z"
     },
     {
-      "cache_key": "85f071d321fd086b644838850661912fd08d007bce1389891c7fa8391a443803",
+      "cache_key": "100501765ea3f0078d73b99b3c31e168240691a6cbdcd087511975d978673a71",
       "period": "daily",
       "timezone": "America/Los_Angeles",
-      "local_date": "2026-08-07",
-      "period_start": "2026-08-07T07:00:00Z",
-      "period_end": "2026-08-07T17:44:36Z",
+      "local_date": "2026-08-10",
+      "period_start": "2026-08-10T07:00:00Z",
+      "period_end": "2026-08-10T17:11:15Z",
       "target_language": "zh-CN",
       "window_articles": [
         {
           "source_slug": "openai-news",
-          "external_id": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-          "canonical_url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-          "content_hash": "5e360b082517339cd8c8045d5cfe014ee859240263812d4bed27c225c393c1aa"
+          "external_id": "https://openai.com/index/building-an-ai-native-finance-function",
+          "canonical_url": "https://openai.com/index/building-an-ai-native-finance-function",
+          "content_hash": "5c2e0096ed48890e0aa2b892903493db03fc5df3dd65ad66b7ead3efb341d4a2"
         },
         {
           "source_slug": "openai-news",
-          "external_id": "https://openai.com/index/hsp-gruppe",
-          "canonical_url": "https://openai.com/index/hsp-gruppe",
-          "content_hash": "d43b308df9546f7cfdd8d5ed3efdec2f6788eb0052cb50ff4f4f04b1a34f581f"
+          "external_id": "https://openai.com/index/responsible-ai-infrastructure-texas",
+          "canonical_url": "https://openai.com/index/responsible-ai-infrastructure-texas",
+          "content_hash": "74740d1ed97a8f5d65375d01650a1de0d1e6189d231724fd90075d3505500a5d"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/model-ml",
+          "canonical_url": "https://openai.com/index/model-ml",
+          "content_hash": "3f1fde4002e985b92d72cc7fb6d50652fc58267c611712d44730c028915a1692"
         }
       ],
       "articles": [
         {
           "source_slug": "openai-news",
-          "external_id": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-          "canonical_url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-          "content_hash": "5e360b082517339cd8c8045d5cfe014ee859240263812d4bed27c225c393c1aa"
+          "external_id": "https://openai.com/index/building-an-ai-native-finance-function",
+          "canonical_url": "https://openai.com/index/building-an-ai-native-finance-function",
+          "content_hash": "5c2e0096ed48890e0aa2b892903493db03fc5df3dd65ad66b7ead3efb341d4a2"
         },
         {
           "source_slug": "openai-news",
-          "external_id": "https://openai.com/index/hsp-gruppe",
-          "canonical_url": "https://openai.com/index/hsp-gruppe",
-          "content_hash": "d43b308df9546f7cfdd8d5ed3efdec2f6788eb0052cb50ff4f4f04b1a34f581f"
+          "external_id": "https://openai.com/index/responsible-ai-infrastructure-texas",
+          "canonical_url": "https://openai.com/index/responsible-ai-infrastructure-texas",
+          "content_hash": "74740d1ed97a8f5d65375d01650a1de0d1e6189d231724fd90075d3505500a5d"
+        },
+        {
+          "source_slug": "openai-news",
+          "external_id": "https://openai.com/index/model-ml",
+          "canonical_url": "https://openai.com/index/model-ml",
+          "content_hash": "3f1fde4002e985b92d72cc7fb6d50652fc58267c611712d44730c028915a1692"
         }
       ],
-      "articles_hash": "fb15d3eb82589bd28188191ef90cc64d78d396cf8c7c23b5423309bab97ab221",
+      "articles_hash": "9bab383556848f284b727a0151b5895c2d1e8b1cb516ba83eb7fd515b5168412",
       "artifact": {
         "task_type": "digest",
         "input_scope": "digest",
@@ -7859,52 +7893,62 @@
         "prompt_hash": "c7de63d573807b12fa9115c7b16078ad49be95de955b459be3ea403f45e79811",
         "response_schema_version": "ai-output-v1",
         "response_schema_hash": "e3b3cf36cf1a0f621d818dade80daea5b074ccc3747e1088076ff2dfb261df1f",
-        "provider": "deepseek",
-        "requested_model": "deepseek-v4-flash",
-        "resolved_model": "deepseek-v4-flash",
+        "provider": "openrouter",
+        "requested_model": "openrouter/free",
+        "resolved_model": "google/gemma-4-26b-a4b-it:free",
         "generation_params_hash": "b9436b5a22dbb777cca5c86696a0984e63df460980a46071e9492578efa86937",
         "output": {
-          "headline": "OpenAI 网络安全更新与 HSP GRUPPE 案例研究",
-          "overview": "2026年8月7日，OpenAI 发布了两篇文章。第一篇题为《应对关键网络能力的新前沿》，分享了针对 Astra 的初步网络安全评估，并概述了加强保障和安全控制的步骤。第二篇《HSP GRUPPE 如何构建税务咨询的 AI 能力》描述了 HSP GRUPPE 如何利用 ChatGPT Enterprise 提升生产力、改善工作质量，并为税务咨询和客户服务创造更多容量。",
+          "headline": "OpenAI 新闻日报：2026年8月10日",
+          "overview": "本摘要涵盖了 2026 年 8 月 10 日的 OpenAI 相关新闻，包括 CFO Sarah Friar 关于 AI 原生财务职能的见解、关于德克萨斯州 AI 基础设施给 Abbott 州长的信函，以及 Model ML 使用 GPT-5.6 Sol 处理财务工作流的情况。",
           "items": [
             {
               "article": {
                 "source_slug": "openai-news",
-                "external_id": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-                "canonical_url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
-                "content_hash": "5e360b082517339cd8c8045d5cfe014ee859240263812d4bed27c225c393c1aa"
+                "external_id": "https://openai.com/index/building-an-ai-native-finance-function",
+                "canonical_url": "https://openai.com/index/building-an-ai-native-finance-function",
+                "content_hash": "5c2e0096ed48890e0aa2b892903493db03fc5df3dd65ad66b7ead3efb341d4a2"
               },
-              "title": "应对关键网络能力的新前沿",
-              "summary": "OpenAI 正在分享针对 Astra 的初步网络安全评估，以及我们为加强保障和安全控制所采取的步骤。"
+              "title": "构建 AI 原生财务职能给我的启示",
+              "summary": "OpenAI 首席财务官 Sarah Friar 分享了构建 AI 原生财务职能的五点经验，涵盖了从自动化预测到更强的控制和 AI 投资回报率等内容。"
             },
             {
               "article": {
                 "source_slug": "openai-news",
-                "external_id": "https://openai.com/index/hsp-gruppe",
-                "canonical_url": "https://openai.com/index/hsp-gruppe",
-                "content_hash": "d43b308df9546f7cfdd8d5ed3efdec2f6788eb0052cb50ff4f4f04b1a34f581f"
+                "external_id": "https://openai.com/index/responsible-ai-infrastructure-texas",
+                "canonical_url": "https://openai.com/index/responsible-ai-infrastructure-texas",
+                "content_hash": "74740d1ed97a8f5d65375d01650a1de0d1e6189d231724fd90075d3505500a5d"
               },
-              "title": "HSP GRUPPE 如何构建税务咨询的 AI 能力",
-              "summary": "了解 HSP GRUPPE 如何利用 ChatGPT Enterprise 提升生产力、改善工作质量，并为税务咨询和客户服务创造更多容量。"
+              "title": "OpenAI 给 Abbott 州长关于德克萨斯州负责任 AI 基础设施的信函",
+              "summary": "OpenAI 向州长 Greg Abbott 致信，概述了其对德克萨斯州负责任 AI 基础设施建设的承诺，旨在支持造福德州人的可靠、透明的增长。"
+            },
+            {
+              "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/model-ml",
+                "canonical_url": "https://openai.com/index/model-ml",
+                "content_hash": "3f1fde4002e985b92d72cc7fb6d50652fc58267c611712d44730c028915a1692"
+              },
+              "title": "Model ML 利用 GPT-5.6 Sol 更高效地完成财务工作",
+              "summary": "Model ML 利用 GPT-5.6 Sol 将财务工作从研究与分析延伸至可编辑、可追溯的 PowerPoint 演示文稿和 Excel 工作簿。"
             }
           ],
           "language": "zh-CN",
-          "limitations": "本摘要仅涵盖出版商摘要，而非完整文章文本。细节可能为初步或不完整。"
+          "limitations": "本报告基于提供的文章摘要，仅包含摘要中存在的信息。"
         },
-        "output_hash": "8d65f41a9561b544538c7ddac5dd441e090d2a917c0482eb745b85f990d715bb",
+        "output_hash": "9035e6bee9e39ab9b24a1e676941b2fa6f9cb4324598e9243ca41f9fce02e483",
         "input_truncated": false,
-        "created_at": "2026-08-07T17:44:41Z"
+        "created_at": "2026-08-10T17:11:33Z"
       },
-      "created_at": "2026-08-07T17:44:41Z"
+      "created_at": "2026-08-10T17:11:33Z"
     }
   ],
   "usage_ledger": [
     {
-      "ledger_key": "cd768a78283b6b0c14b52e2091a27eb51bbb4a5d969de6069ba6a529ef1b4bc1",
+      "ledger_key": "2c4c722dcb42059e57d9b97b1a0b4aa370e2cb48c2cdadaf373293204ac09f77",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-10T06:08:58Z",
+      "covered_through": "2026-08-10T17:12:07Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -7920,11 +7964,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "82f0a0e527387e6e25cfdb6b56eba4192589e00a3d1ec4d68373e1bca3811e98",
+      "ledger_key": "caedfe1f93f79c1d8f5521b77a4732efe7579fc9c75920a0a65fbe2145c23457",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-10T06:08:58Z",
+      "covered_through": "2026-08-10T17:12:07Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -7940,11 +7984,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "a861f8ea28ae10a11aa975ff47b200905bdefcba642afb1d3ffc10a1b0090720",
+      "ledger_key": "645d07af81b7cba11ec941b571f21f3500c82074d8f470108289dc8695d4c68e",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-10T06:08:58Z",
+      "covered_through": "2026-08-10T17:12:07Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -7960,11 +8004,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "7e185d21a03ea5bcaafd3770bdea1ced00c7cb16205c124f3fb2ffa966a21f42",
+      "ledger_key": "27a30b78e7286441ad233bd00582e1daa5ed3b6879025fbd500d5d8cb779abf6",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-10T06:08:58Z",
+      "covered_through": "2026-08-10T17:12:07Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -7980,11 +8024,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "cd516bf10eeeadabe0f60f92338ba9e76860a9110629de8567ce54df622c1fb4",
+      "ledger_key": "ce1430e8136b41912595ce29d3ece9e7ded06de6fad9458bc9b05b51be3d73df",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-10T06:08:58Z",
+      "covered_through": "2026-08-10T17:12:07Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8000,11 +8044,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1649dc20a1c87475f88e1a136aaf0fb180d00280dd50233d4c3964e2654e2271",
+      "ledger_key": "52f8a921b6cfb5e457d032a62e29737495e7211b4db5f7bff2a9458c3db1470f",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-10T06:08:58Z",
+      "covered_through": "2026-08-10T17:12:07Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8020,11 +8064,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "33ef9832fc488da01e6c56943946dcbd1b7deba4f435c3098c9d351605703201",
+      "ledger_key": "efaa2cb6dea65b37a5161c48d2e31964e286f3f30dd03af6824c5395c3e0d715",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-10T06:08:58Z",
+      "covered_through": "2026-08-10T17:12:07Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8035,6 +8079,26 @@
       "output_tokens": 2572,
       "reasoning_tokens": 0,
       "total_tokens": 5342,
+      "reserved_total_tokens_for_unconfirmed": 0,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "14473c174ca119749c7e5f6a900d95cb81e7b5ecaa1fe2e88bdf406d2e6fad23",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-10T07:00:00Z",
+      "day_end": "2026-08-11T07:00:00Z",
+      "covered_through": "2026-08-10T17:12:07Z",
+      "requests": 2,
+      "confirmed_requests": 2,
+      "unconfirmed_requests": 0,
+      "input_tokens": 1797,
+      "cached_input_tokens": 0,
+      "cache_miss_input_tokens": 1797,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1571,
+      "reasoning_tokens": 773,
+      "total_tokens": 3368,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
@@ -8269,6 +8333,38 @@
       },
       "first_seen_at": "2026-08-09T05:43:34Z",
       "last_seen_at": "2026-08-09T05:43:34Z"
+    },
+    {
+      "hold_key": "32f2df98f701534494e1f98d49f7ecc7daa2cfaba3d1e64164d435e01ceeb27e",
+      "workload_kind": "article",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://openai.com/index/building-an-ai-native-finance-function",
+            "content_hash": "5c2e0096ed48890e0aa2b892903493db03fc5df3dd65ad66b7ead3efb341d4a2",
+            "external_id": "https://openai.com/index/building-an-ai-native-finance-function",
+            "source_slug": "openai-news"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "openrouter/free",
+        "portable_input_hash": "f32157c3c604ed95baa3d81a13c3a498b60a0326ff1f02d63de25007cef83ed9",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "openrouter",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-10T17:11:33Z",
+      "last_seen_at": "2026-08-10T17:12:07Z"
     },
     {
       "hold_key": "3bc73cdf7915ff9e01400b984857529a7a89cf0cbaa74be51f008ee1f84a5cdc",
