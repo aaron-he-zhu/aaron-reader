@@ -82,8 +82,17 @@ const snapshot = JSON.parse(await readFile(snapshotSource, "utf8"));
       const publicArticle = { ...item };
       delete publicArticle.unread;
       delete publicArticle.starred;
+      publicArticle.ai_artifacts = Array.isArray(publicArticle.ai_artifacts)
+        ? publicArticle.ai_artifacts.filter(
+          (artifact) => artifact && artifact.task === "translation",
+        )
+        : [];
       return publicArticle;
     });
+    snapshot.cached_ai_artifact_count = snapshot.articles.reduce(
+      (count, article) => count + article.ai_artifacts.length,
+      0,
+    );
     const publicJson = `${JSON.stringify(snapshot, null, 2)}\n`;
 await writeFile(resolve(siteRoot, "data", "latest.json"), publicJson, "utf8");
 await writeFile(resolve(siteRoot, "public", "reader", "latest.json"), publicJson, "utf8");

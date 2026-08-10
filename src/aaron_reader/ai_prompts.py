@@ -174,6 +174,7 @@ def parse_and_validate_output(
     input_scope: str,
     expected_article_ids: Optional[Sequence[int]] = None,
     translated_fields: Sequence[str] = ("title", "publisher_summary"),
+    translation_input: Optional[Mapping[str, object]] = None,
 ) -> Tuple[Dict[str, object], str]:
     try:
         value = json.loads(output_text)
@@ -233,12 +234,25 @@ def parse_and_validate_output(
                     raise ValueError("translation returned a field that was not requested")
                 clean_translation[field] = None
             else:
-                cleaned = _clean_text(
-                    item,
-                    field,
-                    maximum=maximum,
-                    allow_empty=field == "publisher_summary",
-                )
+                # The translation schema must permit null for fields that were
+                # not requested.  Some providers also use that nullable branch
+                # for an explicitly requested but empty publisher summary.
+                # Normalize only that lossless case; null for non-empty input
+                # (and every other wrong type) remains a contract failure.
+                if (
+                    field == "publisher_summary"
+                    and item is None
+                    and translation_input is not None
+                    and translation_input.get(field) == ""
+                ):
+                    cleaned = ""
+                else:
+                    cleaned = _clean_text(
+                        item,
+                        field,
+                        maximum=maximum,
+                        allow_empty=field == "publisher_summary",
+                    )
                 clean_translation[field] = cleaned
                 readable_parts.append(cleaned)
         return clean_translation, "\n\n".join(readable_parts)

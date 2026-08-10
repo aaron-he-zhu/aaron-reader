@@ -24,9 +24,14 @@ from .ai_prompts import (
     stable_hash,
     task_definition,
 )
+from .ai_profiles import (
+    DEFAULT_AI_FALLBACK_PROVIDER,
+    DEFAULT_AI_PROVIDER,
+    matches_ai_provider_profile,
+)
 from .ai_provider import (
-    DEEPSEEK_MODEL,
     DeepSeekChatCompletionsProvider,
+    OpenRouterChatCompletionsProvider,
     ProviderConfigError,
     ProviderHTTPError,
     ProviderKnownError,
@@ -66,7 +71,39 @@ class AIGenerationHeld(AIServiceError):
     """A stable generation fingerprint is held against automatic replay."""
 
 
+class AIFallbackEligibleError(AIServiceError):
+    """A classified primary-provider failure may continue on the fixed fallback."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        reason_code: str,
+        provider_call_made: bool,
+        generation_hold_key: str = "",
+    ) -> None:
+        super().__init__(message)
+        self.reason_code = str(reason_code or "provider_unavailable")[:100]
+        self.provider_call_made = bool(provider_call_made)
+        self.generation_hold_key = str(generation_hold_key or "")[:64]
+
+
 TOKEN_ESTIMATE_PROTOCOL_MARGIN = 2_048
+_FALLBACK_HTTP_STATUSES = frozenset({401, 402, 404, 429})
+_TRANSIENT_KNOWN_PROVIDER_CODES = frozenset(
+    {"provider_overloaded", "provider_unavailable", "rate_limit_exceeded"}
+)
+_FALLBACK_KNOWN_PROVIDER_CODES = frozenset(
+    {
+        # Stable OpenRouter typed availability failures.  Unknown codes and
+        # content/auth/input categories are deliberately default-deny.
+        *_TRANSIENT_KNOWN_PROVIDER_CODES,
+        # Closed-profile contract violations with complete audited usage.
+        "thinking_output",
+        "thinking_tokens",
+        "tool_calls",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -104,6 +141,17 @@ class PreparedTask:
             "expected_article_content_hash": self.article_content_hash,
             "content_snapshot_id": self.content_snapshot_id,
         }
+
+
+@dataclass(frozen=True)
+class _ObservedGenerationHold:
+    hold_key: str
+    hold_class: str
+    revision: int
+    legacy_pair: bool
+
+    def delete_guard(self) -> Tuple[str, str, int]:
+        return (self.hold_key, self.hold_class, self.revision)
 
 
 def _utc_datetime(value: datetime) -> datetime:
@@ -197,6 +245,8 @@ class AIService:
         provider: Optional[object] = None,
         clock: Optional[Callable[[], datetime]] = None,
         content_fetcher_factory: Optional[Callable[..., object]] = None,
+        automatic_fallback_provider: str = "",
+        allow_fallback_pending_from: str = "",
     ) -> None:
         self.app_config = app_config
         self.config: AIConfig = app_config.ai
@@ -205,6 +255,27 @@ class AIService:
         self._provider_instance = provider
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._content_fetcher_factory = content_fetcher_factory or ContentFetcher
+        self._settleable_generation_hold_attempts = set()
+        self._automatic_fallback_provider = str(
+            automatic_fallback_provider or ""
+        ).strip()
+        self._allow_fallback_pending_from = str(
+            allow_fallback_pending_from or ""
+        ).strip()
+        if self._automatic_fallback_provider and not (
+            self.config.provider == DEFAULT_AI_PROVIDER
+            and self._automatic_fallback_provider == DEFAULT_AI_FALLBACK_PROVIDER
+        ):
+            raise AIInputError(
+                "automatic AI fallback only supports openrouter -> deepseek"
+            )
+        if self._allow_fallback_pending_from and not (
+            self.config.provider == DEFAULT_AI_FALLBACK_PROVIDER
+            and self._allow_fallback_pending_from == DEFAULT_AI_PROVIDER
+        ):
+            raise AIInputError(
+                "fallback continuation only supports openrouter -> deepseek"
+            )
 
     def _now(self) -> datetime:
         return _utc_datetime(self._clock())
@@ -238,6 +309,8 @@ class AIService:
             }
             if self.config.provider == "deepseek":
                 self._provider_instance = DeepSeekChatCompletionsProvider(**options)
+            elif self.config.provider == "openrouter":
+                self._provider_instance = OpenRouterChatCompletionsProvider(**options)
             else:
                 raise ProviderConfigError(
                     "unsupported AI provider: %s" % self.config.provider
@@ -372,17 +445,302 @@ class AIService:
             "descriptor": template["descriptor"],
         }
 
+    def _automatic_fallback_enabled(self) -> bool:
+        return bool(
+            self.config.provider == DEFAULT_AI_PROVIDER
+            and self._automatic_fallback_provider
+            == DEFAULT_AI_FALLBACK_PROVIDER
+        )
+
+    def _fallback_error(
+        self,
+        message: str,
+        *,
+        reason_code: str,
+        provider_call_made: bool,
+        generation_hold_key: str = "",
+    ) -> AIServiceError:
+        if self._automatic_fallback_enabled():
+            return AIFallbackEligibleError(
+                message,
+                reason_code=reason_code,
+                provider_call_made=provider_call_made,
+                generation_hold_key=generation_hold_key,
+            )
+        return AIServiceError(message)
+
+    @staticmethod
+    def _known_failure_allows_fallback(code: object) -> bool:
+        normalized = str(code or "").strip().lower()
+        return normalized in _FALLBACK_KNOWN_PROVIDER_CODES
+
+    @staticmethod
+    def _http_failure_allows_fallback(status: object) -> bool:
+        return (
+            isinstance(status, int)
+            and not isinstance(status, bool)
+            and status in _FALLBACK_HTTP_STATUSES
+        )
+
+    @staticmethod
+    def _http_failure_is_ambiguous(status: object) -> bool:
+        return bool(
+            isinstance(status, int)
+            and not isinstance(status, bool)
+            and (
+                status in {408, 409, 425}
+                or 500 <= status <= 599
+            )
+        )
+
+    def _settleable_generation_hold(self, attempt_id: int) -> bool:
+        return int(attempt_id) in self._settleable_generation_hold_attempts
+
+    def _failure_generation_hold(
+        self,
+        template: Mapping[str, object],
+        default_class: str,
+        *,
+        fallback_eligible: bool,
+    ) -> Dict[str, object]:
+        hold_class = (
+            "fallback_pending"
+            if fallback_eligible and self._automatic_fallback_enabled()
+            else default_class
+        )
+        return self._classified_generation_hold(template, hold_class)
+
+    @staticmethod
+    def _generation_hold_semantic_identity(
+        descriptor: Mapping[str, object],
+    ) -> Dict[str, object]:
+        """Identify the work independently of the selected provider profile.
+
+        Provider and model remain in the stored descriptor for auditability,
+        but changing either one must not bypass a hold for the same semantic
+        generation.  The provider-specific generation hash is redundant with
+        the separately retained prompt, schema, input, and output-limit fields.
+        """
+
+        ignored = {"provider", "model", "generation_params_hash"}
+        return {
+            str(key): value
+            for key, value in descriptor.items()
+            if key not in ignored
+        }
+
+    def _equivalent_generation_holds(
+        self,
+        template: Mapping[str, object],
+    ) -> List[Dict[str, object]]:
+        descriptor = template.get("descriptor")
+        if not isinstance(descriptor, Mapping):
+            return []
+        identity = self._generation_hold_semantic_identity(descriptor)
+        matches = []
+        for hold in self.database.list_ai_generation_holds(
+            include_revision=True
+        ):
+            candidate = hold.get("descriptor")
+            if (
+                isinstance(candidate, Mapping)
+                and (
+                    self._generation_hold_semantic_identity(candidate) == identity
+                    or self._legacy_pair_hold_covers_translation(
+                        descriptor,
+                        candidate,
+                    )
+                )
+            ):
+                matches.append(hold)
+        return matches
+
+    @staticmethod
+    def _legacy_pair_hold_covers_translation(
+        requested: Mapping[str, object],
+        candidate: Mapping[str, object],
+    ) -> bool:
+        """Bridge an older article-pair hold to its translation-only successor.
+
+        The public product no longer generates per-article summaries, but an
+        already billed pair request included the same title/summary translation.
+        Matching the exact portable article version prevents that overlapping
+        work from being replayed merely because the workload became narrower.
+        """
+
+        return bool(
+            requested.get("workload_kind") == "article"
+            and requested.get("task_type") == "translation"
+            and requested.get("input_scope") == "metadata"
+            and candidate.get("workload_kind") == "article_pair"
+            and candidate.get("task_type") == "summary"
+            and candidate.get("input_scope") == "metadata"
+            and candidate.get("schema_name") == "article_summary_translation"
+            and candidate.get("prompt_version") == "ai-enrichment-pair-v2"
+            and candidate.get("target_language") == requested.get("target_language")
+            and candidate.get("article_identities")
+            == requested.get("article_identities")
+        )
+
+    @staticmethod
+    def _generation_holds_cleared_after_success(
+        prepared: PreparedTask,
+        observed_holds: Sequence[_ObservedGenerationHold],
+    ) -> Tuple[Tuple[str, str, int], ...]:
+        """Select preflight holds that a successful result fully settles.
+
+        A direct fallback-pending hold represents exactly the requested task,
+        so a successful continuation settles it.  A legacy article-pair hold
+        is broader and may be settled only by the complete production
+        translation (title plus publisher summary), never by a title-only or
+        publisher-summary-only request.
+        """
+
+        complete_translation = bool(
+            prepared.task_type == "translation"
+            and set(prepared.translated_fields)
+            == {"title", "publisher_summary"}
+        )
+        return tuple(
+            observation.delete_guard()
+            for observation in observed_holds
+            if (
+                complete_translation
+                if observation.legacy_pair
+                else observation.hold_class == "fallback_pending"
+            )
+        )
+
     def _check_generation_hold(
         self,
         template: Mapping[str, object],
         *,
         force_held: bool,
+    ) -> Tuple[_ObservedGenerationHold, ...]:
+        holds = self._equivalent_generation_holds(template)
+        exact = self.database.ai_generation_hold(
+            str(template["hold_key"]),
+            include_revision=True,
+        )
+        if exact is not None and not any(
+            str(hold.get("hold_key")) == str(exact.get("hold_key"))
+            for hold in holds
+        ):
+            holds.append(exact)
+        descriptor = template.get("descriptor")
+        observed_by_key: Dict[str, _ObservedGenerationHold] = {}
+        for hold in holds:
+            hold_key = str(hold.get("hold_key") or "")
+            hold_class = str(hold.get("hold_class") or "")
+            revision = hold.get("revision")
+            candidate_descriptor = hold.get("descriptor")
+            if (
+                not hold_key
+                or not hold_class
+                or isinstance(revision, bool)
+                or not isinstance(revision, int)
+                or revision < 1
+            ):
+                continue
+            observed_by_key[hold_key] = _ObservedGenerationHold(
+                hold_key=hold_key,
+                hold_class=hold_class,
+                revision=revision,
+                legacy_pair=bool(
+                    isinstance(descriptor, Mapping)
+                    and isinstance(candidate_descriptor, Mapping)
+                    and self._legacy_pair_hold_covers_translation(
+                        descriptor,
+                        candidate_descriptor,
+                    )
+                ),
+            )
+        observed_holds = tuple(observed_by_key.values())
+        if not holds:
+            return observed_holds
+
+        risk = {"fallback_pending": 0, "paid_failure": 1, "ambiguous": 2}
+        direct_holds = [
+            candidate
+            for candidate in holds
+            if not (
+                isinstance(descriptor, Mapping)
+                and isinstance(candidate.get("descriptor"), Mapping)
+                and self._legacy_pair_hold_covers_translation(
+                    descriptor,
+                    candidate["descriptor"],
+                )
+            )
+        ]
+        controlling_holds = direct_holds or holds
+        only_pending = bool(controlling_holds) and all(
+            str(candidate.get("hold_class")) == "fallback_pending"
+            for candidate in controlling_holds
+        )
+        pending_from_expected_provider = only_pending and all(
+            isinstance(candidate.get("descriptor"), Mapping)
+            and str(candidate["descriptor"].get("provider") or "")
+            == self._allow_fallback_pending_from
+            for candidate in controlling_holds
+        )
+        if (
+            pending_from_expected_provider
+            and self.config.provider == DEFAULT_AI_FALLBACK_PROVIDER
+            and self._allow_fallback_pending_from == DEFAULT_AI_PROVIDER
+        ):
+            return observed_holds
+        pending_from_primary_provider = only_pending and all(
+            isinstance(candidate.get("descriptor"), Mapping)
+            and str(candidate["descriptor"].get("provider") or "")
+            == self.config.provider
+            for candidate in controlling_holds
+        )
+        if (
+            pending_from_primary_provider
+            and self._automatic_fallback_enabled()
+        ):
+            hold = min(
+                controlling_holds,
+                key=lambda candidate: str(candidate.get("hold_key") or ""),
+            )
+            raise AIFallbackEligibleError(
+                "AI generation is waiting for the configured DeepSeek fallback",
+                reason_code="fallback_pending",
+                provider_call_made=False,
+                generation_hold_key=str(hold.get("hold_key") or ""),
+            )
+        if force_held:
+            return observed_holds
+        hold = max(
+            controlling_holds,
+            key=lambda candidate: risk.get(
+                str(candidate.get("hold_class") or ""), 3
+            ),
+        )
+        raise AIGenerationHeld(
+            "AI generation is held against automatic replay (%s, %s)"
+            % (hold.get("hold_class"), str(hold["hold_key"])[:12])
+        )
+
+    def _clear_observed_generation_holds(
+        self,
+        holds: Sequence[_ObservedGenerationHold],
     ) -> None:
-        hold = self.database.ai_generation_hold(str(template["hold_key"]))
-        if hold is not None and not force_held:
-            raise AIGenerationHeld(
-                "AI generation is held against automatic replay (%s, %s)"
-                % (hold.get("hold_class"), str(hold["hold_key"])[:12])
+        """Clear only holds present before this provider request began.
+
+        A semantically equivalent request can use a different provider-specific
+        hold key.  Re-listing equivalent holds after success could therefore
+        delete a hold installed by another request that is still in flight.
+        The exact provisional hold for this attempt is cleared atomically by
+        ``complete_ai_attempt``; this cleanup is limited to the preflight
+        snapshot (for example, the primary fallback-pending hold).
+        """
+
+        for observation in holds:
+            if observation.hold_class != "fallback_pending":
+                continue
+            self.database.clear_ai_generation_hold_if_snapshot(
+                *observation.delete_guard(),
             )
 
     def _source_hosts(self, article: Mapping[str, object]) -> Tuple[str, ...]:
@@ -779,6 +1137,12 @@ class AIService:
     def _ensure_api_key(self) -> None:
         value = str(os.environ.get(self.config.api_key_environment, "")).strip()
         if not value:
+            if self._automatic_fallback_enabled():
+                raise AIFallbackEligibleError(
+                    "%s is not set" % self.config.api_key_environment,
+                    reason_code="missing_api_key",
+                    provider_call_made=False,
+                )
             raise ProviderConfigError(
                 "%s is not set" % self.config.api_key_environment
             )
@@ -931,17 +1295,22 @@ class AIService:
         trigger_kind: str = "cloud",
         force_held: bool = False,
     ) -> Dict[str, object]:
-        """Generate a summary and metadata translation with one DeepSeek call."""
+        """Generate a summary and metadata translation with one provider call."""
 
-        if self.config.provider != "deepseek" or any(
-            model != DEEPSEEK_MODEL
-            for model in (
-                self.config.summary_model,
-                self.config.translation_model,
+        if (
+            self.config.reasoning_effort != "none"
+            or self.config.store
+            or not matches_ai_provider_profile(
+                self.config.provider,
+                (
+                    self.config.summary_model,
+                    self.config.translation_model,
+                ),
+                self.config.api_key_environment,
             )
         ):
             raise AIInputError(
-                "combined article generation requires the fixed DeepSeek cloud profile"
+                "combined article generation requires a fixed cloud AI profile"
             )
         language = normalize_language(target_language)
         self._require_enabled("summary", "metadata")
@@ -1030,18 +1399,31 @@ class AIService:
         combined_max_output = (
             summary.max_output_tokens + translation.max_output_tokens
         )
-        combined_generation_hash = stable_hash(
-            {
+        if self.config.provider == "deepseek":
+            # Preserve the established DeepSeek hold identity exactly.  A
+            # provider addition must not make an older ambiguous request look
+            # like fresh work that is safe to replay.
+            generation_profile = {
                 "profile": "deepseek-cloud-nonthinking-json-v1",
                 "thinking": "disabled",
                 "max_output_tokens": combined_max_output,
                 "store_sent": False,
                 "tools_sent": False,
             }
-        )
+            bundle_protocol = "deepseek-article-pair/v2"
+        else:
+            generation_profile = {
+                "profile": "openrouter-free-cloud-nonthinking-json-v1",
+                "reasoning": "none",
+                "max_output_tokens": combined_max_output,
+                "store_sent": False,
+                "tools_sent": False,
+            }
+            bundle_protocol = "openrouter-free-article-pair/v1"
+        combined_generation_hash = stable_hash(generation_profile)
         bundle_key = stable_hash(
             {
-                "protocol": "deepseek-article-pair/v2",
+                "protocol": bundle_protocol,
                 "summary_artifact_key": summary.artifact_key,
                 "translation_artifact_key": translation.artifact_key,
                 "prompt_hash": combined_definition.prompt_hash,
@@ -1081,10 +1463,11 @@ class AIService:
             bundle,
             workload_kind="article_pair",
         )
-        self._check_generation_hold(
+        observed_generation_holds = self._check_generation_hold(
             generation_hold,
             force_held=force_held,
         )
+        self._ensure_api_key()
         request_payload = bundle.job_request()
         request_payload.update(
             {
@@ -1134,7 +1517,6 @@ class AIService:
                 "provider_api_calls": 0,
             }
 
-        self._ensure_api_key()
         estimated_input = conservative_token_estimate(
             combined_definition.instructions,
             bundle.input_text,
@@ -1153,6 +1535,7 @@ class AIService:
         reservation = self.database.reserve_ai_attempt(
             job_id=int(job["id"]),
             idempotency_key=idempotency_key,
+            requested_provider=self.config.provider,
             requested_model=bundle.model,
             estimated_input_tokens=estimated_input,
             reserved_output_tokens=combined_max_output,
@@ -1221,8 +1604,12 @@ class AIService:
                 input_scope="metadata",
                 expected_article_ids=(int(article_id),),
                 translated_fields=("title", "publisher_summary"),
+                translation_input=translation.input_payload,
             )
         except ValueError as exc:
+            fallback_eligible = bool(
+                usage_confirmed and self._automatic_fallback_enabled()
+            )
             self.database.fail_ai_attempt(
                 attempt_id=attempt_id,
                 job_state="permanent_failed",
@@ -1233,14 +1620,30 @@ class AIService:
                 usage=usage_dict if usage_confirmed else None,
                 actual_cost_micros=actual_cost,
                 preserve_reservation=not usage_confirmed,
-                generation_hold=self._classified_generation_hold(
+                generation_hold=self._failure_generation_hold(
                     generation_hold,
                     "paid_failure" if usage_confirmed else "ambiguous",
+                    fallback_eligible=fallback_eligible,
+                ),
+                settle_provisional_generation_hold=(
+                    self._settleable_generation_hold(attempt_id)
                 ),
             )
-            raise AIServiceError(
-                "provider output failed local validation: %s" % exc
-            ) from exc
+            self._settleable_generation_hold_attempts.discard(attempt_id)
+            message = "provider output failed local validation: %s" % exc
+            error = (
+                self._fallback_error(
+                    message,
+                    reason_code="invalid_structured_output",
+                    provider_call_made=True,
+                    generation_hold_key=str(
+                        generation_hold.get("hold_key") or ""
+                    ),
+                )
+                if fallback_eligible
+                else AIServiceError(message)
+            )
+            raise error from exc
 
         summary_artifact = self._provider_artifact(
             summary,
@@ -1266,7 +1669,14 @@ class AIService:
             actual_cost_micros=actual_cost,
             usage_confirmed=usage_confirmed,
             clear_generation_hold_key=str(generation_hold["hold_key"]),
+            clear_generation_hold_snapshots=(
+                self._generation_holds_cleared_after_success(
+                    bundle,
+                    observed_generation_holds,
+                )
+            ),
         )
+        self._settleable_generation_hold_attempts.discard(attempt_id)
         stored_translation = self.database.ai_artifact_by_key(
             translation.artifact_key
         )
@@ -1290,9 +1700,15 @@ class AIService:
         target_language: str = "zh-CN",
         trigger_kind: str = "cli",
         report_context: Optional[Mapping[str, object]] = None,
+        report_record: Optional[Mapping[str, object]] = None,
+        report_article_versions: Optional[Mapping[int, str]] = None,
         force_held: bool = False,
     ) -> Dict[str, object]:
         self._require_enabled("digest", "digest")
+        if (report_record is None) != (report_article_versions is None):
+            raise AIInputError(
+                "AI report completion metadata must include record and article versions"
+            )
         prepared = self.prepare_digest(
             articles,
             target_language=target_language,
@@ -1318,6 +1734,8 @@ class AIService:
             int(job["id"]),
             prepared_task=prepared,
             force_generation_hold=force_held,
+            report_record=report_record,
+            report_article_versions=report_article_versions,
         )
 
     def generate_digest_pair(
@@ -1325,6 +1743,8 @@ class AIService:
         articles: Sequence[Mapping[str, object]],
         *,
         report_context: Mapping[str, object],
+        report_records: Optional[Mapping[str, Mapping[str, object]]] = None,
+        report_article_versions: Optional[Mapping[int, str]] = None,
         trigger_kind: str = "cloud-report",
         force_held: bool = False,
     ) -> Dict[str, object]:
@@ -1336,9 +1756,25 @@ class AIService:
         the missing language.
         """
 
-        if self.config.provider != "deepseek" or self.config.digest_model != DEEPSEEK_MODEL:
+        if (report_records is None) != (report_article_versions is None):
             raise AIInputError(
-                "bilingual report generation requires the fixed DeepSeek cloud profile"
+                "bilingual report completion metadata is incomplete"
+            )
+        if report_records is not None and set(report_records) != {"en", "zh-CN"}:
+            raise AIInputError(
+                "bilingual report completion metadata requires en and zh-CN"
+            )
+        if (
+            self.config.reasoning_effort != "none"
+            or self.config.store
+            or not matches_ai_provider_profile(
+                self.config.provider,
+                (self.config.digest_model,),
+                self.config.api_key_environment,
+            )
+        ):
+            raise AIInputError(
+                "bilingual report generation requires a fixed cloud AI profile"
             )
         self._require_enabled("digest", "digest")
         prepared_by_language = {
@@ -1389,6 +1825,12 @@ class AIService:
                 target_language=missing_language,
                 trigger_kind=trigger_kind,
                 report_context=report_context,
+                report_record=(
+                    report_records.get(missing_language)
+                    if report_records is not None
+                    else None
+                ),
+                report_article_versions=report_article_versions,
                 force_held=force_held,
             )
             return {
@@ -1436,18 +1878,28 @@ class AIService:
         combined_max_output = (
             english.max_output_tokens + chinese.max_output_tokens
         )
-        combined_generation_hash = stable_hash(
-            {
+        if self.config.provider == "deepseek":
+            generation_profile = {
                 "profile": "deepseek-cloud-bilingual-report-nonthinking-json-v1",
                 "thinking": "disabled",
                 "max_output_tokens": combined_max_output,
                 "store_sent": False,
                 "tools_sent": False,
             }
-        )
+            bundle_protocol = "deepseek-bilingual-report/v1"
+        else:
+            generation_profile = {
+                "profile": "openrouter-free-cloud-bilingual-report-json-v1",
+                "reasoning": "none",
+                "max_output_tokens": combined_max_output,
+                "store_sent": False,
+                "tools_sent": False,
+            }
+            bundle_protocol = "openrouter-free-bilingual-report/v1"
+        combined_generation_hash = stable_hash(generation_profile)
         bundle_key = stable_hash(
             {
-                "protocol": "deepseek-bilingual-report/v1",
+                "protocol": bundle_protocol,
                 "en_artifact_key": english.artifact_key,
                 "zh_cn_artifact_key": chinese.artifact_key,
                 "prompt_hash": combined_definition.prompt_hash,
@@ -1478,7 +1930,11 @@ class AIService:
             bundle,
             workload_kind="report",
         )
-        self._check_generation_hold(generation_hold, force_held=force_held)
+        observed_generation_holds = self._check_generation_hold(
+            generation_hold,
+            force_held=force_held,
+        )
+        self._ensure_api_key()
 
         request_payload = bundle.job_request()
         request_payload.update(
@@ -1531,7 +1987,6 @@ class AIService:
                 "provider_api_calls": 0,
             }
 
-        self._ensure_api_key()
         estimated_input = conservative_token_estimate(
             combined_definition.instructions,
             combined_input_text,
@@ -1550,6 +2005,7 @@ class AIService:
         reservation = self.database.reserve_ai_attempt(
             job_id=int(job["id"]),
             idempotency_key=idempotency_key,
+            requested_provider=self.config.provider,
             requested_model=bundle.model,
             estimated_input_tokens=estimated_input,
             reserved_output_tokens=combined_max_output,
@@ -1613,6 +2069,9 @@ class AIService:
                     expected_article_ids=english.expected_article_ids,
                 )
         except ValueError as exc:
+            fallback_eligible = bool(
+                usage_confirmed and self._automatic_fallback_enabled()
+            )
             self.database.fail_ai_attempt(
                 attempt_id=attempt_id,
                 job_state="permanent_failed",
@@ -1623,14 +2082,30 @@ class AIService:
                 usage=usage_dict if usage_confirmed else None,
                 actual_cost_micros=actual_cost,
                 preserve_reservation=not usage_confirmed,
-                generation_hold=self._classified_generation_hold(
+                generation_hold=self._failure_generation_hold(
                     generation_hold,
                     "paid_failure" if usage_confirmed else "ambiguous",
+                    fallback_eligible=fallback_eligible,
+                ),
+                settle_provisional_generation_hold=(
+                    self._settleable_generation_hold(attempt_id)
                 ),
             )
-            raise AIServiceError(
-                "provider bilingual output failed local validation: %s" % exc
-            ) from exc
+            self._settleable_generation_hold_attempts.discard(attempt_id)
+            message = "provider bilingual output failed local validation: %s" % exc
+            error = (
+                self._fallback_error(
+                    message,
+                    reason_code="invalid_bilingual_structured_output",
+                    provider_call_made=True,
+                    generation_hold_key=str(
+                        generation_hold.get("hold_key") or ""
+                    ),
+                )
+                if fallback_eligible
+                else AIServiceError(message)
+            )
+            raise error from exc
 
         artifacts = {
             language: self._provider_artifact(
@@ -1647,11 +2122,27 @@ class AIService:
             attempt_id=attempt_id,
             artifact=artifacts["en"],
             additional_artifacts=(artifacts["zh-CN"],),
+            report_records=(
+                (
+                    dict(report_records["en"]),
+                    dict(report_records["zh-CN"]),
+                )
+                if report_records is not None
+                else ()
+            ),
+            report_article_versions=report_article_versions,
             usage=usage_dict,
             actual_cost_micros=actual_cost,
             usage_confirmed=usage_confirmed,
             clear_generation_hold_key=str(generation_hold["hold_key"]),
+            clear_generation_hold_snapshots=(
+                self._generation_holds_cleared_after_success(
+                    english,
+                    observed_generation_holds,
+                )
+            ),
         )
+        self._settleable_generation_hold_attempts.discard(attempt_id)
         stored_chinese = self.database.ai_artifact_by_key(chinese.artifact_key)
         if stored_chinese is None:
             raise AIServiceError("bilingual Chinese report artifact was not committed")
@@ -1724,13 +2215,32 @@ class AIService:
     ) -> ProviderResponse:
         """Make one audited provider call without retrying ambiguous failures."""
 
-        self.database.mark_ai_attempt_sent(int(attempt_id))
         try:
             generate = getattr(self._provider(), "generate", None)
             if not callable(generate):
                 raise ProviderConfigError(
                     "AI provider does not provide generate(request)"
                 )
+        except ProviderConfigError as exc:
+            self.database.fail_ai_attempt(
+                attempt_id=int(attempt_id),
+                job_state="permanent_failed",
+                error_class="provider_config",
+                error_code="provider_config",
+                error_message=str(exc),
+            )
+            raise AIServiceError(str(exc)) from exc
+
+        provisional_hold = self._classified_generation_hold(
+            generation_hold, "ambiguous"
+        )
+        provisional_created = self.database.mark_ai_attempt_sent(
+            int(attempt_id),
+            provisional_generation_hold=provisional_hold,
+        )
+        if provisional_created:
+            self._settleable_generation_hold_attempts.add(int(attempt_id))
+        try:
             response = generate(provider_request)
             if not isinstance(response, ProviderResponse):
                 raise ProviderUnknownError(
@@ -1742,7 +2252,15 @@ class AIService:
             # No configured provider promises safe replay for a rejected POST.
             # A 429 is a definitive rejection; transport-like HTTP failures may
             # already have reached inference and therefore remain unknown.
-            ambiguous_result = bool(exc.retryable) and exc.status != 429
+            ambiguous_result = self._http_failure_is_ambiguous(exc.status)
+            fallback_eligible = bool(
+                self._automatic_fallback_enabled()
+                and self._http_failure_allows_fallback(exc.status)
+            )
+            transient_rejection = bool(
+                not fallback_eligible
+                and self._http_failure_allows_fallback(exc.status)
+            )
             self.database.fail_ai_attempt(
                 attempt_id=int(attempt_id),
                 job_state="unknown" if ambiguous_result else "permanent_failed",
@@ -1756,18 +2274,43 @@ class AIService:
                 http_status=exc.status,
                 next_attempt_at=None,
                 generation_hold=(
-                    self._classified_generation_hold(
-                        generation_hold, "ambiguous"
+                    self._failure_generation_hold(
+                        generation_hold,
+                        "ambiguous" if ambiguous_result else "paid_failure",
+                        fallback_eligible=fallback_eligible,
                     )
-                    if ambiguous_result
+                    if not transient_rejection
                     else None
                 ),
+                settle_provisional_generation_hold=(
+                    provisional_created and not transient_rejection
+                ),
+                clear_provisional_generation_hold_key=(
+                    str(generation_hold.get("hold_key") or "")
+                    if transient_rejection and provisional_created
+                    else ""
+                ),
             )
-            raise AIServiceError(str(exc)) from exc
+            self._settleable_generation_hold_attempts.discard(int(attempt_id))
+            error = self._fallback_error(
+                str(exc),
+                reason_code="http_%d" % exc.status,
+                provider_call_made=True,
+                generation_hold_key=(
+                    str(generation_hold.get("hold_key") or "")
+                    if fallback_eligible
+                    else ""
+                ),
+            ) if fallback_eligible else AIServiceError(str(exc))
+            raise error from exc
         except ProviderKnownError as exc:
             known_usage = self._usage_dict(exc.usage)
             known_cost = self._actual_cost(
                 self.config.prices.get(prepared.model), exc.usage
+            )
+            fallback_eligible = bool(
+                self._automatic_fallback_enabled()
+                and self._known_failure_allows_fallback(exc.code)
             )
             self.database.fail_ai_attempt(
                 attempt_id=int(attempt_id),
@@ -1781,11 +2324,27 @@ class AIService:
                 provider_request_id=exc.request_id or exc.response_id,
                 resolved_model=exc.model,
                 finish_reason=exc.code,
-                generation_hold=self._classified_generation_hold(
-                    generation_hold, "paid_failure"
+                generation_hold=self._failure_generation_hold(
+                    generation_hold,
+                    "paid_failure",
+                    fallback_eligible=fallback_eligible,
                 ),
+                settle_provisional_generation_hold=provisional_created,
             )
-            raise AIServiceError(str(exc)) from exc
+            self._settleable_generation_hold_attempts.discard(int(attempt_id))
+            error = (
+                self._fallback_error(
+                    str(exc),
+                    reason_code=str(exc.code or "known_unusable_completion"),
+                    provider_call_made=True,
+                    generation_hold_key=str(
+                        generation_hold.get("hold_key") or ""
+                    ),
+                )
+                if fallback_eligible
+                else AIServiceError(str(exc))
+            )
+            raise error from exc
         except ProviderUnknownError as exc:
             self.database.fail_ai_attempt(
                 attempt_id=int(attempt_id),
@@ -1797,6 +2356,7 @@ class AIService:
                     generation_hold, "ambiguous"
                 ),
             )
+            self._settleable_generation_hold_attempts.discard(int(attempt_id))
             raise AIServiceError(str(exc)) from exc
         except ProviderConfigError as exc:
             self.database.fail_ai_attempt(
@@ -1805,7 +2365,13 @@ class AIService:
                 error_class="provider_config",
                 error_code="provider_config",
                 error_message=str(exc),
+                clear_provisional_generation_hold_key=(
+                    str(generation_hold.get("hold_key") or "")
+                    if provisional_created
+                    else ""
+                ),
             )
+            self._settleable_generation_hold_attempts.discard(int(attempt_id))
             raise AIServiceError(str(exc)) from exc
         except Exception as exc:
             self.database.fail_ai_attempt(
@@ -1821,6 +2387,7 @@ class AIService:
                     generation_hold, "ambiguous"
                 ),
             )
+            self._settleable_generation_hold_attempts.discard(int(attempt_id))
             raise AIServiceError(
                 "unexpected provider failure; "
                 "the request may already have been processed"
@@ -1833,6 +2400,8 @@ class AIService:
         force_new_provider_request: bool = False,
         prepared_task: Optional[PreparedTask] = None,
         force_generation_hold: bool = False,
+        report_record: Optional[Mapping[str, object]] = None,
+        report_article_versions: Optional[Mapping[int, str]] = None,
     ) -> Dict[str, object]:
         job = self.database.ai_job(int(job_id))
         if job is None:
@@ -1896,7 +2465,7 @@ class AIService:
             prepared,
             workload_kind=workload_kind,
         )
-        self._check_generation_hold(
+        observed_generation_holds = self._check_generation_hold(
             generation_hold,
             force_held=force_generation_hold,
         )
@@ -1931,6 +2500,7 @@ class AIService:
         reservation = self.database.reserve_ai_attempt(
             job_id=int(job_id),
             idempotency_key=idempotency_key,
+            requested_provider=self.config.provider,
             requested_model=prepared.model,
             estimated_input_tokens=estimated_input,
             reserved_output_tokens=prepared.max_output_tokens,
@@ -1986,11 +2556,20 @@ class AIService:
                 input_scope=prepared.input_scope,
                 expected_article_ids=prepared.expected_article_ids,
                 translated_fields=prepared.translated_fields,
+                translation_input=(
+                    prepared.input_payload
+                    if prepared.task_type == "translation"
+                    else None
+                ),
             )
         except ValueError as exc:
             current = self.database.ai_job(int(job_id)) or job
+            fallback_eligible = bool(
+                usage_confirmed and self._automatic_fallback_enabled()
+            )
             retryable = (
                 usage_confirmed
+                and not fallback_eligible
                 and not (
                     prepared.input_scope == "full_text"
                     and self.config.input_policy == "fetch_on_demand_ephemeral"
@@ -2009,12 +2588,30 @@ class AIService:
                 actual_cost_micros=actual_cost,
                 next_attempt_at=_iso(self._now() + timedelta(seconds=5)) if retryable else None,
                 preserve_reservation=not usage_confirmed,
-                generation_hold=self._classified_generation_hold(
+                generation_hold=self._failure_generation_hold(
                     generation_hold,
                     "paid_failure" if usage_confirmed else "ambiguous",
+                    fallback_eligible=fallback_eligible,
+                ),
+                settle_provisional_generation_hold=(
+                    self._settleable_generation_hold(attempt_id)
                 ),
             )
-            raise AIServiceError("provider output failed local validation: %s" % exc) from exc
+            self._settleable_generation_hold_attempts.discard(attempt_id)
+            message = "provider output failed local validation: %s" % exc
+            error = (
+                self._fallback_error(
+                    message,
+                    reason_code="invalid_structured_output",
+                    provider_call_made=True,
+                    generation_hold_key=str(
+                        generation_hold.get("hold_key") or ""
+                    ),
+                )
+                if fallback_eligible
+                else AIServiceError(message)
+            )
+            raise error from exc
 
         artifact = self._provider_artifact(
             prepared,
@@ -2026,11 +2623,20 @@ class AIService:
         stored = self.database.complete_ai_attempt(
             attempt_id=attempt_id,
             artifact=artifact,
+            report_records=(dict(report_record),) if report_record is not None else (),
+            report_article_versions=report_article_versions,
             usage=usage_dict,
             actual_cost_micros=actual_cost,
             usage_confirmed=usage_confirmed,
             clear_generation_hold_key=str(generation_hold["hold_key"]),
+            clear_generation_hold_snapshots=(
+                self._generation_holds_cleared_after_success(
+                    prepared,
+                    observed_generation_holds,
+                )
+            ),
         )
+        self._settleable_generation_hold_attempts.discard(attempt_id)
         return self._artifact_result(stored, cache_hit=False)
 
     def _provider_artifact(
@@ -2193,7 +2799,9 @@ class AIService:
             int(job_id), allow_unknown=allow_unknown
         )
         return self.run_job(
-            int(job["id"]), force_new_provider_request=True
+            int(job["id"]),
+            force_new_provider_request=True,
+            force_generation_hold=True,
         )
 
     def status(self) -> Dict[str, object]:

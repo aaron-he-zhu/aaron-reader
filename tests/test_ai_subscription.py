@@ -12,6 +12,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT / "src"))
 
 from aaron_reader.ai_prompts import stable_hash  # noqa: E402
+from aaron_reader.ai_cache import export_ai_cache, import_ai_cache  # noqa: E402
 from aaron_reader.ai_provider import (  # noqa: E402
     DEEPSEEK_MODEL,
     ProviderResponse,
@@ -69,6 +70,7 @@ class AISubscriptionTests(unittest.TestCase):
                     content_hash=stable_hash([title, url, summary]),
                 )
             )
+        self.candidates = candidates
         self.database.commit_candidates(
             self.source,
             candidates,
@@ -87,6 +89,18 @@ class AISubscriptionTests(unittest.TestCase):
 
     def tearDown(self):
         self.temporary.cleanup()
+
+    @staticmethod
+    def enabled_deepseek_ai() -> AIConfig:
+        return AIConfig(
+            enabled=True,
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            digest_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
 
     @staticmethod
     def article_result(request, *, include_summary=True, include_translation=True):
@@ -203,7 +217,7 @@ class AISubscriptionTests(unittest.TestCase):
         artifacts = self.database.latest_ai_artifacts([int(article["id"])])
         self.assertEqual("translation", artifacts[int(article["id"])][0]["task_type"])
 
-    def test_translation_preserves_an_empty_requested_publisher_summary(self):
+    def test_translation_normalizes_null_for_an_empty_requested_summary(self):
         url = "https://example.com/blog/empty-summary"
         title = "An article without a publisher summary"
         self.database.commit_candidates(
@@ -242,7 +256,7 @@ class AISubscriptionTests(unittest.TestCase):
             include_summary=False,
             include_translation=True,
         )
-        payload["items"][0]["translation"]["publisher_summary"] = ""
+        payload["items"][0]["translation"]["publisher_summary"] = None
 
         result = import_subscription_results(self.service, payload)
 
@@ -250,6 +264,29 @@ class AISubscriptionTests(unittest.TestCase):
         artifacts = self.database.latest_ai_artifacts([int(article["id"])])
         output = json.loads(artifacts[int(article["id"])][0]["output_json"])
         self.assertEqual("", output["publisher_summary"])
+
+    def test_translation_rejects_null_for_a_nonempty_requested_summary(self):
+        article = self.database.list_articles(limit=1)[0]
+        request = export_subscription_batch(
+            self.service,
+            [article],
+            target_language="zh-CN",
+            tasks=("translation",),
+        )
+        self.assertTrue(request["items"][0]["input"]["publisher_summary"])
+        payload = self.article_result(
+            request,
+            include_summary=False,
+            include_translation=True,
+        )
+        payload["items"][0]["translation"]["publisher_summary"] = None
+
+        with self.assertRaisesRegex(
+            AIInputError,
+            "publisher_summary must be a string",
+        ):
+            import_subscription_results(self.service, payload)
+        self.assertEqual({}, self.database.latest_ai_artifacts([int(article["id"])]))
 
     def test_san_francisco_daily_weekly_and_dst_boundaries(self):
         daily = report_period_window("daily", now=self.now)
@@ -375,7 +412,7 @@ class AISubscriptionTests(unittest.TestCase):
         service = AIService(
             AppConfig(
                 sources=[self.source],
-                ai=AIConfig(enabled=True),
+                ai=self.enabled_deepseek_ai(),
             ),
             self.database,
             provider=provider,
@@ -501,7 +538,7 @@ class AISubscriptionTests(unittest.TestCase):
 
         provider = EnglishOnlyProvider()
         service = AIService(
-            AppConfig(sources=[self.source], ai=AIConfig(enabled=True)),
+            AppConfig(sources=[self.source], ai=self.enabled_deepseek_ai()),
             self.database,
             provider=provider,
         )
@@ -529,6 +566,128 @@ class AISubscriptionTests(unittest.TestCase):
         self.assertTrue(
             all(len(json.loads(str(report["article_ids_json"]))) == 50 for report in reports)
         )
+
+    def test_provider_report_and_artifacts_commit_before_wrapper_can_crash(self):
+        class BilingualProvider:
+            def __init__(self):
+                self.requests = []
+
+            def generate(self, request):
+                self.requests.append(request)
+                payload = json.loads(request.input_text)
+                output = {
+                    language: {
+                        "headline": "%s headline" % language,
+                        "overview": "%s overview" % language,
+                        "items": [
+                            {
+                                "article_id": int(article["article_id"]),
+                                "title": str(article["title"]),
+                                "summary": "%s item" % language,
+                            }
+                            for article in payload["articles"]
+                        ],
+                        "language": language,
+                        "limitations": "Metadata only.",
+                    }
+                    for language in ("en", "zh-CN")
+                }
+                return ProviderResponse(
+                    output_text=json.dumps(output, ensure_ascii=False),
+                    usage=ProviderUsage(
+                        input_tokens=100,
+                        output_tokens=80,
+                        total_tokens=180,
+                    ),
+                    model=DEEPSEEK_MODEL,
+                    request_id="atomic-report-test",
+                )
+
+        provider = BilingualProvider()
+        service = AIService(
+            AppConfig(sources=[self.source], ai=self.enabled_deepseek_ai()),
+            self.database,
+            provider=provider,
+        )
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ), mock.patch.object(
+            self.database,
+            "store_existing_ai_reports",
+            side_effect=RuntimeError("simulated wrapper crash"),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "wrapper crash"):
+                generate_cloud_report_pair(
+                    service,
+                    period="daily",
+                    now=self.now,
+                )
+
+        self.assertEqual(1, len(provider.requests))
+        self.assertEqual(2, len(self.database.latest_ai_reports()))
+        self.assertEqual(
+            2,
+            len(
+                [
+                    artifact
+                    for artifact in self.database.latest_ai_reports()
+                    if artifact["status"] == "succeeded"
+                ]
+            ),
+        )
+        self.assertEqual("succeeded", self.database.list_ai_attempts()[0]["state"])
+
+        bundle = Path(self.temporary.name) / "atomic-report-cache.json"
+        exported = export_ai_cache(self.database, service.app_config, bundle)
+        self.assertEqual(2, exported["reports"])
+        target = Database(Path(self.temporary.name) / "fresh-runner.sqlite3")
+        target.initialize()
+        target.sync_source_configs([self.source])
+        target.commit_candidates(
+            self.source,
+            self.candidates,
+            started_at="2026-08-01T17:00:00Z",
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="fresh-runner-fixture",
+        )
+        imported = import_ai_cache(target, service.app_config, bundle)
+        self.assertEqual(2, imported["reports"])
+
+        class MustNotRun:
+            def __init__(self):
+                self.requests = []
+
+            def generate(self, request):
+                self.requests.append(request)
+                raise AssertionError("imported report must be a cache hit")
+
+        fresh_provider = MustNotRun()
+        fresh_service = AIService(
+            service.app_config,
+            target,
+            provider=fresh_provider,
+        )
+        imported_cache = generate_cloud_report_pair(
+            fresh_service,
+            period="daily",
+            now=self.now,
+        )
+        self.assertEqual(0, imported_cache["provider_api_calls"])
+        self.assertEqual([], fresh_provider.requests)
+
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
+        ):
+            cached = generate_cloud_report_pair(
+                service,
+                period="daily",
+                now=self.now,
+            )
+        self.assertEqual(1, len(provider.requests))
+        self.assertEqual(0, cached["provider_api_calls"])
+        self.assertTrue(all(row["cache_hit"] for row in cached["reports"]))
 
     def test_report_rejects_article_changes_without_partial_storage(self):
         request = export_subscription_report(

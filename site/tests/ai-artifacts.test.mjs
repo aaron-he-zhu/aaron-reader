@@ -3,8 +3,8 @@ import test from "node:test";
 
 import {
   artifactPayload,
-  artifactSearchText,
   findArtifact,
+  translationSearchText,
 } from "../app/ai-artifacts.ts";
 
 const artifacts = [
@@ -56,11 +56,8 @@ test("reads the nested cached artifact shape", () => {
   assert.equal(findArtifact(artifacts, "translation", "en"), undefined);
 });
 
-test("keeps AI artifact content searchable", () => {
-  assert.deepEqual(artifactSearchText(artifacts), [
-    "中文 AI 摘要",
-    "第一点",
-    "第二点",
+test("keeps translated article metadata searchable across interface languages", () => {
+  assert.deepEqual(translationSearchText(artifacts), [
     "标题译文",
     "发布方简介译文",
   ]);

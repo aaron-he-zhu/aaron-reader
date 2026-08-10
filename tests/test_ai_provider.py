@@ -16,7 +16,11 @@ from aaron_reader.ai_provider import (  # noqa: E402
     DEEPSEEK_CHAT_COMPLETIONS_URL,
     DEEPSEEK_MODEL,
     MAX_RESPONSE_BYTES,
+    OPENROUTER_API_KEY_ENVIRONMENT,
+    OPENROUTER_CHAT_COMPLETIONS_URL,
+    OPENROUTER_MODEL,
     DeepSeekChatCompletionsProvider,
+    OpenRouterChatCompletionsProvider,
     ProviderConfigError,
     ProviderHTTPError,
     ProviderKnownError,
@@ -25,6 +29,7 @@ from aaron_reader.ai_provider import (  # noqa: E402
     ProviderUsage,
     _NoRedirectHandler,
 )
+from aaron_reader.ai_service import AIService  # noqa: E402
 
 
 API_KEY = "test-secret-api-key"
@@ -319,6 +324,367 @@ class DeepSeekChatCompletionsProviderTests(unittest.TestCase):
                 Message(),
                 "https://attacker.example/steal",
             )
+        )
+
+
+class OpenRouterChatCompletionsProviderTests(unittest.TestCase):
+    @staticmethod
+    def successful_payload(
+        content='{"summary":"ok"}',
+        *,
+        resolved_model="qwen/qwen3-4b:free",
+        reasoning_tokens=0,
+    ):
+        return {
+            "id": "gen-openrouter-1",
+            "object": "chat.completion",
+            "model": resolved_model,
+            "choices": [
+                {
+                    "index": 0,
+                    "finish_reason": "stop",
+                    "message": {
+                        "role": "assistant",
+                        "content": content,
+                    },
+                }
+            ],
+            "usage": {
+                "prompt_tokens": 100,
+                "completion_tokens": 20,
+                "total_tokens": 120,
+                "prompt_tokens_details": {
+                    "cached_tokens": 40,
+                    "cache_write_tokens": 10,
+                },
+                "completion_tokens_details": {
+                    "reasoning_tokens": reasoning_tokens,
+                },
+            },
+        }
+
+    def test_fixed_free_router_request_uses_strict_schema_and_openrouter_usage(self):
+        headers = Message()
+        headers["x-request-id"] = "openrouter-request-1"
+        opener = RecordingOpener(
+            FakeResponse(self.successful_payload(), headers=headers)
+        )
+        provider = OpenRouterChatCompletionsProvider(
+            opener=opener,
+            timeout_seconds=9,
+        )
+        request_value = provider_request(model=OPENROUTER_MODEL)
+        with mock.patch.dict(
+            os.environ,
+            {OPENROUTER_API_KEY_ENVIRONMENT: API_KEY},
+            clear=True,
+        ):
+            result = provider.generate(request_value)
+
+        self.assertEqual('{"summary":"ok"}', result.output_text)
+        self.assertEqual("openrouter-request-1", result.request_id)
+        self.assertEqual("gen-openrouter-1", result.response_id)
+        self.assertEqual("qwen/qwen3-4b:free", result.model)
+        self.assertTrue(result.usage_reported)
+        self.assertEqual(
+            ProviderUsage(
+                input_tokens=100,
+                cached_input_tokens=40,
+                cache_write_input_tokens=10,
+                output_tokens=20,
+                total_tokens=120,
+            ),
+            result.usage,
+        )
+
+        self.assertEqual(1, len(opener.calls))
+        http_request, timeout = opener.calls[0]
+        self.assertEqual(9.0, timeout)
+        self.assertEqual(OPENROUTER_CHAT_COMPLETIONS_URL, http_request.full_url)
+        self.assertEqual("POST", http_request.get_method())
+        self.assertEqual(
+            "Bearer %s" % API_KEY,
+            http_request.get_header("Authorization"),
+        )
+        payload = json.loads(http_request.data.decode("utf-8"))
+        self.assertEqual(OPENROUTER_MODEL, payload["model"])
+        self.assertEqual(
+            {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "article_summary",
+                    "strict": True,
+                    "schema": request_value.json_schema,
+                },
+            },
+            payload["response_format"],
+        )
+        self.assertEqual({"require_parameters": True}, payload["provider"])
+        self.assertEqual({"effort": "none"}, payload["reasoning"])
+        self.assertIs(False, payload["stream"])
+        self.assertEqual(384, payload["max_tokens"])
+        self.assertNotIn("thinking", payload)
+        for forbidden in ("tools", "tool_choice", "store"):
+            self.assertNotIn(forbidden, payload)
+
+    def test_only_fixed_openrouter_key_and_model_are_accepted_before_transport(self):
+        opener = RecordingOpener(AssertionError("transport must not be called"))
+        provider = OpenRouterChatCompletionsProvider(opener=opener)
+        request_value = provider_request(model=OPENROUTER_MODEL)
+        with mock.patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(
+                ProviderConfigError,
+                OPENROUTER_API_KEY_ENVIRONMENT,
+            ):
+                provider.generate(request_value)
+        with mock.patch.dict(
+            os.environ,
+            {OPENROUTER_API_KEY_ENVIRONMENT: API_KEY},
+            clear=True,
+        ):
+            with self.assertRaisesRegex(ProviderConfigError, OPENROUTER_MODEL):
+                provider.generate(provider_request(model="openrouter/auto"))
+        self.assertEqual([], opener.calls)
+
+    def test_reasoning_tokens_are_a_known_auditable_profile_failure(self):
+        payload = self.successful_payload(reasoning_tokens=7)
+        provider = OpenRouterChatCompletionsProvider(
+            opener=RecordingOpener(FakeResponse(payload))
+        )
+        with mock.patch.dict(
+            os.environ,
+            {OPENROUTER_API_KEY_ENVIRONMENT: API_KEY},
+            clear=True,
+        ):
+            with self.assertRaises(ProviderKnownError) as raised:
+                provider.generate(provider_request(model=OPENROUTER_MODEL))
+        self.assertEqual("thinking_tokens", raised.exception.code)
+        self.assertEqual(7, raised.exception.usage.reasoning_tokens)
+        self.assertEqual(40, raised.exception.usage.cached_input_tokens)
+        self.assertEqual(10, raised.exception.usage.cache_write_input_tokens)
+
+    def test_explicit_refusal_is_classified_before_empty_output(self):
+        payload = self.successful_payload(content="")
+        payload.pop("id")
+        payload.pop("object")
+        payload["choices"][0]["finish_reason"] = "length"
+        payload["choices"][0]["message"]["refusal"] = (
+            "private provider policy detail"
+        )
+        provider = OpenRouterChatCompletionsProvider(
+            opener=RecordingOpener(FakeResponse(payload))
+        )
+        with mock.patch.dict(
+            os.environ,
+            {OPENROUTER_API_KEY_ENVIRONMENT: API_KEY},
+            clear=True,
+        ):
+            with self.assertRaises(ProviderKnownError) as raised:
+                provider.generate(provider_request(model=OPENROUTER_MODEL))
+
+        self.assertEqual("refusal", raised.exception.code)
+        self.assertEqual(120, raised.exception.usage.total_tokens)
+        self.assertNotIn("private provider policy detail", str(raised.exception))
+
+    def test_content_filter_finish_reason_precedes_invalid_envelope(self):
+        payload = self.successful_payload(content="")
+        payload.pop("id")
+        payload.pop("model")
+        payload["choices"][0]["finish_reason"] = "content_filter"
+        provider = OpenRouterChatCompletionsProvider(
+            opener=RecordingOpener(FakeResponse(payload))
+        )
+        with mock.patch.dict(
+            os.environ,
+            {OPENROUTER_API_KEY_ENVIRONMENT: API_KEY},
+            clear=True,
+        ):
+            with self.assertRaises(ProviderKnownError) as raised:
+                provider.generate(provider_request(model=OPENROUTER_MODEL))
+
+        self.assertEqual("content_filter", raised.exception.code)
+        self.assertFalse(
+            AIService._known_failure_allows_fallback(raised.exception.code)
+        )
+
+    def test_typed_choice_errors_use_a_closed_fallback_allowlist(self):
+        cases = (
+            ("provider_unavailable", True),
+            ("provider_overloaded", True),
+            ("rate_limit_exceeded", True),
+            ("content_policy_violation", False),
+            ("refusal", False),
+            ("permission_denied", False),
+            ("future_unknown_type", False),
+        )
+        for error_type, expected_fallback in cases:
+            with self.subTest(error_type=error_type):
+                payload = self.successful_payload(content="partial")
+                payload["choices"][0]["finish_reason"] = "error"
+                payload["choices"][0]["error"] = {
+                    "code": 502,
+                    "message": "private provider error detail",
+                    "metadata": {
+                        "error_type": error_type,
+                        "flagged_input": "private prompt excerpt",
+                    },
+                }
+                provider = OpenRouterChatCompletionsProvider(
+                    opener=RecordingOpener(FakeResponse(payload))
+                )
+                with mock.patch.dict(
+                    os.environ,
+                    {OPENROUTER_API_KEY_ENVIRONMENT: API_KEY},
+                    clear=True,
+                ):
+                    with self.assertRaises(ProviderKnownError) as raised:
+                        provider.generate(
+                            provider_request(model=OPENROUTER_MODEL)
+                        )
+
+                expected_code = (
+                    error_type
+                    if error_type != "future_unknown_type"
+                    else "provider_error"
+                )
+                self.assertEqual(expected_code, raised.exception.code)
+                self.assertEqual(
+                    expected_fallback,
+                    AIService._known_failure_allows_fallback(
+                        raised.exception.code
+                    ),
+                )
+                self.assertNotIn(
+                    "private provider error detail", str(raised.exception)
+                )
+                self.assertNotIn("private prompt excerpt", str(raised.exception))
+
+    def test_conflicting_or_unknown_error_signal_overrides_availability(self):
+        payload = self.successful_payload(content="partial")
+        payload["error"] = {
+            "metadata": {"error_type": "provider_unavailable"}
+        }
+        payload["choices"][0]["finish_reason"] = "error"
+        payload["choices"][0]["error"] = {
+            "metadata": {"error_type": "future_unknown_type"}
+        }
+        provider = OpenRouterChatCompletionsProvider(
+            opener=RecordingOpener(FakeResponse(payload))
+        )
+        with mock.patch.dict(
+            os.environ,
+            {OPENROUTER_API_KEY_ENVIRONMENT: API_KEY},
+            clear=True,
+        ):
+            with self.assertRaises(ProviderKnownError) as raised:
+                provider.generate(provider_request(model=OPENROUTER_MODEL))
+
+        self.assertEqual("provider_error", raised.exception.code)
+        self.assertFalse(
+            AIService._known_failure_allows_fallback(raised.exception.code)
+        )
+
+    def test_typed_terminal_error_requires_its_exact_alternate_envelope(self):
+        valid = self.successful_payload(content="partial")
+        valid.pop("id")
+        valid.pop("model")
+        valid.pop("object")
+        valid["choices"][0]["finish_reason"] = "error"
+        valid["choices"][0]["error"] = {
+            "metadata": {"error_type": "provider_unavailable"}
+        }
+
+        provider = OpenRouterChatCompletionsProvider(
+            opener=RecordingOpener(FakeResponse(valid))
+        )
+        with mock.patch.dict(
+            os.environ,
+            {OPENROUTER_API_KEY_ENVIRONMENT: API_KEY},
+            clear=True,
+        ):
+            with self.assertRaises(ProviderKnownError) as raised:
+                provider.generate(provider_request(model=OPENROUTER_MODEL))
+        self.assertEqual("provider_unavailable", raised.exception.code)
+        self.assertTrue(
+            AIService._known_failure_allows_fallback(raised.exception.code)
+        )
+
+        for mutate in ("wrong_finish", "extra_choice", "top_level"):
+            with self.subTest(mutate=mutate):
+                malformed = self.successful_payload(content="partial")
+                if mutate == "top_level":
+                    malformed["error"] = {
+                        "metadata": {"error_type": "provider_unavailable"}
+                    }
+                else:
+                    malformed["choices"][0]["finish_reason"] = (
+                        "stop" if mutate == "wrong_finish" else "error"
+                    )
+                    malformed["choices"][0]["error"] = {
+                        "metadata": {"error_type": "provider_unavailable"}
+                    }
+                    if mutate == "extra_choice":
+                        malformed["choices"].append(
+                            dict(malformed["choices"][0])
+                        )
+                provider = OpenRouterChatCompletionsProvider(
+                    opener=RecordingOpener(FakeResponse(malformed))
+                )
+                with mock.patch.dict(
+                    os.environ,
+                    {OPENROUTER_API_KEY_ENVIRONMENT: API_KEY},
+                    clear=True,
+                ):
+                    with self.assertRaises(ProviderKnownError) as raised:
+                        provider.generate(
+                            provider_request(model=OPENROUTER_MODEL)
+                        )
+                self.assertEqual("provider_error", raised.exception.code)
+                self.assertFalse(
+                    AIService._known_failure_allows_fallback(
+                        raised.exception.code
+                    )
+                )
+
+    def test_overlapping_openrouter_cache_counts_are_not_claimed_as_complete(self):
+        payload = self.successful_payload()
+        payload["usage"]["prompt_tokens_details"] = {
+            "cached_tokens": 80,
+            "cache_write_tokens": 30,
+        }
+        provider = OpenRouterChatCompletionsProvider(
+            opener=RecordingOpener(FakeResponse(payload))
+        )
+        with mock.patch.dict(
+            os.environ,
+            {OPENROUTER_API_KEY_ENVIRONMENT: API_KEY},
+            clear=True,
+        ):
+            result = provider.generate(provider_request(model=OPENROUTER_MODEL))
+
+        self.assertFalse(result.usage_reported)
+
+    def test_top_level_provider_error_is_a_non_fallback_known_failure(self):
+        payload = self.successful_payload()
+        payload["error"] = {
+            "code": "private-policy-code",
+            "message": "private provider detail",
+        }
+        provider = OpenRouterChatCompletionsProvider(
+            opener=RecordingOpener(FakeResponse(payload))
+        )
+        with mock.patch.dict(
+            os.environ,
+            {OPENROUTER_API_KEY_ENVIRONMENT: API_KEY},
+            clear=True,
+        ):
+            with self.assertRaises(ProviderKnownError) as raised:
+                provider.generate(provider_request(model=OPENROUTER_MODEL))
+
+        self.assertEqual("provider_error", raised.exception.code)
+        self.assertNotIn("private provider detail", str(raised.exception))
+        self.assertFalse(
+            AIService._known_failure_allows_fallback(raised.exception.code)
         )
 
 

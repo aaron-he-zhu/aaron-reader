@@ -203,6 +203,7 @@ def _public_snapshot(snapshot: Mapping[str, object]) -> dict[str, object]:
             source.pop("last_error", None)
 
     articles = public.get("articles")
+    cached_translation_count = 0
     if isinstance(articles, list):
         for article in articles:
             if not isinstance(article, dict):
@@ -211,11 +212,26 @@ def _public_snapshot(snapshot: Mapping[str, object]) -> dict[str, object]:
             article.pop("starred", None)
             artifacts = article.get("ai_artifacts")
             if isinstance(artifacts, list):
+                translations = []
                 for artifact in artifacts:
-                    if not isinstance(artifact, dict):
+                    if (
+                        not isinstance(artifact, dict)
+                        or str(
+                            artifact.get("task")
+                            or artifact.get("task_type")
+                            or ""
+                        )
+                        != "translation"
+                    ):
                         continue
                     artifact.pop("provider", None)
                     artifact.pop("model", None)
+                    translations.append(artifact)
+                article["ai_artifacts"] = translations
+                cached_translation_count += len(translations)
+            else:
+                article["ai_artifacts"] = []
+    public["cached_ai_artifact_count"] = cached_translation_count
 
     reports = public.get("ai_reports")
     if isinstance(reports, list):

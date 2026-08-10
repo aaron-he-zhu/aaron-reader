@@ -47,13 +47,9 @@ test("server-renders the Aaron Reader snapshot", async () => {
   const articleCount = snapshot.articles.length;
   const coveredArticleCount = snapshot.articles.filter((article) => {
     const artifacts = article.ai_artifacts || [];
-    const hasSummary = artifacts.some(
-      (artifact) => artifact.task === "summary" && artifact.target_language === "zh-CN",
-    );
-    const hasTranslation = artifacts.some(
+    return artifacts.some(
       (artifact) => artifact.task === "translation" && artifact.target_language === "zh-CN",
     );
-    return hasSummary && hasTranslation;
   }).length;
   const expectedEnglishReports = (snapshot.ai_reports || []).filter(
     (report) => report.target_language === "en" || report.output?.language === "en",
@@ -75,17 +71,29 @@ test("server-renders the Aaron Reader snapshot", async () => {
   assert.doesNotMatch(html, /aaron-reader\.zhuhe1983\.workers\.dev/i);
   assert.match(html, /Independent signal desk/);
   assert.match(html, /The work behind/);
-  assert.match(html, /DeepSeek V4 Flash · automatic twice daily/);
+  assert.match(html, /Default · OpenRouter Free → DeepSeek V4 Flash/);
+  assert.match(html, /can switch once to DeepSeek V4 Flash/);
+  assert.match(html, /explicitly selected DeepSeek-only run.+never falls back in reverse/);
+  assert.match(
+    html,
+    /Ambiguous network results, unknown or future error codes, and safety or policy refusals never fall back/,
+  );
+  assert.match(
+    html,
+    /OpenRouter Free may resolve to and internally route among different eligible free providers/,
+  );
+  assert.doesNotMatch(html, /DeepSeek V4 Flash · automatic twice daily/);
   assert.match(html, /Chinese AI automation coverage/);
   assert.match(
     html,
     new RegExp(`<strong>${coveredArticleCount}(?:<!-- -->)?\\/(?:<!-- -->)?${articleCount}<\\/strong>`),
   );
   if (coveredArticleCount === articleCount) {
-    assert.match(html, /All articles have a cached Chinese summary and translation/);
+    assert.match(html, /All articles have a cached Chinese translation/);
   } else {
-    assert.match(html, /Cloud automation will fill missing summaries and translations/);
+    assert.match(html, /Cloud automation will fill missing article translations/);
   }
+  assert.doesNotMatch(html, /class="ai-summary-card"/);
   assert.doesNotMatch(html, /Translate to Chinese|翻译为中文/);
   assert.doesNotMatch(html, /Backfill 3 articles|补齐接下来 3 篇/);
   assert.doesNotMatch(html, /codex:\/\//i);
@@ -94,7 +102,9 @@ test("server-renders the Aaron Reader snapshot", async () => {
   assert.doesNotMatch(html, /on-demand ai|workspace path|local checkout/i);
   assert.doesNotMatch(html, /signed-in ChatGPT subscription/i);
   assert.doesNotMatch(html, /Summarize (?:today|this week|in English)/);
-  assert.match(html, /GitHub Actions · 10:00 &amp; 22:00 San Francisco/);
+  assert.match(html, /GitHub Actions · 09:15 &amp; 21:15 San Francisco/);
+  assert.match(html, /collected at 09:15 and 21:15 San Francisco time/);
+  assert.doesNotMatch(html, /collected at 10:00 and 22:00 San Francisco time/);
   const reportCards = html.match(
     /<article\b(?=[^>]*\bclass="[^"]*\breport-card\b[^"]*")[^>]*>[\s\S]*?<\/article>/g,
   ) ?? [];

@@ -23,6 +23,11 @@ const snapshot = JSON.parse(dataBytes.toString("utf8"));
 if (!Array.isArray(snapshot.articles) || !Array.isArray(snapshot.sources)) {
   throw new Error("The reader snapshot is missing article or source arrays.");
 }
+if (snapshot.articles.some(
+  (article) => !article || typeof article !== "object" || !Array.isArray(article.ai_artifacts),
+)) {
+  throw new Error("Every public article must contain an AI artifact array.");
+}
 if (snapshot.llm_tokens_used !== 0 || snapshot.render_llm_tokens_used !== 0) {
   throw new Error("Deterministic collection or rendering unexpectedly used LLM tokens.");
 }
@@ -36,6 +41,15 @@ if (snapshot.articles.some((article) => (article.ai_artifacts || []).some(
   (artifact) => "provider" in artifact || "model" in artifact,
 ))) {
   throw new Error("The public snapshot must not expose AI provider provenance.");
+}
+const articleArtifacts = snapshot.articles.flatMap((article) => article.ai_artifacts);
+if (articleArtifacts.some(
+  (artifact) => !artifact || typeof artifact !== "object" || artifact.task !== "translation",
+)) {
+  throw new Error("The public snapshot may expose only per-article translations.");
+}
+if (snapshot.cached_ai_artifact_count !== articleArtifacts.length) {
+  throw new Error("The cached article translation count is inconsistent.");
 }
 if ((snapshot.ai_reports || []).some(
   (report) => "provider" in report || "model" in report,

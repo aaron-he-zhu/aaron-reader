@@ -1,3 +1,4 @@
+import hashlib
 import json
 import sys
 import tempfile
@@ -38,11 +39,20 @@ class AIDatabaseTests(unittest.TestCase):
             request={"version": 1, "key": key},
         )
 
-    def reserve(self, job_id, key, total_cap=1000):
+    def reserve(
+        self,
+        job_id,
+        key,
+        total_cap=1000,
+        *,
+        requested_model="test-model",
+        requested_provider="unknown",
+    ):
         return self.database.reserve_ai_attempt(
             job_id=job_id,
             idempotency_key=key,
-            requested_model="test-model",
+            requested_model=requested_model,
+            requested_provider=requested_provider,
             estimated_input_tokens=6,
             reserved_output_tokens=4,
             reserved_cost_micros=0,
@@ -58,6 +68,32 @@ class AIDatabaseTests(unittest.TestCase):
             monthly_max_total_tokens=total_cap,
             monthly_max_cost_micros=0,
         )
+
+    @staticmethod
+    def generation_hold(hold_class, *, include_timestamps=True):
+        descriptor = {
+            "protocol": "aaron-reader-test-generation-hold/v1",
+            "workload_kind": "article",
+            "fixture": "provider-fallback",
+        }
+        encoded = json.dumps(
+            descriptor,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        hold = {
+            "hold_key": hashlib.sha256(encoded.encode("utf-8")).hexdigest(),
+            "workload_kind": "article",
+            "hold_class": hold_class,
+            "descriptor": descriptor,
+        }
+        if include_timestamps:
+            now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace(
+                "+00:00", "Z"
+            )
+            hold.update({"first_seen_at": now, "last_seen_at": now})
+        return hold
 
     @staticmethod
     def usage_entry(**overrides):
@@ -167,6 +203,282 @@ class AIDatabaseTests(unittest.TestCase):
             ).fetchone()[0]
         self.assertEqual(str(SCHEMA_VERSION), version)
         self.assertNotIn("idempotency_key TEXT NOT NULL UNIQUE", table_sql)
+
+    def test_requested_provider_is_persisted_with_each_attempt(self):
+        attempt = self.reserve(
+            int(self.job("provider-audit")["id"]),
+            "provider-audit-key",
+            requested_model="openrouter/free",
+            requested_provider="openrouter",
+        )
+        self.assertEqual("openrouter", attempt["requested_provider"])
+        self.assertEqual(
+            "openrouter",
+            self.database.list_ai_attempts()[0]["requested_provider"],
+        )
+
+    def test_v6_migration_backfills_requested_provider_and_preserves_holds(self):
+        expected_providers = {
+            "openrouter/free": "openrouter",
+            "deepseek-v4-flash": "deepseek",
+            "private-model": "unknown",
+        }
+        for index, model in enumerate(expected_providers):
+            self.reserve(
+                int(self.job("legacy-provider-%d" % index)["id"]),
+                "legacy-provider-key-%d" % index,
+                requested_model=model,
+                requested_provider="discarded-by-v6-fixture",
+            )
+        legacy_hold = self.generation_hold("paid_failure")
+        self.database.replace_ai_generation_holds([legacy_hold])
+
+        with self.database.connect() as connection:
+            attempt_table_sql = connection.execute(
+                "SELECT sql FROM sqlite_master "
+                "WHERE type='table' AND name='ai_attempts'"
+            ).fetchone()[0]
+            legacy_attempt_sql = attempt_table_sql.replace(
+                "requested_provider TEXT NOT NULL DEFAULT 'unknown',", ""
+            )
+            self.assertNotEqual(attempt_table_sql, legacy_attempt_sql)
+            attempt_columns = [
+                str(row[1])
+                for row in connection.execute("PRAGMA table_info(ai_attempts)")
+                if str(row[1]) != "requested_provider"
+            ]
+            columns_sql = ", ".join(attempt_columns)
+            connection.execute("DROP INDEX idx_ai_attempts_started")
+            connection.execute("ALTER TABLE ai_attempts RENAME TO ai_attempts_v7")
+            connection.execute(legacy_attempt_sql)
+            connection.execute(
+                "INSERT INTO ai_attempts(%s) SELECT %s FROM ai_attempts_v7"
+                % (columns_sql, columns_sql)
+            )
+            connection.execute("DROP TABLE ai_attempts_v7")
+
+            hold_table_sql = connection.execute(
+                "SELECT sql FROM sqlite_master "
+                "WHERE type='table' AND name='ai_generation_holds'"
+            ).fetchone()[0]
+            legacy_hold_sql = hold_table_sql.replace(
+                ", 'fallback_pending'", ""
+            )
+            legacy_hold_sql = legacy_hold_sql.replace(
+                "revision INTEGER NOT NULL DEFAULT 1 CHECK(revision >= 1),",
+                "",
+            )
+            self.assertNotEqual(hold_table_sql, legacy_hold_sql)
+            connection.execute("DROP INDEX idx_ai_generation_holds_seen")
+            connection.execute(
+                "ALTER TABLE ai_generation_holds RENAME TO ai_generation_holds_v7"
+            )
+            connection.execute(legacy_hold_sql)
+            connection.execute(
+                """
+                INSERT INTO ai_generation_holds(
+                    hold_key, workload_kind, hold_class, descriptor_json,
+                    first_seen_at, last_seen_at
+                )
+                SELECT hold_key, workload_kind, hold_class, descriptor_json,
+                    first_seen_at, last_seen_at
+                FROM ai_generation_holds_v7
+                """
+            )
+            connection.execute("DROP TABLE ai_generation_holds_v7")
+            connection.execute(
+                "UPDATE app_meta SET value='6' WHERE key='schema_version'"
+            )
+            connection.execute(
+                "DELETE FROM app_meta "
+                "WHERE key='ai_generation_hold_revision'"
+            )
+
+        self.database.initialize()
+
+        attempts = self.database.list_ai_attempts()
+        self.assertEqual(
+            expected_providers,
+            {
+                str(attempt["requested_model"]): str(attempt["requested_provider"])
+                for attempt in attempts
+            },
+        )
+        self.assertEqual([legacy_hold], self.database.list_ai_generation_holds())
+        with self.database.connect() as connection:
+            version = connection.execute(
+                "SELECT value FROM app_meta WHERE key='schema_version'"
+            ).fetchone()[0]
+            hold_table_sql = connection.execute(
+                "SELECT sql FROM sqlite_master "
+                "WHERE type='table' AND name='ai_generation_holds'"
+            ).fetchone()[0]
+            hold_columns = {
+                str(row[1])
+                for row in connection.execute(
+                    "PRAGMA table_info(ai_generation_holds)"
+                ).fetchall()
+            }
+        self.assertEqual(str(SCHEMA_VERSION), version)
+        self.assertIn("fallback_pending", hold_table_sql)
+        self.assertIn("revision", hold_columns)
+        migrated_hold = self.database.ai_generation_hold(
+            legacy_hold["hold_key"],
+            include_revision=True,
+        )
+        self.assertEqual(1, migrated_hold["revision"])
+
+    def test_fallback_pending_hold_validation_and_risk_priority(self):
+        pending = self.generation_hold("fallback_pending")
+        self.database.replace_ai_generation_holds([pending])
+        self.assertEqual(
+            "fallback_pending",
+            self.database.ai_generation_hold(pending["hold_key"])["hold_class"],
+        )
+
+        invalid = {**pending, "hold_class": "retryable"}
+        with self.assertRaisesRegex(ValueError, "hold class is invalid"):
+            self.database.replace_ai_generation_holds([invalid])
+        self.assertEqual([pending], self.database.list_ai_generation_holds())
+
+        attempt = self.reserve(
+            int(self.job("hold-risk-priority")["id"]),
+            "hold-risk-priority-key",
+        )
+
+        def upsert(hold_class):
+            self.database.fail_ai_attempt(
+                attempt_id=int(attempt["id"]),
+                job_state="permanent_failed",
+                error_class="provider_known",
+                error_code="fixture",
+                error_message="fixture",
+                generation_hold=self.generation_hold(
+                    hold_class, include_timestamps=False
+                ),
+            )
+            return self.database.ai_generation_hold(pending["hold_key"])[
+                "hold_class"
+            ]
+
+        self.assertEqual("paid_failure", upsert("paid_failure"))
+        self.assertEqual("paid_failure", upsert("fallback_pending"))
+        self.assertEqual("ambiguous", upsert("ambiguous"))
+        self.assertEqual("ambiguous", upsert("paid_failure"))
+
+    def test_hold_revision_is_internal_and_never_reused_after_replace(self):
+        hold = self.generation_hold("paid_failure")
+        self.database.replace_ai_generation_holds([hold])
+        first = self.database.ai_generation_hold(
+            hold["hold_key"],
+            include_revision=True,
+        )
+        self.assertNotIn(
+            "revision",
+            self.database.ai_generation_hold(hold["hold_key"]),
+        )
+
+        self.assertTrue(self.database.clear_ai_generation_hold(hold["hold_key"]))
+        self.database.replace_ai_generation_holds([hold])
+        second = self.database.ai_generation_hold(
+            hold["hold_key"],
+            include_revision=True,
+        )
+        self.assertGreater(second["revision"], first["revision"])
+
+    def test_mark_sent_and_provisional_hold_are_atomic_and_settleable(self):
+        job = self.job("atomic-provisional-hold")
+        attempt = self.reserve(int(job["id"]), "atomic-provisional-hold-key")
+        ambiguous = self.generation_hold(
+            "ambiguous", include_timestamps=False
+        )
+        invalid = {**ambiguous, "hold_class": "invalid"}
+
+        with self.assertRaisesRegex(ValueError, "hold class is invalid"):
+            self.database.mark_ai_attempt_sent(
+                int(attempt["id"]),
+                provisional_generation_hold=invalid,
+            )
+
+        current_attempt = next(
+            row
+            for row in self.database.list_ai_attempts()
+            if int(row["id"]) == int(attempt["id"])
+        )
+        self.assertEqual("reserved", current_attempt["state"])
+        self.assertEqual("reserved", self.database.ai_job(int(job["id"]))["state"])
+        self.assertEqual([], self.database.list_ai_generation_holds())
+
+        created = self.database.mark_ai_attempt_sent(
+            int(attempt["id"]),
+            provisional_generation_hold=ambiguous,
+        )
+        self.assertTrue(created)
+        current_attempt = next(
+            row
+            for row in self.database.list_ai_attempts()
+            if int(row["id"]) == int(attempt["id"])
+        )
+        self.assertEqual("sent", current_attempt["state"])
+        self.assertEqual("sent", self.database.ai_job(int(job["id"]))["state"])
+        self.assertEqual(
+            "ambiguous",
+            self.database.ai_generation_hold(ambiguous["hold_key"])[
+                "hold_class"
+            ],
+        )
+
+        self.database.fail_ai_attempt(
+            attempt_id=int(attempt["id"]),
+            job_state="permanent_failed",
+            error_class="provider_http",
+            error_code="http_429",
+            error_message="fixture",
+            generation_hold={
+                **ambiguous,
+                "hold_class": "fallback_pending",
+            },
+            settle_provisional_generation_hold=True,
+        )
+        self.assertEqual(
+            "fallback_pending",
+            self.database.ai_generation_hold(ambiguous["hold_key"])[
+                "hold_class"
+            ],
+        )
+
+    def test_preexisting_high_risk_hold_cannot_be_settled_down(self):
+        existing = self.generation_hold("ambiguous")
+        self.database.replace_ai_generation_holds([existing])
+        job = self.job("forced-preexisting-hold")
+        attempt = self.reserve(int(job["id"]), "forced-preexisting-hold-key")
+        provisional = self.generation_hold(
+            "ambiguous", include_timestamps=False
+        )
+
+        created = self.database.mark_ai_attempt_sent(
+            int(attempt["id"]),
+            provisional_generation_hold=provisional,
+        )
+        self.assertFalse(created)
+        self.database.fail_ai_attempt(
+            attempt_id=int(attempt["id"]),
+            job_state="permanent_failed",
+            error_class="provider_http",
+            error_code="http_429",
+            error_message="fixture",
+            generation_hold={
+                **provisional,
+                "hold_class": "fallback_pending",
+            },
+            settle_provisional_generation_hold=created,
+        )
+        self.assertEqual(
+            "ambiguous",
+            self.database.ai_generation_hold(existing["hold_key"])[
+                "hold_class"
+            ],
+        )
 
     def test_budget_reservation_is_atomic_across_competing_threads(self):
         jobs = [self.job("artifact-%d" % index) for index in range(2)]
@@ -295,7 +607,12 @@ class AIDatabaseTests(unittest.TestCase):
     def test_stalled_sent_attempt_becomes_unknown_and_is_never_retried(self):
         job = self.job("unknown-artifact")
         attempt = self.reserve(int(job["id"]), "unknown-attempt")
-        self.database.mark_ai_attempt_sent(int(attempt["id"]))
+        self.database.mark_ai_attempt_sent(
+            int(attempt["id"]),
+            provisional_generation_hold=self.generation_hold(
+                "ambiguous", include_timestamps=False
+            ),
+        )
         with self.database.connect() as connection:
             connection.execute(
                 "UPDATE ai_attempts SET request_started_at='2000-01-01T00:00:00Z' WHERE id=?",
@@ -327,7 +644,12 @@ class AIDatabaseTests(unittest.TestCase):
     def test_provider_key_is_audited_but_is_not_attempt_identity(self):
         job = self.job("http-replay")
         first = self.reserve(int(job["id"]), "stable-provider-key")
-        self.database.mark_ai_attempt_sent(int(first["id"]))
+        self.database.mark_ai_attempt_sent(
+            int(first["id"]),
+            provisional_generation_hold=self.generation_hold(
+                "ambiguous", include_timestamps=False
+            ),
+        )
         self.database.fail_ai_attempt(
             attempt_id=int(first["id"]),
             job_state="retryable",

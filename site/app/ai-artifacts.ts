@@ -86,10 +86,12 @@ export function artifactPayload(artifact: AIArtifact | undefined): ArtifactPaylo
   };
 }
 
-export function artifactSearchText(artifacts: AIArtifact[] | undefined) {
-  return (artifacts || []).flatMap((artifact) => {
-    const payload = artifactPayload(artifact);
-    return [payload.title, payload.publisherSummary, payload.summary, ...payload.keyPoints]
-      .filter((value): value is string => value !== null);
-  });
+export function translationSearchText(artifacts: AIArtifact[] | undefined) {
+  return (artifacts || [])
+    .filter((artifact) => artifact.task === "translation")
+    .flatMap((artifact) => {
+      const payload = artifactPayload(artifact);
+      return [payload.title, payload.publisherSummary]
+        .filter((value): value is string => value !== null);
+    });
 }
