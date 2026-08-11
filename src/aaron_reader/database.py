@@ -10,7 +10,7 @@ from .i18n import translate
 from .models import ArticleCandidate, SourceConfig
 
 
-SCHEMA_VERSION = 8
+SCHEMA_VERSION = 9
 
 
 class AIBudgetExceeded(ValueError):
@@ -214,26 +214,6 @@ class Database:
                 );
                 CREATE INDEX IF NOT EXISTS idx_ai_artifacts_article
                     ON ai_artifacts(article_id, task_type, target_language, created_at DESC, id DESC);
-                CREATE INDEX IF NOT EXISTS idx_ai_artifacts_digest
-                    ON ai_artifacts(task_type, target_language, created_at DESC, id DESC);
-
-                CREATE TABLE IF NOT EXISTS ai_reports (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    report_key TEXT NOT NULL UNIQUE,
-                    period TEXT NOT NULL CHECK(period IN ('daily', 'weekly')),
-                    timezone TEXT NOT NULL,
-                    local_date TEXT NOT NULL,
-                    period_start TEXT NOT NULL,
-                    period_end TEXT NOT NULL,
-                    target_language TEXT NOT NULL,
-                    article_ids_json TEXT NOT NULL,
-                    article_content_hash TEXT NOT NULL,
-                    artifact_id INTEGER NOT NULL UNIQUE
-                        REFERENCES ai_artifacts(id) ON DELETE CASCADE,
-                    created_at TEXT NOT NULL
-                );
-                CREATE INDEX IF NOT EXISTS idx_ai_reports_latest
-                    ON ai_reports(period, target_language, created_at DESC, id DESC);
 
                 CREATE TABLE IF NOT EXISTS ai_jobs (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -353,6 +333,8 @@ class Database:
                 self._migrate_ai_schema_v7(connection)
             if stored_version < 8:
                 self._migrate_ai_schema_v8(connection)
+            if stored_version < 9:
+                self._migrate_ai_schema_v9(connection)
             pending_columns = {
                 str(row[1])
                 for row in connection.execute("PRAGMA table_info(pending_urls)").fetchall()
@@ -525,6 +507,50 @@ class Database:
                 "revision INTEGER NOT NULL DEFAULT 1 CHECK(revision >= 1)"
             )
         Database._ensure_ai_generation_hold_revision_sequence(connection)
+
+    @staticmethod
+    def _migrate_ai_schema_v9(connection: sqlite3.Connection) -> None:
+        """Retire AI brief state while preserving provider usage audit rows."""
+
+        has_reports = connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='ai_reports'"
+        ).fetchone()
+        if has_reports:
+            invalid = connection.execute(
+                """
+                SELECT COUNT(*)
+                FROM ai_reports r
+                LEFT JOIN ai_artifacts a ON a.id=r.artifact_id
+                WHERE a.id IS NULL OR a.task_type!='digest' OR a.input_scope!='digest'
+                """
+            ).fetchone()
+            if invalid is None or int(invalid[0] or 0) != 0:
+                raise ValueError("legacy AI report state is inconsistent")
+
+        now = utc_now()
+        connection.execute(
+            """
+            UPDATE ai_jobs
+            SET state=CASE
+                    WHEN state IN ('succeeded', 'cancelled') THEN state
+                    ELSE 'cancelled'
+                END,
+                request_json='{}',
+                updated_at=?
+            WHERE task_type='digest'
+            """,
+            (now,),
+        )
+        connection.execute(
+            "DELETE FROM ai_generation_holds "
+            "WHERE workload_kind IN ('digest', 'report')"
+        )
+        connection.execute("DROP TABLE IF EXISTS ai_reports")
+        connection.execute("DELETE FROM ai_artifacts WHERE task_type='digest'")
+        connection.execute("DROP INDEX IF EXISTS idx_ai_artifacts_digest")
+        foreign_key_errors = connection.execute("PRAGMA foreign_key_check").fetchall()
+        if foreign_key_errors:
+            raise ValueError("AI brief schema migration violated a foreign key")
 
     def sync_source_configs(
         self, sources: Iterable[SourceConfig], language: str = "en"
@@ -1359,78 +1385,6 @@ class Database:
             results.setdefault(key[0], []).append(item)
         return results
 
-    def latest_ai_digest(self, target_language: str) -> Optional[Dict[str, object]]:
-        with self.connect() as connection:
-            row = connection.execute(
-                """
-                SELECT * FROM ai_artifacts
-                WHERE article_id IS NULL AND task_type='digest'
-                  AND target_language=? AND status='succeeded'
-                ORDER BY created_at DESC, id DESC LIMIT 1
-                """,
-                (target_language,),
-            ).fetchone()
-        return dict(row) if row else None
-
-    def ai_report_by_key(self, report_key: str) -> Optional[Dict[str, object]]:
-        with self.connect() as connection:
-            row = connection.execute(
-                """
-                SELECT r.*,
-                    aa.provider AS artifact_provider,
-                    aa.requested_model AS artifact_requested_model,
-                    aa.resolved_model AS artifact_resolved_model
-                FROM ai_reports r
-                JOIN ai_artifacts aa ON aa.id=r.artifact_id
-                WHERE r.report_key=? AND aa.status='succeeded'
-                """,
-                (report_key,),
-            ).fetchone()
-        return dict(row) if row else None
-
-    def latest_ai_reports(self) -> List[Dict[str, object]]:
-        """Return the newest cached report for every period/language pair."""
-
-        with self.connect() as connection:
-            rows = connection.execute(
-                """
-                SELECT
-                    r.id AS report_id,
-                    r.report_key,
-                    r.period,
-                    r.timezone,
-                    r.local_date,
-                    r.period_start,
-                    r.period_end,
-                    r.target_language,
-                    r.article_ids_json,
-                    r.article_content_hash,
-                    r.created_at,
-                    aa.id AS artifact_id,
-                    aa.input_scope,
-                    aa.input_truncated,
-                    aa.provider,
-                    aa.requested_model,
-                    aa.resolved_model,
-                    aa.output_json,
-                    aa.status
-                FROM ai_reports r
-                JOIN ai_artifacts aa ON aa.id=r.artifact_id
-                WHERE aa.status='succeeded'
-                ORDER BY r.created_at DESC, r.id DESC
-                """
-            ).fetchall()
-        result: List[Dict[str, object]] = []
-        seen = set()
-        for row in rows:
-            item = dict(row)
-            key = (str(item["period"]), str(item["target_language"]))
-            if key in seen:
-                continue
-            seen.add(key)
-            result.append(item)
-        return result
-
     def ensure_ai_job(
         self,
         *,
@@ -1837,7 +1791,7 @@ class Database:
             raw.get("descriptor")
         )
         workload_kind = raw.get("workload_kind")
-        if workload_kind not in {"article", "article_pair", "digest", "report"}:
+        if workload_kind not in {"article", "article_pair"}:
             raise ValueError("AI generation hold workload_kind is invalid")
         if descriptor.get("workload_kind") != workload_kind:
             raise ValueError("AI generation hold descriptor workload differs")
@@ -2418,8 +2372,6 @@ class Database:
         attempt_id: int,
         artifact: Dict[str, object],
         additional_artifacts: Sequence[Dict[str, object]] = (),
-        report_records: Sequence[Mapping[str, object]] = (),
-        report_article_versions: Optional[Mapping[int, str]] = None,
         usage: Dict[str, int],
         actual_cost_micros: Optional[int] = None,
         usage_confirmed: bool = True,
@@ -2439,14 +2391,6 @@ class Database:
             "status", "input_truncated", "created_at",
         )
         artifacts = [artifact] + list(additional_artifacts)
-        if report_records and len(report_records) != len(artifacts):
-            raise AIJobConflict(
-                "AI attempt report records must match committed artifacts"
-            )
-        if report_records and report_article_versions is None:
-            raise AIJobConflict(
-                "AI attempt report records require article versions"
-            )
         with self.connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
             attempt = connection.execute(
@@ -2482,25 +2426,6 @@ class Database:
                     connection.rollback()
                     raise sqlite3.IntegrityError("AI artifact was not stored")
                 stored_rows.append(stored_candidate)
-            if report_records:
-                normalized, first_report, expected_versions = (
-                    self._normalize_ai_report_attachments(
-                        [
-                            (dict(stored_row), dict(report))
-                            for stored_row, report in zip(
-                                stored_rows, report_records
-                            )
-                        ],
-                        report_article_versions or {},
-                    )
-                )
-                self._attach_existing_ai_reports_in_connection(
-                    connection,
-                    normalized,
-                    first_report=first_report,
-                    expected_versions=expected_versions,
-                    now=now,
-                )
             stored = stored_rows[0]
             recorded_usage = usage if usage_confirmed else {}
             actual_total = recorded_usage.get("total_tokens")
@@ -2630,365 +2555,6 @@ class Database:
                 stored_artifacts.append(result)
             connection.commit()
         return stored_artifacts
-
-    def store_external_ai_report(
-        self,
-        artifact: Dict[str, object],
-        report: Dict[str, object],
-        *,
-        article_versions: Mapping[int, str],
-    ) -> Dict[str, object]:
-        """Atomically cache a subscription-produced digest and report record.
-
-        The transaction rechecks every covered article version immediately
-        before insertion.  Like ``store_external_ai_artifacts``, this path
-        deliberately creates no provider attempt or budget reservation.
-        """
-
-        if artifact.get("article_id") is not None:
-            raise AIJobConflict("external AI reports cannot belong to one article")
-        if artifact.get("task_type") != "digest" or artifact.get("input_scope") != "digest":
-            raise AIJobConflict("external AI reports require a digest artifact")
-        if report.get("period") not in {"daily", "weekly"}:
-            raise AIJobConflict("external AI report period is invalid")
-        expected_versions = {
-            int(article_id): str(content_hash or "")
-            for article_id, content_hash in article_versions.items()
-        }
-        expected_ids = list(expected_versions)
-        if not 1 <= len(expected_ids) <= 50:
-            raise AIJobConflict("AI report selected article count is invalid")
-        try:
-            supplied_ids = json.loads(str(report.get("article_ids_json") or ""))
-        except (TypeError, ValueError, json.JSONDecodeError) as exc:
-            raise AIJobConflict("AI report article IDs are invalid") from exc
-        if supplied_ids != expected_ids:
-            raise AIJobConflict("AI report article IDs differ")
-
-        now = utc_now()
-        artifact_columns = (
-            "article_id", "task_type", "input_scope", "source_language",
-            "target_language", "artifact_key", "input_hash", "article_content_hash",
-            "source_artifact_id", "content_snapshot_id", "prompt_version", "prompt_hash",
-            "response_schema_version", "response_schema_hash", "provider",
-            "requested_model", "resolved_model", "generation_params_hash",
-            "provider_response_id", "output_json", "output_text", "output_hash",
-            "status", "input_truncated", "created_at",
-        )
-        report_columns = (
-            "report_key", "period", "timezone", "local_date", "period_start",
-            "period_end", "target_language", "article_ids_json",
-            "article_content_hash", "artifact_id", "created_at",
-        )
-        with self.connect() as connection:
-            connection.execute("BEGIN IMMEDIATE")
-            current_rows = connection.execute(
-                """
-                SELECT id, content_hash
-                FROM articles
-                WHERE julianday(COALESCE(published_at, discovered_at))
-                          >= julianday(?)
-                  AND julianday(COALESCE(published_at, discovered_at))
-                          <= julianday(?)
-                ORDER BY COALESCE(published_at, discovered_at) DESC,
-                    source_slug ASC, external_id ASC, canonical_url ASC
-                LIMIT ?
-                """,
-                (
-                    report.get("period_start"),
-                    report.get("period_end"),
-                    len(expected_versions),
-                ),
-            ).fetchall()
-            current_versions = {
-                int(row["id"]): str(row["content_hash"] or "")
-                for row in current_rows
-            }
-            if (
-                list(current_versions) != list(expected_versions)
-                or current_versions != expected_versions
-            ):
-                connection.rollback()
-                raise AIJobConflict(
-                    "the AI report article set changed before import"
-                )
-            for article_id, content_hash in article_versions.items():
-                row = connection.execute(
-                    "SELECT content_hash FROM articles WHERE id=?", (int(article_id),)
-                ).fetchone()
-                if row is None:
-                    connection.rollback()
-                    raise AIJobConflict(
-                        "article %s disappeared before AI report import" % article_id
-                    )
-                if str(row["content_hash"] or "") != str(content_hash or ""):
-                    connection.rollback()
-                    raise AIJobConflict(
-                        "article %s changed before AI report import" % article_id
-                    )
-
-            artifact_values = [artifact.get(column) for column in artifact_columns[:-1]] + [now]
-            artifact_cursor = connection.execute(
-                "INSERT OR IGNORE INTO ai_artifacts(%s) VALUES (%s)"
-                % (
-                    ", ".join(artifact_columns),
-                    ", ".join("?" for _ in artifact_columns),
-                ),
-                artifact_values,
-            )
-            stored_artifact = connection.execute(
-                "SELECT * FROM ai_artifacts WHERE artifact_key=?",
-                (artifact["artifact_key"],),
-            ).fetchone()
-            if stored_artifact is None:
-                connection.rollback()
-                raise sqlite3.IntegrityError("AI report artifact was not stored")
-
-            report_values = [report.get(column) for column in report_columns[:-2]] + [
-                int(stored_artifact["id"]),
-                now,
-            ]
-            report_cursor = connection.execute(
-                "INSERT OR IGNORE INTO ai_reports(%s) VALUES (%s)"
-                % (
-                    ", ".join(report_columns),
-                    ", ".join("?" for _ in report_columns),
-                ),
-                report_values,
-            )
-            stored_report = connection.execute(
-                "SELECT * FROM ai_reports WHERE report_key=?",
-                (report["report_key"],),
-            ).fetchone()
-            if stored_report is None:
-                connection.rollback()
-                raise sqlite3.IntegrityError("AI report record was not stored")
-            expected = {
-                column: report.get(column)
-                for column in report_columns[:-2]
-            }
-            for column, expected_value in expected.items():
-                if str(stored_report[column]) != str(expected_value):
-                    connection.rollback()
-                    raise AIJobConflict("AI report cache key collision")
-            if int(stored_report["artifact_id"]) != int(stored_artifact["id"]):
-                connection.rollback()
-                raise AIJobConflict("AI report artifact cache key collision")
-            connection.commit()
-
-        result = dict(stored_report)
-        result["artifact_id"] = int(stored_artifact["id"])
-        result["artifact_cache_hit"] = artifact_cursor.rowcount == 0
-        result["cache_hit"] = report_cursor.rowcount == 0
-        return result
-
-    @staticmethod
-    def _normalize_ai_report_attachments(
-        records: Sequence[
-            Tuple[Mapping[str, object], Mapping[str, object]]
-        ],
-        article_versions: Mapping[int, str],
-    ) -> Tuple[
-        List[Tuple[Dict[str, object], Dict[str, object]]],
-        Dict[str, object],
-        Dict[int, str],
-    ]:
-        if not records or len(records) > 2:
-            raise AIJobConflict("AI report attachment requires one or two records")
-        normalized = [
-            (dict(artifact), dict(report)) for artifact, report in records
-        ]
-        first_report = normalized[0][1]
-        window = (
-            first_report.get("period"),
-            first_report.get("timezone"),
-            first_report.get("local_date"),
-            first_report.get("period_start"),
-            first_report.get("period_end"),
-        )
-        languages = set()
-        for artifact, report in normalized:
-            if artifact.get("article_id") is not None:
-                raise AIJobConflict("AI report artifact cannot belong to one article")
-            if (
-                artifact.get("task_type") != "digest"
-                or artifact.get("input_scope") != "digest"
-            ):
-                raise AIJobConflict("AI report attachment requires digest artifacts")
-            if report.get("period") not in {"daily", "weekly"}:
-                raise AIJobConflict("AI report period is invalid")
-            if (
-                report.get("period"),
-                report.get("timezone"),
-                report.get("local_date"),
-                report.get("period_start"),
-                report.get("period_end"),
-            ) != window:
-                raise AIJobConflict("AI report attachment windows differ")
-            language = str(report.get("target_language") or "")
-            if not language or language != str(
-                artifact.get("target_language") or ""
-            ):
-                raise AIJobConflict("AI report artifact language differs")
-            if language in languages:
-                raise AIJobConflict(
-                    "AI report attachment languages must be distinct"
-                )
-            languages.add(language)
-            if str(report.get("article_content_hash") or "") != str(
-                artifact.get("article_content_hash") or ""
-            ):
-                raise AIJobConflict("AI report artifact content hash differs")
-
-        expected_versions = {
-            int(article_id): str(content_hash or "")
-            for article_id, content_hash in article_versions.items()
-        }
-        expected_ids = list(expected_versions)
-        if not 1 <= len(expected_ids) <= 50:
-            raise AIJobConflict("AI report selected article count is invalid")
-        for _, report in normalized:
-            try:
-                supplied_ids = json.loads(
-                    str(report.get("article_ids_json") or "")
-                )
-            except (TypeError, ValueError, json.JSONDecodeError) as exc:
-                raise AIJobConflict("AI report article IDs are invalid") from exc
-            if supplied_ids != expected_ids:
-                raise AIJobConflict("AI report article IDs differ")
-        return normalized, first_report, expected_versions
-
-    @staticmethod
-    def _attach_existing_ai_reports_in_connection(
-        connection: sqlite3.Connection,
-        normalized: Sequence[
-            Tuple[Mapping[str, object], Mapping[str, object]]
-        ],
-        *,
-        first_report: Mapping[str, object],
-        expected_versions: Mapping[int, str],
-        now: str,
-    ) -> List[Dict[str, object]]:
-        current_rows = connection.execute(
-            """
-            SELECT id, content_hash
-            FROM articles
-            WHERE julianday(COALESCE(published_at, discovered_at))
-                      >= julianday(?)
-              AND julianday(COALESCE(published_at, discovered_at))
-                      <= julianday(?)
-            ORDER BY COALESCE(published_at, discovered_at) DESC,
-                source_slug ASC, external_id ASC, canonical_url ASC
-            LIMIT ?
-            """,
-            (
-                first_report.get("period_start"),
-                first_report.get("period_end"),
-                len(expected_versions),
-            ),
-        ).fetchall()
-        current_versions = {
-            int(row["id"]): str(row["content_hash"] or "")
-            for row in current_rows
-        }
-        if (
-            list(current_versions) != list(expected_versions)
-            or current_versions != expected_versions
-        ):
-            raise AIJobConflict(
-                "the AI report article set changed before attachment"
-            )
-
-        report_columns = (
-            "report_key", "period", "timezone", "local_date", "period_start",
-            "period_end", "target_language", "article_ids_json",
-            "article_content_hash", "artifact_id", "created_at",
-        )
-        results: List[Dict[str, object]] = []
-        for artifact, report in normalized:
-            artifact_id = artifact.get("id")
-            if isinstance(artifact_id, bool) or not isinstance(artifact_id, int):
-                raise AIJobConflict("AI report artifact ID is invalid")
-            stored_artifact = connection.execute(
-                "SELECT * FROM ai_artifacts WHERE id=?",
-                (int(artifact_id),),
-            ).fetchone()
-            if stored_artifact is None:
-                raise AIJobConflict("AI report artifact disappeared")
-            for field in (
-                "artifact_key",
-                "task_type",
-                "input_scope",
-                "target_language",
-                "input_hash",
-                "article_content_hash",
-                "output_hash",
-                "status",
-            ):
-                if str(stored_artifact[field]) != str(artifact.get(field)):
-                    raise AIJobConflict(
-                        "AI report artifact changed before attachment"
-                    )
-
-            values = [report.get(column) for column in report_columns[:-2]] + [
-                int(artifact_id),
-                now,
-            ]
-            cursor = connection.execute(
-                "INSERT OR IGNORE INTO ai_reports(%s) VALUES (%s)"
-                % (
-                    ", ".join(report_columns),
-                    ", ".join("?" for _ in report_columns),
-                ),
-                values,
-            )
-            stored_report = connection.execute(
-                "SELECT * FROM ai_reports WHERE report_key=?",
-                (report["report_key"],),
-            ).fetchone()
-            if stored_report is None:
-                raise sqlite3.IntegrityError("AI report record was not stored")
-            for column in report_columns[:-2]:
-                if str(stored_report[column]) != str(report.get(column)):
-                    raise AIJobConflict("AI report cache key collision")
-            if int(stored_report["artifact_id"]) != int(artifact_id):
-                raise AIJobConflict("AI report artifact cache key collision")
-            result = dict(stored_report)
-            result["cache_hit"] = cursor.rowcount == 0
-            results.append(result)
-        return results
-
-    def store_existing_ai_reports(
-        self,
-        records: Sequence[
-            Tuple[Mapping[str, object], Mapping[str, object]]
-        ],
-        *,
-        article_versions: Mapping[int, str],
-    ) -> List[Dict[str, object]]:
-        """Idempotently attach report rows to already committed artifacts.
-
-        Provider-backed report generation now supplies these records directly
-        to ``complete_ai_attempt`` so artifacts, reports, usage, and attempt
-        state commit together.  This method remains for cache hits and for
-        validated artifacts imported through the external bridge.
-        """
-
-        normalized, first_report, expected_versions = (
-            self._normalize_ai_report_attachments(records, article_versions)
-        )
-        now = utc_now()
-        with self.connect() as connection:
-            connection.execute("BEGIN IMMEDIATE")
-            results = self._attach_existing_ai_reports_in_connection(
-                connection,
-                normalized,
-                first_report=first_report,
-                expected_versions=expected_versions,
-                now=now,
-            )
-            connection.commit()
-        return results
 
     def fail_ai_attempt(
         self,

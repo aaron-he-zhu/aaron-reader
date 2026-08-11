@@ -64,7 +64,6 @@ class AIConfig:
     provider: str = OPENROUTER_PROFILE.provider
     translation_model: str = OPENROUTER_PROFILE.model
     summary_model: str = OPENROUTER_PROFILE.model
-    digest_model: str = OPENROUTER_PROFILE.model
     reasoning_effort: str = "none"
     store: bool = False
     api_key_environment: str = OPENROUTER_PROFILE.api_key_environment
@@ -73,12 +72,10 @@ class AIConfig:
     max_full_text_chars: int = 60_000
     max_output_tokens_summary: int = 400
     max_output_tokens_translation: int = 800
-    max_output_tokens_digest: int = 1_200
     timeout_seconds: int = 60
     max_response_bytes: int = 2_000_000
     summary_enabled: bool = True
     translation_enabled: bool = True
-    digest_enabled: bool = True
     full_text_enabled: bool = False
     budget: AIBudgetConfig = field(default_factory=AIBudgetConfig)
     batch: AIBatchConfig = field(default_factory=AIBatchConfig)

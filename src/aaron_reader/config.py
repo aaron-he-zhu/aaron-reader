@@ -305,11 +305,6 @@ def _load_ai_config(raw_value: object) -> AIConfig:
             "config.ai.summary_model",
             profile.model,
         ),
-        digest_model=_fixed_provider_model(
-            raw.get("digest_model", profile.model),
-            "config.ai.digest_model",
-            profile.model,
-        ),
         reasoning_effort=reasoning,
         store=store,
         api_key_environment=api_key_environment,
@@ -338,12 +333,6 @@ def _load_ai_config(raw_value: object) -> AIConfig:
             minimum=32,
             maximum=32_000,
         ),
-        max_output_tokens_digest=_integer(
-            outputs.get("digest", 1_200),
-            "config.ai.max_output_tokens.digest",
-            minimum=32,
-            maximum=32_000,
-        ),
         timeout_seconds=_integer(
             raw.get("timeout_seconds", 60),
             "config.ai.timeout_seconds",
@@ -361,9 +350,6 @@ def _load_ai_config(raw_value: object) -> AIConfig:
         ),
         translation_enabled=_boolean(
             features.get("translation", True), "config.ai.features.translation"
-        ),
-        digest_enabled=_boolean(
-            features.get("digest", True), "config.ai.features.digest"
         ),
         full_text_enabled=_boolean(
             features.get("full_text", False), "config.ai.features.full_text"

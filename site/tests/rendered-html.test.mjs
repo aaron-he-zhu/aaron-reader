@@ -51,8 +51,15 @@ test("server-renders the Aaron Reader snapshot", async () => {
       (artifact) => artifact.task === "translation" && artifact.target_language === "zh-CN",
     );
   }).length;
-  const expectedEnglishReports = (snapshot.ai_reports || []).filter(
-    (report) => report.target_language === "en" || report.output?.language === "en",
+  assert.equal(
+    Object.hasOwn(snapshot, "ai_reports"),
+    false,
+    "The public snapshot must not expose removed AI brief payloads",
+  );
+  assert.equal(
+    Object.hasOwn(snapshot, "cached_ai_report_count"),
+    false,
+    "The public snapshot must not expose the removed AI brief counter",
   );
   const response = await render();
   assert.equal(response.status, 200);
@@ -105,38 +112,12 @@ test("server-renders the Aaron Reader snapshot", async () => {
   assert.match(html, /GitHub Actions · 09:15 &amp; 21:15 San Francisco/);
   assert.match(html, /collected at 09:15 and 21:15 San Francisco time/);
   assert.doesNotMatch(html, /collected at 10:00 and 22:00 San Francisco time/);
-  const reportCards = html.match(
-    /<article\b(?=[^>]*\bclass="[^"]*\breport-card\b[^"]*")[^>]*>[\s\S]*?<\/article>/g,
-  ) ?? [];
-  if (expectedEnglishReports.length > 0) {
-    assert.match(html, /class="report-section"/);
-    for (const report of expectedEnglishReports) {
-      const label = report.period === "daily" ? "Daily brief" : "Weekly brief";
-      assert.ok(
-        reportCards.some(
-          (card) => /\blang="en"/.test(card) && card.includes(`<strong>${label}</strong>`),
-        ),
-        `English SSR should render its ${report.period} report card`,
-      );
-    }
-  } else {
-    assert.equal(reportCards.length, 0);
-  }
-  assert.ok(
-    reportCards.every((card) => !/\blang="zh-CN"/.test(card)),
-    "English SSR must not render a visible zh-CN report card",
+  assert.doesNotMatch(html, /id="report-section-title"/);
+  assert.doesNotMatch(
+    html,
+    /class="[^"]*\breport-(?:section|grid|card|items|footer)\b/,
+    "SSR must not render the removed AI brief UI",
   );
-  const reportDetailTags = reportCards.flatMap(
-    (card) => card.match(
-      /<details\b(?=[^>]*\bclass="[^"]*\breport-items\b[^"]*")[^>]*>/g,
-    ) ?? [],
-  );
-  if (reportCards.length > 0) {
-    assert.ok(reportDetailTags.length > 0, "Published reports should include source notes");
-  }
-  for (const tag of reportDetailTags) {
-    assert.doesNotMatch(tag, /\sopen(?:\s|=|>)/i, "Report details should be collapsed by default");
-  }
   assert.match(html, /OpenAI News/);
   assert.match(html, /Anthropic News/);
   assert.doesNotMatch(html, /codex-preview/);

@@ -67,33 +67,35 @@ await mkdir(resolve(siteRoot, "public", "reader"), { recursive: true });
 const snapshotSource = resolve(readerRoot, "public", "latest.json");
 await access(snapshotSource);
 const snapshot = JSON.parse(await readFile(snapshotSource, "utf8"));
-    const publicCounts = { ...snapshot.counts };
-    delete publicCounts.unread;
-    delete publicCounts.starred;
-    snapshot.counts = publicCounts;
-    snapshot.sources = snapshot.sources.map((item) => {
-      const publicSource = { ...item };
-      delete publicSource.unread_count;
-      delete publicSource.pending_count;
-      delete publicSource.last_error;
-      return publicSource;
-    });
-    snapshot.articles = snapshot.articles.map((item) => {
-      const publicArticle = { ...item };
-      delete publicArticle.unread;
-      delete publicArticle.starred;
-      publicArticle.ai_artifacts = Array.isArray(publicArticle.ai_artifacts)
-        ? publicArticle.ai_artifacts.filter(
-          (artifact) => artifact && artifact.task === "translation",
-        )
-        : [];
-      return publicArticle;
-    });
-    snapshot.cached_ai_artifact_count = snapshot.articles.reduce(
-      (count, article) => count + article.ai_artifacts.length,
-      0,
-    );
-    const publicJson = `${JSON.stringify(snapshot, null, 2)}\n`;
+delete snapshot.ai_reports;
+delete snapshot.cached_ai_report_count;
+const publicCounts = { ...snapshot.counts };
+delete publicCounts.unread;
+delete publicCounts.starred;
+snapshot.counts = publicCounts;
+snapshot.sources = snapshot.sources.map((item) => {
+  const publicSource = { ...item };
+  delete publicSource.unread_count;
+  delete publicSource.pending_count;
+  delete publicSource.last_error;
+  return publicSource;
+});
+snapshot.articles = snapshot.articles.map((item) => {
+  const publicArticle = { ...item };
+  delete publicArticle.unread;
+  delete publicArticle.starred;
+  publicArticle.ai_artifacts = Array.isArray(publicArticle.ai_artifacts)
+    ? publicArticle.ai_artifacts.filter(
+      (artifact) => artifact && artifact.task === "translation",
+    )
+    : [];
+  return publicArticle;
+});
+snapshot.cached_ai_artifact_count = snapshot.articles.reduce(
+  (count, article) => count + article.ai_artifacts.length,
+  0,
+);
+const publicJson = `${JSON.stringify(snapshot, null, 2)}\n`;
 await writeFile(resolve(siteRoot, "data", "latest.json"), publicJson, "utf8");
 await writeFile(resolve(siteRoot, "public", "reader", "latest.json"), publicJson, "utf8");
 await writeFile(

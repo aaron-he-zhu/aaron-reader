@@ -302,7 +302,7 @@ def import_crawler_state(
     """Strictly import a crawler bundle, preserving every local-only table.
 
     Merge mode preserves existing article IDs, read/star state, AI artifacts,
-    AI reports, jobs, attempts, notifications, and full-text snapshots.  New
+    jobs, attempts, notifications, and full-text snapshots.  New
     articles are inserted unread.  Seed mode requires an empty content/AI
     database and marks imported history read so a subsequent sync identifies
     only genuinely new discoveries.
@@ -331,7 +331,6 @@ def import_crawler_state(
                 SELECT
                     (SELECT COUNT(*) FROM articles) AS articles,
                     (SELECT COUNT(*) FROM ai_artifacts) AS artifacts,
-                    (SELECT COUNT(*) FROM ai_reports) AS reports,
                     (SELECT COUNT(*) FROM article_content_snapshots) AS snapshots
                 """
             ).fetchone()
@@ -525,7 +524,6 @@ def import_crawler_state(
         "updated": updated,
         "unchanged": unchanged,
         "ai_artifacts_touched": 0,
-        "ai_reports_touched": 0,
         "personal_state_touched": 0,
     }
 

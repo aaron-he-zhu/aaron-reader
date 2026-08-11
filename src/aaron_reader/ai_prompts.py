@@ -62,33 +62,6 @@ TRANSLATION_SCHEMA: Dict[str, object] = {
 }
 
 
-DIGEST_SCHEMA: Dict[str, object] = {
-    "type": "object",
-    "properties": {
-        "headline": {"type": "string", "minLength": 1, "maxLength": 500},
-        "overview": {"type": "string", "minLength": 1, "maxLength": 2400},
-        "items": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "article_id": {"type": "integer"},
-                    "title": {"type": "string", "minLength": 1, "maxLength": 1000},
-                    "summary": {"type": "string", "minLength": 1, "maxLength": 1000},
-                },
-                "required": ["article_id", "title", "summary"],
-                "additionalProperties": False,
-            },
-            "maxItems": 50,
-        },
-        "language": {"type": "string"},
-        "limitations": {"type": "string", "maxLength": 800},
-    },
-    "required": ["headline", "overview", "items", "language", "limitations"],
-    "additionalProperties": False,
-}
-
-
 @dataclass(frozen=True)
 class TaskDefinition:
     task_type: str
@@ -125,13 +98,6 @@ def task_definition(task_type: str) -> TaskDefinition:
         )
         schema_name = "article_translation"
         schema = TRANSLATION_SCHEMA
-    elif task_type == "digest":
-        detail = (
-            "Create one overview and one short item for every supplied article. "
-            "Use each article_id exactly once and do not invent or reorder IDs."
-        )
-        schema_name = "article_digest"
-        schema = DIGEST_SCHEMA
     else:
         raise ValueError("unsupported AI task: %s" % task_type)
     instructions = "%s\nTask-specific success criteria:\n%s" % (
@@ -172,7 +138,6 @@ def parse_and_validate_output(
     *,
     target_language: str,
     input_scope: str,
-    expected_article_ids: Optional[Sequence[int]] = None,
     translated_fields: Sequence[str] = ("title", "publisher_summary"),
     translation_input: Optional[Mapping[str, object]] = None,
 ) -> Tuple[Dict[str, object], str]:
@@ -256,48 +221,5 @@ def parse_and_validate_output(
                 clean_translation[field] = cleaned
                 readable_parts.append(cleaned)
         return clean_translation, "\n\n".join(readable_parts)
-
-    if task_type == "digest":
-        expected_keys = {"headline", "overview", "items", "language", "limitations"}
-        if set(value) != expected_keys:
-            raise ValueError("digest output fields do not match the response contract")
-        language = _clean_text(value["language"], "language", maximum=32)
-        if language != target_language:
-            raise ValueError("digest output language does not match target_language")
-        items = value["items"]
-        if not isinstance(items, list) or len(items) > 50:
-            raise ValueError("digest items must be an array with at most 50 entries")
-        clean_items: List[Dict[str, object]] = []
-        returned_ids: List[int] = []
-        for item in items:
-            if not isinstance(item, dict) or set(item) != {"article_id", "title", "summary"}:
-                raise ValueError("digest item fields do not match the response contract")
-            article_id = item["article_id"]
-            if isinstance(article_id, bool) or not isinstance(article_id, int):
-                raise ValueError("digest article_id must be an integer")
-            returned_ids.append(article_id)
-            clean_items.append(
-                {
-                    "article_id": article_id,
-                    "title": _clean_text(item["title"], "title", maximum=1000),
-                    "summary": _clean_text(item["summary"], "summary", maximum=1000),
-                }
-            )
-        expected_ids = [int(value) for value in (expected_article_ids or [])]
-        if returned_ids != expected_ids or len(set(returned_ids)) != len(returned_ids):
-            raise ValueError("digest article IDs do not exactly match the input order")
-        clean_digest: Dict[str, object] = {
-            "headline": _clean_text(value["headline"], "headline", maximum=500),
-            "overview": _clean_text(value["overview"], "overview", maximum=2400),
-            "items": clean_items,
-            "language": language,
-            "limitations": _clean_text(
-                value["limitations"], "limitations", maximum=800, allow_empty=True
-            ),
-        }
-        lines = [str(clean_digest["headline"]), "", str(clean_digest["overview"])]
-        for item in clean_items:
-            lines.extend(("", "- %s" % item["title"], "  %s" % item["summary"]))
-        return clean_digest, "\n".join(lines)
 
     raise ValueError("unsupported AI task: %s" % task_type)

@@ -120,7 +120,6 @@ def render_outputs(
     artifact_map = database.latest_ai_artifacts(
         [int(article["id"]) for article in recent_articles]
     )
-    ai_reports = database.latest_ai_reports()
     recent_articles = [
         dict(
             article,
@@ -157,7 +156,6 @@ def render_outputs(
             counts=counts,
             article_limit=LATEST_JSON_ARTICLE_LIMIT,
             language=resolved_language,
-            ai_reports=ai_reports,
         ),
     )
     _atomic_write(
@@ -425,7 +423,6 @@ def render_json(
     counts: Optional[Dict[str, int]] = None,
     article_limit: Optional[int] = None,
     language: str = "en",
-    ai_reports: Sequence[Dict[str, object]] = (),
 ) -> str:
     resolved_language = _normalize_language(language)
     resolved_counts = _resolve_counts(articles, statuses, counts)
@@ -446,7 +443,6 @@ def render_json(
         "llm_tokens_used": 0,
         "render_llm_tokens_used": 0,
         "cached_ai_artifact_count": cached_ai_artifact_count,
-        "cached_ai_report_count": len(ai_reports),
         "counts": resolved_counts,
         "articles_page": {
             "order": "newest_first",
@@ -469,16 +465,6 @@ def render_json(
             for source in statuses
         ],
         "articles": [_public_article(article) for article in articles],
-        "ai_reports": [
-            _public_ai_report(report)
-            for report in sorted(
-                ai_reports,
-                key=lambda item: (
-                    {"daily": 0, "weekly": 1}.get(str(item.get("period")), 2),
-                    str(item.get("target_language") or ""),
-                ),
-            )
-        ],
     }
     return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
 
@@ -773,27 +759,6 @@ def _public_ai_artifact(artifact: Dict[str, object]) -> Dict[str, object]:
         "target_language": _output_text(artifact.get("target_language") or ""),
         "generated_at": _output_text(artifact.get("created_at") or "") or None,
         "input_truncated": bool(artifact.get("input_truncated")),
-        "output": output,
-    }
-
-
-def _public_ai_report(report: Dict[str, object]) -> Dict[str, object]:
-    try:
-        output = json.loads(_output_text(report.get("output_json") or "{}"))
-    except (TypeError, ValueError, json.JSONDecodeError):
-        output = {}
-    if not isinstance(output, dict):
-        output = {}
-    return {
-        "id": int(report.get("report_id") or 0),
-        "period": _output_text(report.get("period") or ""),
-        "timezone": _output_text(report.get("timezone") or ""),
-        "local_date": _output_text(report.get("local_date") or ""),
-        "period_start": _output_text(report.get("period_start") or ""),
-        "period_end": _output_text(report.get("period_end") or ""),
-        "target_language": _output_text(report.get("target_language") or ""),
-        "generated_at": _output_text(report.get("created_at") or "") or None,
-        "input_truncated": bool(report.get("input_truncated")),
         "output": output,
     }
 

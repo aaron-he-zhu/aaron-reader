@@ -7,7 +7,6 @@ from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional, Sequence
-from zoneinfo import ZoneInfo
 
 from .ai_profiles import (
     DEFAULT_AI_FALLBACK_PROVIDER,
@@ -127,11 +126,6 @@ def build_parser(language: str = "en") -> argparse.ArgumentParser:
         type=lambda value: _article_limit(value, language),
         default=50,
         help="Maximum number of articles with missing AI coverage to process",
-    )
-    cloud_run_parser.add_argument(
-        "--force-weekly",
-        action="store_true",
-        help="Generate weekly reports outside the Sunday-night schedule",
     )
     cloud_run_parser.add_argument(
         "--force-held",
@@ -556,7 +550,6 @@ def _run_ai_command(
             fallback_provider=fallback_name,
             translation_model=profile.model,
             summary_model=profile.model,
-            digest_model=profile.model,
             reasoning_effort="none",
             store=False,
             api_key_environment=profile.api_key_environment,
@@ -564,12 +557,10 @@ def _run_ai_command(
             max_input_chars_per_article=12_000,
             max_output_tokens_summary=400,
             max_output_tokens_translation=800,
-            max_output_tokens_digest=1_200,
             timeout_seconds=60,
             max_response_bytes=2_000_000,
             summary_enabled=False,
             translation_enabled=True,
-            digest_enabled=True,
             full_text_enabled=False,
             budget=replace(
                 config.ai.budget,
@@ -591,7 +582,6 @@ def _run_ai_command(
             fallback_provider="",
             translation_model=fallback_profile.model,
             summary_model=fallback_profile.model,
-            digest_model=fallback_profile.model,
             api_key_environment=fallback_profile.api_key_environment,
         )
         fallback_service = AIService(
@@ -601,7 +591,6 @@ def _run_ai_command(
         )
     try:
         if command == "cloud-run":
-            from .ai_subscription import generate_cloud_report_pair
             from .database import AIBudgetExceeded
 
             if not args.yes:
@@ -611,10 +600,6 @@ def _run_ai_command(
                 int(previous_attempts[0]["id"]) if previous_attempts else 0
             )
             now = datetime.now(timezone.utc).replace(microsecond=0)
-            weekly_due = _weekly_report_due(
-                now,
-                force=bool(args.force_weekly),
-            )
             result = {
                 "provider": ai.provider,
                 "model": ai.translation_model,
@@ -636,14 +621,12 @@ def _run_ai_command(
                     "validation": "fixed chat-completions request",
                 },
                 "started_at": now.isoformat().replace("+00:00", "Z"),
-                "weekly_due": weekly_due,
                 "force_held": bool(args.force_held),
                 "article_limit": int(args.limit),
                 "provider_api_calls": 0,
                 "coverage_cache_hits": 0,
                 "generation_holds_skipped": 0,
                 "article_results": [],
-                "reports": [],
                 "failures": [],
             }
             active_service = service
@@ -689,64 +672,6 @@ def _run_ai_command(
 
             budget_exhausted = False
             run_failed = False
-            report_periods = ["daily"] + (["weekly"] if weekly_due else [])
-            for period in report_periods:
-                try:
-                    period_result, used_provider, calls = execute_provider_operation(
-                        lambda selected, is_primary: generate_cloud_report_pair(
-                            selected,
-                            period=period,
-                            now=now,
-                            force_held=(
-                                bool(args.force_held) if is_primary else False
-                            ),
-                        ),
-                        {"kind": "report", "period": period},
-                    )
-                    period_result["provider_api_calls"] = calls
-                    report_rows = period_result.get("reports")
-                    if isinstance(report_rows, list):
-                        for index, report_row in enumerate(report_rows):
-                            if isinstance(report_row, dict):
-                                report_row["provider_api_calls"] = (
-                                    calls if index == 0 else 0
-                                )
-                    result["reports"].extend(period_result["reports"])
-                    result["provider_api_calls"] += calls
-                    result["generation_holds_skipped"] += int(
-                        period_result.get("generation_holds_skipped") or 0
-                    )
-                except AIGenerationHeld as exc:
-                    # Defensive fallback: the paired report helper normally
-                    # converts a persisted hold into two explicit zero-call
-                    # rows, but a newly added report path must still fail safe.
-                    result["generation_holds_skipped"] += 1
-                    for target_language in ("en", "zh-CN"):
-                        result["reports"].append(
-                            {
-                                "period": period,
-                                "target_language": target_language,
-                                "cache_hit": False,
-                                "provider_api_calls": 0,
-                                "skipped": "generation_hold",
-                                "detail": str(exc)[:200],
-                            }
-                        )
-                except (AIServiceError, AIBudgetExceeded, ProviderConfigError) as exc:
-                    result["failures"].append(
-                        {
-                            "kind": "report",
-                            "period": period,
-                            "target_language": "en+zh-CN",
-                            "error": str(exc)[:500],
-                        }
-                    )
-                    if isinstance(exc, AIBudgetExceeded):
-                        budget_exhausted = True
-                    run_failed = True
-                if run_failed:
-                    break
-
             articles = database.list_articles(limit=1000)
             result["articles_scanned"] = len(articles)
             missing_seen = 0
@@ -928,11 +853,3 @@ def _ai_usage_after(database: Database, baseline_attempt_id: int) -> dict:
         )
         usage["total_tokens"] += int(actual_total)
     return usage
-
-
-def _weekly_report_due(now: datetime, *, force: bool = False) -> bool:
-    if force:
-        return True
-    moment = now if now.tzinfo is not None else now.replace(tzinfo=timezone.utc)
-    san_francisco = moment.astimezone(ZoneInfo("America/Los_Angeles"))
-    return san_francisco.weekday() == 6 and san_francisco.hour >= 20

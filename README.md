@@ -4,7 +4,7 @@
 
 [Live site](https://aaron-reader.aaron-he-zhu.workers.dev/) · [GitHub repository](https://github.com/aaron-he-zhu/aaron-reader)
 
-Aaron Reader is a bilingual, cloud-hosted reader for official OpenAI and Anthropic publications. GitHub Actions collects and verifies new articles, OpenRouter Free translates each article's title and publisher summary into Simplified Chinese and creates daily or weekly briefs with DeepSeek V4 Flash as a bounded fallback, and Cloudflare Workers serves the resulting read-only snapshot.
+Aaron Reader is a bilingual, cloud-hosted reader for official OpenAI and Anthropic publications. GitHub Actions collects and verifies new articles; OpenRouter Free translates each article's title and publisher summary into Simplified Chinese, with DeepSeek V4 Flash as a bounded fallback; and Cloudflare Workers serves the resulting read-only snapshot.
 
 Production runs entirely on GitHub and Cloudflare. It does not depend on a personal computer, a local database, a desktop application, or an interactive AI subscription.
 
@@ -47,13 +47,10 @@ Each successful cycle:
 
 - checks all four sources with deterministic code;
 - reuses valid artifacts already bound to the current article content hash;
-- translates only the title and publisher summary for each article missing a current Simplified Chinese translation;
-- evaluates English and Chinese daily briefs, generating both languages from one shared article window when both are missing and calling the model only when that validated input changed; and
+- translates only the title and publisher summary for each article missing a current Simplified Chinese translation; and
 - publishes a new snapshot only after all required checks pass.
 
-The weekly brief is different from the daily brief: it covers the San Francisco calendar week, synthesizes longer-running themes across sources, and is generated **once on Sunday evening San Francisco time**. It is not regenerated during every twice-daily run. A manually dispatched update follows the same cache and validation rules.
-
-Everything outside those language-understanding tasks uses fixed code and consumes no LLM tokens: HTTP caching, parsing, URL normalization, article identity, content hashing, deduplication, source health, cache selection, budget enforcement, serialization, rendering, tests, commits, and deployment preparation.
+Everything outside that language-understanding task uses fixed code and consumes no LLM tokens: HTTP caching, parsing, URL normalization, article identity, content hashing, deduplication, source health, cache selection, budget enforcement, serialization, rendering, tests, commits, and deployment preparation.
 
 ## Fixed AI provider profiles
 
@@ -72,7 +69,7 @@ The first eligible OpenRouter failure trips a one-way circuit breaker for that c
 
 Ambiguous results never trigger fallback. Timeouts, connection failures, `408`/`409`/`425`, `5xx`, malformed, untyped, conflicting, or truncated provider responses, unknown usage, pre-existing ambiguous or paid-failure generation holds, budget failures, all other local configuration/input errors, and safety, moderation, content-filter, or policy refusals all fail closed. The sole configuration exception is the missing pre-send OpenRouter credential described above. Definite non-fallback request/policy failures such as `400`, `403`, and `422` create a cross-profile paid-failure hold. A `fallback_pending` hold is the sole narrow hold exception: it authorizes only the configured DeepSeek continuation and never a replay on the primary provider. An ambiguous or paid non-fallback hold applies to the same semantic work across both profiles, so changing provider cannot bypass it; replay requires an explicit provider selection and the `force_held` acknowledgement.
 
-Immediately before each provider POST, the local attempt state and an `ambiguous` no-replay hold are committed in one SQLite transaction. A definitive response atomically settles that provisional hold, and provider-backed report artifacts, report indexes, usage, and attempt completion commit together. Those protections survive Python/CLI failures once the workflow exports and publishes `cloud/ai-cache.json`. They are not an absolute exactly-once guarantee if the entire hosted runner and its unexported local database disappear after the provider receives a request; neither configured provider is assumed to offer a server-side idempotency guarantee. The production workflow is serialized to one writer, and the hold settlement code relies on that single-writer boundary.
+Immediately before each provider POST, the local attempt state and an `ambiguous` no-replay hold are committed in one SQLite transaction. A definitive response atomically settles that provisional hold, and the validated article-translation artifact, usage, and attempt completion commit together. Those protections survive Python/CLI failures once the workflow exports and publishes `cloud/ai-cache.json`. They are not an absolute exactly-once guarantee if the entire hosted runner and its unexported local database disappear after the provider receives a request; neither configured provider is assumed to offer a server-side idempotency guarantee. The production workflow is serialized to one writer, and the hold settlement code relies on that single-writer boundary.
 
 `openrouter/free` is a dynamic zero-cost routing target, not a single deterministic model or a reliability guarantee. Its eligible model pool, availability, latency, output characteristics, upstream provider, and upstream data-handling policy can change. OpenRouter receives the request and may route or fail over among its eligible upstream providers; Aaron Reader's one-way rule governs only the separate OpenRouter-to-DeepSeek continuation performed by this application. Aaron Reader therefore sends only bounded public publisher metadata, never personal reading state or private content. Operators should review OpenRouter's current [Free Models Router](https://openrouter.ai/docs/guides/routing/routers/free-router), [provider routing](https://openrouter.ai/docs/guides/routing/provider-selection), and [provider data-policy controls](https://openrouter.ai/docs/guides/privacy/provider-logging/) before enabling that profile and must not use it for confidential, personal, or otherwise sensitive input.
 
@@ -81,11 +78,11 @@ Immediately before each provider POST, the local attempt state and an `ambiguous
 GitHub-hosted runners are disposable, so the repository contains two deliberately small, public continuation files:
 
 - `crawler/latest.json` contains the strict crawler handoff: source identity, safe article metadata, content fingerprints, and bounded fetch-continuation data. It contains no SQLite database, personal read/star state, credentials, or raw failure history.
-- `cloud/ai-cache.json` contains validated translations, legacy article-summary artifacts retained for compatibility, and daily/weekly reports keyed by stable publisher identity and content hash rather than temporary database row IDs. New production runs do not create per-article summaries, and the public reader projection omits those legacy artifacts. The cache also carries a bounded, aggregate San Francisco usage ledger and input-free generation holds so budgets and no-replay safety survive disposable runners. It contains no API key, provider request ID, request-level audit, error text, prompt, model response, private reading state, or extracted full article text.
+- `cloud/ai-cache.json` contains validated translations and legacy article-summary artifacts retained for compatibility, keyed by stable publisher identity and content hash rather than temporary database row IDs. New production runs do not create per-article summaries, and the public reader projection omits those legacy artifacts. The cache also carries a bounded, aggregate San Francisco usage ledger and input-free generation holds so budgets and no-replay safety survive disposable runners. It contains no API key, provider request ID, request-level audit, error text, prompt, model response, private reading state, or extracted full article text.
 
 At the beginning of a run, both files are validated and imported into a fresh ephemeral SQLite database. At the end, fixed serializers export the next public state atomically. Generated deployment data under `site/data/` and `site/public/reader/` is another public projection; runtime databases and temporary files are ignored by Git.
 
-Before a release is committed, the two exported handoffs are imported once more into a second empty validation database. The website is rendered only from that reconstructed database, and the release fails if its report identities differ from the public AI cache. This makes the checked-in state sufficient to reproduce the deployed site on a different disposable runner.
+Before a release is committed, the two exported handoffs are imported once more into a second empty validation database. The website is rendered only from that reconstructed database, and its generated public snapshot is validated before release. This makes the checked-in state sufficient to reproduce the deployed site on a different disposable runner.
 
 Because AI artifacts are content-hash-bound, an unchanged article remains a cache hit across runs. Valid historical artifacts can also be reused after a provider or model change; switching the configured model does not by itself force every article to be regenerated.
 
@@ -109,9 +106,7 @@ Forks do not inherit repository secrets. A fork must add its own `DEEPSEEK_API_K
 Aaron Reader minimizes billable work at several layers:
 
 - a newly changed article requests only one bounded translation of its title and publisher summary;
-- English and Chinese reports share one article-window request when both languages are missing, reducing a normal daily report from two calls to one and Sunday daily-plus-weekly reports from four calls to two;
 - exact content-hash cache hits skip the provider, including compatible historical artifacts;
-- report input hashes prevent unchanged daily or weekly windows from being regenerated;
 - a bounded aggregate ledger carries confirmed use and conservative unknown-result reservations across runners, so daily and monthly request/token caps cannot reset with each ephemeral job;
 - article counts, input characters, output tokens, response size, request count, total tokens, timeouts, and worker concurrency are bounded by configuration;
 - reasoning is disabled in both fixed profiles for this structured transformation workload;
@@ -123,7 +118,7 @@ Source-health, state-schema, privacy, test, repository-boundary, or site-build f
 
 ## Running an update manually
 
-Open the repository's **Actions** tab, select the production update workflow under `.github/workflows/`, choose **Run workflow**, leave the default `openrouter` primary or select `deepseek` for a DeepSeek-only diagnostic run, and run it on `main`. A manual run uses the same ephemeral database, secret boundary, cache checks, safety limits, tests, exact-file commit, and Cloudflare deployment path as a scheduled run. `force_weekly` is an explicit one-off weekly-report override. `force_held` is a separate recovery control that may repeat a previously billed generation; leave it disabled unless you have reviewed the workflow summary and intentionally accept that cost. Scheduled runs never enable either override.
+Open the repository's **Actions** tab, select the production update workflow under `.github/workflows/`, choose **Run workflow**, leave the default `openrouter` primary or select `deepseek` for a DeepSeek-only diagnostic run, and run it on `main`. A manual run uses the same ephemeral database, secret boundary, cache checks, safety limits, tests, exact-file commit, and Cloudflare deployment path as a scheduled run. `force_held` is a recovery control that may repeat a previously billed generation; leave it disabled unless you have reviewed the workflow summary and intentionally accept that cost. Scheduled runs never enable this override.
 
 The workflow summary is the operational record: it reports cache hits, provider calls and token usage, failures, changed public files, and whether a commit was published. Secret values and provider response bodies are not logged.
 

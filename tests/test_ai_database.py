@@ -33,8 +33,8 @@ class AIDatabaseTests(unittest.TestCase):
         return self.database.ensure_ai_job(
             artifact_key=key,
             article_id=None,
-            task_type="digest",
-            input_scope="digest",
+            task_type="summary",
+            input_scope="metadata",
             target_language="zh-CN",
             request={"version": 1, "key": key},
         )
@@ -327,6 +327,396 @@ class AIDatabaseTests(unittest.TestCase):
             include_revision=True,
         )
         self.assertEqual(1, migrated_hold["revision"])
+
+    def test_v9_migration_retires_ai_briefs_and_preserves_article_audit_state(self):
+        timestamp = "2026-08-01T17:00:00Z"
+        usage = self.usage_entry(
+            day_start="2026-08-01T07:00:00Z",
+            day_end="2026-08-02T07:00:00Z",
+            covered_through="2026-08-01T17:00:00Z",
+            requests=2,
+            confirmed_requests=1,
+            unconfirmed_requests=1,
+            input_tokens=90,
+            cached_input_tokens=10,
+            cache_miss_input_tokens=80,
+            output_tokens=30,
+            total_tokens=120,
+            reserved_total_tokens_for_unconfirmed=200,
+        )
+        self.database.replace_ai_usage_ledger([usage])
+
+        retained_hold_keys = set()
+        removed_hold_keys = set()
+        with self.database.connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO sources(
+                    slug, name, home_url, fetch_url, adapter, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    "legacy",
+                    "Legacy",
+                    "https://example.com/",
+                    "https://example.com/feed.xml",
+                    "rss",
+                    timestamp,
+                ),
+            )
+            article_cursor = connection.execute(
+                """
+                INSERT INTO articles(
+                    source_slug, external_id, canonical_url, title, summary,
+                    discovered_at, updated_at, content_hash
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    "legacy",
+                    "article",
+                    "https://example.com/article",
+                    "Legacy article",
+                    "Publisher summary",
+                    timestamp,
+                    timestamp,
+                    "article-content-v1",
+                ),
+            )
+            article_id = int(article_cursor.lastrowid)
+
+            def insert_artifact(
+                *,
+                article,
+                task_type,
+                input_scope,
+                artifact_key,
+                output,
+            ):
+                output_json = json.dumps(
+                    output,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+                cursor = connection.execute(
+                    """
+                    INSERT INTO ai_artifacts(
+                        article_id, task_type, input_scope, target_language,
+                        artifact_key, input_hash, article_content_hash,
+                        prompt_version, prompt_hash, response_schema_version,
+                        response_schema_hash, provider, requested_model,
+                        resolved_model, generation_params_hash, output_json,
+                        output_text, output_hash, status, input_truncated,
+                        created_at
+                    ) VALUES (
+                        ?, ?, ?, 'zh-CN', ?, ?, ?, 'legacy-v1', ?,
+                        'legacy-v1', ?, 'deepseek', 'deepseek-v4-flash',
+                        'deepseek-v4-flash', ?, ?, ?, ?, 'succeeded', 0, ?
+                    )
+                    """,
+                    (
+                        article,
+                        task_type,
+                        input_scope,
+                        artifact_key,
+                        hashlib.sha256(
+                            ("%s-input" % artifact_key).encode("utf-8")
+                        ).hexdigest(),
+                        "article-content-v1" if article is not None else "",
+                        hashlib.sha256(b"legacy-prompt").hexdigest(),
+                        hashlib.sha256(b"legacy-schema").hexdigest(),
+                        hashlib.sha256(b"legacy-generation").hexdigest(),
+                        output_json,
+                        str(output),
+                        hashlib.sha256(output_json.encode("utf-8")).hexdigest(),
+                        timestamp,
+                    ),
+                )
+                return int(cursor.lastrowid)
+
+            article_artifact_id = insert_artifact(
+                article=article_id,
+                task_type="summary",
+                input_scope="metadata",
+                artifact_key="legacy-article-summary",
+                output={
+                    "summary": "Grounded article summary",
+                    "language": "zh-CN",
+                },
+            )
+            digest_artifact_id = insert_artifact(
+                article=None,
+                task_type="digest",
+                input_scope="digest",
+                artifact_key="legacy-daily-brief",
+                output={
+                    "headline": "Legacy daily brief",
+                    "items": [{"article_id": article_id}],
+                    "language": "zh-CN",
+                },
+            )
+
+            connection.executescript(
+                """
+                CREATE TABLE ai_reports (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    report_key TEXT NOT NULL UNIQUE,
+                    period TEXT NOT NULL CHECK(period IN ('daily', 'weekly')),
+                    timezone TEXT NOT NULL,
+                    local_date TEXT NOT NULL,
+                    period_start TEXT NOT NULL,
+                    period_end TEXT NOT NULL,
+                    target_language TEXT NOT NULL,
+                    article_ids_json TEXT NOT NULL,
+                    article_content_hash TEXT NOT NULL,
+                    artifact_id INTEGER NOT NULL UNIQUE
+                        REFERENCES ai_artifacts(id) ON DELETE CASCADE,
+                    created_at TEXT NOT NULL
+                );
+                CREATE INDEX idx_ai_reports_latest
+                    ON ai_reports(
+                        period, target_language, created_at DESC, id DESC
+                    );
+                """
+            )
+            connection.execute(
+                """
+                INSERT INTO ai_reports(
+                    report_key, period, timezone, local_date, period_start,
+                    period_end, target_language, article_ids_json,
+                    article_content_hash, artifact_id, created_at
+                ) VALUES (?, 'daily', 'America/Los_Angeles', '2026-08-01',
+                    '2026-08-01T07:00:00Z', '2026-08-01T17:00:00Z',
+                    'zh-CN', ?, ?, ?, ?)
+                """,
+                (
+                    "legacy-report",
+                    json.dumps([article_id]),
+                    "legacy-report-article-set",
+                    digest_artifact_id,
+                    timestamp,
+                ),
+            )
+
+            article_job_cursor = connection.execute(
+                """
+                INSERT INTO ai_jobs(
+                    artifact_key, article_id, task_type, input_scope,
+                    target_language, request_json, trigger_kind, state,
+                    artifact_id, created_at, updated_at
+                ) VALUES (?, ?, 'summary', 'metadata', 'zh-CN', ?, 'batch',
+                    'succeeded', ?, ?, ?)
+                """,
+                (
+                    "legacy-article-summary",
+                    article_id,
+                    '{"task_type":"summary"}',
+                    article_artifact_id,
+                    timestamp,
+                    timestamp,
+                ),
+            )
+            article_job_id = int(article_job_cursor.lastrowid)
+            completed_digest_job_cursor = connection.execute(
+                """
+                INSERT INTO ai_jobs(
+                    artifact_key, task_type, input_scope, target_language,
+                    request_json, trigger_kind, state, attempt_count,
+                    artifact_id, created_at, updated_at
+                ) VALUES (?, 'digest', 'digest', 'zh-CN', ?, 'scheduled',
+                    'succeeded', 1, ?, ?, ?)
+                """,
+                (
+                    "legacy-daily-brief",
+                    '{"period":"daily","article_ids":[1]}',
+                    digest_artifact_id,
+                    timestamp,
+                    timestamp,
+                ),
+            )
+            completed_digest_job_id = int(completed_digest_job_cursor.lastrowid)
+            pending_digest_job_cursor = connection.execute(
+                """
+                INSERT INTO ai_jobs(
+                    artifact_key, task_type, input_scope, target_language,
+                    request_json, trigger_kind, state, attempt_count,
+                    created_at, updated_at
+                ) VALUES (?, 'digest', 'digest', 'en', ?, 'scheduled',
+                    'sent', 1, ?, ?)
+                """,
+                (
+                    "legacy-weekly-brief-pending",
+                    '{"period":"weekly","article_ids":[1],"secret":"scrub-me"}',
+                    timestamp,
+                    timestamp,
+                ),
+            )
+            pending_digest_job_id = int(pending_digest_job_cursor.lastrowid)
+
+            completed_attempt_cursor = connection.execute(
+                """
+                INSERT INTO ai_attempts(
+                    job_id, attempt_number, idempotency_key, state,
+                    request_started_at, response_received_at,
+                    provider_request_id, requested_provider, requested_model,
+                    resolved_model, estimated_input_tokens,
+                    reserved_output_tokens, reserved_total_tokens,
+                    actual_input_tokens, actual_cached_input_tokens,
+                    actual_cache_write_tokens, actual_output_tokens,
+                    actual_reasoning_tokens, actual_total_tokens,
+                    reservation_active, finish_reason, response_hash
+                ) VALUES (?, 1, ?, 'succeeded', ?, ?, ?, 'deepseek',
+                    'deepseek-v4-flash', 'deepseek-v4-flash', 100, 100, 200,
+                    90, 10, 0, 30, 0, 120, 0, 'stop', ?)
+                """,
+                (
+                    completed_digest_job_id,
+                    "legacy-completed-digest-attempt",
+                    timestamp,
+                    timestamp,
+                    "legacy-provider-request",
+                    hashlib.sha256(b"legacy-response").hexdigest(),
+                ),
+            )
+            completed_attempt_id = int(completed_attempt_cursor.lastrowid)
+            pending_attempt_cursor = connection.execute(
+                """
+                INSERT INTO ai_attempts(
+                    job_id, attempt_number, idempotency_key, state,
+                    request_started_at, requested_provider, requested_model,
+                    estimated_input_tokens, reserved_output_tokens,
+                    reserved_total_tokens, reservation_active
+                ) VALUES (?, 1, ?, 'sent', ?, 'deepseek',
+                    'deepseek-v4-flash', 100, 100, 200, 1)
+                """,
+                (
+                    pending_digest_job_id,
+                    "legacy-pending-digest-attempt",
+                    timestamp,
+                ),
+            )
+            pending_attempt_id = int(pending_attempt_cursor.lastrowid)
+
+            for workload_kind, hold_class in (
+                ("article", "ambiguous"),
+                ("article_pair", "fallback_pending"),
+                ("digest", "paid_failure"),
+                ("report", "ambiguous"),
+            ):
+                descriptor = {
+                    "protocol": "aaron-reader-test-generation-hold/v1",
+                    "workload_kind": workload_kind,
+                    "fixture": "v8-to-v9",
+                }
+                encoded = json.dumps(
+                    descriptor,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+                hold_key = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+                connection.execute(
+                    """
+                    INSERT INTO ai_generation_holds(
+                        hold_key, workload_kind, hold_class, descriptor_json,
+                        first_seen_at, last_seen_at
+                    ) VALUES (?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        hold_key,
+                        workload_kind,
+                        hold_class,
+                        encoded,
+                        timestamp,
+                        timestamp,
+                    ),
+                )
+                if workload_kind in {"article", "article_pair"}:
+                    retained_hold_keys.add(hold_key)
+                else:
+                    removed_hold_keys.add(hold_key)
+
+            connection.execute(
+                "UPDATE app_meta SET value='8' WHERE key='schema_version'"
+            )
+
+        self.database.initialize()
+
+        self.assertEqual([usage], self.database.list_ai_usage_ledger())
+        attempts = {
+            int(attempt["id"]): attempt
+            for attempt in self.database.list_ai_attempts()
+        }
+        self.assertEqual(2, len(attempts))
+        self.assertEqual("succeeded", attempts[completed_attempt_id]["state"])
+        self.assertEqual(120, attempts[completed_attempt_id]["actual_total_tokens"])
+        self.assertEqual("sent", attempts[pending_attempt_id]["state"])
+        self.assertEqual(
+            "legacy-pending-digest-attempt",
+            attempts[pending_attempt_id]["idempotency_key"],
+        )
+        self.assertEqual(
+            retained_hold_keys,
+            {
+                str(hold["hold_key"])
+                for hold in self.database.list_ai_generation_holds()
+            },
+        )
+        self.assertTrue(
+            removed_hold_keys.isdisjoint(
+                {
+                    str(hold["hold_key"])
+                    for hold in self.database.list_ai_generation_holds()
+                }
+            )
+        )
+
+        article_job = self.database.ai_job(article_job_id)
+        self.assertEqual("succeeded", article_job["state"])
+        self.assertEqual('{"task_type":"summary"}', article_job["request_json"])
+        self.assertEqual(article_artifact_id, int(article_job["artifact_id"]))
+
+        completed_digest_job = self.database.ai_job(completed_digest_job_id)
+        self.assertEqual("succeeded", completed_digest_job["state"])
+        self.assertEqual("{}", completed_digest_job["request_json"])
+        self.assertIsNone(completed_digest_job["artifact_id"])
+        pending_digest_job = self.database.ai_job(pending_digest_job_id)
+        self.assertEqual("cancelled", pending_digest_job["state"])
+        self.assertEqual("{}", pending_digest_job["request_json"])
+
+        with self.database.connect() as connection:
+            self.assertEqual(
+                str(SCHEMA_VERSION),
+                connection.execute(
+                    "SELECT value FROM app_meta WHERE key='schema_version'"
+                ).fetchone()[0],
+            )
+            self.assertIsNone(
+                connection.execute(
+                    "SELECT 1 FROM sqlite_master "
+                    "WHERE type='table' AND name='ai_reports'"
+                ).fetchone()
+            )
+            self.assertEqual(
+                0,
+                connection.execute(
+                    "SELECT COUNT(*) FROM ai_artifacts WHERE task_type='digest'"
+                ).fetchone()[0],
+            )
+            retained_artifact = connection.execute(
+                "SELECT task_type, input_scope FROM ai_artifacts WHERE id=?",
+                (article_artifact_id,),
+            ).fetchone()
+            self.assertEqual(("summary", "metadata"), tuple(retained_artifact))
+            retained_article = connection.execute(
+                "SELECT title, summary FROM articles WHERE id=?",
+                (article_id,),
+            ).fetchone()
+            self.assertEqual(
+                ("Legacy article", "Publisher summary"),
+                tuple(retained_article),
+            )
+            self.assertEqual([], connection.execute("PRAGMA foreign_key_check").fetchall())
 
     def test_fallback_pending_hold_validation_and_risk_priority(self):
         pending = self.generation_hold("fallback_pending")
@@ -671,8 +1061,8 @@ class AIDatabaseTests(unittest.TestCase):
         first = self.database.ensure_ai_job(
             artifact_key="first-artifact",
             article_id=None,
-            task_type="digest",
-            input_scope="digest",
+            task_type="summary",
+            input_scope="metadata",
             target_language="zh-CN",
             request={"version": 1, "key": "first"},
             client_request_id="same-client-request",
@@ -680,8 +1070,8 @@ class AIDatabaseTests(unittest.TestCase):
         repeated = self.database.ensure_ai_job(
             artifact_key="first-artifact",
             article_id=None,
-            task_type="digest",
-            input_scope="digest",
+            task_type="summary",
+            input_scope="metadata",
             target_language="zh-CN",
             request={"version": 1, "key": "first"},
             client_request_id="same-client-request",
@@ -691,8 +1081,8 @@ class AIDatabaseTests(unittest.TestCase):
             self.database.ensure_ai_job(
                 artifact_key="different-artifact",
                 article_id=None,
-                task_type="digest",
-                input_scope="digest",
+                task_type="summary",
+                input_scope="metadata",
                 target_language="zh-CN",
                 request={"version": 1, "key": "different"},
                 client_request_id="same-client-request",
