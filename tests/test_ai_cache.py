@@ -41,12 +41,10 @@ from aaron_reader.ai_service import (  # noqa: E402
     AIFallbackEligibleError,
     AIGenerationHeld,
     AIService,
+    AIServiceError,
 )
 from aaron_reader.ai_subscription import (  # noqa: E402
     export_subscription_batch,
-    export_subscription_report,
-    generate_cloud_report_pair,
-    import_subscription_report,
     import_subscription_results,
 )
 from aaron_reader.cli import build_parser  # noqa: E402
@@ -79,7 +77,6 @@ class PublicAICacheTests(unittest.TestCase):
                 provider="openai",
                 summary_model="gpt-5.6-luna",
                 translation_model="gpt-5.6-luna",
-                digest_model="gpt-5.6-luna",
                 reasoning_effort="medium",
                 api_key_environment="OPENAI_API_KEY",
             ),
@@ -91,7 +88,6 @@ class PublicAICacheTests(unittest.TestCase):
                 provider="deepseek",
                 summary_model="deepseek-v4-flash",
                 translation_model="deepseek-v4-flash",
-                digest_model="deepseek-v4-flash",
                 reasoning_effort="none",
                 api_key_environment="DEEPSEEK_API_KEY",
             ),
@@ -215,45 +211,6 @@ class PublicAICacheTests(unittest.TestCase):
             },
         )
 
-        now = datetime(2026, 8, 1, 17, 0, tzinfo=timezone.utc)
-        for period in ("daily", "weekly"):
-            report_request = export_subscription_report(
-                service,
-                period=period,
-                target_language="zh-CN",
-                now=now,
-            )
-            report_articles = report_request["input"]["articles"]
-            payload = {
-                key: report_request[key]
-                for key in (
-                    "protocol",
-                    "report_id",
-                    "fingerprint",
-                    "period",
-                    "timezone",
-                    "local_date",
-                    "period_start",
-                    "period_end",
-                    "target_language",
-                )
-            }
-            payload["output"] = {
-                "headline": "%s 云端简报" % period,
-                "overview": "这是可公开复用的 AI 报告。",
-                "items": [
-                    {
-                        "article_id": int(article["article_id"]),
-                        "title": "报告：%s" % article["title"],
-                        "summary": "该文章的严格元数据摘要。",
-                    }
-                    for article in report_articles
-                ],
-                "language": "zh-CN",
-                "limitations": "没有读取全文。",
-            }
-            import_subscription_report(service, payload)
-
     def payload(self):
         return json.loads(self.bundle.read_text(encoding="utf-8"))
 
@@ -285,11 +242,15 @@ class PublicAICacheTests(unittest.TestCase):
         *,
         reserved_cost_micros: int = 0,
     ):
+        article = database.article_by_url(
+            self.source.slug,
+            "https://example.com/blog/today",
+        )
         job = database.ensure_ai_job(
             artifact_key=stable_hash("usage-%s" % suffix),
-            article_id=None,
-            task_type="digest",
-            input_scope="digest",
+            article_id=int(article["id"]),
+            task_type="translation",
+            input_scope="metadata",
             target_language="zh-CN",
             request={"version": 1, "usage_fixture": suffix},
             trigger_kind="test",
@@ -371,12 +332,29 @@ class PublicAICacheTests(unittest.TestCase):
 
     def test_export_is_public_safe_versioned_and_hash_bound(self) -> None:
         payload = self.payload()
+        self.assertEqual("aaron-reader-public-ai-cache-v3", AI_CACHE_PROTOCOL)
         self.assertEqual(AI_CACHE_PROTOCOL, payload["protocol"])
+        self.assertEqual(
+            {
+                "protocol",
+                "exported_at",
+                "bundle_hash",
+                "artifacts",
+                "usage_ledger",
+                "generation_holds",
+            },
+            set(payload),
+        )
+        self.assertNotIn("reports", payload)
         self.assertEqual(_cache_hash(payload), payload["bundle_hash"])
         self.assertEqual(6, len(payload["artifacts"]))
-        self.assertEqual(2, len(payload["reports"]))
-        self.assertEqual(8, self.export_result["artifacts"])
+        self.assertEqual(AI_CACHE_PROTOCOL, self.export_result["protocol"])
+        self.assertEqual(6, self.export_result["article_artifacts"])
+        self.assertEqual(6, self.export_result["artifacts"])
         self.assertEqual(0, self.export_result["skipped_incompatible"])
+        self.assertFalse(
+            {key for key in self.export_result if "report" in key}
+        )
 
         keys = set()
 
@@ -396,7 +374,6 @@ class PublicAICacheTests(unittest.TestCase):
                 "article_id",
                 "artifact_id",
                 "artifact_key",
-                "report_key",
                 "input_hash",
                 "provider_response_id",
                 "api_key",
@@ -434,20 +411,22 @@ class PublicAICacheTests(unittest.TestCase):
 
         first = import_ai_cache(target, self.new_config, self.bundle)
         second = import_ai_cache(target, self.new_config, self.bundle)
-        self.assertEqual((8, 2), (first["inserted_artifacts"], first["inserted_reports"]))
-        self.assertEqual((8, 2), (second["artifact_cache_hits"], second["report_cache_hits"]))
+        self.assertEqual(6, first["inserted_artifacts"])
+        self.assertEqual(6, second["artifact_cache_hits"])
+        for result in (first, second):
+            self.assertEqual(AI_CACHE_PROTOCOL, result["protocol"])
+            self.assertFalse({key for key in result if "report" in key})
         self.assertFalse(first["api_key_used"])
         self.assertEqual(0, first["provider_api_calls"])
 
         with target.connect() as connection:
             self.assertEqual(
-                (8, 2, 0, 0, 0),
+                (6, 0, 0, 0),
                 tuple(
                     connection.execute(
                         """
                         SELECT
                             (SELECT COUNT(*) FROM ai_artifacts),
-                            (SELECT COUNT(*) FROM ai_reports),
                             (SELECT COUNT(*) FROM ai_attempts),
                             (SELECT COUNT(*) FROM ai_jobs),
                             (SELECT COUNT(*) FROM article_content_snapshots)
@@ -462,25 +441,6 @@ class PublicAICacheTests(unittest.TestCase):
                 ).fetchall()
             }
             self.assertEqual({"gpt-5.6-luna"}, requested_models)
-            report_ids = json.loads(
-                connection.execute(
-                    "SELECT article_ids_json FROM ai_reports WHERE period='weekly'"
-                ).fetchone()[0]
-            )
-            weekly_public = next(
-                report for report in self.payload()["reports"]
-                if report["period"] == "weekly"
-            )
-            expected_target_ids = [
-                target_by_url[identity["canonical_url"]]
-                for identity in weekly_public["articles"]
-            ]
-            expected_source_ids = [
-                source_by_url[identity["canonical_url"]]
-                for identity in weekly_public["articles"]
-            ]
-            self.assertEqual(expected_target_ids, report_ids)
-            self.assertNotEqual(expected_source_ids, report_ids)
 
         refreshed = target.article(int(today["id"]))
         self.assertIsNotNone(refreshed["read_at"])
@@ -490,188 +450,15 @@ class PublicAICacheTests(unittest.TestCase):
         rendered = self.root / "rendered-target"
         render_outputs(target, rendered, language="en")
         latest = json.loads((rendered / "latest.json").read_text(encoding="utf-8"))
-        weekly_rendered = next(
-            report for report in latest["ai_reports"]
-            if report["period"] == "weekly"
-        )
-        self.assertEqual("weekly 云端简报", weekly_rendered["output"]["headline"])
-        self.assertEqual(
-            expected_target_ids,
-            [item["article_id"] for item in weekly_rendered["output"]["items"]],
-        )
+        self.assertNotIn("ai_reports", latest)
+        self.assertNotIn("cached_ai_report_count", latest)
 
         round_trip = self.root / "round-trip.json"
-        export_ai_cache(target, self.new_config, round_trip)
+        round_trip_result = export_ai_cache(target, self.new_config, round_trip)
         round_trip_payload = json.loads(round_trip.read_text(encoding="utf-8"))
         self.assertEqual(self.payload()["artifacts"], round_trip_payload["artifacts"])
-        self.assertEqual(self.payload()["reports"], round_trip_payload["reports"])
-
-    def test_legacy_equal_timestamp_report_order_survives_disposable_runners(self) -> None:
-        tied_candidates = [
-            self.candidate("tie-beta", "2026-08-01T08:00:00Z"),
-            self.candidate("tie-alpha", "2026-08-01T08:00:00Z"),
-            self.candidate("newest", "2026-08-01T10:00:00Z"),
-        ]
-        source = self.database("legacy-order-source.sqlite3", tied_candidates)
-        service = AIService(self.old_config, source)
-        now = datetime(2026, 8, 1, 17, 0, tzinfo=timezone.utc)
-        for period in ("daily", "weekly"):
-            for language in ("en", "zh-CN"):
-                request = export_subscription_report(
-                    service,
-                    period=period,
-                    target_language=language,
-                    now=now,
-                )
-                articles = request["input"]["articles"]
-                result = {
-                    key: request[key]
-                    for key in (
-                        "protocol",
-                        "report_id",
-                        "fingerprint",
-                        "period",
-                        "timezone",
-                        "local_date",
-                        "period_start",
-                        "period_end",
-                        "target_language",
-                    )
-                }
-                result["output"] = {
-                    "headline": "%s %s report" % (period, language),
-                    "overview": "Portable metadata report.",
-                    "items": [
-                        {
-                            "article_id": int(article["article_id"]),
-                            "title": str(article["title"]),
-                            "summary": "Metadata-only report item.",
-                        }
-                        for article in articles
-                    ],
-                    "language": language,
-                    "limitations": "Metadata only.",
-                }
-                import_subscription_report(service, result)
-
-        stable_bundle = self.root / "stable-tied-reports.json"
-        export_ai_cache(source, self.old_config, stable_bundle)
-        legacy_payload = json.loads(stable_bundle.read_text(encoding="utf-8"))
-        self.assertEqual(4, len(legacy_payload["reports"]))
-
-        # Recreate the old `published_at DESC, id DESC` transport order by
-        # swapping the equal-timestamp identities.  The portable output must
-        # follow the same legacy order, just as a historical cache did.
-        for report in legacy_payload["reports"]:
-            for field in ("window_articles", "articles"):
-                values = report[field]
-                alpha = next(
-                    index
-                    for index, identity in enumerate(values)
-                    if identity["external_id"] == "external-tie-alpha"
-                )
-                beta = next(
-                    index
-                    for index, identity in enumerate(values)
-                    if identity["external_id"] == "external-tie-beta"
-                )
-                values[alpha], values[beta] = values[beta], values[alpha]
-            output = report["artifact"]["output"]
-            items_by_url = {
-                item["article"]["canonical_url"]: item
-                for item in output["items"]
-            }
-            output["items"] = [
-                items_by_url[identity["canonical_url"]]
-                for identity in report["articles"]
-            ]
-            report["artifact"]["output_hash"] = stable_hash(
-                canonical_json(output)
-            )
-            report["articles_hash"] = stable_hash(report["articles"])
-            report["cache_key"] = _entry_hash(report)
-        legacy_payload["reports"].sort(
-            key=lambda report: (
-                report["period"],
-                report["period_start"],
-                report["period_end"],
-                report["target_language"],
-                report["cache_key"],
-            )
-        )
-        self.rehash(legacy_payload)
-        legacy_bundle = self.write_payload(
-            legacy_payload, "legacy-tied-reports.json"
-        )
-
-        class RejectingProvider:
-            def __init__(self):
-                self.calls = 0
-
-            def generate(self, request):
-                self.calls += 1
-                raise AssertionError("a persisted report must not call the provider")
-
-        first_target = self.database(
-            "legacy-order-first.sqlite3",
-            tied_candidates,
-            reverse=True,
-            shift_ids=True,
-        )
-        first_import = import_ai_cache(
-            first_target, self.new_config, legacy_bundle
-        )
-        self.assertEqual(4, first_import["inserted_reports"])
-        first_provider = RejectingProvider()
-        first_service = AIService(
-            self.new_config, first_target, provider=first_provider
-        )
-        for period in ("daily", "weekly"):
-            cached = generate_cloud_report_pair(
-                first_service, period=period, now=now
-            )
-            self.assertEqual(0, cached["provider_api_calls"])
-            self.assertTrue(
-                all(report["cache_hit"] for report in cached["reports"])
-            )
-        self.assertEqual(0, first_provider.calls)
-
-        round_trip = self.root / "legacy-tied-round-trip.json"
-        exported = export_ai_cache(first_target, self.new_config, round_trip)
-        self.assertEqual(4, exported["reports"])
-
-        second_target = self.database(
-            "legacy-order-second.sqlite3",
-            tied_candidates,
-            reverse=False,
-            shift_ids=True,
-        )
-        second_import = import_ai_cache(
-            second_target, self.new_config, round_trip
-        )
-        self.assertEqual(4, second_import["inserted_reports"])
-        second_provider = RejectingProvider()
-        second_service = AIService(
-            self.new_config, second_target, provider=second_provider
-        )
-        for period in ("daily", "weekly"):
-            cached = generate_cloud_report_pair(
-                second_service, period=period, now=now
-            )
-            self.assertEqual(0, cached["provider_api_calls"])
-            self.assertTrue(
-                all(report["cache_hit"] for report in cached["reports"])
-            )
-        self.assertEqual(0, second_provider.calls)
-        second_round_trip = self.root / "legacy-tied-second-round-trip.json"
-        second_export = export_ai_cache(
-            second_target, self.new_config, second_round_trip
-        )
-        self.assertEqual(4, second_export["reports"])
-        self.assertEqual(
-            json.loads(round_trip.read_text(encoding="utf-8"))["reports"],
-            json.loads(second_round_trip.read_text(encoding="utf-8"))["reports"],
-        )
+        self.assertNotIn("reports", round_trip_payload)
+        self.assertFalse({key for key in round_trip_result if "report" in key})
 
     def test_usage_ledger_is_aggregate_durable_idempotent_and_budget_enforced(self) -> None:
         confirmed = self.reserve_usage_attempt(
@@ -761,11 +548,15 @@ class PublicAICacheTests(unittest.TestCase):
             entry["day_start"], entry["day_start"]
         )["daily"])
 
+        budget_article = target.article_by_url(
+            self.source.slug,
+            "https://example.com/blog/today",
+        )
         job = target.ensure_ai_job(
             artifact_key=stable_hash("budget-must-carry"),
-            article_id=None,
-            task_type="digest",
-            input_scope="digest",
+            article_id=int(budget_article["id"]),
+            task_type="translation",
+            input_scope="metadata",
             target_language="zh-CN",
             request={"version": 1},
             trigger_kind="test",
@@ -909,6 +700,86 @@ class PublicAICacheTests(unittest.TestCase):
             round_trip_payload["generation_holds"],
         )
 
+    def test_legacy_article_pair_hold_round_trips_without_local_ids(self) -> None:
+        pair_candidate = self.candidate(
+            "pair-hold",
+            "2026-08-01T09:00:00Z",
+        )
+        source = self.database("pair-hold-source.sqlite3", [pair_candidate])
+        source_article = source.article_by_url(
+            self.source.slug,
+            "https://example.com/blog/pair-hold",
+        )
+        pair_config = replace(
+            self.new_config,
+            ai=replace(
+                self.new_config.ai,
+                enabled=True,
+                fallback_provider="",
+            ),
+        )
+
+        class InvalidPairProvider:
+            def generate(self, request):
+                return ProviderResponse(
+                    output_text="{}",
+                    usage=ProviderUsage(
+                        input_tokens=20,
+                        output_tokens=1,
+                        total_tokens=21,
+                    ),
+                    model=DEEPSEEK_MODEL,
+                    request_id="pair-hold-fixture",
+                )
+
+        service = AIService(
+            pair_config,
+            source,
+            provider=InvalidPairProvider(),
+        )
+        with mock.patch.dict(
+            "os.environ",
+            {"DEEPSEEK_API_KEY": "test-key"},
+            clear=True,
+        ):
+            with self.assertRaises(AIServiceError):
+                service.generate_article_pair(int(source_article["id"]))
+
+        holds = source.list_ai_generation_holds()
+        self.assertEqual(1, len(holds))
+        self.assertEqual("article_pair", holds[0]["workload_kind"])
+        self.assertEqual("paid_failure", holds[0]["hold_class"])
+        self.assertNotIn("article_id", holds[0]["descriptor"])
+
+        bundle = self.root / "pair-hold.json"
+        exported = export_ai_cache(source, pair_config, bundle)
+        payload = json.loads(bundle.read_text(encoding="utf-8"))
+        self.assertEqual(1, exported["generation_holds"])
+        self.assertEqual(holds, payload["generation_holds"])
+
+        target = self.database(
+            "pair-hold-target.sqlite3",
+            [pair_candidate],
+            reverse=True,
+            shift_ids=True,
+        )
+        target_article = target.article_by_url(
+            self.source.slug,
+            "https://example.com/blog/pair-hold",
+        )
+        self.assertNotEqual(source_article["id"], target_article["id"])
+        imported = import_ai_cache(target, pair_config, bundle)
+        self.assertEqual(1, imported["generation_holds"])
+        self.assertEqual(holds, target.list_ai_generation_holds())
+
+        round_trip = self.root / "pair-hold-round-trip.json"
+        export_ai_cache(target, pair_config, round_trip)
+        round_trip_payload = json.loads(round_trip.read_text(encoding="utf-8"))
+        self.assertEqual(
+            payload["generation_holds"],
+            round_trip_payload["generation_holds"],
+        )
+
     def test_hard_crash_hold_survives_public_cache_and_blocks_fresh_runner(self):
         class FatalProvider:
             def __init__(self):
@@ -1006,7 +877,6 @@ class PublicAICacheTests(unittest.TestCase):
                 fallback_provider="deepseek",
                 summary_model=OPENROUTER_MODEL,
                 translation_model=OPENROUTER_MODEL,
-                digest_model=OPENROUTER_MODEL,
                 api_key_environment="OPENROUTER_API_KEY",
             ),
         )
@@ -1110,7 +980,6 @@ class PublicAICacheTests(unittest.TestCase):
                 fallback_provider="",
                 summary_model=DEEPSEEK_MODEL,
                 translation_model=DEEPSEEK_MODEL,
-                digest_model=DEEPSEEK_MODEL,
                 api_key_environment="DEEPSEEK_API_KEY",
             ),
         )
@@ -1301,8 +1170,12 @@ class PublicAICacheTests(unittest.TestCase):
             import_ai_cache(target, self.new_config, extra)
 
         with target.connect() as connection:
-            self.assertEqual(0, connection.execute("SELECT COUNT(*) FROM ai_artifacts").fetchone()[0])
-            self.assertEqual(0, connection.execute("SELECT COUNT(*) FROM ai_reports").fetchone()[0])
+            self.assertEqual(
+                0,
+                connection.execute(
+                    "SELECT COUNT(*) FROM ai_artifacts"
+                ).fetchone()[0],
+            )
 
     def test_rehashed_identity_output_and_entry_tampering_are_rejected(self) -> None:
         target = self.target_database()
@@ -1349,7 +1222,7 @@ class PublicAICacheTests(unittest.TestCase):
                 target, self.new_config, self.write_payload(payload, "entry.json")
             )
 
-    def test_prompt_schema_and_report_identity_contracts_are_strict(self) -> None:
+    def test_prompt_and_schema_contracts_are_strict(self) -> None:
         target = self.target_database()
         payload = self.payload()
         entry = payload["artifacts"][0]
@@ -1359,24 +1232,6 @@ class PublicAICacheTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "current prompt or schema"):
             import_ai_cache(
                 target, self.new_config, self.write_payload(payload, "prompt.json")
-            )
-
-        payload = self.payload()
-        report = next(
-            report for report in payload["reports"]
-            if len(report["articles"]) > 1
-        )
-        report["artifact"]["output"]["items"][0]["article"] = copy.deepcopy(
-            report["articles"][-1]
-        )
-        report["artifact"]["output_hash"] = stable_hash(
-            canonical_json(report["artifact"]["output"])
-        )
-        report["cache_key"] = _entry_hash(report)
-        self.rehash(payload)
-        with self.assertRaisesRegex(ValueError, "item identities"):
-            import_ai_cache(
-                target, self.new_config, self.write_payload(payload, "report.json")
             )
 
     def test_collision_after_an_insert_rolls_back_the_whole_transaction(self) -> None:
@@ -1424,12 +1279,16 @@ class PublicAICacheTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "artifact key collision"):
             import_ai_cache(target, self.new_config, self.bundle)
         with target.connect() as connection:
-            self.assertEqual(1, connection.execute("SELECT COUNT(*) FROM ai_artifacts").fetchone()[0])
-            self.assertEqual(0, connection.execute("SELECT COUNT(*) FROM ai_reports").fetchone()[0])
+            self.assertEqual(
+                1,
+                connection.execute(
+                    "SELECT COUNT(*) FROM ai_artifacts"
+                ).fetchone()[0],
+            )
         self.assertEqual(original_ledger, target.list_ai_usage_ledger())
         self.assertEqual(original_holds, target.list_ai_generation_holds())
 
-    def test_article_change_omits_its_artifacts_and_every_affected_report(self) -> None:
+    def test_article_change_omits_its_artifacts_and_generation_hold(self) -> None:
         self.source_database.replace_ai_generation_holds(
             [
                 self.generation_hold_entry(
@@ -1453,7 +1312,6 @@ class PublicAICacheTests(unittest.TestCase):
         )
         payload = json.loads(stale_path.read_text(encoding="utf-8"))
         self.assertEqual(4, result["article_artifacts"])
-        self.assertEqual(0, result["reports"])
         self.assertEqual(0, result["generation_holds"])
         self.assertEqual(1, result["skipped_generation_holds"])
         self.assertEqual([], payload["generation_holds"])
@@ -1463,70 +1321,6 @@ class PublicAICacheTests(unittest.TestCase):
                 != "https://example.com/blog/today"
                 for entry in payload["artifacts"]
             )
-        )
-
-    def test_export_retains_only_latest_report_per_period_and_language(self) -> None:
-        service = AIService(self.old_config, self.source_database)
-        # A newly published article gives the later fixed window a distinct,
-        # still-valid report while the earlier fixed window remains valid too.
-        self.source_database.commit_candidates(
-            self.source,
-            [self.candidate("late-today", "2026-08-01T17:30:00Z")],
-            started_at="2026-08-01T18:00:00Z",
-            http_status=200,
-            etag="",
-            last_modified="",
-            body_hash="later-report-fixture",
-        )
-        later = datetime(2026, 8, 1, 18, 0, tzinfo=timezone.utc)
-        request = export_subscription_report(
-            service,
-            period="daily",
-            target_language="zh-CN",
-            now=later,
-        )
-        payload = {
-            key: request[key]
-            for key in (
-                "protocol",
-                "report_id",
-                "fingerprint",
-                "period",
-                "timezone",
-                "local_date",
-                "period_start",
-                "period_end",
-                "target_language",
-            )
-        }
-        payload["output"] = {
-            "headline": "newest daily report",
-            "overview": "Only this daily report should remain in the handoff.",
-            "items": [
-                {
-                    "article_id": int(article["article_id"]),
-                    "title": "Latest: %s" % article["title"],
-                    "summary": "Latest bounded report item.",
-                }
-                for article in request["input"]["articles"]
-            ],
-            "language": "zh-CN",
-            "limitations": "Metadata only.",
-        }
-        import_subscription_report(service, payload)
-        with self.source_database.connect() as connection:
-            self.assertEqual(3, connection.execute("SELECT COUNT(*) FROM ai_reports").fetchone()[0])
-
-        latest_path = self.root / "latest-reports.json"
-        result = export_ai_cache(
-            self.source_database, self.old_config, latest_path
-        )
-        handoff = json.loads(latest_path.read_text(encoding="utf-8"))
-        self.assertEqual(2, result["reports"])
-        daily = next(report for report in handoff["reports"] if report["period"] == "daily")
-        self.assertEqual("2026-08-01T18:00:00Z", daily["period_end"])
-        self.assertEqual(
-            "newest daily report", daily["artifact"]["output"]["headline"]
         )
 
     def test_size_limit_symlinks_and_cli_syntax(self) -> None:
@@ -1556,9 +1350,27 @@ class PublicAICacheTests(unittest.TestCase):
 class TrackedPublicAICacheTests(unittest.TestCase):
     def test_tracked_cache_is_strict_nonempty_unique_and_has_no_local_ids(self) -> None:
         path = REPOSITORY_ROOT / "cloud" / "ai-cache.json"
+        raw_payload = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(
+            AI_CACHE_PROTOCOL,
+            raw_payload.get("protocol"),
+            "tracked cloud/ai-cache.json still requires a v3 migration",
+        )
         payload = _read_payload(path)
         config = load_config(str(REPOSITORY_ROOT / "config" / "sources.json"))
         _validate_payload(payload, config.sources, verify_hash=True)
+        self.assertEqual(
+            {
+                "protocol",
+                "exported_at",
+                "bundle_hash",
+                "artifacts",
+                "usage_ledger",
+                "generation_holds",
+            },
+            set(payload),
+        )
+        self.assertNotIn("reports", payload)
         # Production state evolves every cycle.  Test structural coverage and
         # uniqueness, never one historical snapshot's exact count or hash.
         self.assertTrue(payload["artifacts"])
@@ -1577,11 +1389,13 @@ class TrackedPublicAICacheTests(unittest.TestCase):
             for entry in payload["artifacts"]
         }
         self.assertEqual(len(payload["artifacts"]), len(bindings))
-        report_bindings = {
-            (report["period"], report["target_language"])
-            for report in payload["reports"]
-        }
-        self.assertEqual(len(payload["reports"]), len(report_bindings))
+        self.assertLessEqual(
+            {
+                hold["workload_kind"]
+                for hold in payload["generation_holds"]
+            },
+            {"article", "article_pair"},
+        )
 
         keys = set()
 

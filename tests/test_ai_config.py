@@ -47,7 +47,6 @@ class AIConfigTests(unittest.TestCase):
                 self.assertEqual("deepseek", configuration.fallback_provider)
                 self.assertEqual("openrouter/free", configuration.translation_model)
                 self.assertEqual("openrouter/free", configuration.summary_model)
-                self.assertEqual("openrouter/free", configuration.digest_model)
                 self.assertEqual("none", configuration.reasoning_effort)
                 self.assertEqual("OPENROUTER_API_KEY", configuration.api_key_environment)
                 self.assertEqual(
@@ -61,7 +60,6 @@ class AIConfigTests(unittest.TestCase):
 
         self.assertFalse(production.summary_enabled)
         self.assertTrue(production.translation_enabled)
-        self.assertTrue(production.digest_enabled)
 
     def test_exact_openrouter_free_profile_is_accepted(self):
         payload = base_payload()
@@ -70,7 +68,6 @@ class AIConfigTests(unittest.TestCase):
                 "provider": "openrouter",
                 "translation_model": "openrouter/free",
                 "summary_model": "openrouter/free",
-                "digest_model": "openrouter/free",
                 "reasoning_effort": "none",
                 "api_key_environment": "OPENROUTER_API_KEY",
             }
@@ -81,7 +78,6 @@ class AIConfigTests(unittest.TestCase):
         self.assertEqual("openrouter", configuration.provider)
         self.assertEqual("openrouter/free", configuration.translation_model)
         self.assertEqual("openrouter/free", configuration.summary_model)
-        self.assertEqual("openrouter/free", configuration.digest_model)
         self.assertEqual("none", configuration.reasoning_effort)
         self.assertEqual(
             "OPENROUTER_API_KEY",
@@ -95,7 +91,6 @@ class AIConfigTests(unittest.TestCase):
                 "provider": "deepseek",
                 "translation_model": "deepseek-v4-flash",
                 "summary_model": "deepseek-v4-flash",
-                "digest_model": "deepseek-v4-flash",
                 "reasoning_effort": "none",
                 "api_key_environment": "DEEPSEEK_API_KEY",
             }
@@ -105,7 +100,8 @@ class AIConfigTests(unittest.TestCase):
 
         self.assertEqual("deepseek", configuration.provider)
         self.assertEqual("", configuration.fallback_provider)
-        self.assertEqual("deepseek-v4-flash", configuration.digest_model)
+        self.assertEqual("deepseek-v4-flash", configuration.translation_model)
+        self.assertEqual("deepseek-v4-flash", configuration.summary_model)
         self.assertEqual("DEEPSEEK_API_KEY", configuration.api_key_environment)
 
     def test_unsupported_or_mismatched_fixed_profiles_are_rejected(self):
@@ -113,7 +109,6 @@ class AIConfigTests(unittest.TestCase):
             "provider": "deepseek",
             "translation_model": "deepseek-v4-flash",
             "summary_model": "deepseek-v4-flash",
-            "digest_model": "deepseek-v4-flash",
             "reasoning_effort": "none",
             "api_key_environment": "DEEPSEEK_API_KEY",
         }
@@ -121,7 +116,6 @@ class AIConfigTests(unittest.TestCase):
             "provider": "openrouter",
             "translation_model": "openrouter/free",
             "summary_model": "openrouter/free",
-            "digest_model": "openrouter/free",
             "reasoning_effort": "none",
             "api_key_environment": "OPENROUTER_API_KEY",
         }
@@ -129,14 +123,12 @@ class AIConfigTests(unittest.TestCase):
             {**deepseek_profile, "provider": "openai"},
             {**deepseek_profile, "summary_model": "deepseek-v4-pro"},
             {**deepseek_profile, "translation_model": "openrouter/free"},
-            {**deepseek_profile, "digest_model": "another-model"},
             {**deepseek_profile, "reasoning_effort": "low"},
             {**deepseek_profile, "api_key_environment": "OPENROUTER_API_KEY"},
             {**deepseek_profile, "fallback_provider": "deepseek"},
             {**deepseek_profile, "fallback_provider": "openrouter"},
             {**openrouter_profile, "summary_model": "deepseek-v4-flash"},
             {**openrouter_profile, "translation_model": "openrouter/auto"},
-            {**openrouter_profile, "digest_model": "another-model"},
             {**openrouter_profile, "reasoning_effort": "low"},
             {**openrouter_profile, "api_key_environment": "DEEPSEEK_API_KEY"},
             {**openrouter_profile, "fallback_provider": "openrouter"},
@@ -155,7 +147,6 @@ class AIConfigTests(unittest.TestCase):
             (("batch", "enabled"), "false"),
             (("features", "summary"), "true"),
             (("features", "translation"), 1),
-            (("features", "digest"), 0),
             (("features", "full_text"), "false"),
         )
         for path, value in mutations:

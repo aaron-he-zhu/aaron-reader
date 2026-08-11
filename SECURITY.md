@@ -43,8 +43,8 @@ separately named variables and may coexist only in the bounded AI-generation
 step.
 
 Before a provider POST, the local attempt and provisional ambiguous hold must
-commit atomically. Provider-backed report artifacts and their public report
-indexes must also complete in the same transaction. This prevents replay after
+commit atomically. The validated article-translation artifact must complete
+with attempt state in the same transaction. This prevents replay after
 process-level failures once the workflow successfully exports the public
 handoff. It is not an exactly-once guarantee if the entire hosted runner and
 its unexported SQLite state are lost after request transmission; do not assume

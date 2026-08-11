@@ -1,4 +1,4 @@
-"""Strict public handoff for reusable AI article and report caches.
+"""Strict public handoff for reusable AI article caches.
 
 The handoff is intentionally portable across ephemeral SQLite databases.  It
 never publishes local integer IDs or database cache keys; article identities
@@ -6,11 +6,11 @@ are the configured source slug, publisher identity, canonical URL, and current
 content hash.  Import resolves those identities again and re-keys each result
 for the target database.
 
-Only successful metadata summaries/translations and successful digest reports
-are eligible.  Provider/model fields are retained as bounded provenance, but
-they are not a compatibility gate: a structurally valid historical result can
-be reused after a provider or model migration when its article content,
-prompt, schema, task, scope, and target language are still compatible.
+Only successful metadata summaries/translations are eligible.  Provider/model
+fields are retained as bounded provenance, but they are not a compatibility
+gate: a structurally valid historical result can be reused after a provider or
+model migration when its article content, prompt, schema, task, scope, and
+target language are still compatible.
 
 The format deliberately excludes API keys, provider request identifiers,
 jobs, attempts, errors, personal read/star state, notifications, raw inputs,
@@ -27,7 +27,7 @@ import os
 import sqlite3
 import tempfile
 import unicodedata
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import datetime, time, timedelta, timezone
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Sequence, Tuple
 from urllib.parse import urlsplit
@@ -35,24 +35,15 @@ from zoneinfo import ZoneInfo
 
 from .ai_prompts import canonical_json, parse_and_validate_output, stable_hash
 from .ai_service import AIService, PreparedTask
-from .ai_subscription import (
-    SUBSCRIPTION_REPORT_PROTOCOL,
-    _report_context,
-    _report_key,
-    _validated_report_window,
-)
 from .crawler_state import _source_url_is_allowed
 from .database import Database, utc_now
 from .i18n import normalize_language
 from .models import AppConfig, SourceConfig
 
 
-AI_CACHE_PROTOCOL = "aaron-reader-public-ai-cache-v2"
+AI_CACHE_PROTOCOL = "aaron-reader-public-ai-cache-v3"
 AI_CACHE_MAX_BYTES = 25 * 1024 * 1024
 AI_CACHE_MAX_ARTIFACTS = 20_000
-AI_CACHE_MAX_REPORTS = 4
-AI_CACHE_MAX_REPORT_WINDOW_ARTICLES = 1_000
-AI_CACHE_MAX_REPORT_ARTICLES = 50
 AI_CACHE_MAX_USAGE_DAYS = 62
 AI_CACHE_MAX_GENERATION_HOLDS = 20_000
 AI_CACHE_USAGE_TIMEZONE = "America/Los_Angeles"
@@ -63,7 +54,6 @@ _TOP_LEVEL_KEYS = {
     "exported_at",
     "bundle_hash",
     "artifacts",
-    "reports",
     "usage_ledger",
     "generation_holds",
 }
@@ -93,29 +83,6 @@ _ARTICLE_ARTIFACT_KEYS = {
     "input_truncated",
     "created_at",
 }
-_REPORT_ARTIFACT_KEYS = _ARTICLE_ARTIFACT_KEYS - {"cache_key", "article"}
-_REPORT_KEYS = {
-    "cache_key",
-    "period",
-    "timezone",
-    "local_date",
-    "period_start",
-    "period_end",
-    "target_language",
-    "window_articles",
-    "articles",
-    "articles_hash",
-    "artifact",
-    "created_at",
-}
-_PUBLIC_DIGEST_KEYS = {
-    "headline",
-    "overview",
-    "items",
-    "language",
-    "limitations",
-}
-_PUBLIC_DIGEST_ITEM_KEYS = {"article", "title", "summary"}
 _USAGE_LEDGER_KEYS = {
     "ledger_key",
     "timezone",
@@ -176,11 +143,6 @@ _GENERATION_HOLD_DESCRIPTOR_KEYS = {
     "schema_hash",
     "generation_params_hash",
     "max_output_tokens",
-}
-_GENERATION_HOLD_REPORT_KEYS = {
-    "period",
-    "timezone",
-    "period_start_local_date",
 }
 _GENERATION_HOLD_PROTOCOL = "aaron-reader-ai-generation-hold/v1"
 
@@ -540,7 +502,7 @@ def _validate_generation_hold_entry(
     label = "generation_holds[%d]" % index
     entry = _exact_keys(value, _GENERATION_HOLD_KEYS, label)
     workload_kind = entry["workload_kind"]
-    if workload_kind not in {"article", "article_pair", "digest", "report"}:
+    if workload_kind not in {"article", "article_pair"}:
         raise ValueError("AI cache generation hold workload_kind is invalid")
     if entry["hold_class"] not in {
         "ambiguous",
@@ -549,12 +511,9 @@ def _validate_generation_hold_entry(
     }:
         raise ValueError("AI cache generation hold class is invalid")
 
-    expected_descriptor_keys = set(_GENERATION_HOLD_DESCRIPTOR_KEYS)
-    if workload_kind == "report":
-        expected_descriptor_keys.add("report")
     descriptor = _exact_keys(
         entry["descriptor"],
-        expected_descriptor_keys,
+        _GENERATION_HOLD_DESCRIPTOR_KEYS,
         "%s.descriptor" % label,
     )
     if descriptor["protocol"] != _GENERATION_HOLD_PROTOCOL:
@@ -572,19 +531,13 @@ def _validate_generation_hold_entry(
     elif workload_kind == "article_pair":
         if task_type != "summary" or input_scope != "metadata":
             raise ValueError("AI cache article-pair generation hold contract is invalid")
-    elif task_type != "digest" or input_scope != "digest":
-        raise ValueError("AI cache digest generation hold contract is invalid")
     _language(
         descriptor["target_language"],
         "%s.descriptor.target_language" % label,
     )
 
     identities = descriptor["article_identities"]
-    maximum_identities = 1 if workload_kind in {"article", "article_pair"} else 50
-    if (
-        not isinstance(identities, list)
-        or not 1 <= len(identities) <= maximum_identities
-    ):
+    if not isinstance(identities, list) or len(identities) != 1:
         raise ValueError(
             "AI cache generation hold article identity count is outside the safe range"
         )
@@ -632,32 +585,6 @@ def _validate_generation_hold_entry(
     )
     if max_output_tokens <= 0:
         raise ValueError("AI cache generation hold max_output_tokens must be positive")
-
-    if workload_kind == "report":
-        report = _exact_keys(
-            descriptor["report"],
-            _GENERATION_HOLD_REPORT_KEYS,
-            "%s.descriptor.report" % label,
-        )
-        if report["period"] not in {"daily", "weekly"}:
-            raise ValueError("AI cache report generation hold period is invalid")
-        if report["timezone"] != AI_CACHE_USAGE_TIMEZONE:
-            raise ValueError("AI cache report generation hold timezone is invalid")
-        local_date = _text(
-            report["period_start_local_date"],
-            "%s.descriptor.report.period_start_local_date" % label,
-            maximum=10,
-        )
-        try:
-            parsed_date = date.fromisoformat(local_date)
-        except ValueError as exc:
-            raise ValueError(
-                "AI cache report generation hold local date is invalid"
-            ) from exc
-        if parsed_date.isoformat() != local_date:
-            raise ValueError(
-                "AI cache report generation hold local date is not canonical"
-            )
 
     _, first_seen = _utc_timestamp(
         entry["first_seen_at"], "%s.first_seen_at" % label
@@ -735,108 +662,6 @@ def _validate_article_output(
     return validated, readable
 
 
-def _public_digest_to_local(
-    output: object,
-    articles: Sequence[Mapping[str, object]],
-    local_ids: Sequence[int],
-    *,
-    target_language: str,
-    label: str,
-) -> Tuple[Dict[str, object], str]:
-    digest = _exact_keys(output, _PUBLIC_DIGEST_KEYS, "%s.output" % label)
-    items = digest["items"]
-    if not isinstance(items, list) or len(items) != len(articles):
-        raise ValueError("AI cache %s.output.items must cover every report article" % label)
-    local_items: List[Dict[str, object]] = []
-    returned_identities: List[Tuple[str, str, str, str]] = []
-    for index, item_value in enumerate(items):
-        item = _exact_keys(
-            item_value,
-            _PUBLIC_DIGEST_ITEM_KEYS,
-            "%s.output.items[%d]" % (label, index),
-        )
-        article = _exact_keys(
-            item["article"],
-            _IDENTITY_KEYS,
-            "%s.output.items[%d].article" % (label, index),
-        )
-        returned_identities.append(_identity_key(article))
-        local_items.append(
-            {
-                "article_id": int(local_ids[index]),
-                "title": item["title"],
-                "summary": item["summary"],
-            }
-        )
-    expected_identities = [_identity_key(article) for article in articles]
-    if returned_identities != expected_identities:
-        raise ValueError("AI cache digest item identities do not match report order")
-    local_output = {
-        "headline": digest["headline"],
-        "overview": digest["overview"],
-        "items": local_items,
-        "language": digest["language"],
-        "limitations": digest["limitations"],
-    }
-    try:
-        validated, readable = parse_and_validate_output(
-            "digest",
-            canonical_json(local_output),
-            target_language=target_language,
-            input_scope="digest",
-            expected_article_ids=tuple(int(value) for value in local_ids),
-        )
-    except ValueError as exc:
-        raise ValueError("AI cache %s.output failed validation: %s" % (label, exc)) from exc
-    return validated, readable
-
-
-def _digest_output_in_article_order(
-    validated: Mapping[str, object],
-    article_ids: Sequence[int],
-    *,
-    target_language: str,
-    label: str,
-) -> Tuple[Dict[str, object], str]:
-    """Return one already-validated digest in a new, equivalent ID order."""
-
-    raw_items = validated.get("items")
-    if not isinstance(raw_items, list):
-        raise ValueError("AI cache %s.output.items must be an array" % label)
-    items_by_id: Dict[int, Mapping[str, object]] = {}
-    for item in raw_items:
-        if not isinstance(item, Mapping):
-            raise ValueError("AI cache %s.output.items contains an invalid item" % label)
-        article_id = item.get("article_id")
-        if isinstance(article_id, bool) or not isinstance(article_id, int):
-            raise ValueError("AI cache %s.output.items contains an invalid ID" % label)
-        if article_id in items_by_id:
-            raise ValueError("AI cache %s.output.items contains a duplicate ID" % label)
-        items_by_id[article_id] = item
-    expected_ids = [int(value) for value in article_ids]
-    if set(items_by_id) != set(expected_ids) or len(items_by_id) != len(expected_ids):
-        raise ValueError("AI cache %s.output.items coverage changed" % label)
-    reordered = {
-        "headline": validated["headline"],
-        "overview": validated["overview"],
-        "items": [dict(items_by_id[article_id]) for article_id in expected_ids],
-        "language": validated["language"],
-        "limitations": validated["limitations"],
-    }
-    try:
-        return parse_and_validate_output(
-            "digest",
-            canonical_json(reordered),
-            target_language=target_language,
-            input_scope="digest",
-            expected_article_ids=tuple(expected_ids),
-        )
-    except ValueError as exc:
-        raise ValueError(
-            "AI cache %s.output failed reordered validation: %s" % (label, exc)
-        ) from exc
-
-
 def _validate_payload(
     payload: object,
     configured_sources: Sequence[SourceConfig],
@@ -855,13 +680,10 @@ def _validate_payload(
         raise ValueError("AI cache bundle hash does not match its contents")
 
     artifacts = root["artifacts"]
-    reports = root["reports"]
     usage_ledger = root["usage_ledger"]
     generation_holds = root["generation_holds"]
     if not isinstance(artifacts, list) or len(artifacts) > AI_CACHE_MAX_ARTIFACTS:
         raise ValueError("AI cache artifacts exceed the safe cardinality")
-    if not isinstance(reports, list) or len(reports) > AI_CACHE_MAX_REPORTS:
-        raise ValueError("AI cache reports exceed the safe cardinality")
     if (
         not isinstance(usage_ledger, list)
         or len(usage_ledger) > AI_CACHE_MAX_USAGE_DAYS
@@ -911,123 +733,6 @@ def _validate_payload(
         artifact_order.append(binding + (cache_key,))
     if artifact_order != sorted(artifact_order):
         raise ValueError("AI cache artifacts are not in canonical order")
-
-    report_keys = set()
-    report_bindings = set()
-    report_order: List[Tuple[object, ...]] = []
-    for index, value in enumerate(reports):
-        label = "reports[%d]" % index
-        report = _exact_keys(value, _REPORT_KEYS, label)
-        try:
-            window = _validated_report_window(report)
-        except ValueError as exc:
-            raise ValueError("AI cache %s window is invalid: %s" % (label, exc)) from exc
-        target_language = _language(
-            report["target_language"], "%s.target_language" % label
-        )
-        window_articles = report["window_articles"]
-        articles = report["articles"]
-        if (
-            not isinstance(window_articles, list)
-            or not 1 <= len(window_articles) <= AI_CACHE_MAX_REPORT_WINDOW_ARTICLES
-        ):
-            raise ValueError("AI cache report window article count is outside the safe range")
-        if (
-            not isinstance(articles, list)
-            or not 1 <= len(articles) <= AI_CACHE_MAX_REPORT_ARTICLES
-        ):
-            raise ValueError("AI cache report article count is outside the safe range")
-        validated_window_articles = [
-            _validate_identity(
-                article,
-                configured_by_slug,
-                "%s.window_articles[%d]" % (label, article_index),
-            )
-            for article_index, article in enumerate(window_articles)
-        ]
-        validated_articles = [
-            _validate_identity(
-                article,
-                configured_by_slug,
-                "%s.articles[%d]" % (label, article_index),
-            )
-            for article_index, article in enumerate(articles)
-        ]
-        window_identity_keys = [
-            _identity_key(article) for article in validated_window_articles
-        ]
-        article_identity_keys = [
-            _identity_key(article) for article in validated_articles
-        ]
-        if len(set(window_identity_keys)) != len(window_identity_keys):
-            raise ValueError("AI cache report window contains duplicate article identities")
-        if len(set(article_identity_keys)) != len(article_identity_keys):
-            raise ValueError("AI cache report contains duplicate article identities")
-        if article_identity_keys != window_identity_keys[: len(article_identity_keys)]:
-            raise ValueError("AI cache report articles must be the covered window prefix")
-        articles_hash = _sha(report["articles_hash"], "%s.articles_hash" % label)
-        if articles_hash != stable_hash(validated_articles):
-            raise ValueError("AI cache report articles_hash does not match articles")
-
-        artifact = _exact_keys(
-            report["artifact"], _REPORT_ARTIFACT_KEYS, "%s.artifact" % label
-        )
-        if artifact["task_type"] != "digest" or artifact["input_scope"] != "digest":
-            raise ValueError("AI cache report artifact must be a digest")
-        if artifact["target_language"] != target_language:
-            raise ValueError("AI cache report and artifact target languages differ")
-        _validate_provenance_fields(artifact, "%s.artifact" % label)
-        public_output = artifact["output"]
-        local_ids = list(range(1, len(validated_articles) + 1))
-        validated_local, _ = _public_digest_to_local(
-            public_output,
-            validated_articles,
-            local_ids,
-            target_language=target_language,
-            label="%s.artifact" % label,
-        )
-        # Replace the local integer IDs again before hashing: the public hash is
-        # explicitly bound to the identity-bearing transport representation.
-        del validated_local
-        expected_output_hash = stable_hash(canonical_json(public_output))
-        if _sha(
-            artifact["output_hash"], "%s.artifact.output_hash" % label
-        ) != expected_output_hash:
-            raise ValueError("AI cache report output_hash does not match output")
-
-        _, artifact_created = _utc_timestamp(
-            artifact["created_at"], "%s.artifact.created_at" % label
-        )
-        _, report_created = _utc_timestamp(
-            report["created_at"], "%s.created_at" % label
-        )
-        if artifact_created > report_created or report_created > exported_datetime:
-            raise ValueError("AI cache report timestamps are inconsistent")
-        _, period_end = _utc_timestamp(report["period_end"], "%s.period_end" % label)
-        if period_end > report_created:
-            raise ValueError("AI cache report was created before its period ended")
-
-        cache_key = _sha(report["cache_key"], "%s.cache_key" % label)
-        if cache_key != _entry_hash(report):
-            raise ValueError("AI cache report cache_key does not match its contents")
-        if cache_key in report_keys:
-            raise ValueError("AI cache contains a duplicate report cache_key")
-        report_keys.add(cache_key)
-        binding = (str(window["period"]), target_language)
-        if binding in report_bindings:
-            raise ValueError("AI cache contains duplicate report coverage")
-        report_bindings.add(binding)
-        report_order.append(
-            (
-                str(window["period"]),
-                str(window["period_start"]),
-                str(window["period_end"]),
-                target_language,
-                cache_key,
-            )
-        )
-    if report_order != sorted(report_order):
-        raise ValueError("AI cache reports are not in canonical order")
 
     usage_order: List[str] = []
     usage_keys = set()
@@ -1141,7 +846,6 @@ def _validated_db_output(
             str(row.get("output_json") or ""),
             target_language=prepared.target_language,
             input_scope=prepared.input_scope,
-            expected_article_ids=prepared.expected_article_ids,
             translated_fields=prepared.translated_fields,
         )
     except ValueError as exc:
@@ -1177,237 +881,6 @@ def _article_rows(connection: sqlite3.Connection) -> List[Dict[str, object]]:
             """
         ).fetchall()
     ]
-
-
-def _window_rows(
-    connection: sqlite3.Connection, period_start: str, period_end: str
-) -> List[Dict[str, object]]:
-    return [
-        dict(row)
-        for row in connection.execute(
-            """
-            SELECT a.*, s.name AS source_name, s.home_url AS source_home_url
-            FROM articles a JOIN sources s ON s.slug=a.source_slug
-            WHERE julianday(COALESCE(a.published_at, a.discovered_at))
-                      >= julianday(?)
-              AND julianday(COALESCE(a.published_at, a.discovered_at))
-                      <= julianday(?)
-            ORDER BY COALESCE(a.published_at, a.discovered_at) DESC,
-                a.source_slug ASC, a.external_id ASC, a.canonical_url ASC
-            LIMIT 1000
-            """,
-            (period_start, period_end),
-        ).fetchall()
-    ]
-
-
-def _strict_integer_ids(value: object, label: str) -> List[int]:
-    try:
-        parsed = json.loads(str(value), parse_constant=_reject_nonfinite)
-    except (TypeError, ValueError, json.JSONDecodeError, RecursionError) as exc:
-        raise ValueError("%s is not strict JSON" % label) from exc
-    if not isinstance(parsed, list) or not 1 <= len(parsed) <= AI_CACHE_MAX_REPORT_ARTICLES:
-        raise ValueError("%s must be a bounded non-empty array" % label)
-    result: List[int] = []
-    for item in parsed:
-        if isinstance(item, bool) or not isinstance(item, int) or item <= 0:
-            raise ValueError("%s contains an invalid article ID" % label)
-        result.append(item)
-    if len(set(result)) != len(result):
-        raise ValueError("%s contains duplicate article IDs" % label)
-    return result
-
-
-def _selected_report_rows(
-    window_rows: Sequence[Mapping[str, object]],
-    selected_ids: Sequence[int],
-) -> List[Mapping[str, object]]:
-    """Rebuild a legacy digest input without relying on ephemeral row IDs.
-
-    ``ai_reports`` retains the exact selected article order used by the stored
-    artifact.  Those selected rows are the complete hashed prompt payload;
-    omitted window rows only determined truncation provenance.  Preparing just
-    this ordered selection therefore recreates the historical task even when
-    equal-timestamp rows received different local IDs on a disposable runner.
-    """
-
-    row_by_id = {int(row["id"]): row for row in window_rows}
-    try:
-        selected = [row_by_id[int(article_id)] for article_id in selected_ids]
-    except KeyError as exc:
-        raise ValueError("stored AI report references an article outside its window") from exc
-    return selected
-
-
-def _legacy_stored_report_key(
-    artifact: Mapping[str, object], window: Mapping[str, str]
-) -> str:
-    """Recompute the provider-specific v1 report key for compatibility.
-
-    Existing public handoff databases may contain this key.  New report rows use
-    the provider-neutral v2 identity from ``ai_subscription._report_key`` so a
-    valid DeepSeek fallback result remains visible to the next OpenRouter run.
-    """
-
-    return stable_hash(
-        {
-            "protocol": SUBSCRIPTION_REPORT_PROTOCOL,
-            "period": window["period"],
-            "timezone": window["timezone"],
-            "period_start": window["period_start"],
-            "artifact_key": str(artifact["artifact_key"]),
-            "article_content_hash": str(artifact["article_content_hash"]),
-        }
-    )
-
-
-def _report_entries(
-    database: Database,
-    service: AIService,
-) -> List[Dict[str, object]]:
-    result: List[Dict[str, object]] = []
-    with database.connect() as connection:
-        reports = [
-            dict(row)
-            for row in connection.execute(
-                "SELECT * FROM ai_reports ORDER BY period_start, period_end, period, target_language, id"
-            ).fetchall()
-        ]
-        for report in reports:
-            artifact_row = connection.execute(
-                "SELECT * FROM ai_artifacts WHERE id=?",
-                (int(report["artifact_id"]),),
-            ).fetchone()
-            if artifact_row is None:
-                continue
-            artifact = dict(artifact_row)
-            if (
-                artifact.get("status") != "succeeded"
-                or artifact.get("article_id") is not None
-                or artifact.get("task_type") != "digest"
-                or artifact.get("input_scope") != "digest"
-                or artifact.get("source_artifact_id") is not None
-                or artifact.get("content_snapshot_id") is not None
-            ):
-                continue
-            try:
-                window = _validated_report_window(report)
-                language = normalize_language(str(report["target_language"]))
-            except ValueError:
-                continue
-            if language != str(report["target_language"]):
-                continue
-            window_rows = _window_rows(
-                connection, window["period_start"], window["period_end"]
-            )
-            if not window_rows:
-                continue
-            stable_prepared = service.prepare_digest(
-                window_rows,
-                target_language=language,
-                report_context=_report_context(window),
-            )
-            stored_article_ids = _strict_integer_ids(
-                report["article_ids_json"], "stored report article_ids_json"
-            )
-            # A changed window must not revive a stale report.  Compare the
-            # selected set under the stable publisher-identity ordering; set
-            # equality intentionally tolerates the historical local-ID
-            # tie-breaker while still detecting a new article entering the
-            # top-N/input-budget selection (including windows larger than 50).
-            stable_article_ids = list(stable_prepared.expected_article_ids)
-            if (
-                len(stable_article_ids) != len(stored_article_ids)
-                or set(stable_article_ids) != set(stored_article_ids)
-            ):
-                continue
-            try:
-                legacy_window_rows = _selected_report_rows(
-                    window_rows, stored_article_ids
-                )
-            except ValueError:
-                continue
-            legacy_prepared = service.prepare_digest(
-                legacy_window_rows,
-                target_language=language,
-                report_context=_report_context(window),
-            )
-            if list(legacy_prepared.expected_article_ids) != stored_article_ids:
-                continue
-            if not _row_contract_matches_prepared(artifact, legacy_prepared):
-                continue
-            if (
-                str(report.get("article_content_hash") or "")
-                != legacy_prepared.article_content_hash
-            ):
-                continue
-            accepted_report_keys = {
-                _legacy_stored_report_key(artifact, window),
-                _report_key(legacy_prepared, window),
-            }
-            if str(report.get("report_key") or "") not in accepted_report_keys:
-                continue
-            validated, _ = _validated_db_output(artifact, legacy_prepared)
-            validated_by_id = {
-                int(item["article_id"]): item for item in validated["items"]
-            }
-            row_by_id = {int(row["id"]): row for row in window_rows}
-            try:
-                included_rows = [
-                    row_by_id[article_id] for article_id in stable_article_ids
-                ]
-                ordered_items = [
-                    validated_by_id[article_id] for article_id in stable_article_ids
-                ]
-            except KeyError:
-                continue
-            window_identities = [_identity_from_row(row) for row in window_rows]
-            identities = [_identity_from_row(row) for row in included_rows]
-            public_items = []
-            for item, identity in zip(ordered_items, identities):
-                public_items.append(
-                    {
-                        "article": identity,
-                        "title": item["title"],
-                        "summary": item["summary"],
-                    }
-                )
-            public_output = {
-                "headline": validated["headline"],
-                "overview": validated["overview"],
-                "items": public_items,
-                "language": validated["language"],
-                "limitations": validated["limitations"],
-            }
-            public_artifact = _portable_artifact_fields(artifact, public_output)
-            entry: Dict[str, object] = {
-                "cache_key": "",
-                **window,
-                "target_language": language,
-                "window_articles": window_identities,
-                "articles": identities,
-                "articles_hash": stable_hash(identities),
-                "artifact": public_artifact,
-                "created_at": str(report["created_at"]),
-            }
-            entry["cache_key"] = _entry_hash(entry)
-            result.append(entry)
-    latest: Dict[Tuple[str, str], Dict[str, object]] = {}
-    for entry in result:
-        key = (str(entry["period"]), str(entry["target_language"]))
-        rank = (
-            str(entry["created_at"]),
-            str(entry["period_end"]),
-            str(entry["cache_key"]),
-        )
-        previous = latest.get(key)
-        if previous is None or rank > (
-            str(previous["created_at"]),
-            str(previous["period_end"]),
-            str(previous["cache_key"]),
-        ):
-            latest[key] = entry
-    return list(latest.values())
 
 
 def _usage_attempt_rows(database: Database) -> List[Dict[str, object]]:
@@ -1646,7 +1119,6 @@ def export_ai_cache(
         entry["cache_key"] = _entry_hash(entry)
         artifacts.append(entry)
 
-    reports = _report_entries(database, service)
     latest_artifacts: Dict[Tuple[object, ...], Dict[str, object]] = {}
     for entry in artifacts:
         binding = (
@@ -1668,15 +1140,6 @@ def export_ai_cache(
             str(entry["cache_key"]),
         )
     )
-    reports.sort(
-        key=lambda entry: (
-            str(entry["period"]),
-            str(entry["period_start"]),
-            str(entry["period_end"]),
-            str(entry["target_language"]),
-            str(entry["cache_key"]),
-        )
-    )
     exported_at = utc_now()
     usage_ledger = _usage_entries(database, exported_at)
     generation_holds, skipped_generation_holds = _generation_hold_entries(
@@ -1689,7 +1152,6 @@ def export_ai_cache(
         "exported_at": exported_at,
         "bundle_hash": "0" * 64,
         "artifacts": artifacts,
-        "reports": reports,
         "usage_ledger": usage_ledger,
         "generation_holds": generation_holds,
     }
@@ -1697,15 +1159,13 @@ def export_ai_cache(
     payload["bundle_hash"] = _cache_hash(payload)
     _validate_payload(payload, app_config.sources, verify_hash=True)
     destination = _atomic_write(Path(path), payload)
-    report_artifacts = len(reports)
     return {
         "protocol": AI_CACHE_PROTOCOL,
         "path": str(destination),
         "bundle_hash": payload["bundle_hash"],
         "exported_at": payload["exported_at"],
         "article_artifacts": len(artifacts),
-        "reports": len(reports),
-        "artifacts": len(artifacts) + report_artifacts,
+        "artifacts": len(artifacts),
         "usage_days": len(usage_ledger),
         "usage_requests": sum(int(entry["requests"]) for entry in usage_ledger),
         "generation_holds": len(generation_holds),
@@ -1818,7 +1278,6 @@ def _resolved_payload(
     List[Dict[str, object]],
     List[Dict[str, object]],
     List[Dict[str, object]],
-    List[Dict[str, object]],
     Dict[Tuple[str, str, str, str], int],
 ]:
     service = AIService(app_config, database)
@@ -1829,11 +1288,6 @@ def _resolved_payload(
             key = _identity_key(identity)
             if key not in identity_rows:
                 identity_rows[key] = _resolve_identity(connection, identity)
-        for report in payload["reports"]:  # type: ignore[index]
-            for identity in report["window_articles"]:
-                key = _identity_key(identity)
-                if key not in identity_rows:
-                    identity_rows[key] = _resolve_identity(connection, identity)
         for hold in payload["generation_holds"]:  # type: ignore[index]
             for identity in hold["descriptor"]["article_identities"]:
                 key = _identity_key(identity)
@@ -1866,97 +1320,6 @@ def _resolved_payload(
         local_key_seen.add(artifact["artifact_key"])
         artifacts.append(artifact)
 
-    reports: List[Dict[str, object]] = []
-    report_key_seen = set()
-    for index, report in enumerate(payload["reports"]):  # type: ignore[index]
-        window = _validated_report_window(report)
-        portable_window_rows = [
-            identity_rows[_identity_key(identity)]
-            for identity in report["window_articles"]
-        ]
-        with database.connect() as connection:
-            actual_window_rows = _window_rows(
-                connection, window["period_start"], window["period_end"]
-            )
-        actual_keys = {_identity_key(_identity_from_row(row)) for row in actual_window_rows}
-        expected_keys = {
-            _identity_key(identity) for identity in report["window_articles"]
-        }
-        if (
-            actual_keys != expected_keys
-            or len(actual_window_rows) != len(portable_window_rows)
-        ):
-            raise ValueError("AI cache report article window differs locally")
-
-        portable_prepared = service.prepare_digest(
-            portable_window_rows,
-            target_language=str(report["target_language"]),
-            report_context=_report_context(window),
-        )
-        portable_included_rows = [
-            identity_rows[_identity_key(identity)] for identity in report["articles"]
-        ]
-        portable_included_ids = tuple(
-            int(row["id"]) for row in portable_included_rows
-        )
-        if portable_prepared.expected_article_ids != portable_included_ids:
-            raise ValueError("AI cache report coverage differs under the current input budget")
-        portable_artifact = report["artifact"]
-        if not _prepared_contract_matches(portable_prepared, portable_artifact):
-            raise ValueError(
-                "AI cache report is incompatible with the current prompt or schema"
-            )
-        portable_validated, _ = _public_digest_to_local(
-            portable_artifact["output"],
-            report["articles"],
-            portable_included_ids,
-            target_language=str(report["target_language"]),
-            label="reports[%d].artifact" % index,
-        )
-
-        # Normalize legacy cache order to the stable publisher-identity order
-        # used by current cloud generation.  The selected identity set must be
-        # unchanged; otherwise an article entered or left the current top-N
-        # selection and the historical report is stale.
-        prepared = service.prepare_digest(
-            actual_window_rows,
-            target_language=str(report["target_language"]),
-            report_context=_report_context(window),
-        )
-        included_ids = tuple(int(value) for value in prepared.expected_article_ids)
-        if (
-            len(included_ids) != len(portable_included_ids)
-            or set(included_ids) != set(portable_included_ids)
-        ):
-            raise ValueError("AI cache report coverage differs under stable ordering")
-        validated, readable = _digest_output_in_article_order(
-            portable_validated,
-            included_ids,
-            target_language=str(report["target_language"]),
-            label="reports[%d].artifact" % index,
-        )
-        artifact = _db_artifact(prepared, portable_artifact, validated, readable)
-        if artifact["artifact_key"] in local_key_seen:
-            raise ValueError("AI cache entries map to a duplicate local artifact key")
-        local_key_seen.add(artifact["artifact_key"])
-        report_key = _report_key(prepared, window)
-        if report_key in report_key_seen:
-            raise ValueError("AI cache reports map to a duplicate local report key")
-        report_key_seen.add(report_key)
-        reports.append(
-            {
-                "artifact": artifact,
-                "report_key": report_key,
-                **window,
-                "target_language": prepared.target_language,
-                "article_ids_json": canonical_json(list(included_ids)),
-                "article_content_hash": prepared.article_content_hash,
-                "created_at": str(report["created_at"]),
-                "window_identities": [
-                    _identity_from_row(row) for row in actual_window_rows
-                ],
-            }
-        )
     id_map = {
         identity: int(row["id"]) for identity, row in identity_rows.items()
     }
@@ -1972,7 +1335,7 @@ def _resolved_payload(
         dict(entry)
         for entry in payload["generation_holds"]  # type: ignore[index]
     ]
-    return artifacts, reports, usage_ledger, generation_holds, id_map
+    return artifacts, usage_ledger, generation_holds, id_map
 
 
 def _recheck_identity_map(
@@ -2005,14 +1368,12 @@ def import_ai_cache(
 
     payload = _read_payload(Path(path))
     validated = _validate_payload(payload, app_config.sources, verify_hash=True)
-    artifacts, reports, usage_ledger, generation_holds, id_map = _resolved_payload(
+    artifacts, usage_ledger, generation_holds, id_map = _resolved_payload(
         database, app_config, validated
     )
 
     inserted_artifacts = 0
     artifact_cache_hits = 0
-    inserted_reports = 0
-    report_cache_hits = 0
     with database.connect() as connection:
         connection.execute("BEGIN IMMEDIATE")
         try:
@@ -2040,74 +1401,6 @@ def import_ai_cache(
                 else:
                     inserted_artifacts += 1
 
-            for report in reports:
-                actual_rows = _window_rows(
-                    connection,
-                    str(report["period_start"]),
-                    str(report["period_end"]),
-                )
-                actual_identities = {
-                    _identity_key(_identity_from_row(row)) for row in actual_rows
-                }
-                expected_identities = {
-                    _identity_key(value) for value in report["window_identities"]
-                }
-                if actual_identities != expected_identities:
-                    raise ValueError("AI cache report article window changed during import")
-
-                artifact_id, artifact_cache_hit = _insert_artifact(
-                    connection, report["artifact"]
-                )
-                if artifact_cache_hit:
-                    artifact_cache_hits += 1
-                else:
-                    inserted_artifacts += 1
-                report_values = (
-                    report["report_key"],
-                    report["period"],
-                    report["timezone"],
-                    report["local_date"],
-                    report["period_start"],
-                    report["period_end"],
-                    report["target_language"],
-                    report["article_ids_json"],
-                    report["article_content_hash"],
-                    artifact_id,
-                    report["created_at"],
-                )
-                cursor = connection.execute(
-                    """
-                    INSERT OR IGNORE INTO ai_reports(
-                        report_key, period, timezone, local_date, period_start,
-                        period_end, target_language, article_ids_json,
-                        article_content_hash, artifact_id, created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    report_values,
-                )
-                stored = connection.execute(
-                    "SELECT * FROM ai_reports WHERE report_key=?",
-                    (report["report_key"],),
-                ).fetchone()
-                if stored is None:
-                    raise sqlite3.IntegrityError("public AI cache report was not stored")
-                expected_report = {
-                    "period": report["period"],
-                    "timezone": report["timezone"],
-                    "local_date": report["local_date"],
-                    "period_start": report["period_start"],
-                    "period_end": report["period_end"],
-                    "target_language": report["target_language"],
-                    "article_ids_json": report["article_ids_json"],
-                    "article_content_hash": report["article_content_hash"],
-                    "artifact_id": artifact_id,
-                }
-                if any(stored[key] != value for key, value in expected_report.items()):
-                    raise ValueError("public AI cache report key collision")
-                if cursor.rowcount == 0:
-                    report_cache_hits += 1
-                else:
-                    inserted_reports += 1
             connection.commit()
         except Exception:
             connection.rollback()
@@ -2118,7 +1411,6 @@ def import_ai_cache(
         "path": str(Path(path)),
         "bundle_hash": validated["bundle_hash"],
         "article_artifacts": len(artifacts),
-        "reports": len(reports),
         "usage_days": len(usage_ledger),
         "usage_requests": sum(
             int(entry["requests"]) for entry in usage_ledger
@@ -2134,11 +1426,9 @@ def import_ai_cache(
             entry["hold_class"] == "fallback_pending"
             for entry in generation_holds
         ),
-        "artifacts": len(artifacts) + len(reports),
+        "artifacts": len(artifacts),
         "inserted_artifacts": inserted_artifacts,
         "artifact_cache_hits": artifact_cache_hits,
-        "inserted_reports": inserted_reports,
-        "report_cache_hits": report_cache_hits,
         "provider_api_calls": 0,
         "api_key_used": False,
     }

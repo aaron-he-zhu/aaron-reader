@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -80,6 +81,7 @@ class CloudflareReleaseTests(unittest.TestCase):
         original = {
             "counts": {"total": 1, "unread": 1, "starred": 1},
             "cached_ai_artifact_count": 2,
+            "cached_ai_report_count": 1,
             "sources": [
                 {
                     "slug": "example",
@@ -131,53 +133,39 @@ class CloudflareReleaseTests(unittest.TestCase):
             public["articles"][0],
         )
         self.assertEqual(1, public["cached_ai_artifact_count"])
-        self.assertEqual(
-            {"period": "daily", "output": {"headline": "public"}},
-            public["ai_reports"][0],
-        )
+        self.assertNotIn("ai_reports", public)
+        self.assertNotIn("cached_ai_report_count", public)
         self.assertIn("unread", original["counts"])
 
-    def test_report_projection_must_be_reproducible_from_public_cache(self):
-        RELEASE._validate_report_projection(
-            {"ai_reports": [{"period": "weekly"}], "cached_ai_report_count": 1},
-            {"reports": [{"period": "weekly"}]},
+    def test_release_rejects_removed_ai_brief_fields(self):
+        base_snapshot = {
+            "articles": [],
+            "sources": [],
+            "render_llm_tokens_used": 0,
+            "llm_tokens_used": 0,
+        }
+        base_cache = {
+            "protocol": "aaron-reader-public-ai-cache-v3",
+            "artifacts": [],
+        }
+        cases = (
+            ({**base_snapshot, "ai_reports": []}, base_cache),
+            ({**base_snapshot, "cached_ai_report_count": 0}, base_cache),
+            (base_snapshot, {**base_cache, "reports": []}),
         )
-        with self.assertRaisesRegex(RELEASE.ReleaseError, "not reproducible"):
-            RELEASE._validate_report_projection(
-                {
-                    "ai_reports": [{"period": "weekly"}],
-                    "cached_ai_report_count": 1,
-                },
-                {"reports": []},
-            )
-        with self.assertRaisesRegex(RELEASE.ReleaseError, "identities differ"):
-            RELEASE._validate_report_projection(
-                {
-                    "ai_reports": [
-                        {
-                            "period": "weekly",
-                            "target_language": "en",
-                            "timezone": "America/Los_Angeles",
-                            "local_date": "2026-08-02",
-                            "period_start": "2026-07-27T07:00:00Z",
-                            "period_end": "2026-08-02T12:00:00Z",
-                        }
-                    ],
-                    "cached_ai_report_count": 1,
-                },
-                {
-                    "reports": [
-                        {
-                            "period": "weekly",
-                            "target_language": "zh-CN",
-                            "timezone": "America/Los_Angeles",
-                            "local_date": "2026-08-02",
-                            "period_start": "2026-07-27T07:00:00Z",
-                            "period_end": "2026-08-02T12:00:00Z",
-                        }
-                    ]
-                },
-            )
+        for snapshot, cache in cases:
+            with self.subTest(snapshot=snapshot, cache=cache), mock.patch.object(
+                RELEASE,
+                "_validate_regular_file",
+                side_effect=[
+                    json.dumps(snapshot).encode("utf-8"),
+                    b"<rss version='2.0'><channel /></rss>",
+                    b"# digest\n",
+                    json.dumps(cache).encode("utf-8"),
+                ],
+            ):
+                with self.assertRaisesRegex(RELEASE.ReleaseError, "removed AI brief"):
+                    RELEASE._validate_outputs()
 
     def test_public_digest_uses_all_public_articles_and_escapes_markdown(self):
         digest = RELEASE._public_digest(

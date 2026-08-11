@@ -51,10 +51,8 @@ if (articleArtifacts.some(
 if (snapshot.cached_ai_artifact_count !== articleArtifacts.length) {
   throw new Error("The cached article translation count is inconsistent.");
 }
-if ((snapshot.ai_reports || []).some(
-  (report) => "provider" in report || "model" in report,
-)) {
-  throw new Error("The public snapshot must not expose report provider provenance.");
+if ("ai_reports" in snapshot || "cached_ai_report_count" in snapshot) {
+  throw new Error("The public snapshot must not contain removed AI brief fields.");
 }
 if (snapshot.sources.some(
   (source) => "unread_count" in source || "pending_count" in source || "last_error" in source,

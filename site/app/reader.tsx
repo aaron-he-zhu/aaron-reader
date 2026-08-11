@@ -8,12 +8,6 @@ import {
   translationSearchText,
   type AIArtifact,
 } from "./ai-artifacts";
-import {
-  findLatestReport,
-  reportPayload,
-  type AIReport,
-  type ReportPeriod,
-} from "./ai-reports";
 
 type Language = "en" | "zh-CN";
 
@@ -44,7 +38,6 @@ type Snapshot = {
   llm_tokens_used: number;
   render_llm_tokens_used: number;
   cached_ai_artifact_count: number;
-  ai_reports?: AIReport[];
   sources: Source[];
   articles: Article[];
 };
@@ -83,21 +76,13 @@ const copy = {
     aiTranslation: "Publisher metadata translation",
     generatedCached: "AI-generated · cached",
     generatedOn: "Generated",
-    inputTruncated: "Input truncated",
     feed: "RSS feed",
     digest: "Markdown digest",
     coverage: "Chinese AI automation coverage",
     coverageSuffix: "Cloud automation will fill missing article translations on its next run.",
     coverageCompleteSuffix: "All articles have a cached Chinese translation.",
-    reports: "AI briefs",
-    dailyReport: "Daily brief",
-    weeklyReport: "Weekly brief",
-    reportTimezone: "San Francisco time",
-    reportItems: "Source notes",
-    noReports: "No daily or weekly AI brief has been published yet.",
-    reportLimitations: "Scope note",
     policy:
-      "By default, each scheduled cloud run starts with the fixed OpenRouter Free profile and can switch once to DeepSeek V4 Flash only when the OpenRouter credential is missing before transmission, after an explicit OpenRouter 401, 402, 404, or 429 response, or after a closed, non-policy availability/profile failure or locally invalid result with fully audited usage. An explicitly selected DeepSeek-only run receives no OpenRouter credential and never falls back in reverse. Ambiguous network results, unknown or future error codes, and safety or policy refusals never fall back. The active profile refreshes cached Chinese article translations and the daily brief twice daily; the weekly brief is generated once on Sunday evening. OpenRouter Free may resolve to and internally route among different eligible free providers; Aaron Reader's one-way rule covers only its separate DeepSeek continuation. The browser only reads the latest verified snapshot and never calls a model or AI API.",
+      "By default, each scheduled cloud run starts with the fixed OpenRouter Free profile and can switch once to DeepSeek V4 Flash only when the OpenRouter credential is missing before transmission, after an explicit OpenRouter 401, 402, 404, or 429 response, or after a closed, non-policy availability/profile failure or locally invalid result with fully audited usage. An explicitly selected DeepSeek-only run receives no OpenRouter credential and never falls back in reverse. Ambiguous network results, unknown or future error codes, and safety or policy refusals never fall back. The active profile refreshes cached Chinese article translations twice daily. OpenRouter Free may resolve to and internally route among different eligible free providers; Aaron Reader's one-way rule covers only its separate DeepSeek continuation. The browser only reads the latest verified snapshot and never calls a model or AI API.",
     footer: "Built for signal, not engagement.",
   },
   "zh-CN": {
@@ -133,20 +118,12 @@ const copy = {
     aiTranslation: "发布方元数据翻译",
     generatedCached: "AI 生成 · 已缓存",
     generatedOn: "生成于",
-    inputTruncated: "输入已截断",
     feed: "RSS 订阅",
     digest: "Markdown 摘要",
     coverage: "中文 AI 自动覆盖",
     coverageSuffix: "缺失的文章翻译会由云端自动化在下一轮补齐。",
     coverageCompleteSuffix: "全部文章都已有缓存的中文翻译。",
-    reports: "AI 简报",
-    dailyReport: "今日简报",
-    weeklyReport: "本周简报",
-    reportTimezone: "旧金山时间",
-    reportItems: "本期文章",
-    noReports: "目前还没有已发布的日报或周报。",
-    reportLimitations: "范围说明",
-    policy: "每轮定时云端任务默认从固定的 OpenRouter Free profile 开始；只有发送前缺少 OpenRouter 凭据、OpenRouter 明确返回 401、402、404 或 429，或封闭白名单内的非政策可用性/profile 失败或本地无效结果已完整落账时，才会单向切换一次到 DeepSeek V4 Flash。显式选择的 DeepSeek-only 任务不会接收 OpenRouter 凭据，也绝不会反向兜底。网络结果不明、用量未知、未来未知错误码以及安全或政策拒答绝不会兜底。当前 profile 每天两次更新缓存的中文文章翻译和日报；周报仅在周日晚上生成一次。OpenRouter Free 每次请求都可能解析到不同的合格免费模型，也可能在内部上游间路由；Aaron Reader 的单向规则只约束它自己后续发起的 DeepSeek 调用。浏览器只读取最新的已验证快照，不会调用模型或 AI API。",
+    policy: "每轮定时云端任务默认从固定的 OpenRouter Free profile 开始；只有发送前缺少 OpenRouter 凭据、OpenRouter 明确返回 401、402、404 或 429，或封闭白名单内的非政策可用性/profile 失败或本地无效结果已完整落账时，才会单向切换一次到 DeepSeek V4 Flash。显式选择的 DeepSeek-only 任务不会接收 OpenRouter 凭据，也绝不会反向兜底。网络结果不明、用量未知、未来未知错误码以及安全或政策拒答绝不会兜底。当前 profile 每天两次更新缓存的中文文章翻译。OpenRouter Free 每次请求都可能解析到不同的合格免费模型，也可能在内部上游间路由；Aaron Reader 的单向规则只约束它自己后续发起的 DeepSeek 调用。浏览器只读取最新的已验证快照，不会调用模型或 AI API。",
     footer: "为信号而建，而非为互动量而建。",
   },
 } as const;
@@ -167,36 +144,12 @@ function formatDate(value: string | null, language: Language, long = false) {
   ).format(date);
 }
 
-function formatReportWindow(report: AIReport, language: Language) {
-  const start = report.period_start;
-  const end = report.period_end;
-  if (!start || !end) return report.local_date || "—";
-
-  const dateFormatter = new Intl.DateTimeFormat(language, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    timeZone: "America/Los_Angeles",
-  });
-  const cutoffFormatter = new Intl.DateTimeFormat(language, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "America/Los_Angeles",
-    timeZoneName: "short",
-  });
-  return `${dateFormatter.format(new Date(start))} → ${cutoffFormatter.format(new Date(end))}`;
-}
-
 export function Reader({ snapshot }: { snapshot: Snapshot }) {
   const [language, setLanguage] = useState<Language>("en");
   const [query, setQuery] = useState("");
   const [source, setSource] = useState("");
   const [visible, setVisible] = useState(36);
   const t = copy[language];
-  const reportPeriods: ReportPeriod[] = ["daily", "weekly"];
 
   useEffect(() => {
     const stored = window.localStorage.getItem("aaron-reader-language");
@@ -231,10 +184,6 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
     });
   }, [language, query, snapshot.articles, source]);
 
-  const articlesById = useMemo(
-    () => new Map(snapshot.articles.map((article) => [article.id, article])),
-    [snapshot.articles],
-  );
   const cachedTranslationArtifactCount = useMemo(
     () => snapshot.articles.reduce(
       (count, article) => count + article.ai_artifacts.filter(
@@ -254,11 +203,6 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
     snapshot.articles.length > 0
     && chineseTranslatedArticleCount === snapshot.articles.length
   );
-  const publishedReports = reportPeriods.flatMap((period) => {
-    const report = findLatestReport(snapshot.ai_reports, period, language);
-    return report ? [{ period, report, payload: reportPayload(report) }] : [];
-  });
-
   const chooseLanguage = (next: Language) => {
     setLanguage(next);
   };
@@ -328,63 +272,6 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
                 {snapshot.sources.map((item) => <option key={item.slug} value={item.slug}>{item.name}</option>)}
               </select>
             </div>
-
-            {publishedReports.length > 0 && (
-              <section className="report-section" aria-labelledby="report-section-title">
-                <div className="report-section-heading">
-                  <h2 className="panel-kicker" id="report-section-title">{t.reports}</h2>
-                  <span>{t.reportTimezone}</span>
-                </div>
-                <div className="report-grid">
-                  {publishedReports.map(({ period, report, payload }) => (
-                    <article
-                      className="report-card"
-                      key={`${period}-${report.id || report.generated_at || report.period_end}`}
-                      lang={report.target_language || report.output?.language || language}
-                    >
-                      <div className="report-card-meta">
-                        <strong>{period === "daily" ? t.dailyReport : t.weeklyReport}</strong>
-                        <span className="report-ai-status"><i />{t.generatedCached}</span>
-                      </div>
-                      <p className="report-window">{formatReportWindow(report, language)}</p>
-                      {payload.headline && <h3>{payload.headline}</h3>}
-                      {payload.overview && <p className="report-overview">{payload.overview}</p>}
-                      {payload.items.length > 0 && (
-                        <details className="report-items">
-                          <summary>
-                            <span>{t.reportItems}</span>
-                            <strong>{payload.items.length}</strong>
-                            <span className="report-disclosure" aria-hidden="true">+</span>
-                          </summary>
-                          <ol>
-                            {payload.items.map((item) => {
-                              const article = articlesById.get(item.articleId);
-                              return (
-                                <li key={`${report.id || period}-${item.articleId}`}>
-                                  {article ? (
-                                    <a href={article.url} target="_blank" rel="noopener noreferrer">{item.title}</a>
-                                  ) : <strong>{item.title}</strong>}
-                                  <p>{item.summary}</p>
-                                </li>
-                              );
-                            })}
-                          </ol>
-                          {payload.limitations && (
-                            <p className="report-limitations"><strong>{t.reportLimitations}:</strong> {payload.limitations}</p>
-                          )}
-                        </details>
-                      )}
-                      <div className="report-footer">
-                        {report.generated_at && (
-                          <time dateTime={report.generated_at}>{t.generatedOn} {formatDate(report.generated_at, language)}</time>
-                        )}
-                        {report.input_truncated && <span className="ai-warning">{t.inputTruncated}</span>}
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            )}
 
             <div className="stream-heading">
               <p>{t.showing} <strong>{Math.min(filtered.length, visible)}</strong> {t.of} {filtered.length}</p>

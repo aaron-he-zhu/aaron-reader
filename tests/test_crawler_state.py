@@ -149,7 +149,7 @@ class CrawlerStateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "--seed requires an empty"):
             import_crawler_state(target, [source()], self.bundle, seed=True)
 
-    def test_merge_preserves_read_star_ai_and_report_rows(self) -> None:
+    def test_merge_preserves_read_star_and_article_ai_rows(self) -> None:
         target = self.database("merge.sqlite3")
         self.commit(target, [article("one")])
         row = target.list_articles()[0]
@@ -183,49 +183,6 @@ class CrawlerStateTests(unittest.TestCase):
                     utc_now(),
                 ),
             )
-            digest_id = connection.execute(
-                """
-                INSERT INTO ai_artifacts(
-                    article_id, task_type, input_scope, source_language,
-                    target_language, artifact_key, input_hash,
-                    article_content_hash, prompt_version, prompt_hash,
-                    response_schema_version, response_schema_hash, provider,
-                    requested_model, resolved_model, generation_params_hash,
-                    output_json, output_text, output_hash, status,
-                    input_truncated, created_at
-                ) VALUES (NULL, 'digest', 'digest', 'en', 'en', ?, ?, ?,
-                    'v1', ?, 'v1', ?, 'subscription', 'model', 'model', ?,
-                    '{}', 'digest', ?, 'succeeded', 0, ?)
-                """,
-                (
-                    "3" * 64,
-                    "4" * 64,
-                    row["content_hash"],
-                    "5" * 64,
-                    "6" * 64,
-                    "7" * 64,
-                    "8" * 64,
-                    utc_now(),
-                ),
-            ).lastrowid
-            connection.execute(
-                """
-                INSERT INTO ai_reports(
-                    report_key, period, timezone, local_date, period_start,
-                    period_end, target_language, article_ids_json,
-                    article_content_hash, artifact_id, created_at
-                ) VALUES (?, 'daily', 'America/Los_Angeles', '2026-07-30',
-                    '2026-07-30T07:00:00Z', '2026-07-31T06:59:59Z', 'en',
-                    ?, ?, ?, ?)
-                """,
-                (
-                    "9" * 64,
-                    json.dumps([article_id]),
-                    row["content_hash"],
-                    int(digest_id),
-                    utc_now(),
-                ),
-            )
 
         result = import_crawler_state(target, [source()], self.bundle)
         self.assertEqual(0, result["ai_artifacts_touched"])
@@ -233,8 +190,10 @@ class CrawlerStateTests(unittest.TestCase):
         self.assertIsNotNone(refreshed["read_at"])
         self.assertIsNotNone(refreshed["starred_at"])
         with target.connect() as connection:
-            self.assertEqual(2, connection.execute("SELECT COUNT(*) FROM ai_artifacts").fetchone()[0])
-            self.assertEqual(1, connection.execute("SELECT COUNT(*) FROM ai_reports").fetchone()[0])
+            self.assertEqual(
+                1,
+                connection.execute("SELECT COUNT(*) FROM ai_artifacts").fetchone()[0],
+            )
 
     def test_changed_metadata_updates_in_place_and_invalidates_old_ai_cache(self) -> None:
         target = self.database("changed.sqlite3")

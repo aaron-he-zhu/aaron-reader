@@ -24,7 +24,7 @@ from aaron_reader.ai_provider import (  # noqa: E402
     ProviderUnknownError,
     ProviderUsage,
 )
-from aaron_reader.cli import _weekly_report_due, main  # noqa: E402
+from aaron_reader.cli import main  # noqa: E402
 from aaron_reader.database import Database, utc_now  # noqa: E402
 from aaron_reader.models import ArticleCandidate, SourceConfig  # noqa: E402
 from aaron_reader.normalize import stable_hash  # noqa: E402
@@ -54,7 +54,6 @@ class AICliTests(unittest.TestCase):
                         "features": {
                             "summary": True,
                             "translation": True,
-                            "digest": True,
                             "full_text": False,
                             "web_actions": False,
                         },
@@ -126,25 +125,7 @@ class AICliTests(unittest.TestCase):
     def cloud_provider_response(self, request):
         input_value = json.loads(request.input_text)
         language = input_value.get("target_language")
-        if request.schema_name == "bilingual_report":
-            output = {
-                target: {
-                    "headline": "Daily AI" if target == "en" else "每日 AI",
-                    "overview": "Metadata overview.",
-                    "items": [
-                        {
-                            "article_id": article["article_id"],
-                            "title": article["title"],
-                            "summary": "Brief metadata summary.",
-                        }
-                        for article in input_value["articles"]
-                    ],
-                    "language": target,
-                    "limitations": "Metadata only.",
-                }
-                for target in ("en", "zh-CN")
-            }
-        elif request.schema_name == "article_translation":
+        if request.schema_name == "article_translation":
             output = {
                 "title": "文章标题",
                 "publisher_summary": "发布方简介",
@@ -168,20 +149,7 @@ class AICliTests(unittest.TestCase):
                 },
             }
         else:
-            output = {
-                "headline": "Daily AI" if language == "en" else "每日 AI",
-                "overview": "Metadata overview.",
-                "items": [
-                    {
-                        "article_id": article["article_id"],
-                        "title": article["title"],
-                        "summary": "Brief metadata summary.",
-                    }
-                    for article in input_value["articles"]
-                ],
-                "language": language,
-                "limitations": "Metadata only.",
-            }
+            raise AssertionError("unexpected cloud schema: %s" % request.schema_name)
         return ProviderResponse(
             output_text=json.dumps(output, ensure_ascii=False),
             usage=ProviderUsage(
@@ -236,12 +204,12 @@ class AICliTests(unittest.TestCase):
                 outputs.append(json.loads(output.getvalue()))
 
         first, second = outputs
-        self.assertEqual(2, generate.call_count)
+        self.assertEqual(1, generate.call_count)
         self.assertEqual(0, deepseek_generate.call_count)
-        self.assertEqual(2, first["provider_api_calls"])
+        self.assertEqual(1, first["provider_api_calls"])
         self.assertEqual(0, second["provider_api_calls"])
-        self.assertEqual(2, len(first["reports"]))
-        self.assertFalse(first["weekly_due"])
+        self.assertNotIn("reports", first)
+        self.assertNotIn("weekly_due", first)
         self.assertEqual(1, len(first["article_results"]))
         self.assertEqual(1, first["article_results"][0]["provider_api_calls"])
         self.assertIn(
@@ -260,16 +228,16 @@ class AICliTests(unittest.TestCase):
         )
         self.assertEqual(
             {
-                "requests": 2,
-                "confirmed_requests": 2,
+                "requests": 1,
+                "confirmed_requests": 1,
                 "unconfirmed_requests": 0,
-                "input_tokens": 100,
-                "cached_input_tokens": 20,
-                "cache_miss_input_tokens": 80,
+                "input_tokens": 50,
+                "cached_input_tokens": 10,
+                "cache_miss_input_tokens": 40,
                 "cache_write_input_tokens": 0,
-                "output_tokens": 40,
+                "output_tokens": 20,
                 "reasoning_tokens": 0,
-                "total_tokens": 140,
+                "total_tokens": 70,
                 "reserved_total_tokens_for_unconfirmed": 0,
             },
             first["usage"],
@@ -290,10 +258,7 @@ class AICliTests(unittest.TestCase):
             "article_summary",
             [request.schema_name for request in requests],
         )
-        self.assertEqual(
-            1,
-            sum(request.schema_name == "bilingual_report" for request in requests),
-        )
+        self.assertNotIn("bilingual_report", [request.schema_name for request in requests])
         self.assertEqual(
             {"extra_network_call": False, "validation": "fixed chat-completions request"},
             first["model_preflight"],
@@ -302,9 +267,9 @@ class AICliTests(unittest.TestCase):
         self.assertEqual("deepseek", first["fallback_provider"])
         self.assertFalse(first["fallback_activated"])
         self.assertFalse(first["degraded"])
-        self.assertEqual({"openrouter": 2}, first["provider_api_calls_by_provider"])
+        self.assertEqual({"openrouter": 1}, first["provider_api_calls_by_provider"])
 
-    def test_cloud_run_openrouter_uses_fixed_profile_and_reports_selection(self):
+    def test_cloud_run_openrouter_uses_fixed_profile(self):
         class FixedDateTime(datetime):
             @classmethod
             def now(cls, tz=None):
@@ -336,7 +301,7 @@ class AICliTests(unittest.TestCase):
             )
 
         self.assertEqual(0, status)
-        self.assertEqual(2, openrouter_generate.call_count)
+        self.assertEqual(1, openrouter_generate.call_count)
         self.assertEqual(0, deepseek_generate.call_count)
         requests = [call.args[0] for call in openrouter_generate.call_args_list]
         self.assertTrue(all(request.model == OPENROUTER_MODEL for request in requests))
@@ -344,7 +309,9 @@ class AICliTests(unittest.TestCase):
         self.assertEqual("openrouter", result["provider"])
         self.assertEqual(OPENROUTER_MODEL, result["model"])
         self.assertEqual("OPENROUTER_API_KEY", result["api_key_environment"])
-        self.assertEqual(2, result["provider_api_calls"])
+        self.assertEqual(1, result["provider_api_calls"])
+        self.assertNotIn("reports", result)
+        self.assertNotIn("weekly_due", result)
         self.assertTrue(result["completed"])
 
     def test_openrouter_429_trips_one_run_circuit_and_deepseek_completes(self):
@@ -386,25 +353,18 @@ class AICliTests(unittest.TestCase):
         self.assertTrue(result["degraded"])
         self.assertEqual("deepseek", result["active_provider"])
         self.assertEqual(1, openrouter_generate.call_count)
-        self.assertEqual(2, deepseek_generate.call_count)
-        self.assertEqual(3, result["provider_api_calls"])
+        self.assertEqual(1, deepseek_generate.call_count)
+        self.assertEqual(2, result["provider_api_calls"])
         self.assertEqual(
-            {"openrouter": 1, "deepseek": 2},
+            {"openrouter": 1, "deepseek": 1},
             result["provider_api_calls_by_provider"],
         )
         self.assertEqual("http_429", result["fallback_events"][0]["reason"])
         self.assertTrue(result["fallback_events"][0]["primary_call_made"])
-        self.assertEqual("report", result["fallback_events"][0]["kind"])
+        self.assertEqual("article", result["fallback_events"][0]["kind"])
+        self.assertNotIn("reports", result)
         self.assertEqual(
-            {"deepseek"},
-            {str(report["provider"]) for report in result["reports"]},
-        )
-        self.assertEqual(
-            {DEEPSEEK_MODEL},
-            {str(report["resolved_model"]) for report in result["reports"]},
-        )
-        self.assertEqual(
-            [DEEPSEEK_MODEL, DEEPSEEK_MODEL],
+            [DEEPSEEK_MODEL],
             [call.args[0].model for call in deepseek_generate.call_args_list],
         )
         attempts = Database(self.database_path).list_ai_attempts()
@@ -443,15 +403,7 @@ class AICliTests(unittest.TestCase):
         self.assertEqual(0, second_deepseek.call_count)
         self.assertEqual(0, second["provider_api_calls"])
         self.assertEqual({}, second["provider_api_calls_by_provider"])
-        self.assertTrue(all(report["cache_hit"] for report in second["reports"]))
-        self.assertEqual(
-            {"deepseek"},
-            {str(report["provider"]) for report in second["reports"]},
-        )
-        self.assertEqual(
-            {DEEPSEEK_MODEL},
-            {str(report["resolved_model"]) for report in second["reports"]},
-        )
+        self.assertNotIn("reports", second)
         self.assertEqual(1, second["coverage_cache_hits"])
 
     def test_missing_openrouter_key_falls_back_before_primary_attempt(self):
@@ -480,8 +432,8 @@ class AICliTests(unittest.TestCase):
         result = json.loads(output.getvalue())
         self.assertEqual(0, status)
         self.assertEqual(0, openrouter_generate.call_count)
-        self.assertEqual(2, deepseek_generate.call_count)
-        self.assertEqual({"deepseek": 2}, result["provider_api_calls_by_provider"])
+        self.assertEqual(1, deepseek_generate.call_count)
+        self.assertEqual({"deepseek": 1}, result["provider_api_calls_by_provider"])
         self.assertEqual("missing_api_key", result["fallback_events"][0]["reason"])
         self.assertFalse(result["fallback_events"][0]["primary_call_made"])
         attempts = Database(self.database_path).list_ai_attempts()
@@ -641,7 +593,7 @@ class AICliTests(unittest.TestCase):
                 return value if tz is None else value.astimezone(tz)
 
         invalid_response = ProviderResponse(
-            output_text=json.dumps({"not": "the bilingual schema"}),
+            output_text=json.dumps({"not": "the translation schema"}),
             usage=ProviderUsage(input_tokens=15, output_tokens=5, total_tokens=20),
             model="routed-model",
             request_id="request-invalid",
@@ -670,12 +622,12 @@ class AICliTests(unittest.TestCase):
         result = json.loads(output.getvalue())
         self.assertEqual(0, status)
         self.assertEqual(1, openrouter_generate.call_count)
-        self.assertEqual(2, deepseek_generate.call_count)
+        self.assertEqual(1, deepseek_generate.call_count)
         self.assertEqual(
-            "invalid_bilingual_structured_output",
+            "invalid_structured_output",
             result["fallback_events"][0]["reason"],
         )
-        self.assertEqual(3, result["usage"]["confirmed_requests"])
+        self.assertEqual(2, result["usage"]["confirmed_requests"])
         self.assertEqual([], Database(self.database_path).list_ai_generation_holds())
 
     def test_budget_blocked_fallback_is_resumed_without_replaying_openrouter(self):
@@ -754,10 +706,10 @@ class AICliTests(unittest.TestCase):
         second = json.loads(second_output.getvalue())
         self.assertEqual(0, second_status)
         self.assertEqual(0, second_openrouter.call_count)
-        self.assertEqual(2, second_deepseek.call_count)
+        self.assertEqual(1, second_deepseek.call_count)
         self.assertEqual("fallback_pending", second["fallback_events"][0]["reason"])
         self.assertFalse(second["fallback_events"][0]["primary_call_made"])
-        self.assertEqual({"deepseek": 2}, second["provider_api_calls_by_provider"])
+        self.assertEqual({"deepseek": 1}, second["provider_api_calls_by_provider"])
         self.assertEqual([], Database(self.database_path).list_ai_generation_holds())
 
     def test_production_workflow_never_cross_wires_provider_secrets(self):
@@ -779,6 +731,8 @@ class AICliTests(unittest.TestCase):
         self.assertNotIn('cron: "0 10,22 * * *"', workflow)
         self.assertIn('--provider "$AI_PROVIDER"', workflow)
         self.assertIn("arguments+=(--fallback-provider deepseek)", workflow)
+        self.assertNotIn("force_weekly", workflow)
+        self.assertNotIn("FORCE_WEEKLY", workflow)
         self.assertNotIn("AI_API_KEY", workflow)
         self.assertNotIn(
             "secrets.OPENROUTER_API_KEY || secrets.DEEPSEEK_API_KEY",
@@ -855,7 +809,6 @@ class AICliTests(unittest.TestCase):
             environment = {
                 **os.environ,
                 "AI_PROVIDER": "deepseek",
-                "FORCE_WEEKLY": "false",
                 "FORCE_HELD": "false",
             }
             completed = subprocess.run(
@@ -965,26 +918,9 @@ class AICliTests(unittest.TestCase):
         self.assertFalse(result["completed"])
         self.assertEqual(1, result["generation_holds_skipped"])
         self.assertEqual([], result["failures"])
-        self.assertEqual("generation_hold", result["reports"][0]["skipped"])
-        self.assertEqual(1, second_generate.call_count)
-
-    def test_weekly_report_is_only_due_sunday_night_or_when_forced(self):
-        self.assertFalse(
-            _weekly_report_due(
-                datetime(2026, 8, 3, 2, 59, tzinfo=timezone.utc)
-            )
-        )
-        self.assertTrue(
-            _weekly_report_due(
-                datetime(2026, 8, 3, 3, 0, tzinfo=timezone.utc)
-            )
-        )
-        self.assertTrue(
-            _weekly_report_due(
-                datetime(2026, 8, 1, 5, 0, tzinfo=timezone.utc),
-                force=True,
-            )
-        )
+        self.assertEqual("generation_hold", result["article_results"][0]["skipped"])
+        self.assertNotIn("reports", result)
+        self.assertEqual(0, second_generate.call_count)
 
     def test_normal_status_never_constructs_ai_provider(self):
         with mock.patch(

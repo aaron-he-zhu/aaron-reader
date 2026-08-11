@@ -23,10 +23,7 @@ from aaron_reader.ai_provider import (  # noqa: E402
     ProviderUnknownError,
     ProviderUsage,
 )
-from aaron_reader.ai_prompts import (  # noqa: E402
-    canonical_json,
-    parse_and_validate_output,
-)
+from aaron_reader.ai_prompts import parse_and_validate_output  # noqa: E402
 from aaron_reader.ai_service import (  # noqa: E402
     AIDisabledError,
     AIFallbackEligibleError,
@@ -96,25 +93,7 @@ class FakeProvider:
         self.assert_safe_request(request)
         input_value = json.loads(request.input_text)
         language = input_value.get("target_language")
-        if request.schema_name == "bilingual_report":
-            output = {
-                target: {
-                    "headline": "%s report" % target,
-                    "overview": "A grounded overview.",
-                    "items": [
-                        {
-                            "article_id": int(item["article_id"]),
-                            "title": str(item["title"]),
-                            "summary": "Digest item.",
-                        }
-                        for item in input_value["articles"]
-                    ],
-                    "language": target,
-                    "limitations": "Based only on supplied metadata.",
-                }
-                for target in ("en", "zh-CN")
-            }
-        elif request.schema_name == "article_summary_translation":
+        if request.schema_name == "article_summary_translation":
             output = {
                 "summary": {
                     "summary": "A grounded short summary.",
@@ -148,20 +127,7 @@ class FakeProvider:
                 "limitations": "",
             }
         else:
-            output = {
-                "headline": "Today in AI",
-                "overview": "A compact overview.",
-                "items": [
-                    {
-                        "article_id": item["article_id"],
-                        "title": item["title"],
-                        "summary": "Digest item.",
-                    }
-                    for item in input_value["articles"]
-                ],
-                "language": language,
-                "limitations": "",
-            }
+            raise AssertionError("unexpected schema: %s" % request.schema_name)
         return ProviderResponse(
             output_text=json.dumps(output, ensure_ascii=False),
             usage=ProviderUsage(
@@ -321,7 +287,6 @@ class AIServiceTests(unittest.TestCase):
             provider="openrouter",
             summary_model=OPENROUTER_MODEL,
             translation_model=OPENROUTER_MODEL,
-            digest_model=OPENROUTER_MODEL,
             reasoning_effort="none",
             api_key_environment="OPENROUTER_API_KEY",
             timeout_seconds=17,
@@ -351,7 +316,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="",
             summary_model=DEEPSEEK_MODEL,
             translation_model=DEEPSEEK_MODEL,
-            digest_model=DEEPSEEK_MODEL,
             api_key_environment="DEEPSEEK_API_KEY",
         )
         deepseek_service = AIService(
@@ -383,7 +347,6 @@ class AIServiceTests(unittest.TestCase):
             provider="openrouter",
             summary_model=OPENROUTER_MODEL,
             translation_model=OPENROUTER_MODEL,
-            digest_model=OPENROUTER_MODEL,
             reasoning_effort="none",
             api_key_environment="OPENROUTER_API_KEY",
         )
@@ -430,7 +393,6 @@ class AIServiceTests(unittest.TestCase):
             provider="openrouter",
             summary_model=OPENROUTER_MODEL,
             translation_model=OPENROUTER_MODEL,
-            digest_model=OPENROUTER_MODEL,
             reasoning_effort="none",
             api_key_environment="OPENROUTER_API_KEY",
         )
@@ -454,7 +416,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="",
             summary_model=DEEPSEEK_MODEL,
             translation_model=DEEPSEEK_MODEL,
-            digest_model=DEEPSEEK_MODEL,
             api_key_environment="DEEPSEEK_API_KEY",
         )
         deepseek_service = AIService(
@@ -490,7 +451,6 @@ class AIServiceTests(unittest.TestCase):
             provider="openrouter",
             summary_model=OPENROUTER_MODEL,
             translation_model=OPENROUTER_MODEL,
-            digest_model=OPENROUTER_MODEL,
             reasoning_effort="none",
             api_key_environment="OPENROUTER_API_KEY",
         )
@@ -522,7 +482,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="",
             summary_model=DEEPSEEK_MODEL,
             translation_model=DEEPSEEK_MODEL,
-            digest_model=DEEPSEEK_MODEL,
             api_key_environment="DEEPSEEK_API_KEY",
         )
         continuation = AIService(
@@ -565,7 +524,6 @@ class AIServiceTests(unittest.TestCase):
             provider="openrouter",
             summary_model=OPENROUTER_MODEL,
             translation_model=OPENROUTER_MODEL,
-            digest_model=OPENROUTER_MODEL,
             reasoning_effort="none",
             api_key_environment="OPENROUTER_API_KEY",
         )
@@ -584,7 +542,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="",
             summary_model=DEEPSEEK_MODEL,
             translation_model=DEEPSEEK_MODEL,
-            digest_model=DEEPSEEK_MODEL,
             api_key_environment="DEEPSEEK_API_KEY",
         )
         continuation = AIService(
@@ -639,7 +596,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="deepseek",
             summary_model=OPENROUTER_MODEL,
             translation_model=OPENROUTER_MODEL,
-            digest_model=OPENROUTER_MODEL,
             reasoning_effort="none",
             api_key_environment="OPENROUTER_API_KEY",
         )
@@ -689,7 +645,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="",
             summary_model=DEEPSEEK_MODEL,
             translation_model=DEEPSEEK_MODEL,
-            digest_model=DEEPSEEK_MODEL,
             api_key_environment="DEEPSEEK_API_KEY",
         )
         deepseek_provider = FakeProvider()
@@ -738,7 +693,6 @@ class AIServiceTests(unittest.TestCase):
             provider="deepseek",
             summary_model=DEEPSEEK_MODEL,
             translation_model=DEEPSEEK_MODEL,
-            digest_model=DEEPSEEK_MODEL,
             reasoning_effort="none",
             api_key_environment="DEEPSEEK_API_KEY",
         )
@@ -807,7 +761,7 @@ class AIServiceTests(unittest.TestCase):
         self.assertEqual(1, refreshed["provider_api_calls"])
         self.assertEqual(1, len(changed_provider.requests))
 
-    def test_openrouter_article_and_digest_pairs_record_routed_model(self):
+    def test_openrouter_article_pair_records_routed_model(self):
         routed_model = "test-provider/routed-free-model:free"
 
         class RoutedFakeProvider(FakeProvider):
@@ -819,28 +773,17 @@ class AIServiceTests(unittest.TestCase):
             provider="openrouter",
             summary_model=OPENROUTER_MODEL,
             translation_model=OPENROUTER_MODEL,
-            digest_model=OPENROUTER_MODEL,
             reasoning_effort="none",
             api_key_environment="OPENROUTER_API_KEY",
         )
         service = AIService(self.app(ai), self.database, provider=provider)
-        articles = self.database.list_articles(limit=10)
-        report_context = {
-            "period": "daily",
-            "timezone": "America/Los_Angeles",
-            "period_start_local_date": "2026-08-01",
-        }
         with mock.patch.dict(
             os.environ, {"OPENROUTER_API_KEY": "test-key"}, clear=True
         ):
             article_pair = service.generate_article_pair(int(self.article["id"]))
-            digest_pair = service.generate_digest_pair(
-                articles,
-                report_context=report_context,
-            )
 
         self.assertEqual(
-            ["article_summary_translation", "bilingual_report"],
+            ["article_summary_translation"],
             [request.schema_name for request in provider.requests],
         )
         self.assertTrue(
@@ -848,13 +791,6 @@ class AIServiceTests(unittest.TestCase):
         )
         self.assertEqual(routed_model, article_pair["summary"]["resolved_model"])
         self.assertEqual(routed_model, article_pair["translation"]["resolved_model"])
-        self.assertEqual(
-            {routed_model},
-            {
-                artifact["resolved_model"]
-                for artifact in digest_pair["artifacts"].values()
-            },
-        )
         self.assertEqual(
             {OPENROUTER_MODEL},
             {
@@ -869,220 +805,6 @@ class AIServiceTests(unittest.TestCase):
                 for attempt in self.database.list_ai_attempts()
             },
         )
-
-    def test_bilingual_digest_uses_one_shared_input_call_and_two_cached_artifacts(self):
-        provider = FakeProvider()
-        ai = enabled_ai(
-            provider="deepseek",
-            digest_model=DEEPSEEK_MODEL,
-            reasoning_effort="none",
-            api_key_environment="DEEPSEEK_API_KEY",
-        )
-        service = AIService(self.app(ai), self.database, provider=provider)
-        articles = self.database.list_articles(limit=10)
-        report_context = {
-            "period": "daily",
-            "timezone": "America/Los_Angeles",
-            "period_start_local_date": "2026-08-01",
-        }
-        with mock.patch.dict(
-            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
-        ):
-            first = service.generate_digest_pair(
-                articles,
-                report_context=report_context,
-            )
-            second = service.generate_digest_pair(
-                articles,
-                report_context=report_context,
-            )
-
-        self.assertEqual(1, len(provider.requests))
-        request = provider.requests[0]
-        self.assertEqual("bilingual_report", request.schema_name)
-        shared_input = json.loads(request.input_text)
-        self.assertEqual(["en", "zh-CN"], shared_input["target_languages"])
-        self.assertNotIn("target_language", shared_input)
-        self.assertEqual(1, len(shared_input["articles"]))
-        self.assertEqual({"en", "zh-CN"}, set(first["artifacts"]))
-        self.assertEqual(1, first["provider_api_calls"])
-        self.assertEqual(0, second["provider_api_calls"])
-        self.assertTrue(second["cache_hit"])
-        self.assertEqual(1, len(self.database.list_ai_attempts()))
-
-    def test_bilingual_digest_partial_cache_generates_only_missing_language(self):
-        provider = FakeProvider()
-        ai = enabled_ai(
-            provider="deepseek",
-            digest_model=DEEPSEEK_MODEL,
-            reasoning_effort="none",
-            api_key_environment="DEEPSEEK_API_KEY",
-        )
-        service = AIService(self.app(ai), self.database, provider=provider)
-        articles = self.database.list_articles(limit=10)
-        report_context = {
-            "period": "daily",
-            "timezone": "America/Los_Angeles",
-            "period_start_local_date": "2026-08-01",
-        }
-        with mock.patch.dict(
-            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
-        ):
-            service.generate_digest(
-                articles,
-                target_language="en",
-                report_context=report_context,
-            )
-            result = service.generate_digest_pair(
-                articles,
-                report_context=report_context,
-            )
-
-        self.assertEqual(2, len(provider.requests))
-        self.assertTrue(
-            all(request.schema_name == "article_digest" for request in provider.requests)
-        )
-        self.assertEqual(1, result["provider_api_calls"])
-        self.assertEqual({"en", "zh-CN"}, set(result["artifacts"]))
-
-    def test_bilingual_digest_invalid_language_is_atomic_and_durably_held(self):
-        class InvalidChineseProvider(FakeProvider):
-            def generate(self, request):
-                response = super().generate(request)
-                output = json.loads(response.output_text)
-                output["zh-CN"]["language"] = "en"
-                return replace(
-                    response,
-                    output_text=json.dumps(output, ensure_ascii=False),
-                )
-
-        provider = InvalidChineseProvider()
-        ai = enabled_ai(
-            provider="deepseek",
-            digest_model=DEEPSEEK_MODEL,
-            reasoning_effort="none",
-            api_key_environment="DEEPSEEK_API_KEY",
-        )
-        service = AIService(self.app(ai), self.database, provider=provider)
-        articles = self.database.list_articles(limit=10)
-        report_context = {
-            "period": "daily",
-            "timezone": "America/Los_Angeles",
-            "period_start_local_date": "2026-08-01",
-        }
-        prepared = {
-            language: service.prepare_digest(
-                articles,
-                target_language=language,
-                report_context=report_context,
-            )
-            for language in ("en", "zh-CN")
-        }
-        with mock.patch.dict(
-            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
-        ):
-            with self.assertRaisesRegex(AIServiceError, "bilingual output"):
-                service.generate_digest_pair(
-                    articles,
-                    report_context=report_context,
-                )
-            with self.assertRaises(AIGenerationHeld):
-                service.generate_digest_pair(
-                    articles,
-                    report_context=report_context,
-                )
-
-        self.assertEqual(1, len(provider.requests))
-        self.assertTrue(
-            all(
-                self.database.ai_artifact_by_key(task.artifact_key) is None
-                for task in prepared.values()
-            )
-        )
-        holds = self.database.list_ai_generation_holds()
-        self.assertEqual(1, len(holds))
-        self.assertEqual("report", holds[0]["workload_kind"])
-        self.assertEqual("paid_failure", holds[0]["hold_class"])
-
-    def test_sunday_daily_and_thirteen_article_weekly_pairs_fit_30k_reservation(self):
-        candidates = []
-        for index in range(12):
-            slug = "weekly-%02d" % index
-            url = "https://example.com/blog/%s" % slug
-            title = "Weekly AI update %02d" % index
-            summary = "A concise publisher description for update %02d." % index
-            candidates.append(
-                ArticleCandidate(
-                    source_slug="example",
-                    external_id=slug,
-                    url=url,
-                    title=title,
-                    summary=summary,
-                    published_at="2026-07-%02dT12:00:00Z" % (27 + index % 5),
-                    content_hash=article_hash(title, url, summary),
-                )
-            )
-        self.database.commit_candidates(
-            SOURCE,
-            candidates,
-            started_at="2026-08-02T20:00:00Z",
-            http_status=200,
-            etag="",
-            last_modified="",
-            body_hash="weekly-budget-fixture",
-        )
-        provider = FakeProvider()
-        ai = enabled_ai(
-            provider="deepseek",
-            digest_model=DEEPSEEK_MODEL,
-            reasoning_effort="none",
-            api_key_environment="DEEPSEEK_API_KEY",
-            budget=AIBudgetConfig(
-                daily_max_requests=20,
-                daily_max_total_tokens=30_000,
-                monthly_max_requests=300,
-                monthly_max_total_tokens=400_000,
-            ),
-        )
-        service = AIService(self.app(ai), self.database, provider=provider)
-        weekly_articles = self.database.list_articles(limit=20)
-        self.assertEqual(13, len(weekly_articles))
-        daily_articles = [
-            article
-            for article in weekly_articles
-            if int(article["id"]) == int(self.article["id"])
-        ]
-        with mock.patch.dict(
-            os.environ, {"DEEPSEEK_API_KEY": "test-key"}, clear=True
-        ):
-            service.generate_digest_pair(
-                daily_articles,
-                report_context={
-                    "period": "daily",
-                    "timezone": "America/Los_Angeles",
-                    "period_start_local_date": "2026-08-02",
-                },
-            )
-            service.generate_digest_pair(
-                weekly_articles,
-                report_context={
-                    "period": "weekly",
-                    "timezone": "America/Los_Angeles",
-                    "period_start_local_date": "2026-07-27",
-                },
-            )
-
-        self.assertEqual(2, len(provider.requests))
-        reservations = [
-            conservative_token_estimate(
-                request.instructions,
-                request.input_text,
-                canonical_json(request.json_schema),
-            )
-            + request.max_output_tokens
-            for request in provider.requests
-        ]
-        self.assertLessEqual(sum(reservations), 30_000)
 
     def test_translation_fields_have_an_independent_cache_key(self):
         provider = FakeProvider()
@@ -1207,7 +929,6 @@ class AIServiceTests(unittest.TestCase):
             provider="deepseek",
             translation_model=DEEPSEEK_MODEL,
             summary_model=DEEPSEEK_MODEL,
-            digest_model=DEEPSEEK_MODEL,
             api_key_environment="DEEPSEEK_API_KEY",
             fallback_provider="",
         )
@@ -1267,7 +988,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="deepseek",
             summary_model=OPENROUTER_MODEL,
             translation_model=OPENROUTER_MODEL,
-            digest_model=OPENROUTER_MODEL,
             reasoning_effort="none",
             api_key_environment="OPENROUTER_API_KEY",
         )
@@ -1313,7 +1033,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="",
             summary_model=DEEPSEEK_MODEL,
             translation_model=DEEPSEEK_MODEL,
-            digest_model=DEEPSEEK_MODEL,
             api_key_environment="DEEPSEEK_API_KEY",
         )
         continuation_provider = FakeProvider()
@@ -1342,7 +1061,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="",
             summary_model=DEEPSEEK_MODEL,
             translation_model=DEEPSEEK_MODEL,
-            digest_model=DEEPSEEK_MODEL,
             api_key_environment="DEEPSEEK_API_KEY",
         )
         failed_pair = AIService(
@@ -1359,7 +1077,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="deepseek",
             summary_model=OPENROUTER_MODEL,
             translation_model=OPENROUTER_MODEL,
-            digest_model=OPENROUTER_MODEL,
             reasoning_effort="none",
             api_key_environment="OPENROUTER_API_KEY",
         )
@@ -1422,7 +1139,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="",
             summary_model=DEEPSEEK_MODEL,
             translation_model=DEEPSEEK_MODEL,
-            digest_model=DEEPSEEK_MODEL,
             api_key_environment="DEEPSEEK_API_KEY",
         )
         failed_pair = AIService(
@@ -1703,7 +1419,6 @@ class AIServiceTests(unittest.TestCase):
             fallback_provider="deepseek",
             summary_model=OPENROUTER_MODEL,
             translation_model=OPENROUTER_MODEL,
-            digest_model=OPENROUTER_MODEL,
             reasoning_effort="none",
             api_key_environment="OPENROUTER_API_KEY",
         )
@@ -1945,25 +1660,6 @@ class AIServiceTests(unittest.TestCase):
         self.assertEqual(2, len(provider.requests))
         self.assertIsNone(
             self.database.latest_content_snapshot(int(self.article["id"]))
-        )
-
-    def test_digest_validates_exact_article_ids(self):
-        self.database.commit_candidates(
-            SOURCE,
-            [candidate("one"), candidate("two", "Second")],
-            started_at=utc_now(),
-            http_status=200,
-            etag="",
-            last_modified="",
-            body_hash="two",
-        )
-        articles = self.database.list_articles()
-        provider = FakeProvider()
-        service = AIService(self.app(), self.database, provider=provider)
-        result = service.generate_digest(articles)
-        self.assertEqual(
-            [int(article["id"]) for article in articles],
-            [item["article_id"] for item in result["output"]["items"]],
         )
 
     def test_batch_enqueue_is_confirmed_and_worker_is_bounded(self):

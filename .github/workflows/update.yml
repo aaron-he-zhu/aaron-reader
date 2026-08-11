@@ -14,11 +14,6 @@ on:
         options:
           - openrouter
           - deepseek
-      force_weekly:
-        description: Generate the bilingual weekly brief outside Sunday evening
-        required: false
-        default: false
-        type: boolean
       force_held:
         description: Explicitly retry held AI work that may already have been billed
         required: false
@@ -90,7 +85,6 @@ jobs:
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           OPENROUTER_API_KEY: ${{ (inputs.ai_provider || vars.AI_PROVIDER || 'openrouter') == 'openrouter' && secrets.OPENROUTER_API_KEY || '' }}
-          FORCE_WEEKLY: ${{ inputs.force_weekly || 'false' }}
           FORCE_HELD: ${{ inputs.force_held || 'false' }}
         run: |
           set -o pipefail
@@ -107,9 +101,6 @@ jobs:
             arguments+=(--fallback-provider deepseek)
           else
             arguments+=(--fallback-provider none)
-          fi
-          if [[ "$FORCE_WEEKLY" == "true" ]]; then
-            arguments+=(--force-weekly)
           fi
           if [[ "$FORCE_HELD" == "true" ]]; then
             arguments+=(--force-held)

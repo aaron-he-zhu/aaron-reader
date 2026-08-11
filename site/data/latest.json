@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T17:12:08Z",
+  "generated_at": "2026-08-11T00:04:04Z",
   "language": "en",
   "supported_languages": [
     "en",
@@ -8,7 +8,6 @@
   "llm_tokens_used": 0,
   "render_llm_tokens_used": 0,
   "cached_ai_artifact_count": 120,
-  "cached_ai_report_count": 2,
   "counts": {
     "total": 135
   },
@@ -3334,76 +3333,6 @@
           }
         }
       ]
-    }
-  ],
-  "ai_reports": [
-    {
-      "id": 1,
-      "period": "daily",
-      "timezone": "America/Los_Angeles",
-      "local_date": "2026-08-10",
-      "period_start": "2026-08-10T07:00:00Z",
-      "period_end": "2026-08-10T17:11:15Z",
-      "target_language": "en",
-      "generated_at": "2026-08-10T17:11:33Z",
-      "input_truncated": false,
-      "output": {
-        "headline": "Daily OpenAI News Digest: August 10, 2026",
-        "items": [
-          {
-            "article_id": 83,
-            "summary": "OpenAI CFO Sarah Friar discusses five lessons learned while building an AI-native finance function, covering topics such as automated forecasting, stronger controls, and AI ROI.",
-            "title": "What building an AI-native finance function taught me"
-          },
-          {
-            "article_id": 127,
-            "summary": "OpenAI issued a letter to Governor Greg Abbott expressing commitment to responsible AI infrastructure in Texas to support reliable and transparent growth for Texans.",
-            "title": "OpenAI’s letter to Governor Abbott on responsible AI infrastructure in Texas"
-          },
-          {
-            "article_id": 119,
-            "summary": "Model ML utilizes GPT-5.6 Sol to streamline finance tasks, moving from research and analysis to editable and traceable PowerPoint decks and Excel workbooks.",
-            "title": "Model ML completes finance work more efficiently with GPT-5.6 Sol"
-          }
-        ],
-        "language": "en",
-        "limitations": "The report is based on provided article summaries and contains only the information present in those summaries.",
-        "overview": "This digest covers news from OpenAI on August 10, 2026, including insights from CFO Sarah Friar on AI-native finance, a letter to Texas Governor Greg Abbott regarding AI infrastructure, and Model ML's use of GPT-5.6 Sol for finance workflows."
-      }
-    },
-    {
-      "id": 2,
-      "period": "daily",
-      "timezone": "America/Los_Angeles",
-      "local_date": "2026-08-10",
-      "period_start": "2026-08-10T07:00:00Z",
-      "period_end": "2026-08-10T17:11:15Z",
-      "target_language": "zh-CN",
-      "generated_at": "2026-08-10T17:11:33Z",
-      "input_truncated": false,
-      "output": {
-        "headline": "OpenAI 新闻日报：2026年8月10日",
-        "items": [
-          {
-            "article_id": 83,
-            "summary": "OpenAI 首席财务官 Sarah Friar 分享了构建 AI 原生财务职能的五点经验，涵盖了从自动化预测到更强的控制和 AI 投资回报率等内容。",
-            "title": "构建 AI 原生财务职能给我的启示"
-          },
-          {
-            "article_id": 127,
-            "summary": "OpenAI 向州长 Greg Abbott 致信，概述了其对德克萨斯州负责任 AI 基础设施建设的承诺，旨在支持造福德州人的可靠、透明的增长。",
-            "title": "OpenAI 给 Abbott 州长关于德克萨斯州负责任 AI 基础设施的信函"
-          },
-          {
-            "article_id": 119,
-            "summary": "Model ML 利用 GPT-5.6 Sol 将财务工作从研究与分析延伸至可编辑、可追溯的 PowerPoint 演示文稿和 Excel 工作簿。",
-            "title": "Model ML 利用 GPT-5.6 Sol 更高效地完成财务工作"
-          }
-        ],
-        "language": "zh-CN",
-        "limitations": "本报告基于提供的文章摘要，仅包含摘要中存在的信息。",
-        "overview": "本摘要涵盖了 2026 年 8 月 10 日的 OpenAI 相关新闻，包括 CFO Sarah Friar 关于 AI 原生财务职能的见解、关于德克萨斯州 AI 基础设施给 Abbott 州长的信函，以及 Model ML 使用 GPT-5.6 Sol 处理财务工作流的情况。"
-      }
     }
   ]
 }

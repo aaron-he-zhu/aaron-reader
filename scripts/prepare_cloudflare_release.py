@@ -101,49 +101,6 @@ def _validate_regular_file(path: Path, maximum: int) -> bytes:
     return path.read_bytes()
 
 
-def _validate_report_projection(
-    snapshot: Mapping[str, object], cache: Mapping[str, object]
-) -> None:
-    cache_reports = cache.get("reports")
-    if not isinstance(cache_reports, list):
-        raise ReleaseError("cloud AI cache is missing its report array")
-    snapshot_reports = snapshot.get("ai_reports")
-    if not isinstance(snapshot_reports, list) or snapshot.get(
-        "cached_ai_report_count"
-    ) != len(snapshot_reports):
-        raise ReleaseError("latest.json AI report count is inconsistent")
-    if len(snapshot_reports) != len(cache_reports):
-        raise ReleaseError(
-            "rendered AI reports are not reproducible from the public AI cache"
-        )
-    identity_fields = (
-        "period",
-        "target_language",
-        "timezone",
-        "local_date",
-        "period_start",
-        "period_end",
-    )
-    snapshot_keys = {
-        tuple(str(report.get(field) or "") for field in identity_fields)
-        for report in snapshot_reports
-        if isinstance(report, dict)
-    }
-    cache_keys = {
-        tuple(str(report.get(field) or "") for field in identity_fields)
-        for report in cache_reports
-        if isinstance(report, dict)
-    }
-    if (
-        len(snapshot_keys) != len(snapshot_reports)
-        or len(cache_keys) != len(cache_reports)
-        or snapshot_keys != cache_keys
-    ):
-        raise ReleaseError(
-            "rendered AI report identities differ from the public AI cache"
-        )
-
-
 def _validate_outputs() -> dict[str, object]:
     json_bytes = _validate_regular_file(PUBLIC / "latest.json", SIZE_LIMITS["latest.json"])
     feed_bytes = _validate_regular_file(PUBLIC / "feed.xml", SIZE_LIMITS["feed.xml"])
@@ -169,7 +126,10 @@ def _validate_outputs() -> dict[str, object]:
         snapshot.get("sources"), list
     ):
         raise ReleaseError("latest.json is missing article or source arrays")
-    _validate_report_projection(snapshot, cache)
+    if "ai_reports" in snapshot or "cached_ai_report_count" in snapshot:
+        raise ReleaseError("latest.json contains removed AI brief fields")
+    if "reports" in cache:
+        raise ReleaseError("cloud AI cache contains removed AI brief data")
     if snapshot.get("render_llm_tokens_used") != 0:
         raise ReleaseError("static rendering unexpectedly reported LLM token use")
     if snapshot.get("llm_tokens_used") != 0:
@@ -187,6 +147,8 @@ def _validate_outputs() -> dict[str, object]:
 
 def _public_snapshot(snapshot: Mapping[str, object]) -> dict[str, object]:
     public = copy.deepcopy(dict(snapshot))
+    public.pop("ai_reports", None)
+    public.pop("cached_ai_report_count", None)
 
     counts = public.get("counts")
     if isinstance(counts, dict):
@@ -232,14 +194,6 @@ def _public_snapshot(snapshot: Mapping[str, object]) -> dict[str, object]:
             else:
                 article["ai_artifacts"] = []
     public["cached_ai_artifact_count"] = cached_translation_count
-
-    reports = public.get("ai_reports")
-    if isinstance(reports, list):
-        for report in reports:
-            if not isinstance(report, dict):
-                continue
-            report.pop("provider", None)
-            report.pop("model", None)
 
     return public
 

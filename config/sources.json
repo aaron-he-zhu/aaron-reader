@@ -10,7 +10,6 @@
     "fallback_provider": "deepseek",
     "translation_model": "openrouter/free",
     "summary_model": "openrouter/free",
-    "digest_model": "openrouter/free",
     "reasoning_effort": "none",
     "store": false,
     "api_key_environment": "OPENROUTER_API_KEY",
@@ -21,13 +20,11 @@
     "timeout_seconds": 60,
     "max_output_tokens": {
       "summary": 400,
-      "translation": 800,
-      "digest": 1200
+      "translation": 800
     },
     "features": {
       "summary": false,
       "translation": true,
-      "digest": true,
       "full_text": false
     },
     "budget": {

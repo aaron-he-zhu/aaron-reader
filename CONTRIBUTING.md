@@ -4,8 +4,8 @@ Thanks for helping improve Aaron Reader. The project favors deterministic,
 auditable code over model calls: collection, parsing, rendering, testing, and
 deployment preparation must work with zero LLM tokens. Language artifacts use
 the closed OpenRouter Free profile by default for per-article Simplified
-Chinese translations and daily or weekly reports, with the closed DeepSeek V4
-Flash profile as a bounded one-way fallback.
+Chinese translations, with the closed DeepSeek V4 Flash profile as a bounded
+one-way fallback.
 
 ## Development setup
 
@@ -53,10 +53,10 @@ OpenRouter Free dynamically chooses an upstream free model, so tests must not
 assume one resolved model and production prompts must remain limited to public
 publisher metadata. Its internal upstream routing is distinct from Aaron
 Reader's application-level fallback. Never add private, personal, or sensitive
-data to a model request. Provider-backed report artifacts and report indexes
-must commit with attempt completion in one transaction; a sent attempt must
-always create its provisional no-replay hold atomically. Production depends on
-the serialized single-writer workflow, and contributors must not claim an
+data to a model request. Provider-backed article-translation artifacts must
+commit with attempt completion in one transaction; a sent attempt must always
+create its provisional no-replay hold atomically. Production depends on the
+serialized single-writer workflow, and contributors must not claim an
 exactly-once guarantee across complete hosted-runner loss.
 
 ## Public snapshot boundary
