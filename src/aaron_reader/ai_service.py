@@ -255,7 +255,6 @@ class AIService:
         self._provider_instance = provider
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._content_fetcher_factory = content_fetcher_factory or ContentFetcher
-        self._settleable_generation_hold_attempts = set()
         self._automatic_fallback_provider = str(
             automatic_fallback_provider or ""
         ).strip()
@@ -489,9 +488,6 @@ class AIService:
             )
         )
 
-    def _settleable_generation_hold(self, attempt_id: int) -> bool:
-        return int(attempt_id) in self._settleable_generation_hold_attempts
-
     def _failure_generation_hold(
         self,
         template: Mapping[str, object],
@@ -579,17 +575,77 @@ class AIService:
         )
 
     @staticmethod
+    def _all_paid_failure_holds(
+        observed_holds: Sequence[_ObservedGenerationHold],
+    ) -> bool:
+        return bool(observed_holds) and all(
+            observation.hold_class == "paid_failure"
+            for observation in observed_holds
+        )
+
+    @staticmethod
+    def _paid_failure_retry_authorized(
+        observed_holds: Sequence[_ObservedGenerationHold],
+    ) -> bool:
+        """Keep a narrow paid replay valid through its fallback continuation."""
+
+        return bool(
+            any(
+                observation.hold_class == "paid_failure"
+                for observation in observed_holds
+            )
+            and all(
+                observation.hold_class in {"paid_failure", "fallback_pending"}
+                for observation in observed_holds
+            )
+        )
+
+    @staticmethod
+    def _exact_observed_generation_hold(
+        template: Mapping[str, object],
+        observed_holds: Sequence[_ObservedGenerationHold],
+    ) -> Optional[_ObservedGenerationHold]:
+        hold_key = str(template.get("hold_key") or "")
+        return next(
+            (
+                observation
+                for observation in observed_holds
+                if observation.hold_key == hold_key
+            ),
+            None,
+        )
+
+    @staticmethod
+    def _definitive_failure_may_settle_provisional(
+        exact_hold: Optional[_ObservedGenerationHold],
+        observed_holds: Sequence[_ObservedGenerationHold],
+        *,
+        retry_paid_failure: bool,
+    ) -> bool:
+        if any(
+            observation.hold_class == "ambiguous"
+            for observation in observed_holds
+        ):
+            return False
+        if exact_hold is None:
+            return True
+        return bool(
+            retry_paid_failure
+            and exact_hold.hold_class == "paid_failure"
+        )
+
+    @staticmethod
     def _generation_holds_cleared_after_success(
         prepared: PreparedTask,
         observed_holds: Sequence[_ObservedGenerationHold],
     ) -> Tuple[Tuple[str, str, int], ...]:
         """Select preflight holds that a successful result fully settles.
 
-        A direct fallback-pending hold represents exactly the requested task,
-        so a successful continuation settles it.  A legacy article-pair hold
-        is broader and may be settled only by the complete production
-        translation (title plus publisher summary), never by a title-only or
-        publisher-summary-only request.
+        A direct fallback-pending or paid-failure hold represents exactly the
+        requested task, so a successful generation settles it.  A legacy
+        article-pair hold is broader and may be settled only by the complete
+        production translation (title plus publisher summary), never by a
+        title-only or publisher-summary-only request.
         """
 
         complete_translation = bool(
@@ -603,7 +659,7 @@ class AIService:
             if (
                 complete_translation
                 if observation.legacy_pair
-                else observation.hold_class == "fallback_pending"
+                else observation.hold_class in {"fallback_pending", "paid_failure"}
             )
         )
 
@@ -612,6 +668,7 @@ class AIService:
         template: Mapping[str, object],
         *,
         force_held: bool,
+        retry_paid_failure: bool = False,
     ) -> Tuple[_ObservedGenerationHold, ...]:
         holds = self._equivalent_generation_holds(template)
         exact = self.database.ai_generation_hold(
@@ -656,6 +713,20 @@ class AIService:
             return observed_holds
 
         risk = {"fallback_pending": 0, "paid_failure": 1, "ambiguous": 2}
+        ambiguous_holds = [
+            candidate
+            for candidate in holds
+            if str(candidate.get("hold_class") or "") == "ambiguous"
+        ]
+        if ambiguous_holds and not force_held:
+            hold = min(
+                ambiguous_holds,
+                key=lambda candidate: str(candidate.get("hold_key") or ""),
+            )
+            raise AIGenerationHeld(
+                "AI generation is held against automatic replay (%s, %s)"
+                % (hold.get("hold_class"), str(hold["hold_key"])[:12])
+            )
         direct_holds = [
             candidate
             for candidate in holds
@@ -669,15 +740,24 @@ class AIService:
             )
         ]
         controlling_holds = direct_holds or holds
-        only_pending = bool(controlling_holds) and all(
+        pending_holds = [
+            candidate
+            for candidate in controlling_holds
+            if str(candidate.get("hold_class")) == "fallback_pending"
+        ]
+        pending_can_continue = bool(pending_holds) and all(
             str(candidate.get("hold_class")) == "fallback_pending"
+            or (
+                retry_paid_failure
+                and str(candidate.get("hold_class")) == "paid_failure"
+            )
             for candidate in controlling_holds
         )
-        pending_from_expected_provider = only_pending and all(
+        pending_from_expected_provider = pending_can_continue and all(
             isinstance(candidate.get("descriptor"), Mapping)
             and str(candidate["descriptor"].get("provider") or "")
             == self._allow_fallback_pending_from
-            for candidate in controlling_holds
+            for candidate in pending_holds
         )
         if (
             pending_from_expected_provider
@@ -685,18 +765,18 @@ class AIService:
             and self._allow_fallback_pending_from == DEFAULT_AI_PROVIDER
         ):
             return observed_holds
-        pending_from_primary_provider = only_pending and all(
+        pending_from_primary_provider = pending_can_continue and all(
             isinstance(candidate.get("descriptor"), Mapping)
             and str(candidate["descriptor"].get("provider") or "")
             == self.config.provider
-            for candidate in controlling_holds
+            for candidate in pending_holds
         )
         if (
             pending_from_primary_provider
             and self._automatic_fallback_enabled()
         ):
             hold = min(
-                controlling_holds,
+                pending_holds,
                 key=lambda candidate: str(candidate.get("hold_key") or ""),
             )
             raise AIFallbackEligibleError(
@@ -707,6 +787,11 @@ class AIService:
             )
         if force_held:
             return observed_holds
+        if (
+            retry_paid_failure
+            and self._all_paid_failure_holds(observed_holds)
+        ):
+            return observed_holds
         hold = max(
             controlling_holds,
             key=lambda candidate: risk.get(
@@ -716,6 +801,36 @@ class AIService:
         raise AIGenerationHeld(
             "AI generation is held against automatic replay (%s, %s)"
             % (hold.get("hold_class"), str(hold["hold_key"])[:12])
+        )
+
+    def _generation_hold_preflight(
+        self,
+        template: Mapping[str, object],
+        *,
+        force_held: bool,
+        retry_paid_failure: bool = False,
+    ) -> Tuple[Tuple[_ObservedGenerationHold, ...], int]:
+        """Read semantic holds behind a stable global revision fence.
+
+        ``mark_ai_attempt_sent`` validates the returned revision in the same
+        write transaction that installs the attempt's provisional hold.  The
+        exact-key snapshot then identifies what that transaction may replace.
+        Together they prevent a newly inserted equivalent legacy hold from
+        slipping through the non-force ambiguous veto.
+        """
+
+        for _ in range(3):
+            before = self.database.ai_generation_hold_revision_sequence()
+            observed = self._check_generation_hold(
+                template,
+                force_held=force_held,
+                retry_paid_failure=retry_paid_failure,
+            )
+            after = self.database.ai_generation_hold_revision_sequence()
+            if before == after:
+                return observed, after
+        raise AIGenerationHeld(
+            "AI generation holds changed during the final preflight"
         )
 
     def _clear_observed_generation_holds(
@@ -1094,6 +1209,7 @@ class AIService:
         trigger_kind: str = "cli",
         client_request_id: Optional[str] = None,
         force_held: bool = False,
+        retry_paid_failure: bool = False,
     ) -> Dict[str, object]:
         scope = self._normalize_scope(input_scope)
         self._require_enabled(task_type, scope)
@@ -1111,7 +1227,17 @@ class AIService:
         article_hold = self._generation_hold_template(
             prepared, workload_kind="article"
         )
-        self._check_generation_hold(article_hold, force_held=force_held)
+        observed_generation_holds = self._check_generation_hold(
+            article_hold,
+            force_held=force_held,
+            retry_paid_failure=retry_paid_failure,
+        )
+        retry_paid_failure_hold = bool(
+            retry_paid_failure
+            and self._paid_failure_retry_authorized(
+                observed_generation_holds
+            )
+        )
         self._ensure_api_key()
         job = self.enqueue(
             prepared,
@@ -1119,8 +1245,16 @@ class AIService:
             trigger_kind=trigger_kind,
             client_request_id=client_request_id,
         )
-        if job.get("state") == "cancelled" or (
-            force_held and job.get("state") in {"unknown", "permanent_failed"}
+        if (
+            job.get("state") == "cancelled"
+            or (
+                force_held
+                and job.get("state") in {"unknown", "permanent_failed"}
+            )
+            or (
+                retry_paid_failure_hold
+                and job.get("state") in {"cancelled", "permanent_failed"}
+            )
         ):
             job = self.database.requeue_ai_job(
                 int(job["id"]), allow_unknown=force_held
@@ -1129,6 +1263,7 @@ class AIService:
             int(job["id"]),
             prepared_task=prepared,
             force_generation_hold=force_held,
+            retry_paid_failure_hold=retry_paid_failure_hold,
         )
 
     def current_article_artifact(
@@ -1333,9 +1468,28 @@ class AIService:
             bundle,
             workload_kind="article_pair",
         )
-        observed_generation_holds = self._check_generation_hold(
+        (
+            observed_generation_holds,
+            preflight_generation_hold_revision,
+        ) = self._generation_hold_preflight(
             generation_hold,
             force_held=force_held,
+        )
+        exact_generation_hold = self._exact_observed_generation_hold(
+            generation_hold,
+            observed_generation_holds,
+        )
+        preflight_generation_hold_snapshot = (
+            exact_generation_hold.delete_guard()
+            if exact_generation_hold is not None
+            else None
+        )
+        settle_definitive_failure = (
+            self._definitive_failure_may_settle_provisional(
+                exact_generation_hold,
+                observed_generation_holds,
+                retry_paid_failure=force_held,
+            )
         )
         self._ensure_api_key()
         request_payload = bundle.job_request()
@@ -1439,11 +1593,18 @@ class AIService:
             max_output_tokens=combined_max_output,
             reasoning_effort="none",
         )
-        response = self._call_provider_for_attempt(
+        response, provisional_generation_hold = self._call_provider_for_attempt(
             attempt_id=attempt_id,
             prepared=bundle,
             provider_request=provider_request,
             generation_hold=generation_hold,
+            preflight_generation_hold_snapshot=(
+                preflight_generation_hold_snapshot
+            ),
+            preflight_generation_hold_revision=(
+                preflight_generation_hold_revision
+            ),
+            settle_definitive_failure=settle_definitive_failure,
         )
         usage_dict = self._usage_dict(response.usage)
         usage_confirmed = bool(
@@ -1494,10 +1655,11 @@ class AIService:
                     fallback_eligible=fallback_eligible,
                 ),
                 settle_provisional_generation_hold=(
-                    self._settleable_generation_hold(attempt_id)
+                    provisional_generation_hold
+                    if usage_confirmed and settle_definitive_failure
+                    else None
                 ),
             )
-            self._settleable_generation_hold_attempts.discard(attempt_id)
             message = "provider output failed local validation: %s" % exc
             error = (
                 self._fallback_error(
@@ -1536,15 +1698,14 @@ class AIService:
             usage=usage_dict,
             actual_cost_micros=actual_cost,
             usage_confirmed=usage_confirmed,
-            clear_generation_hold_key=str(generation_hold["hold_key"]),
             clear_generation_hold_snapshots=(
-                self._generation_holds_cleared_after_success(
+                (provisional_generation_hold,)
+                + self._generation_holds_cleared_after_success(
                     bundle,
                     observed_generation_holds,
                 )
             ),
         )
-        self._settleable_generation_hold_attempts.discard(attempt_id)
         stored_translation = self.database.ai_artifact_by_key(
             translation.artifact_key
         )
@@ -1607,7 +1768,12 @@ class AIService:
         prepared: PreparedTask,
         provider_request: ProviderRequest,
         generation_hold: Mapping[str, object],
-    ) -> ProviderResponse:
+        preflight_generation_hold_snapshot: Optional[
+            Tuple[str, str, int]
+        ],
+        preflight_generation_hold_revision: int,
+        settle_definitive_failure: bool,
+    ) -> Tuple[ProviderResponse, Tuple[str, str, int]]:
         """Make one audited provider call without retrying ambiguous failures."""
 
         try:
@@ -1624,17 +1790,49 @@ class AIService:
                 error_code="provider_config",
                 error_message=str(exc),
             )
-            raise AIServiceError(str(exc)) from exc
+            raise
 
         provisional_hold = self._classified_generation_hold(
             generation_hold, "ambiguous"
         )
-        provisional_created = self.database.mark_ai_attempt_sent(
-            int(attempt_id),
-            provisional_generation_hold=provisional_hold,
-        )
-        if provisional_created:
-            self._settleable_generation_hold_attempts.add(int(attempt_id))
+        try:
+            provisional_snapshot = self.database.mark_ai_attempt_sent(
+                int(attempt_id),
+                provisional_generation_hold=provisional_hold,
+                preflight_generation_hold_snapshot=(
+                    preflight_generation_hold_snapshot
+                ),
+                preflight_generation_hold_revision=(
+                    preflight_generation_hold_revision
+                ),
+            )
+        except AIJobConflict as exc:
+            message = "AI generation holds changed after the final preflight"
+            self.database.fail_ai_attempt(
+                attempt_id=int(attempt_id),
+                job_state="cancelled",
+                error_class="generation_hold_conflict",
+                error_code="generation_hold_changed",
+                error_message=message,
+            )
+            raise AIGenerationHeld(message) from exc
+
+        def restore_or_clear_preflight_hold() -> Dict[str, object]:
+            if preflight_generation_hold_snapshot is None:
+                return {
+                    "generation_hold": None,
+                    "settle_provisional_generation_hold": None,
+                    "clear_provisional_generation_hold": provisional_snapshot,
+                }
+            return {
+                "generation_hold": self._classified_generation_hold(
+                    generation_hold,
+                    preflight_generation_hold_snapshot[1],
+                ),
+                "settle_provisional_generation_hold": provisional_snapshot,
+                "clear_provisional_generation_hold": None,
+            }
+
         try:
             response = generate(provider_request)
             if not isinstance(response, ProviderResponse):
@@ -1642,7 +1840,7 @@ class AIService:
                     "provider returned an invalid response; "
                     "the request may already have been processed"
                 )
-            return response
+            return response, provisional_snapshot
         except ProviderHTTPError as exc:
             # No configured provider promises safe replay for a rejected POST.
             # A 429 is a definitive rejection; transport-like HTTP failures may
@@ -1656,6 +1854,22 @@ class AIService:
                 not fallback_eligible
                 and self._http_failure_allows_fallback(exc.status)
             )
+            if transient_rejection:
+                hold_transition = restore_or_clear_preflight_hold()
+            else:
+                hold_transition = {
+                    "generation_hold": self._failure_generation_hold(
+                        generation_hold,
+                        "ambiguous" if ambiguous_result else "paid_failure",
+                        fallback_eligible=fallback_eligible,
+                    ),
+                    "settle_provisional_generation_hold": (
+                        provisional_snapshot
+                        if not ambiguous_result and settle_definitive_failure
+                        else None
+                    ),
+                    "clear_provisional_generation_hold": None,
+                }
             self.database.fail_ai_attempt(
                 attempt_id=int(attempt_id),
                 job_state="unknown" if ambiguous_result else "permanent_failed",
@@ -1668,25 +1882,14 @@ class AIService:
                 error_message=str(exc),
                 http_status=exc.status,
                 next_attempt_at=None,
-                generation_hold=(
-                    self._failure_generation_hold(
-                        generation_hold,
-                        "ambiguous" if ambiguous_result else "paid_failure",
-                        fallback_eligible=fallback_eligible,
-                    )
-                    if not transient_rejection
-                    else None
-                ),
-                settle_provisional_generation_hold=(
-                    provisional_created and not transient_rejection
-                ),
-                clear_provisional_generation_hold_key=(
-                    str(generation_hold.get("hold_key") or "")
-                    if transient_rejection and provisional_created
-                    else ""
-                ),
+                generation_hold=hold_transition["generation_hold"],
+                settle_provisional_generation_hold=hold_transition[
+                    "settle_provisional_generation_hold"
+                ],
+                clear_provisional_generation_hold=hold_transition[
+                    "clear_provisional_generation_hold"
+                ],
             )
-            self._settleable_generation_hold_attempts.discard(int(attempt_id))
             error = self._fallback_error(
                 str(exc),
                 reason_code="http_%d" % exc.status,
@@ -1724,9 +1927,12 @@ class AIService:
                     "paid_failure",
                     fallback_eligible=fallback_eligible,
                 ),
-                settle_provisional_generation_hold=provisional_created,
+                settle_provisional_generation_hold=(
+                    provisional_snapshot
+                    if settle_definitive_failure
+                    else None
+                ),
             )
-            self._settleable_generation_hold_attempts.discard(int(attempt_id))
             error = (
                 self._fallback_error(
                     str(exc),
@@ -1751,23 +1957,24 @@ class AIService:
                     generation_hold, "ambiguous"
                 ),
             )
-            self._settleable_generation_hold_attempts.discard(int(attempt_id))
             raise AIServiceError(str(exc)) from exc
         except ProviderConfigError as exc:
+            hold_transition = restore_or_clear_preflight_hold()
             self.database.fail_ai_attempt(
                 attempt_id=int(attempt_id),
                 job_state="permanent_failed",
                 error_class="provider_config",
                 error_code="provider_config",
                 error_message=str(exc),
-                clear_provisional_generation_hold_key=(
-                    str(generation_hold.get("hold_key") or "")
-                    if provisional_created
-                    else ""
-                ),
+                generation_hold=hold_transition["generation_hold"],
+                settle_provisional_generation_hold=hold_transition[
+                    "settle_provisional_generation_hold"
+                ],
+                clear_provisional_generation_hold=hold_transition[
+                    "clear_provisional_generation_hold"
+                ],
             )
-            self._settleable_generation_hold_attempts.discard(int(attempt_id))
-            raise AIServiceError(str(exc)) from exc
+            raise
         except Exception as exc:
             self.database.fail_ai_attempt(
                 attempt_id=int(attempt_id),
@@ -1782,7 +1989,6 @@ class AIService:
                     generation_hold, "ambiguous"
                 ),
             )
-            self._settleable_generation_hold_attempts.discard(int(attempt_id))
             raise AIServiceError(
                 "unexpected provider failure; "
                 "the request may already have been processed"
@@ -1795,6 +2001,7 @@ class AIService:
         force_new_provider_request: bool = False,
         prepared_task: Optional[PreparedTask] = None,
         force_generation_hold: bool = False,
+        retry_paid_failure_hold: bool = False,
     ) -> Dict[str, object]:
         job = self.database.ai_job(int(job_id))
         if job is None:
@@ -1852,9 +2059,31 @@ class AIService:
             prepared,
             workload_kind="article",
         )
-        observed_generation_holds = self._check_generation_hold(
+        (
+            observed_generation_holds,
+            preflight_generation_hold_revision,
+        ) = self._generation_hold_preflight(
             generation_hold,
             force_held=force_generation_hold,
+            retry_paid_failure=retry_paid_failure_hold,
+        )
+        exact_generation_hold = self._exact_observed_generation_hold(
+            generation_hold,
+            observed_generation_holds,
+        )
+        preflight_generation_hold_snapshot = (
+            exact_generation_hold.delete_guard()
+            if exact_generation_hold is not None
+            else None
+        )
+        settle_definitive_failure = (
+            self._definitive_failure_may_settle_provisional(
+                exact_generation_hold,
+                observed_generation_holds,
+                retry_paid_failure=(
+                    retry_paid_failure_hold or force_generation_hold
+                ),
+            )
         )
         try:
             self._require_enabled(prepared.task_type, prepared.input_scope)
@@ -1880,8 +2109,6 @@ class AIService:
                 self.database.cancel_ai_job(int(job_id), code, str(exc))
             except AIJobConflict:
                 pass
-            if isinstance(exc, ProviderConfigError):
-                raise AIServiceError(str(exc)) from exc
             raise
         budget = self.config.budget
         reservation = self.database.reserve_ai_attempt(
@@ -1917,11 +2144,18 @@ class AIService:
             max_output_tokens=prepared.max_output_tokens,
             reasoning_effort=self.config.reasoning_effort,
         )
-        response = self._call_provider_for_attempt(
+        response, provisional_generation_hold = self._call_provider_for_attempt(
             attempt_id=attempt_id,
             prepared=prepared,
             provider_request=provider_request,
             generation_hold=generation_hold,
+            preflight_generation_hold_snapshot=(
+                preflight_generation_hold_snapshot
+            ),
+            preflight_generation_hold_revision=(
+                preflight_generation_hold_revision
+            ),
+            settle_definitive_failure=settle_definitive_failure,
         )
 
         usage_dict = self._usage_dict(response.usage)
@@ -1980,10 +2214,11 @@ class AIService:
                     fallback_eligible=fallback_eligible,
                 ),
                 settle_provisional_generation_hold=(
-                    self._settleable_generation_hold(attempt_id)
+                    provisional_generation_hold
+                    if usage_confirmed and settle_definitive_failure
+                    else None
                 ),
             )
-            self._settleable_generation_hold_attempts.discard(attempt_id)
             message = "provider output failed local validation: %s" % exc
             error = (
                 self._fallback_error(
@@ -2012,15 +2247,14 @@ class AIService:
             usage=usage_dict,
             actual_cost_micros=actual_cost,
             usage_confirmed=usage_confirmed,
-            clear_generation_hold_key=str(generation_hold["hold_key"]),
             clear_generation_hold_snapshots=(
-                self._generation_holds_cleared_after_success(
+                (provisional_generation_hold,)
+                + self._generation_holds_cleared_after_success(
                     prepared,
                     observed_generation_holds,
                 )
             ),
         )
-        self._settleable_generation_hold_attempts.discard(attempt_id)
         return self._artifact_result(stored, cache_hit=False)
 
     def _provider_artifact(

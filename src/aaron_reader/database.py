@@ -1820,6 +1820,21 @@ class Database:
             "last_seen_at": last_seen,
         }
 
+    @staticmethod
+    def _validated_ai_generation_hold_snapshot(
+        snapshot: Sequence[object],
+    ) -> Tuple[str, str, int]:
+        if isinstance(snapshot, (str, bytes)) or len(snapshot) != 3:
+            raise ValueError("AI generation hold snapshot is invalid")
+        hold_key, hold_class, revision = snapshot
+        if not isinstance(hold_key, str) or not hold_key:
+            raise ValueError("AI generation hold snapshot key is invalid")
+        if hold_class not in {"ambiguous", "paid_failure", "fallback_pending"}:
+            raise ValueError("AI generation hold snapshot class is invalid")
+        if isinstance(revision, bool) or not isinstance(revision, int) or revision < 1:
+            raise ValueError("AI generation hold snapshot revision is invalid")
+        return hold_key, str(hold_class), revision
+
     @classmethod
     def _replace_ai_generation_holds(
         cls,
@@ -1916,7 +1931,7 @@ class Database:
         *,
         now: str,
         allow_risk_downgrade: bool = False,
-    ) -> None:
+    ) -> int:
         template_expected = {"hold_key", "workload_kind", "hold_class", "descriptor"}
         if set(hold) != template_expected:
             raise ValueError("AI generation hold template has unexpected fields")
@@ -1983,6 +1998,7 @@ class Database:
                 revision,
             ),
         )
+        return revision
 
     def replace_ai_generation_holds(
         self, entries: Sequence[Mapping[str, object]]
@@ -1991,6 +2007,30 @@ class Database:
             connection.execute("BEGIN IMMEDIATE")
             self._replace_ai_generation_holds(connection, entries)
             connection.commit()
+
+    def ai_generation_hold_revision_sequence(self) -> int:
+        """Return the monotonic sequence covering every hold upsert.
+
+        Callers use this as a final-preflight fence.  Exact-key snapshots still
+        provide the attempt token's compare-and-swap identity, while this
+        sequence also detects a newly inserted or changed equivalent legacy
+        hold between the semantic hold check and ``mark_ai_attempt_sent``.
+        """
+
+        with self.connect() as connection:
+            row = connection.execute(
+                "SELECT value FROM app_meta "
+                "WHERE key='ai_generation_hold_revision'"
+            ).fetchone()
+        if row is None:
+            raise ValueError("missing ai_generation_hold_revision")
+        try:
+            revision = int(row[0])
+        except (TypeError, ValueError) as exc:
+            raise ValueError("invalid ai_generation_hold_revision") from exc
+        if revision < 0:
+            raise ValueError("invalid ai_generation_hold_revision")
+        return revision
 
     def list_ai_generation_holds(
         self,
@@ -2324,16 +2364,49 @@ class Database:
         attempt_id: int,
         *,
         provisional_generation_hold: Mapping[str, object],
-    ) -> bool:
+        preflight_generation_hold_snapshot: Optional[
+            Tuple[str, str, int]
+        ],
+        preflight_generation_hold_revision: int,
+    ) -> Tuple[str, str, int]:
         """Atomically mark a request sent and install its no-replay hold.
 
-        The return value is true only when this call created the exact hold.
-        A caller may settle that newly created provisional ``ambiguous`` hold
-        to a lower-risk definitive outcome.  A pre-existing hold must retain
-        its risk class, including when an operator explicitly forced replay.
+        The caller supplies the exact hold snapshot observed at its final
+        preflight, or ``None`` when that key was absent.  A changed snapshot
+        aborts before the provider request can be sent.  The returned guard
+        identifies only the provisional ``ambiguous`` revision installed by
+        this attempt, so later settlement and cleanup can use compare-and-swap
+        instead of modifying a concurrent hold revision.
         """
 
         now = utc_now()
+        provisional = self._validated_ai_generation_hold(
+            {
+                **dict(provisional_generation_hold),
+                "first_seen_at": now,
+                "last_seen_at": now,
+            }
+        )
+        if provisional["hold_class"] != "ambiguous":
+            raise ValueError("provisional AI generation hold must be ambiguous")
+        expected_snapshot = (
+            self._validated_ai_generation_hold_snapshot(
+                preflight_generation_hold_snapshot
+            )
+            if preflight_generation_hold_snapshot is not None
+            else None
+        )
+        if (
+            expected_snapshot is not None
+            and expected_snapshot[0] != provisional["hold_key"]
+        ):
+            raise ValueError("preflight AI generation hold key differs")
+        if (
+            isinstance(preflight_generation_hold_revision, bool)
+            or not isinstance(preflight_generation_hold_revision, int)
+            or preflight_generation_hold_revision < 0
+        ):
+            raise ValueError("preflight AI generation hold revision is invalid")
         with self.connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
             row = connection.execute(
@@ -2345,17 +2418,38 @@ class Database:
             if row["state"] != "reserved":
                 connection.rollback()
                 raise AIJobConflict("AI attempt is already in state %s" % row["state"])
-            hold_key = str(provisional_generation_hold.get("hold_key") or "")
+            hold_key = str(provisional["hold_key"])
             existing_hold = connection.execute(
-                "SELECT hold_class FROM ai_generation_holds WHERE hold_key=?",
+                "SELECT hold_class, revision FROM ai_generation_holds WHERE hold_key=?",
                 (hold_key,),
             ).fetchone()
-            self._upsert_ai_generation_hold(
+            current_snapshot = (
+                (
+                    hold_key,
+                    str(existing_hold["hold_class"]),
+                    int(existing_hold["revision"]),
+                )
+                if existing_hold is not None
+                else None
+            )
+            if current_snapshot != expected_snapshot:
+                connection.rollback()
+                raise AIJobConflict(
+                    "AI generation hold changed after the final preflight"
+                )
+            current_revision = self._ensure_ai_generation_hold_revision_sequence(
+                connection
+            )
+            if current_revision != preflight_generation_hold_revision:
+                connection.rollback()
+                raise AIJobConflict(
+                    "AI generation holds changed after the final preflight"
+                )
+            revision = self._upsert_ai_generation_hold(
                 connection,
                 provisional_generation_hold,
                 now=now,
             )
-            provisional_created = existing_hold is None
             connection.execute(
                 "UPDATE ai_attempts SET state='sent' WHERE id=?", (int(attempt_id),)
             )
@@ -2364,7 +2458,7 @@ class Database:
                 (now, int(row["job_id"])),
             )
             connection.commit()
-        return provisional_created
+        return hold_key, "ambiguous", revision
 
     def complete_ai_attempt(
         self,
@@ -2375,12 +2469,17 @@ class Database:
         usage: Dict[str, int],
         actual_cost_micros: Optional[int] = None,
         usage_confirmed: bool = True,
-        clear_generation_hold_key: str = "",
         clear_generation_hold_snapshots: Sequence[
             Tuple[str, str, int]
         ] = (),
     ) -> Dict[str, object]:
         now = utc_now()
+        validated_hold_snapshots = tuple(
+            dict.fromkeys(
+                self._validated_ai_generation_hold_snapshot(snapshot)
+                for snapshot in clear_generation_hold_snapshots
+            )
+        )
         columns = (
             "article_id", "task_type", "input_scope", "source_language",
             "target_language", "artifact_key", "input_hash", "article_content_hash",
@@ -2466,14 +2565,7 @@ class Database:
                 """,
                 (int(stored["id"]), now, int(attempt["job_id"])),
             )
-            if clear_generation_hold_key:
-                connection.execute(
-                    "DELETE FROM ai_generation_holds WHERE hold_key=?",
-                    (str(clear_generation_hold_key),),
-                )
-            for hold_key, hold_class, revision in dict.fromkeys(
-                clear_generation_hold_snapshots
-            ):
+            for hold_key, hold_class, revision in validated_hold_snapshots:
                 connection.execute(
                     """
                     DELETE FROM ai_generation_holds
@@ -2573,8 +2665,12 @@ class Database:
         resolved_model: str = "",
         finish_reason: str = "",
         generation_hold: Optional[Mapping[str, object]] = None,
-        settle_provisional_generation_hold: bool = False,
-        clear_provisional_generation_hold_key: str = "",
+        settle_provisional_generation_hold: Optional[
+            Tuple[str, str, int]
+        ] = None,
+        clear_provisional_generation_hold: Optional[
+            Tuple[str, str, int]
+        ] = None,
     ) -> None:
         if job_state not in {"retryable", "unknown", "permanent_failed", "cancelled"}:
             raise ValueError("invalid failed AI job state: %s" % job_state)
@@ -2583,6 +2679,31 @@ class Database:
         actual_usage = usage or {}
         unknown_result = job_state == "unknown"
         keep_reservation = unknown_result or bool(preserve_reservation)
+        settlement_snapshot = (
+            self._validated_ai_generation_hold_snapshot(
+                settle_provisional_generation_hold
+            )
+            if settle_provisional_generation_hold is not None
+            else None
+        )
+        clear_snapshot = (
+            self._validated_ai_generation_hold_snapshot(
+                clear_provisional_generation_hold
+            )
+            if clear_provisional_generation_hold is not None
+            else None
+        )
+        if settlement_snapshot is not None:
+            if settlement_snapshot[1] != "ambiguous":
+                raise ValueError("only an ambiguous provisional hold can be settled")
+            if generation_hold is None or str(
+                generation_hold.get("hold_key") or ""
+            ) != settlement_snapshot[0]:
+                raise ValueError("provisional settlement hold key differs")
+        if clear_snapshot is not None and clear_snapshot[1] != "ambiguous":
+            raise ValueError("only an ambiguous provisional hold can be cleared")
+        if settlement_snapshot is not None and clear_snapshot is not None:
+            raise ValueError("a provisional hold cannot be settled and cleared together")
         with self.connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
             attempt = connection.execute(
@@ -2639,18 +2760,56 @@ class Database:
                 ),
             )
             if generation_hold is not None:
-                self._upsert_ai_generation_hold(
-                    connection,
-                    generation_hold,
-                    now=now,
-                    allow_risk_downgrade=bool(
-                        settle_provisional_generation_hold
-                    ),
-                )
-            if clear_provisional_generation_hold_key:
+                if settlement_snapshot is not None:
+                    current_hold = connection.execute(
+                        """
+                        SELECT hold_class, revision FROM ai_generation_holds
+                        WHERE hold_key=?
+                        """,
+                        (settlement_snapshot[0],),
+                    ).fetchone()
+                    snapshot_matches = bool(
+                        current_hold is not None
+                        and str(current_hold["hold_class"])
+                        == settlement_snapshot[1]
+                        and int(current_hold["revision"])
+                        == settlement_snapshot[2]
+                    )
+                    if snapshot_matches:
+                        self._upsert_ai_generation_hold(
+                            connection,
+                            generation_hold,
+                            now=now,
+                            allow_risk_downgrade=True,
+                        )
+                    elif current_hold is None:
+                        # A concurrent deletion also invalidates the attempt
+                        # token.  Re-establish the conservative no-replay
+                        # barrier instead of installing a lower-risk outcome
+                        # without the requested compare-and-swap match.
+                        self._upsert_ai_generation_hold(
+                            connection,
+                            {
+                                **dict(generation_hold),
+                                "hold_class": "ambiguous",
+                            },
+                            now=now,
+                        )
+                    # A changed concurrent row is authoritative.  In
+                    # particular, do not even refresh its timestamp/revision.
+                else:
+                    self._upsert_ai_generation_hold(
+                        connection,
+                        generation_hold,
+                        now=now,
+                    )
+            if clear_snapshot is not None:
                 connection.execute(
-                    "DELETE FROM ai_generation_holds WHERE hold_key=?",
-                    (str(clear_provisional_generation_hold_key),),
+                    """
+                    DELETE FROM ai_generation_holds
+                    WHERE hold_key=? AND hold_class=? AND revision=?
+                    """,
+                    clear_snapshot,
                 )
             connection.commit()
 

@@ -127,12 +127,21 @@ def build_parser(language: str = "en") -> argparse.ArgumentParser:
         default=50,
         help="Maximum number of articles with missing AI coverage to process",
     )
-    cloud_run_parser.add_argument(
+    held_retry_group = cloud_run_parser.add_mutually_exclusive_group()
+    held_retry_group.add_argument(
         "--force-held",
         action="store_true",
         help=(
             "Explicitly retry stable generations held after an ambiguous or paid "
             "failure; this may create another billable request"
+        ),
+    )
+    held_retry_group.add_argument(
+        "--retry-paid-failures",
+        action="store_true",
+        help=(
+            "Retry only generations held after a paid failure; ambiguous results "
+            "remain protected from automatic replay"
         ),
     )
     cloud_run_parser.add_argument(
@@ -622,6 +631,7 @@ def _run_ai_command(
                 },
                 "started_at": now.isoformat().replace("+00:00", "Z"),
                 "force_held": bool(args.force_held),
+                "retry_paid_failures": bool(args.retry_paid_failures),
                 "article_limit": int(args.limit),
                 "provider_api_calls": 0,
                 "coverage_cache_hits": 0,
@@ -671,79 +681,88 @@ def _run_ai_command(
                 return value, selected.config.provider, calls
 
             budget_exhausted = False
-            run_failed = False
             articles = database.list_articles(limit=1000)
             result["articles_scanned"] = len(articles)
             missing_seen = 0
-            if not run_failed:
-                for article in articles:
-                    article_id = int(article["id"])
-                    translation = service.current_article_artifact(
-                        article_id,
-                        task_type="translation",
-                        target_language="zh-CN",
-                    )
-                    if translation is not None:
-                        result["coverage_cache_hits"] += 1
-                        continue
-                    if missing_seen >= int(args.limit):
-                        continue
-                    missing_seen += 1
-                    try:
-                        article_result, used_provider, calls = execute_provider_operation(
-                            lambda selected, is_primary: selected.generate_article(
-                                article_id,
-                                task_type="translation",
-                                target_language="zh-CN",
-                                input_scope="metadata",
-                                translated_fields=("title", "publisher_summary"),
-                                trigger_kind="cloud-run",
-                                force_held=(
-                                    bool(args.force_held) if is_primary else False
-                                ),
+            for article in articles:
+                article_id = int(article["id"])
+                translation = service.current_article_artifact(
+                    article_id,
+                    task_type="translation",
+                    target_language="zh-CN",
+                )
+                if translation is not None:
+                    result["coverage_cache_hits"] += 1
+                    continue
+                if missing_seen >= int(args.limit):
+                    continue
+                missing_seen += 1
+                try:
+                    article_result, used_provider, calls = execute_provider_operation(
+                        lambda selected, is_primary: selected.generate_article(
+                            article_id,
+                            task_type="translation",
+                            target_language="zh-CN",
+                            input_scope="metadata",
+                            translated_fields=("title", "publisher_summary"),
+                            trigger_kind="cloud-run",
+                            force_held=(
+                                bool(args.force_held) if is_primary else False
                             ),
-                            {"kind": "article", "article_id": article_id},
-                        )
-                        result["provider_api_calls"] += calls
-                        result["article_results"].append(
-                            {
-                                "article_id": article_id,
-                                "provider": str(
-                                    article_result.get("provider")
-                                    or used_provider
-                                ),
-                                "provider_api_calls": calls,
-                                "cache_hit": bool(
-                                    article_result.get("cache_hit")
-                                ),
-                                "translation_artifact_id": int(
-                                    article_result["id"]
-                                ),
-                            }
-                        )
-                    except AIGenerationHeld as exc:
-                        result["generation_holds_skipped"] += 1
-                        result["article_results"].append(
-                            {
-                                "article_id": article_id,
-                                "provider_api_calls": 0,
-                                "cache_hit": False,
-                                "skipped": "generation_hold",
-                                "detail": str(exc)[:200],
-                            }
-                        )
-                    except (AIServiceError, AIBudgetExceeded, ProviderConfigError) as exc:
-                        result["failures"].append(
-                            {
-                                "kind": "article",
-                                "article_id": article_id,
-                                "error": str(exc)[:500],
-                            }
-                        )
-                        if isinstance(exc, AIBudgetExceeded):
-                            budget_exhausted = True
-                        run_failed = True
-                        break
+                            retry_paid_failure=bool(args.retry_paid_failures),
+                        ),
+                        {"kind": "article", "article_id": article_id},
+                    )
+                    result["provider_api_calls"] += calls
+                    result["article_results"].append(
+                        {
+                            "article_id": article_id,
+                            "provider": str(
+                                article_result.get("provider") or used_provider
+                            ),
+                            "provider_api_calls": calls,
+                            "cache_hit": bool(article_result.get("cache_hit")),
+                            "translation_artifact_id": int(article_result["id"]),
+                        }
+                    )
+                except AIGenerationHeld as exc:
+                    result["generation_holds_skipped"] += 1
+                    result["article_results"].append(
+                        {
+                            "article_id": article_id,
+                            "provider_api_calls": 0,
+                            "cache_hit": False,
+                            "skipped": "generation_hold",
+                            "detail": str(exc)[:200],
+                        }
+                    )
+                except AIServiceError as exc:
+                    result["failures"].append(
+                        {
+                            "kind": "article",
+                            "article_id": article_id,
+                            "error": str(exc)[:500],
+                        }
+                    )
+                except AIBudgetExceeded as exc:
+                    result["failures"].append(
+                        {
+                            "kind": "article",
+                            "article_id": article_id,
+                            "error": str(exc)[:500],
+                        }
+                    )
+                    budget_exhausted = True
+                    break
+                except ProviderConfigError as exc:
+                    result["failures"].append(
+                        {
+                            "kind": "article",
+                            "article_id": article_id,
+                            "error": str(exc)[:500],
+                        }
+                    )
+                    break
             result["articles_missing_considered"] = missing_seen
             result["budget_exhausted"] = budget_exhausted
             # A durable hold prevents an automatic duplicate bill, but it still

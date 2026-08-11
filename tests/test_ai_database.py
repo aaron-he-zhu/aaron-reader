@@ -70,11 +70,16 @@ class AIDatabaseTests(unittest.TestCase):
         )
 
     @staticmethod
-    def generation_hold(hold_class, *, include_timestamps=True):
+    def generation_hold(
+        hold_class,
+        *,
+        include_timestamps=True,
+        fixture="provider-fallback",
+    ):
         descriptor = {
             "protocol": "aaron-reader-test-generation-hold/v1",
             "workload_kind": "article",
-            "fixture": "provider-fallback",
+            "fixture": fixture,
         }
         encoded = json.dumps(
             descriptor,
@@ -94,6 +99,45 @@ class AIDatabaseTests(unittest.TestCase):
             )
             hold.update({"first_seen_at": now, "last_seen_at": now})
         return hold
+
+    @staticmethod
+    def artifact(key):
+        output_json = json.dumps(
+            {"summary": "fixture", "language": "zh-CN"},
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
+        return {
+            "article_id": None,
+            "task_type": "summary",
+            "input_scope": "metadata",
+            "source_language": "unknown",
+            "target_language": "zh-CN",
+            "artifact_key": key,
+            "input_hash": digest,
+            "article_content_hash": "",
+            "source_artifact_id": None,
+            "content_snapshot_id": None,
+            "prompt_version": "test-v1",
+            "prompt_hash": digest,
+            "response_schema_version": "1",
+            "response_schema_hash": digest,
+            "provider": "test",
+            "requested_model": "test-model",
+            "resolved_model": "test-model",
+            "generation_params_hash": digest,
+            "provider_response_id": "test-response",
+            "output_json": output_json,
+            "output_text": "fixture",
+            "output_hash": hashlib.sha256(output_json.encode("utf-8")).hexdigest(),
+            "status": "succeeded",
+            "input_truncated": 0,
+            "http_status": 200,
+            "finish_reason": "stop",
+            "response_hash": hashlib.sha256(output_json.encode("utf-8")).hexdigest(),
+        }
 
     @staticmethod
     def usage_entry(**overrides):
@@ -788,6 +832,10 @@ class AIDatabaseTests(unittest.TestCase):
             self.database.mark_ai_attempt_sent(
                 int(attempt["id"]),
                 provisional_generation_hold=invalid,
+                preflight_generation_hold_snapshot=None,
+                preflight_generation_hold_revision=(
+                    self.database.ai_generation_hold_revision_sequence()
+                ),
             )
 
         current_attempt = next(
@@ -799,11 +847,16 @@ class AIDatabaseTests(unittest.TestCase):
         self.assertEqual("reserved", self.database.ai_job(int(job["id"]))["state"])
         self.assertEqual([], self.database.list_ai_generation_holds())
 
-        created = self.database.mark_ai_attempt_sent(
+        provisional_snapshot = self.database.mark_ai_attempt_sent(
             int(attempt["id"]),
             provisional_generation_hold=ambiguous,
+            preflight_generation_hold_snapshot=None,
+            preflight_generation_hold_revision=(
+                self.database.ai_generation_hold_revision_sequence()
+            ),
         )
-        self.assertTrue(created)
+        self.assertEqual(ambiguous["hold_key"], provisional_snapshot[0])
+        self.assertEqual("ambiguous", provisional_snapshot[1])
         current_attempt = next(
             row
             for row in self.database.list_ai_attempts()
@@ -828,7 +881,7 @@ class AIDatabaseTests(unittest.TestCase):
                 **ambiguous,
                 "hold_class": "fallback_pending",
             },
-            settle_provisional_generation_hold=True,
+            settle_provisional_generation_hold=provisional_snapshot,
         )
         self.assertEqual(
             "fallback_pending",
@@ -845,12 +898,23 @@ class AIDatabaseTests(unittest.TestCase):
         provisional = self.generation_hold(
             "ambiguous", include_timestamps=False
         )
+        observed = self.database.ai_generation_hold(
+            existing["hold_key"],
+            include_revision=True,
+        )
 
-        created = self.database.mark_ai_attempt_sent(
+        self.database.mark_ai_attempt_sent(
             int(attempt["id"]),
             provisional_generation_hold=provisional,
+            preflight_generation_hold_snapshot=(
+                str(observed["hold_key"]),
+                str(observed["hold_class"]),
+                int(observed["revision"]),
+            ),
+            preflight_generation_hold_revision=(
+                self.database.ai_generation_hold_revision_sequence()
+            ),
         )
-        self.assertFalse(created)
         self.database.fail_ai_attempt(
             attempt_id=int(attempt["id"]),
             job_state="permanent_failed",
@@ -861,13 +925,191 @@ class AIDatabaseTests(unittest.TestCase):
                 **provisional,
                 "hold_class": "fallback_pending",
             },
-            settle_provisional_generation_hold=created,
         )
         self.assertEqual(
             "ambiguous",
             self.database.ai_generation_hold(existing["hold_key"])[
                 "hold_class"
             ],
+        )
+
+    def test_mark_sent_rejects_a_cross_key_hold_revision_race(self):
+        job = self.job("cross-key-preflight-race")
+        attempt = self.reserve(int(job["id"]), "cross-key-preflight-race-key")
+        provisional = self.generation_hold(
+            "ambiguous",
+            include_timestamps=False,
+            fixture="requested-work",
+        )
+        preflight_revision = (
+            self.database.ai_generation_hold_revision_sequence()
+        )
+        concurrent = self.generation_hold(
+            "ambiguous",
+            fixture="equivalent-work-inserted-concurrently",
+        )
+        self.database.replace_ai_generation_holds([concurrent])
+
+        with self.assertRaisesRegex(
+            AIJobConflict,
+            "generation holds changed after the final preflight",
+        ):
+            self.database.mark_ai_attempt_sent(
+                int(attempt["id"]),
+                provisional_generation_hold=provisional,
+                preflight_generation_hold_snapshot=None,
+                preflight_generation_hold_revision=preflight_revision,
+            )
+
+        current_attempt = next(
+            row
+            for row in self.database.list_ai_attempts()
+            if int(row["id"]) == int(attempt["id"])
+        )
+        self.assertEqual("reserved", current_attempt["state"])
+        self.assertEqual("reserved", self.database.ai_job(int(job["id"]))["state"])
+        self.assertEqual(
+            concurrent["hold_key"],
+            self.database.list_ai_generation_holds()[0]["hold_key"],
+        )
+
+    def test_provisional_settlement_does_not_touch_a_concurrent_revision(self):
+        job = self.job("settlement-cas-race")
+        attempt = self.reserve(int(job["id"]), "settlement-cas-race-key")
+        provisional = self.generation_hold(
+            "ambiguous",
+            include_timestamps=False,
+            fixture="settlement-cas-race",
+        )
+        token = self.database.mark_ai_attempt_sent(
+            int(attempt["id"]),
+            provisional_generation_hold=provisional,
+            preflight_generation_hold_snapshot=None,
+            preflight_generation_hold_revision=(
+                self.database.ai_generation_hold_revision_sequence()
+            ),
+        )
+        concurrent = self.generation_hold(
+            "ambiguous",
+            fixture="settlement-cas-race",
+        )
+        self.database.replace_ai_generation_holds([concurrent])
+        before = self.database.ai_generation_hold(
+            concurrent["hold_key"],
+            include_revision=True,
+        )
+
+        self.database.fail_ai_attempt(
+            attempt_id=int(attempt["id"]),
+            job_state="permanent_failed",
+            error_class="provider_http",
+            error_code="http_429",
+            error_message="fixture",
+            generation_hold={
+                **provisional,
+                "hold_class": "fallback_pending",
+            },
+            settle_provisional_generation_hold=token,
+        )
+
+        after = self.database.ai_generation_hold(
+            concurrent["hold_key"],
+            include_revision=True,
+        )
+        self.assertEqual(before, after)
+        self.assertEqual("ambiguous", after["hold_class"])
+
+    def test_provisional_clear_does_not_delete_a_concurrent_revision(self):
+        job = self.job("clear-cas-race")
+        attempt = self.reserve(int(job["id"]), "clear-cas-race-key")
+        provisional = self.generation_hold(
+            "ambiguous",
+            include_timestamps=False,
+            fixture="clear-cas-race",
+        )
+        token = self.database.mark_ai_attempt_sent(
+            int(attempt["id"]),
+            provisional_generation_hold=provisional,
+            preflight_generation_hold_snapshot=None,
+            preflight_generation_hold_revision=(
+                self.database.ai_generation_hold_revision_sequence()
+            ),
+        )
+        concurrent = self.generation_hold(
+            "ambiguous",
+            fixture="clear-cas-race",
+        )
+        self.database.replace_ai_generation_holds([concurrent])
+        before = self.database.ai_generation_hold(
+            concurrent["hold_key"],
+            include_revision=True,
+        )
+
+        self.database.fail_ai_attempt(
+            attempt_id=int(attempt["id"]),
+            job_state="permanent_failed",
+            error_class="provider_config",
+            error_code="provider_config",
+            error_message="fixture",
+            clear_provisional_generation_hold=token,
+        )
+
+        self.assertEqual(
+            before,
+            self.database.ai_generation_hold(
+                concurrent["hold_key"],
+                include_revision=True,
+            ),
+        )
+
+    def test_success_clears_only_the_attempt_provisional_revision(self):
+        artifact_key = "success-cas-race"
+        job = self.job(artifact_key)
+        attempt = self.reserve(int(job["id"]), "success-cas-race-key")
+        provisional = self.generation_hold(
+            "ambiguous",
+            include_timestamps=False,
+            fixture="success-cas-race",
+        )
+        token = self.database.mark_ai_attempt_sent(
+            int(attempt["id"]),
+            provisional_generation_hold=provisional,
+            preflight_generation_hold_snapshot=None,
+            preflight_generation_hold_revision=(
+                self.database.ai_generation_hold_revision_sequence()
+            ),
+        )
+        concurrent = self.generation_hold(
+            "ambiguous",
+            fixture="success-cas-race",
+        )
+        self.database.replace_ai_generation_holds([concurrent])
+        before = self.database.ai_generation_hold(
+            concurrent["hold_key"],
+            include_revision=True,
+        )
+
+        stored = self.database.complete_ai_attempt(
+            attempt_id=int(attempt["id"]),
+            artifact=self.artifact(artifact_key),
+            usage={
+                "input_tokens": 6,
+                "cached_input_tokens": 0,
+                "cache_write_tokens": 0,
+                "output_tokens": 4,
+                "reasoning_tokens": 0,
+                "total_tokens": 10,
+            },
+            clear_generation_hold_snapshots=(token,),
+        )
+
+        self.assertEqual(artifact_key, stored["artifact_key"])
+        self.assertEqual(
+            before,
+            self.database.ai_generation_hold(
+                concurrent["hold_key"],
+                include_revision=True,
+            ),
         )
 
     def test_budget_reservation_is_atomic_across_competing_threads(self):
@@ -1002,6 +1244,10 @@ class AIDatabaseTests(unittest.TestCase):
             provisional_generation_hold=self.generation_hold(
                 "ambiguous", include_timestamps=False
             ),
+            preflight_generation_hold_snapshot=None,
+            preflight_generation_hold_revision=(
+                self.database.ai_generation_hold_revision_sequence()
+            ),
         )
         with self.database.connect() as connection:
             connection.execute(
@@ -1038,6 +1284,10 @@ class AIDatabaseTests(unittest.TestCase):
             int(first["id"]),
             provisional_generation_hold=self.generation_hold(
                 "ambiguous", include_timestamps=False
+            ),
+            preflight_generation_hold_snapshot=None,
+            preflight_generation_hold_revision=(
+                self.database.ai_generation_hold_revision_sequence()
             ),
         )
         self.database.fail_ai_attempt(

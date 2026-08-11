@@ -86,6 +86,7 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           OPENROUTER_API_KEY: ${{ (inputs.ai_provider || vars.AI_PROVIDER || 'openrouter') == 'openrouter' && secrets.OPENROUTER_API_KEY || '' }}
           FORCE_HELD: ${{ inputs.force_held || 'false' }}
+          AUTO_RETRY_PAID_FAILURES: ${{ github.event_name == 'schedule' }}
         run: |
           set -o pipefail
           case "$AI_PROVIDER" in
@@ -101,6 +102,9 @@ jobs:
             arguments+=(--fallback-provider deepseek)
           else
             arguments+=(--fallback-provider none)
+          fi
+          if [[ "$AUTO_RETRY_PAID_FAILURES" == "true" ]]; then
+            arguments+=(--retry-paid-failures)
           fi
           if [[ "$FORCE_HELD" == "true" ]]; then
             arguments+=(--force-held)
