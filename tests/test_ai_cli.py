@@ -18,6 +18,7 @@ sys.path.insert(0, str(REPOSITORY_ROOT / "src"))
 from aaron_reader.ai_provider import (  # noqa: E402
     DEEPSEEK_MODEL,
     OPENROUTER_MODEL,
+    ProviderConfigError,
     ProviderHTTPError,
     ProviderKnownError,
     ProviderResponse,
@@ -168,6 +169,38 @@ class AICliTests(unittest.TestCase):
 
     def base_args(self):
         return ["--config", str(self.config_path)]
+
+    def add_article(self, external_id, *, published_at):
+        database = Database(self.database_path)
+        url = "https://example.com/blog/%s" % external_id
+        title = "Article %s" % external_id
+        summary = "Publisher description %s" % external_id
+        database.commit_candidates(
+            self.source,
+            [
+                ArticleCandidate(
+                    source_slug=self.source.slug,
+                    external_id=external_id,
+                    url=url,
+                    title=title,
+                    summary=summary,
+                    published_at=published_at,
+                    content_hash=stable_hash(title, url, summary),
+                )
+            ],
+            started_at=utc_now(),
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="body-%s" % external_id,
+        )
+        return int(
+            next(
+                article["id"]
+                for article in database.list_articles()
+                if article["external_id"] == external_id
+            )
+        )
 
     def test_default_cloud_run_uses_openrouter_and_is_cache_aware(self):
         class FixedDateTime(datetime):
@@ -731,6 +764,11 @@ class AICliTests(unittest.TestCase):
         self.assertNotIn('cron: "0 10,22 * * *"', workflow)
         self.assertIn('--provider "$AI_PROVIDER"', workflow)
         self.assertIn("arguments+=(--fallback-provider deepseek)", workflow)
+        self.assertIn(
+            "AUTO_RETRY_PAID_FAILURES: ${{ github.event_name == 'schedule' }}",
+            workflow,
+        )
+        self.assertIn("arguments+=(--retry-paid-failures)", workflow)
         self.assertNotIn("force_weekly", workflow)
         self.assertNotIn("FORCE_WEEKLY", workflow)
         self.assertNotIn("AI_API_KEY", workflow)
@@ -810,6 +848,7 @@ class AICliTests(unittest.TestCase):
                 **os.environ,
                 "AI_PROVIDER": "deepseek",
                 "FORCE_HELD": "false",
+                "AUTO_RETRY_PAID_FAILURES": "false",
             }
             completed = subprocess.run(
                 ["bash", "--noprofile", "--norc", "-e", "-c", run_script],
@@ -830,7 +869,68 @@ class AICliTests(unittest.TestCase):
                 ),
             )
 
-    def test_cloud_run_requires_confirmation_and_fails_fast_after_one_error(self):
+    def test_production_workflow_retries_paid_failures_only_on_schedule(self):
+        workflow = (
+            REPOSITORY_ROOT / ".github" / "workflows" / "update.yml"
+        ).read_text(encoding="utf-8")
+        marker = "      - name: Generate only missing or changed language artifacts\n"
+        start = workflow.index(marker)
+        end = workflow.find("\n      - name: ", start + len(marker))
+        ai_step = workflow[start:] if end < 0 else workflow[start:end]
+        run_script = textwrap.dedent(
+            "\n".join(
+                line[10:] if line.startswith("          ") else line
+                for line in ai_step.split("        run: |\n", 1)[1].splitlines()
+            )
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "data").mkdir()
+            executable = root / "aaron-reader"
+            executable.write_text(
+                "#!/usr/bin/env bash\n"
+                "printf '%s\\n' \"$@\" > \"$ARGUMENTS_PATH\"\n"
+                "printf '%s\\n' '{\"completed\":true}'\n",
+                encoding="utf-8",
+            )
+            executable.chmod(0o700)
+
+            cases = (
+                ("schedule", "true", "false", True, False),
+                ("manual", "false", "false", False, False),
+                ("manual-force", "false", "true", False, True),
+            )
+            for name, automatic, force, expect_paid, expect_force in cases:
+                with self.subTest(name=name):
+                    arguments_path = root / ("arguments-%s.txt" % name)
+                    environment = {
+                        **os.environ,
+                        "AI_PROVIDER": "deepseek",
+                        "FORCE_HELD": force,
+                        "AUTO_RETRY_PAID_FAILURES": automatic,
+                        "ARGUMENTS_PATH": str(arguments_path),
+                    }
+                    completed = subprocess.run(
+                        ["bash", "--noprofile", "--norc", "-e", "-c", run_script],
+                        cwd=root,
+                        env=environment,
+                        check=False,
+                        capture_output=True,
+                        text=True,
+                        timeout=10,
+                    )
+                    self.assertEqual(0, completed.returncode, completed.stderr)
+                    arguments = arguments_path.read_text(
+                        encoding="utf-8"
+                    ).splitlines()
+                    self.assertEqual(
+                        expect_paid,
+                        "--retry-paid-failures" in arguments,
+                    )
+                    self.assertEqual(expect_force, "--force-held" in arguments)
+
+    def test_cloud_run_requires_confirmation_and_continues_after_article_error(self):
         with mock.patch.dict(
             os.environ, {"DEEPSEEK_API_KEY": "deepseek-test"}, clear=True
         ), mock.patch(
@@ -841,16 +941,36 @@ class AICliTests(unittest.TestCase):
         self.assertEqual(2, rejected)
         self.assertEqual(0, generate.call_count)
 
+        second_article_id = self.add_article(
+            "two",
+            published_at="2026-07-31T00:00:00Z",
+        )
+        provider_calls = 0
+
+        def fail_then_succeed(request):
+            nonlocal provider_calls
+            provider_calls += 1
+            if provider_calls == 1:
+                raise ProviderKnownError(
+                    "provider returned a known unusable completion",
+                    code="content_filter",
+                    usage=ProviderUsage(
+                        input_tokens=12,
+                        output_tokens=1,
+                        total_tokens=13,
+                    ),
+                    model=DEEPSEEK_MODEL,
+                    request_id="known-failure-request",
+                    response_id="known-failure-response",
+                )
+            return self.cloud_provider_response(request)
+
         output = io.StringIO()
         with mock.patch.dict(
             os.environ, {"DEEPSEEK_API_KEY": "deepseek-test"}, clear=True
         ), mock.patch(
             "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
-            side_effect=ProviderHTTPError(
-                "provider returned HTTP 429",
-                status=429,
-                retryable=True,
-            ),
+            side_effect=fail_then_succeed,
         ) as generate, redirect_stdout(output):
             failed = main(
                 self.base_args()
@@ -866,15 +986,256 @@ class AICliTests(unittest.TestCase):
                 ]
             )
         self.assertEqual(1, failed)
-        self.assertEqual(1, generate.call_count)
+        self.assertEqual(2, generate.call_count)
         result = json.loads(output.getvalue())
         self.assertFalse(result["completed"])
+        self.assertFalse(result["retry_paid_failures"])
+        self.assertEqual(2, result["articles_missing_considered"])
+        self.assertEqual(1, len(result["failures"]))
+        self.assertEqual(1, len(result["article_results"]))
+        self.assertEqual(2, result["usage"]["requests"])
+        self.assertEqual(2, result["usage"]["confirmed_requests"])
+        self.assertEqual(0, result["usage"]["unconfirmed_requests"])
+        stored = Database(self.database_path).latest_ai_artifacts(
+            [self.article_id, second_article_id]
+        )
+        self.assertEqual([], stored.get(self.article_id, []))
+        self.assertEqual(
+            ["translation"],
+            [
+                artifact["task_type"]
+                for artifact in stored.get(second_article_id, [])
+            ],
+        )
+
+    def test_cloud_run_provider_config_error_is_global_blocker(self):
+        second_article_id = self.add_article(
+            "two",
+            published_at="2026-07-31T00:00:00Z",
+        )
+        output = io.StringIO()
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "deepseek-test"}, clear=True
+        ), mock.patch(
+            "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
+            side_effect=ProviderConfigError("invalid provider configuration"),
+        ) as generate, redirect_stdout(output):
+            status = main(
+                self.base_args()
+                + [
+                    "ai",
+                    "cloud-run",
+                    "--provider",
+                    "deepseek",
+                    "--fallback-provider",
+                    "none",
+                    "--yes",
+                    "--json",
+                ]
+            )
+
+        result = json.loads(output.getvalue())
+        self.assertEqual(1, status)
+        self.assertFalse(result["completed"])
+        self.assertEqual(1, generate.call_count)
+        self.assertEqual(1, result["articles_missing_considered"])
         self.assertEqual(1, len(result["failures"]))
         self.assertEqual([], result["article_results"])
+        self.assertEqual(1, result["provider_api_calls"])
+        self.assertEqual(
+            {"deepseek": 1},
+            result["provider_api_calls_by_provider"],
+        )
         self.assertEqual(1, result["usage"]["requests"])
-        self.assertEqual(1, result["usage"]["unconfirmed_requests"])
+        stored = Database(self.database_path).latest_ai_artifacts(
+            [self.article_id, second_article_id]
+        )
+        self.assertEqual([], stored.get(self.article_id, []))
+        self.assertEqual([], stored.get(second_article_id, []))
 
-    def test_cloud_run_preserves_hold_without_rebilling_and_stays_failed(self):
+    def test_fallback_failure_keeps_active_deepseek_for_later_articles(self):
+        second_article_id = self.add_article(
+            "two",
+            published_at="2026-07-31T00:00:00Z",
+        )
+        deepseek_calls = 0
+
+        def fail_then_succeed(request):
+            nonlocal deepseek_calls
+            deepseek_calls += 1
+            if deepseek_calls == 1:
+                raise ProviderKnownError(
+                    "DeepSeek returned a known unusable completion",
+                    code="content_filter",
+                    usage=ProviderUsage(
+                        input_tokens=12,
+                        output_tokens=1,
+                        total_tokens=13,
+                    ),
+                    model=DEEPSEEK_MODEL,
+                    request_id="deepseek-known-failure-request",
+                    response_id="deepseek-known-failure-response",
+                )
+            return self.cloud_provider_response(request)
+
+        output = io.StringIO()
+        with mock.patch.dict(
+            os.environ,
+            {
+                "OPENROUTER_API_KEY": "openrouter-test",
+                "DEEPSEEK_API_KEY": "deepseek-test",
+            },
+            clear=True,
+        ), mock.patch(
+            "aaron_reader.ai_provider.OpenRouterChatCompletionsProvider.generate",
+            side_effect=ProviderHTTPError(
+                "OpenRouter returned HTTP 429",
+                status=429,
+                retryable=True,
+            ),
+        ) as openrouter_generate, mock.patch(
+            "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
+            side_effect=fail_then_succeed,
+        ) as deepseek_generate, redirect_stdout(output):
+            status = main(
+                self.base_args() + ["ai", "cloud-run", "--yes", "--json"]
+            )
+
+        result = json.loads(output.getvalue())
+        self.assertEqual(1, status)
+        self.assertFalse(result["completed"])
+        self.assertTrue(result["fallback_activated"])
+        self.assertTrue(result["degraded"])
+        self.assertEqual("deepseek", result["active_provider"])
+        self.assertEqual(1, openrouter_generate.call_count)
+        self.assertEqual(2, deepseek_generate.call_count)
+        self.assertEqual(3, result["provider_api_calls"])
+        self.assertEqual(
+            {"openrouter": 1, "deepseek": 2},
+            result["provider_api_calls_by_provider"],
+        )
+        self.assertEqual(3, result["usage"]["requests"])
+        self.assertEqual(2, result["usage"]["confirmed_requests"])
+        self.assertEqual(1, result["usage"]["unconfirmed_requests"])
+        self.assertEqual(2, result["articles_missing_considered"])
+        self.assertEqual(1, len(result["failures"]))
+        self.assertEqual(1, len(result["article_results"]))
+        self.assertEqual(
+            "http_429",
+            result["fallback_events"][0]["reason"],
+        )
+        self.assertTrue(result["fallback_events"][0]["primary_call_made"])
+        self.assertEqual(
+            "deepseek",
+            result["article_results"][0]["provider"],
+        )
+        attempts = Database(self.database_path).list_ai_attempts()
+        self.assertEqual(
+            {"openrouter": 1, "deepseek": 2},
+            {
+                provider: sum(
+                    str(attempt["requested_provider"]) == provider
+                    for attempt in attempts
+                )
+                for provider in ("openrouter", "deepseek")
+            },
+        )
+        stored = Database(self.database_path).latest_ai_artifacts(
+            [self.article_id, second_article_id]
+        )
+        self.assertEqual([], stored.get(self.article_id, []))
+        self.assertEqual(
+            ["translation"],
+            [
+                artifact["task_type"]
+                for artifact in stored.get(second_article_id, [])
+            ],
+        )
+        self.assertEqual(
+            "deepseek",
+            stored[second_article_id][0]["provider"],
+        )
+
+    def test_cloud_run_paid_retry_and_force_are_mutually_exclusive(self):
+        with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as raised:
+            main(
+                self.base_args()
+                + [
+                    "ai",
+                    "cloud-run",
+                    "--yes",
+                    "--force-held",
+                    "--retry-paid-failures",
+                ]
+            )
+        self.assertEqual(2, raised.exception.code)
+
+    def test_cloud_run_retry_paid_failures_recovers_paid_hold(self):
+        class FixedDateTime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                value = cls(2026, 8, 1, 5, 0, tzinfo=timezone.utc)
+                return value if tz is None else value.astimezone(tz)
+
+        arguments = self.base_args() + [
+            "ai",
+            "cloud-run",
+            "--provider",
+            "deepseek",
+            "--fallback-provider",
+            "none",
+            "--yes",
+            "--json",
+        ]
+        known_failure = ProviderKnownError(
+            "provider returned a known unusable completion",
+            code="content_filter",
+            usage=ProviderUsage(
+                input_tokens=12,
+                output_tokens=1,
+                total_tokens=13,
+            ),
+            model=DEEPSEEK_MODEL,
+            request_id="known-paid-failure",
+            response_id="known-paid-failure-response",
+        )
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "deepseek-test"}, clear=True
+        ), mock.patch(
+            "aaron_reader.cli.datetime", FixedDateTime
+        ), mock.patch(
+            "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
+            side_effect=known_failure,
+        ) as first_generate, redirect_stdout(io.StringIO()):
+            self.assertEqual(1, main(arguments))
+        self.assertEqual(1, first_generate.call_count)
+        holds = Database(self.database_path).list_ai_generation_holds()
+        self.assertEqual(1, len(holds))
+        self.assertEqual("paid_failure", holds[0]["hold_class"])
+
+        output = io.StringIO()
+        with mock.patch.dict(
+            os.environ, {"DEEPSEEK_API_KEY": "deepseek-test"}, clear=True
+        ), mock.patch(
+            "aaron_reader.cli.datetime", FixedDateTime
+        ), mock.patch(
+            "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
+            side_effect=self.cloud_provider_response,
+        ) as second_generate, redirect_stdout(output):
+            status = main(arguments + ["--retry-paid-failures"])
+
+        result = json.loads(output.getvalue())
+        self.assertEqual(0, status)
+        self.assertTrue(result["completed"])
+        self.assertTrue(result["retry_paid_failures"])
+        self.assertFalse(result["force_held"])
+        self.assertEqual(1, second_generate.call_count)
+        self.assertEqual(1, result["provider_api_calls"])
+        self.assertEqual([], Database(self.database_path).list_ai_generation_holds())
+        stored = Database(self.database_path).latest_ai_artifacts([self.article_id])
+        self.assertEqual("translation", stored[self.article_id][0]["task_type"])
+
+    def test_cloud_run_retry_paid_failures_never_replays_ambiguous_hold(self):
         class FixedDateTime(datetime):
             @classmethod
             def now(cls, tz=None):
@@ -911,16 +1272,21 @@ class AICliTests(unittest.TestCase):
             "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
             side_effect=self.cloud_provider_response,
         ) as second_generate, redirect_stdout(output):
-            status = main(arguments)
+            status = main(arguments + ["--retry-paid-failures"])
 
         result = json.loads(output.getvalue())
         self.assertEqual(1, status)
         self.assertFalse(result["completed"])
+        self.assertTrue(result["retry_paid_failures"])
+        self.assertFalse(result["force_held"])
         self.assertEqual(1, result["generation_holds_skipped"])
         self.assertEqual([], result["failures"])
         self.assertEqual("generation_hold", result["article_results"][0]["skipped"])
         self.assertNotIn("reports", result)
         self.assertEqual(0, second_generate.call_count)
+        holds = Database(self.database_path).list_ai_generation_holds()
+        self.assertEqual(1, len(holds))
+        self.assertEqual("ambiguous", holds[0]["hold_class"])
 
     def test_normal_status_never_constructs_ai_provider(self):
         with mock.patch(

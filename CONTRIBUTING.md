@@ -42,13 +42,33 @@ OpenRouter-to-DeepSeek policy: a missing pre-send OpenRouter key; explicit
 closed profile codes `thinking_output`, `thinking_tokens`, and `tool_calls`;
 or locally invalid structured output. Every eligible typed, profile-violation,
 or local-output path requires complete usage, and unknown codes are denied.
-Timeouts, ambiguous transport or 5xx results, unknown usage, existing ambiguous
-or paid-failure holds, other local input/configuration errors, budget failures, and
-safety/policy refusals must remain ineligible. A
-`fallback_pending` hold is the sole narrow hold exception and may authorize only
-the configured DeepSeek continuation, never a primary-provider replay. Never
-combine two provider transmissions into one attempt, propagate broad
-`force_held` authority to fallback, add a third call, or fall back in reverse.
+Timeouts, ambiguous transport or 5xx results, unknown usage, existing holds,
+other local input/configuration errors, budget failures, and safety/policy
+refusals must remain ineligible for cross-provider fallback. A
+`fallback_pending` hold is the sole narrow hold exception for that continuation
+and may authorize only the configured DeepSeek call, never a primary-provider
+replay. Never combine two provider transmissions into one attempt, propagate
+broad `force_held` authority to fallback, add a third call, or fall back in
+reverse.
+
+The scheduled translation backfill is a separate paid-failure replay policy. It
+must scan the bounded current corpus for missing translations up to the
+configured per-cycle processing limit, isolate one `AIServiceError` from later
+articles, and grant at most one replay on the currently active provider profile
+per article per scheduled cycle. That authorization is valid only when every
+semantically equivalent hold is `paid_failure`; one equivalent `ambiguous` hold
+must block automatic replay. The replay and any one existing
+OpenRouter-to-DeepSeek continuation consume the normal daily budget. A
+persistently definite paid failure may receive one new billable replay in each
+later scheduled cycle; it stops automatically if the result becomes ambiguous
+or the budget gate closes. Manual runs must leave this narrow policy disabled
+by default. `force_held` remains an explicit broad recovery control that may
+bypass ambiguous holds; tests and documentation must not conflate it with the
+scheduled all-paid-failure rule.
+Every strictly valid artifact, ledger update, and hold produced before an
+incomplete cycle must be published atomically, while the final job still fails
+visibly if any article failed or remained held.
+
 OpenRouter Free dynamically chooses an upstream free model, so tests must not
 assume one resolved model and production prompts must remain limited to public
 publisher metadata. Its internal upstream routing is distinct from Aaron

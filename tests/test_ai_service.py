@@ -388,6 +388,30 @@ class AIServiceTests(unittest.TestCase):
             ],
         )
 
+        held_at = utc_now()
+        existing_ambiguous = self.database.ai_generation_hold(
+            str(deepseek_hold["hold_key"])
+        )
+        self.database.replace_ai_generation_holds(
+            [
+                existing_ambiguous,
+                {
+                    **openrouter_service._classified_generation_hold(
+                        openrouter_hold,
+                        "paid_failure",
+                    ),
+                    "first_seen_at": held_at,
+                    "last_seen_at": held_at,
+                },
+            ]
+        )
+        with self.assertRaises(AIGenerationHeld):
+            openrouter_service._check_generation_hold(
+                openrouter_hold,
+                force_held=False,
+                retry_paid_failure=True,
+            )
+
     def test_success_cleanup_preserves_equivalent_hold_created_after_preflight(self):
         openrouter_ai = enabled_ai(
             provider="openrouter",
@@ -924,7 +948,7 @@ class AIServiceTests(unittest.TestCase):
             self.database.list_ai_generation_holds()[0]["hold_class"],
         )
 
-    def test_legacy_pair_hold_blocks_narrower_translation_until_forced(self):
+    def test_legacy_pair_paid_hold_allows_narrow_paid_failure_retry(self):
         deepseek_ai = enabled_ai(
             provider="deepseek",
             translation_model=DEEPSEEK_MODEL,
@@ -976,7 +1000,7 @@ class AIServiceTests(unittest.TestCase):
         recovered = translation_service.generate_article(
             int(self.article["id"]),
             task_type="translation",
-            force_held=True,
+            retry_paid_failure=True,
         )
         self.assertEqual("译文简介", recovered["output"]["publisher_summary"])
         self.assertEqual(2, len(translation_provider.requests))
@@ -1018,6 +1042,13 @@ class AIServiceTests(unittest.TestCase):
             provider=replay_provider,
             automatic_fallback_provider="deepseek",
         )
+        with self.assertRaises(AIFallbackEligibleError) as paid_retry_pending:
+            primary.generate_article(
+                int(self.article["id"]),
+                task_type="translation",
+                retry_paid_failure=True,
+            )
+        self.assertFalse(paid_retry_pending.exception.provider_call_made)
         with self.assertRaises(AIFallbackEligibleError) as raised:
             primary.generate_article(
                 int(self.article["id"]),
@@ -1051,6 +1082,119 @@ class AIServiceTests(unittest.TestCase):
                 int(self.article["id"]),
                 task_type="translation",
             )
+        self.assertEqual("译文简介", recovered["output"]["publisher_summary"])
+        self.assertEqual(1, len(continuation_provider.requests))
+        self.assertEqual([], self.database.list_ai_generation_holds())
+
+    def test_paid_retry_continues_mixed_direct_pending_on_fallback(self):
+        article_id = int(self.article["id"])
+        deepseek_ai = enabled_ai(
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        deepseek_failure = ProviderKnownError(
+            "known unusable completion",
+            code="refusal",
+            usage=ProviderUsage(
+                input_tokens=20,
+                output_tokens=5,
+                total_tokens=25,
+            ),
+            model=DEEPSEEK_MODEL,
+            request_id="req_old_deepseek_failure",
+            response_id="resp_old_deepseek_failure",
+        )
+        failed_deepseek = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=FakeProvider(deepseek_failure),
+        )
+        with mock.patch.dict(
+            os.environ,
+            {"DEEPSEEK_API_KEY": "test-key"},
+            clear=True,
+        ):
+            with self.assertRaises(AIServiceError):
+                failed_deepseek.generate_article(
+                    article_id,
+                    task_type="translation",
+                )
+
+        openrouter_ai = enabled_ai(
+            provider="openrouter",
+            fallback_provider="deepseek",
+            summary_model=OPENROUTER_MODEL,
+            translation_model=OPENROUTER_MODEL,
+            reasoning_effort="none",
+            api_key_environment="OPENROUTER_API_KEY",
+        )
+        openrouter_provider = FakeProvider(
+            ProviderHTTPError("rate limited", status=429, retryable=True)
+        )
+        primary = AIService(
+            self.app(openrouter_ai),
+            self.database,
+            provider=openrouter_provider,
+            automatic_fallback_provider="deepseek",
+        )
+        with mock.patch.dict(
+            os.environ,
+            {"OPENROUTER_API_KEY": "test-key"},
+            clear=True,
+        ):
+            with self.assertRaises(AIFallbackEligibleError) as raised:
+                primary.generate_article(
+                    article_id,
+                    task_type="translation",
+                    retry_paid_failure=True,
+                )
+        self.assertTrue(raised.exception.provider_call_made)
+        self.assertEqual(1, len(openrouter_provider.requests))
+        self.assertEqual(
+            ["fallback_pending", "paid_failure"],
+            sorted(
+                hold["hold_class"]
+                for hold in self.database.list_ai_generation_holds()
+            ),
+        )
+
+        resumed_provider = FakeProvider()
+        resumed_primary = AIService(
+            self.app(openrouter_ai),
+            self.database,
+            provider=resumed_provider,
+            automatic_fallback_provider="deepseek",
+        )
+        with self.assertRaises(AIFallbackEligibleError) as resumed:
+            resumed_primary.generate_article(
+                article_id,
+                task_type="translation",
+                retry_paid_failure=True,
+            )
+        self.assertFalse(resumed.exception.provider_call_made)
+        self.assertEqual([], resumed_provider.requests)
+
+        continuation_provider = FakeProvider()
+        continuation = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=continuation_provider,
+            allow_fallback_pending_from="openrouter",
+        )
+        with mock.patch.dict(
+            os.environ,
+            {"DEEPSEEK_API_KEY": "test-key"},
+            clear=True,
+        ):
+            recovered = continuation.generate_article(
+                article_id,
+                task_type="translation",
+                retry_paid_failure=True,
+            )
+
         self.assertEqual("译文简介", recovered["output"]["publisher_summary"])
         self.assertEqual(1, len(continuation_provider.requests))
         self.assertEqual([], self.database.list_ai_generation_holds())
@@ -1133,6 +1277,82 @@ class AIServiceTests(unittest.TestCase):
         self.assertEqual(1, len(continuation_provider.requests))
         self.assertEqual([], self.database.list_ai_generation_holds())
 
+    def test_direct_pending_cannot_override_a_legacy_ambiguous_hold(self):
+        openrouter_ai = enabled_ai(
+            provider="openrouter",
+            fallback_provider="deepseek",
+            summary_model=OPENROUTER_MODEL,
+            translation_model=OPENROUTER_MODEL,
+            reasoning_effort="none",
+            api_key_environment="OPENROUTER_API_KEY",
+        )
+        failed_pair = AIService(
+            self.app(openrouter_ai),
+            self.database,
+            provider=FakeProvider(
+                ProviderUnknownError(
+                    "pair transport failed after the request was sent"
+                )
+            ),
+            automatic_fallback_provider="deepseek",
+        )
+        with self.assertRaises(AIServiceError):
+            failed_pair.generate_article_pair(int(self.article["id"]))
+        legacy_ambiguous = self.database.list_ai_generation_holds()[0]
+        self.assertEqual("article_pair", legacy_ambiguous["workload_kind"])
+        self.assertEqual("ambiguous", legacy_ambiguous["hold_class"])
+
+        prepared = failed_pair.prepare_article(
+            int(self.article["id"]),
+            task_type="translation",
+        )
+        direct_template = failed_pair._generation_hold_template(
+            prepared,
+            workload_kind="article",
+        )
+        held_at = utc_now()
+        direct_pending = {
+            **failed_pair._classified_generation_hold(
+                direct_template,
+                "fallback_pending",
+            ),
+            "first_seen_at": held_at,
+            "last_seen_at": held_at,
+        }
+        self.database.replace_ai_generation_holds(
+            [legacy_ambiguous, direct_pending]
+        )
+
+        deepseek_ai = enabled_ai(
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        provider = FakeProvider()
+        continuation = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=provider,
+            allow_fallback_pending_from="openrouter",
+        )
+        with self.assertRaises(AIGenerationHeld):
+            continuation.generate_article(
+                int(self.article["id"]),
+                task_type="translation",
+                retry_paid_failure=True,
+            )
+
+        self.assertEqual([], provider.requests)
+        self.assertEqual(
+            ["ambiguous", "fallback_pending"],
+            sorted(
+                hold["hold_class"]
+                for hold in self.database.list_ai_generation_holds()
+            ),
+        )
+
     def test_same_second_legacy_hold_upsert_after_preflight_is_not_cleared(self):
         deepseek_ai = enabled_ai(
             provider="deepseek",
@@ -1206,6 +1426,255 @@ class AIServiceTests(unittest.TestCase):
         self.assertEqual(original_seen_at, remaining["last_seen_at"])
         self.assertGreater(remaining["revision"], original_revision)
 
+    def test_success_does_not_clear_a_concurrent_exact_hold_revision(self):
+        service = AIService(self.app(), self.database, provider=FakeProvider())
+        prepared = service.prepare_article(
+            int(self.article["id"]),
+            task_type="translation",
+        )
+        template = service._generation_hold_template(
+            prepared,
+            workload_kind="article",
+        )
+        hold_template = service._classified_generation_hold(
+            template,
+            "ambiguous",
+        )
+        database = self.database
+
+        class ConcurrentExactHoldProvider(FakeProvider):
+            def __init__(self):
+                super().__init__()
+                self.concurrent_snapshot = None
+
+            def generate(self, request):
+                with database.connect() as connection:
+                    connection.execute("BEGIN IMMEDIATE")
+                    database._upsert_ai_generation_hold(
+                        connection,
+                        hold_template,
+                        now=utc_now(),
+                    )
+                    connection.commit()
+                self.concurrent_snapshot = database.ai_generation_hold(
+                    str(template["hold_key"]),
+                    include_revision=True,
+                )
+                return super().generate(request)
+
+        provider = ConcurrentExactHoldProvider()
+        service._provider_instance = provider
+        result = service.generate_article(
+            int(self.article["id"]),
+            task_type="translation",
+        )
+
+        self.assertEqual("succeeded", result["status"])
+        self.assertEqual(
+            provider.concurrent_snapshot,
+            self.database.ai_generation_hold(
+                str(template["hold_key"]),
+                include_revision=True,
+            ),
+        )
+        self.assertEqual("ambiguous", provider.concurrent_snapshot["hold_class"])
+
+    def test_429_does_not_settle_a_concurrent_exact_hold_revision(self):
+        openrouter_ai = enabled_ai(
+            provider="openrouter",
+            fallback_provider="deepseek",
+            summary_model=OPENROUTER_MODEL,
+            translation_model=OPENROUTER_MODEL,
+            reasoning_effort="none",
+            api_key_environment="OPENROUTER_API_KEY",
+        )
+        service = AIService(
+            self.app(openrouter_ai),
+            self.database,
+            provider=FakeProvider(),
+            automatic_fallback_provider="deepseek",
+        )
+        prepared = service.prepare_article(
+            int(self.article["id"]),
+            task_type="translation",
+        )
+        template = service._generation_hold_template(
+            prepared,
+            workload_kind="article",
+        )
+        hold_template = service._classified_generation_hold(
+            template,
+            "ambiguous",
+        )
+        database = self.database
+
+        class Concurrent429Provider(FakeProvider):
+            def __init__(self):
+                super().__init__()
+                self.concurrent_snapshot = None
+
+            def generate(self, request):
+                self.requests.append(request)
+                with database.connect() as connection:
+                    connection.execute("BEGIN IMMEDIATE")
+                    database._upsert_ai_generation_hold(
+                        connection,
+                        hold_template,
+                        now=utc_now(),
+                    )
+                    connection.commit()
+                self.concurrent_snapshot = database.ai_generation_hold(
+                    str(template["hold_key"]),
+                    include_revision=True,
+                )
+                raise ProviderHTTPError(
+                    "rate limited",
+                    status=429,
+                    retryable=True,
+                )
+
+        provider = Concurrent429Provider()
+        service._provider_instance = provider
+        with self.assertRaises(AIFallbackEligibleError):
+            service.generate_article(
+                int(self.article["id"]),
+                task_type="translation",
+            )
+
+        self.assertEqual(
+            provider.concurrent_snapshot,
+            self.database.ai_generation_hold(
+                str(template["hold_key"]),
+                include_revision=True,
+            ),
+        )
+        self.assertEqual("ambiguous", provider.concurrent_snapshot["hold_class"])
+
+    def test_final_hold_revision_conflict_cancels_pre_send_reservation(self):
+        service = AIService(self.app(), self.database, provider=FakeProvider())
+        deepseek_ai = enabled_ai(
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        concurrent_service = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=FakeProvider(),
+        )
+        concurrent_prepared = concurrent_service.prepare_article(
+            int(self.article["id"]),
+            task_type="translation",
+        )
+        concurrent_template = concurrent_service._generation_hold_template(
+            concurrent_prepared,
+            workload_kind="article",
+        )
+        concurrent_hold = concurrent_service._classified_generation_hold(
+            concurrent_template,
+            "ambiguous",
+        )
+        original_mark = self.database.mark_ai_attempt_sent
+
+        def mark_after_concurrent_hold(*args, **kwargs):
+            with self.database.connect() as connection:
+                connection.execute("BEGIN IMMEDIATE")
+                self.database._upsert_ai_generation_hold(
+                    connection,
+                    concurrent_hold,
+                    now=utc_now(),
+                )
+                connection.commit()
+            return original_mark(*args, **kwargs)
+
+        with mock.patch.object(
+            self.database,
+            "mark_ai_attempt_sent",
+            side_effect=mark_after_concurrent_hold,
+        ):
+            with self.assertRaises(AIGenerationHeld):
+                service.generate_article(
+                    int(self.article["id"]),
+                    task_type="translation",
+                )
+
+        self.assertEqual([], service._provider_instance.requests)
+        attempt = self.database.list_ai_attempts()[0]
+        self.assertEqual("failed", attempt["state"])
+        self.assertEqual(0, attempt["reservation_active"])
+        self.assertEqual("generation_hold_conflict", attempt["error_class"])
+        self.assertEqual("cancelled", attempt["job_state"])
+        self.assertEqual(
+            "ambiguous",
+            self.database.ai_generation_hold(
+                str(concurrent_template["hold_key"])
+            )["hold_class"],
+        )
+
+    def test_paid_failure_retry_rechecks_concurrent_risk_upgrade(self):
+        provider = FakeProvider(
+            ProviderKnownError(
+                "known unusable completion",
+                code="refusal",
+                usage=ProviderUsage(
+                    input_tokens=20,
+                    output_tokens=5,
+                    total_tokens=25,
+                ),
+                model="known-failure-model",
+                request_id="req_known_failure",
+                response_id="resp_known_failure",
+            )
+        )
+        service = AIService(self.app(), self.database, provider=provider)
+        article_id = int(self.article["id"])
+        with self.assertRaises(AIServiceError):
+            service.generate_article(article_id, task_type="translation")
+        paid_hold = self.database.list_ai_generation_holds()[0]
+        self.assertEqual("paid_failure", paid_hold["hold_class"])
+        provider.failure = None
+
+        original_check = service._check_generation_hold
+        check_count = 0
+
+        def check_with_risk_upgrade(
+            template,
+            *,
+            force_held,
+            retry_paid_failure=False,
+        ):
+            nonlocal check_count
+            check_count += 1
+            if check_count == 2:
+                self.database.replace_ai_generation_holds(
+                    [{**paid_hold, "hold_class": "ambiguous"}]
+                )
+            return original_check(
+                template,
+                force_held=force_held,
+                retry_paid_failure=retry_paid_failure,
+            )
+
+        with mock.patch.object(
+            service,
+            "_check_generation_hold",
+            side_effect=check_with_risk_upgrade,
+        ):
+            with self.assertRaises(AIGenerationHeld):
+                service.generate_article(
+                    article_id,
+                    task_type="translation",
+                    retry_paid_failure=True,
+                )
+
+        self.assertEqual(2, check_count)
+        self.assertEqual(1, len(provider.requests))
+        self.assertEqual(1, len(self.database.list_ai_attempts()))
+        remaining = self.database.list_ai_generation_holds()[0]
+        self.assertEqual("ambiguous", remaining["hold_class"])
+
     def test_budget_is_reserved_before_any_provider_call(self):
         provider = FakeProvider()
         tiny_budget = AIBudgetConfig(
@@ -1234,7 +1703,11 @@ class AIServiceTests(unittest.TestCase):
         with self.assertRaises(AIServiceError):
             service.generate_article(int(self.article["id"]), task_type="summary")
         with self.assertRaises(AIGenerationHeld):
-            service.generate_article(int(self.article["id"]), task_type="summary")
+            service.generate_article(
+                int(self.article["id"]),
+                task_type="summary",
+                retry_paid_failure=True,
+            )
         self.assertEqual(1, len(provider.requests))
         self.assertEqual(1, len(self.database.list_ai_generation_holds()))
         audit = self.database.list_ai_attempts()[0]
@@ -1245,7 +1718,7 @@ class AIServiceTests(unittest.TestCase):
     def test_provider_config_failure_is_terminal_and_releases_reservation(self):
         provider = FakeProvider(ProviderConfigError("invalid local provider request"))
         service = AIService(self.app(), self.database, provider=provider)
-        with self.assertRaises(AIServiceError):
+        with self.assertRaises(ProviderConfigError):
             service.generate_article(int(self.article["id"]), task_type="summary")
         audit = self.database.list_ai_attempts()[0]
         self.assertEqual("failed", audit["state"])
@@ -1253,6 +1726,19 @@ class AIServiceTests(unittest.TestCase):
         self.assertEqual(0, audit["reservation_active"])
         job = self.database.ai_job(int(audit["job_id"]))
         self.assertEqual("permanent_failed", job["state"])
+        self.assertEqual([], self.database.list_ai_generation_holds())
+
+    def test_provider_construction_error_keeps_its_global_config_type(self):
+        service = AIService(self.app(), self.database, provider=object())
+        with self.assertRaises(ProviderConfigError):
+            service.generate_article(
+                int(self.article["id"]),
+                task_type="summary",
+            )
+        audit = self.database.list_ai_attempts()[0]
+        self.assertEqual("failed", audit["state"])
+        self.assertEqual("provider_config", audit["error_class"])
+        self.assertEqual(0, audit["reservation_active"])
         self.assertEqual([], self.database.list_ai_generation_holds())
 
     def test_known_billed_failure_records_actual_usage_without_retry(self):
@@ -1290,6 +1776,358 @@ class AIServiceTests(unittest.TestCase):
                 int(self.article["id"]), task_type="summary"
             )
         self.assertEqual(1, len(provider.requests))
+
+    def test_direct_paid_failure_retry_is_fresh_and_narrowly_requeues(self):
+        provider = FakeProvider(
+            ProviderKnownError(
+                "known unusable completion",
+                code="refusal",
+                usage=ProviderUsage(
+                    input_tokens=20,
+                    output_tokens=5,
+                    total_tokens=25,
+                ),
+                model="known-failure-model",
+                request_id="req_known_failure",
+                response_id="resp_known_failure",
+            )
+        )
+        service = AIService(self.app(), self.database, provider=provider)
+        article_id = int(self.article["id"])
+        prepared = service.prepare_article(
+            article_id,
+            task_type="translation",
+        )
+
+        with self.assertRaises(AIServiceError):
+            service.generate_article(article_id, task_type="translation")
+        job = self.database.ai_job_for_artifact(prepared.artifact_key)
+        self.assertEqual("permanent_failed", job["state"])
+        self.assertEqual(
+            "paid_failure",
+            self.database.list_ai_generation_holds()[0]["hold_class"],
+        )
+        first_attempt = self.database.list_ai_attempts()[0]
+        provider.failure = None
+
+        with mock.patch.object(
+            self.database,
+            "requeue_ai_job",
+            wraps=self.database.requeue_ai_job,
+        ) as requeue:
+            recovered = service.generate_article(
+                article_id,
+                task_type="translation",
+                retry_paid_failure=True,
+            )
+
+        requeue.assert_called_once_with(int(job["id"]), allow_unknown=False)
+        self.assertEqual("译文简介", recovered["output"]["publisher_summary"])
+        self.assertFalse(recovered["cache_hit"])
+        self.assertEqual(2, len(provider.requests))
+        self.assertEqual([], self.database.list_ai_generation_holds())
+        attempts = self.database.list_ai_attempts()
+        self.assertEqual(2, len(attempts))
+        self.assertNotEqual(
+            first_attempt["idempotency_key"],
+            attempts[0]["idempotency_key"],
+        )
+
+    def test_paid_failure_retry_definitive_failure_settles_back_to_paid(self):
+        first_failure = ProviderKnownError(
+            "first known unusable completion",
+            code="refusal",
+            usage=ProviderUsage(input_tokens=20, output_tokens=5, total_tokens=25),
+            model="known-failure-model",
+            request_id="req_known_failure_1",
+            response_id="resp_known_failure_1",
+        )
+        provider = FakeProvider(first_failure)
+        service = AIService(self.app(), self.database, provider=provider)
+        article_id = int(self.article["id"])
+
+        with self.assertRaises(AIServiceError):
+            service.generate_article(article_id, task_type="translation")
+        first_hold = self.database.list_ai_generation_holds(
+            include_revision=True
+        )[0]
+        self.assertEqual("paid_failure", first_hold["hold_class"])
+
+        provider.failure = ProviderKnownError(
+            "second known unusable completion",
+            code="refusal",
+            usage=ProviderUsage(input_tokens=22, output_tokens=6, total_tokens=28),
+            model="known-failure-model",
+            request_id="req_known_failure_2",
+            response_id="resp_known_failure_2",
+        )
+        with self.assertRaises(AIServiceError):
+            service.generate_article(
+                article_id,
+                task_type="translation",
+                retry_paid_failure=True,
+            )
+
+        remaining = self.database.list_ai_generation_holds(
+            include_revision=True
+        )[0]
+        self.assertEqual("paid_failure", remaining["hold_class"])
+        self.assertGreater(int(remaining["revision"]), int(first_hold["revision"]))
+        self.assertEqual(2, len(provider.requests))
+        self.assertEqual(2, len(self.database.list_ai_attempts()))
+
+    def test_forced_paid_failure_replay_definitive_failure_remains_paid(self):
+        failure = ProviderKnownError(
+            "known unusable completion",
+            code="refusal",
+            usage=ProviderUsage(input_tokens=20, output_tokens=5, total_tokens=25),
+            model="known-failure-model",
+            request_id="req_forced_paid_1",
+            response_id="resp_forced_paid_1",
+        )
+        provider = FakeProvider(failure)
+        service = AIService(self.app(), self.database, provider=provider)
+        article_id = int(self.article["id"])
+        with self.assertRaises(AIServiceError):
+            service.generate_article(article_id, task_type="translation")
+
+        provider.failure = ProviderKnownError(
+            "known unusable completion again",
+            code="refusal",
+            usage=ProviderUsage(input_tokens=21, output_tokens=5, total_tokens=26),
+            model="known-failure-model",
+            request_id="req_forced_paid_2",
+            response_id="resp_forced_paid_2",
+        )
+        with self.assertRaises(AIServiceError):
+            service.generate_article(
+                article_id,
+                task_type="translation",
+                force_held=True,
+            )
+
+        self.assertEqual(
+            "paid_failure",
+            self.database.list_ai_generation_holds()[0]["hold_class"],
+        )
+        self.assertEqual(2, len(provider.requests))
+
+    def test_paid_failure_retry_unknown_result_remains_ambiguous(self):
+        provider = FakeProvider(
+            ProviderKnownError(
+                "known unusable completion",
+                code="refusal",
+                usage=ProviderUsage(
+                    input_tokens=20,
+                    output_tokens=5,
+                    total_tokens=25,
+                ),
+                model="known-failure-model",
+                request_id="req_paid_before_unknown",
+                response_id="resp_paid_before_unknown",
+            )
+        )
+        service = AIService(self.app(), self.database, provider=provider)
+        article_id = int(self.article["id"])
+        with self.assertRaises(AIServiceError):
+            service.generate_article(article_id, task_type="translation")
+
+        provider.failure = ProviderUnknownError(
+            "transport failed after the paid replay was sent"
+        )
+        with self.assertRaises(AIServiceError):
+            service.generate_article(
+                article_id,
+                task_type="translation",
+                retry_paid_failure=True,
+            )
+
+        self.assertEqual(
+            "ambiguous",
+            self.database.list_ai_generation_holds()[0]["hold_class"],
+        )
+        attempts = self.database.list_ai_attempts()
+        self.assertEqual(2, len(attempts))
+        self.assertEqual("unknown", attempts[0]["state"])
+        self.assertEqual(2, len(provider.requests))
+
+    def test_paid_failure_retry_429_without_fallback_restores_paid_hold(self):
+        provider = FakeProvider(
+            ProviderKnownError(
+                "known unusable completion",
+                code="refusal",
+                usage=ProviderUsage(
+                    input_tokens=20,
+                    output_tokens=5,
+                    total_tokens=25,
+                ),
+                model="known-failure-model",
+                request_id="req_paid_before_429",
+                response_id="resp_paid_before_429",
+            )
+        )
+        service = AIService(self.app(), self.database, provider=provider)
+        article_id = int(self.article["id"])
+        with self.assertRaises(AIServiceError):
+            service.generate_article(article_id, task_type="translation")
+
+        provider.failure = ProviderHTTPError(
+            "rate limited",
+            status=429,
+            retryable=True,
+        )
+        with self.assertRaises(AIServiceError):
+            service.generate_article(
+                article_id,
+                task_type="translation",
+                retry_paid_failure=True,
+            )
+
+        self.assertEqual(
+            "paid_failure",
+            self.database.list_ai_generation_holds()[0]["hold_class"],
+        )
+        self.assertEqual(2, len(provider.requests))
+
+    def test_paid_retry_429_settles_pending_and_deepseek_succeeds(self):
+        article_id = int(self.article["id"])
+        openrouter_ai = enabled_ai(
+            provider="openrouter",
+            fallback_provider="deepseek",
+            summary_model=OPENROUTER_MODEL,
+            translation_model=OPENROUTER_MODEL,
+            reasoning_effort="none",
+            api_key_environment="OPENROUTER_API_KEY",
+        )
+        openrouter_provider = FakeProvider(
+            ProviderKnownError(
+                "known unusable completion",
+                code="refusal",
+                usage=ProviderUsage(
+                    input_tokens=20,
+                    output_tokens=5,
+                    total_tokens=25,
+                ),
+                model=OPENROUTER_MODEL,
+                request_id="req_openrouter_paid",
+                response_id="resp_openrouter_paid",
+            )
+        )
+        primary = AIService(
+            self.app(openrouter_ai),
+            self.database,
+            provider=openrouter_provider,
+            automatic_fallback_provider="deepseek",
+        )
+        with self.assertRaises(AIServiceError):
+            primary.generate_article(article_id, task_type="translation")
+        self.assertEqual(
+            "paid_failure",
+            self.database.list_ai_generation_holds()[0]["hold_class"],
+        )
+
+        openrouter_provider.failure = ProviderHTTPError(
+            "rate limited",
+            status=429,
+            retryable=True,
+        )
+        with self.assertRaises(AIFallbackEligibleError) as raised:
+            primary.generate_article(
+                article_id,
+                task_type="translation",
+                retry_paid_failure=True,
+            )
+        self.assertTrue(raised.exception.provider_call_made)
+        self.assertEqual(
+            ["fallback_pending"],
+            [
+                hold["hold_class"]
+                for hold in self.database.list_ai_generation_holds()
+            ],
+        )
+
+        deepseek_ai = enabled_ai(
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        deepseek_provider = FakeProvider()
+        continuation = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=deepseek_provider,
+            allow_fallback_pending_from="openrouter",
+        )
+        recovered = continuation.generate_article(
+            article_id,
+            task_type="translation",
+        )
+
+        self.assertEqual("译文简介", recovered["output"]["publisher_summary"])
+        self.assertEqual(2, len(openrouter_provider.requests))
+        self.assertEqual(1, len(deepseek_provider.requests))
+        self.assertEqual([], self.database.list_ai_generation_holds())
+
+    def test_cross_provider_paid_failure_retry_clears_observed_snapshot(self):
+        deepseek_ai = enabled_ai(
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        deepseek = AIService(
+            self.app(deepseek_ai),
+            self.database,
+            provider=FakeProvider(),
+        )
+        prepared = deepseek.prepare_article(
+            int(self.article["id"]),
+            task_type="translation",
+        )
+        template = deepseek._generation_hold_template(
+            prepared,
+            workload_kind="article",
+        )
+        held_at = utc_now()
+        self.database.replace_ai_generation_holds(
+            [
+                {
+                    **deepseek._classified_generation_hold(
+                        template,
+                        "paid_failure",
+                    ),
+                    "first_seen_at": held_at,
+                    "last_seen_at": held_at,
+                }
+            ]
+        )
+
+        openrouter_ai = enabled_ai(
+            provider="openrouter",
+            fallback_provider="",
+            summary_model=OPENROUTER_MODEL,
+            translation_model=OPENROUTER_MODEL,
+            reasoning_effort="none",
+            api_key_environment="OPENROUTER_API_KEY",
+        )
+        provider = FakeProvider()
+        openrouter = AIService(
+            self.app(openrouter_ai),
+            self.database,
+            provider=provider,
+        )
+        recovered = openrouter.generate_article(
+            int(self.article["id"]),
+            task_type="translation",
+            retry_paid_failure=True,
+        )
+
+        self.assertEqual("openrouter", recovered["provider"])
+        self.assertEqual(1, len(provider.requests))
+        self.assertEqual([], self.database.list_ai_generation_holds())
 
     def test_known_availability_failure_without_fallback_remains_held(self):
         provider = FakeProvider(

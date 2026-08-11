@@ -31,16 +31,31 @@ future provider codes are denied. Each provider request receives a separate audi
 budget reservation, idempotency key, model identity, and provenance record.
 
 Timeouts, connection failures, 408/409/425, 5xx responses, malformed or
-truncated provider responses, unknown usage, existing ambiguous or paid-failure
-generation holds, other local input/configuration failures, exhausted budgets, and
-safety, moderation, content-filter, abuse, or policy refusals must never trigger
-cross-provider fallback. Those paths fail closed. A `fallback_pending` hold is
-the sole narrow hold exception and authorizes only the configured DeepSeek
-continuation, never a primary-provider replay. Fallback is never
+truncated provider responses, unknown usage, existing generation holds, other
+local input/configuration failures, exhausted budgets, and safety, moderation,
+content-filter, abuse, or policy refusals must never trigger cross-provider
+fallback. Those paths fail closed. A `fallback_pending` hold is the sole narrow
+hold exception for cross-provider continuation and authorizes only the
+configured DeepSeek call, never a primary-provider replay. Fallback is never
 DeepSeek-to-OpenRouter, never makes a third provider call, and never receives
 the broad `force_held` override. The two credentials must remain in their
 separately named variables and may coexist only in the bounded AI-generation
 step.
+
+Scheduled translation backfill has a distinct, budget-bound replay authority:
+for each missing article, one scheduled cycle may authorize at most one replay
+on the currently active provider profile only when every semantically
+equivalent hold is `paid_failure`. Any equivalent `ambiguous` hold denies
+automatic replay. A new OpenRouter replay may still receive the one existing
+OpenRouter-to-DeepSeek continuation under the closed fallback rules, but never
+a third provider call, and all requests consume the normal daily budget. Once
+the cycle has switched to DeepSeek, later articles stay on that active profile
+instead of reversing back to OpenRouter. A persistently definite paid failure
+may therefore incur one new replay in every later scheduled cycle until it
+succeeds, becomes ambiguous, or is stopped by the budget gate.
+Manual runs do not enable this narrow policy by default. `force_held` is the
+explicit broad recovery path and can bypass an ambiguous hold, so its use must
+remain a deliberate operator acknowledgement of possible duplicate billing.
 
 Before a provider POST, the local attempt and provisional ambiguous hold must
 commit atomically. The validated article-translation artifact must complete
@@ -50,6 +65,13 @@ handoff. It is not an exactly-once guarantee if the entire hosted runner and
 its unexported SQLite state are lost after request transmission; do not assume
 provider-side idempotency. Production must retain its serialized single-writer
 workflow because provisional-hold settlement is designed for that boundary.
+
+One article-level `AIServiceError` must not suppress later missing-translation
+work. The producer records the failure and continues the scheduled scan, but
+never publishes an invalid output. Strictly validated artifacts, aggregate
+usage, and generation holds are exported and published before an incomplete
+AI cycle finishes with a visible failed job, preserving safe partial progress
+without presenting the cycle as complete.
 
 The OpenRouter Free profile sends bounded public publisher metadata to
 OpenRouter, which dynamically selects an eligible free model and may route or

@@ -25,6 +25,22 @@ or policy refusals fail closed. Translations are published as validated cached
 artifacts. The hosted reader only renders those caches; loading or using the
 page never calls a model.
 
+Each scheduled producer run scans the bounded current corpus for articles that
+still lack a translation, up to the configured per-cycle processing limit.
+Article failures are isolated, so one `AIServiceError` does not stop later
+missing articles. A schedule may retry once on the currently active provider
+profile per article per cycle only when all semantically equivalent holds are
+`paid_failure`; any `ambiguous` hold blocks automatic replay, and all attempts
+remain subject to the daily budget. A persistently definite paid failure can
+receive one new billable replay in each later scheduled cycle until it
+succeeds, becomes ambiguous, or reaches that budget gate. The retry may still
+use the existing single OpenRouter-to-DeepSeek continuation when a new
+OpenRouter attempt is eligible. If the cycle has already switched to DeepSeek,
+later articles stay on that active profile. Manual runs leave this narrow
+policy off by default; the explicit broad `force_held` recovery can
+bypass ambiguous holds and therefore carries duplicate-billing risk. Valid
+partial progress is published before an incomplete producer job finishes red.
+
 OpenRouter Free is a dynamic router rather than one deterministic model. Its
 eligible free-model pool, upstream provider, availability, latency, output
 characteristics, and upstream data policy can change. The producer therefore
