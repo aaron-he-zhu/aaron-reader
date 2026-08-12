@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-12T05:50:15Z",
-  "bundle_hash": "5ab3ae4ca69a732d6a09b1fb487d4215cb2bb357df1e7c2c9f65a28aad7192c4",
+  "exported_at": "2026-08-12T17:15:12Z",
+  "bundle_hash": "a1afbb00c6c7155c094a17ff99b16c7c68417dde33fe81a12d8fba519ec46340",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -6145,6 +6145,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "f14a4ebde8135b37f1ca48de4cdf807041b8a8a09facb83862bfa295c78f6d76",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/how-enterprises-put-ai-to-work",
+        "canonical_url": "https://openai.com/index/how-enterprises-put-ai-to-work",
+        "content_hash": "a35123ac546c923adb2e72214a23c29202e345a050f004afdede519acad9ec8a"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "此内容基于提供的数据，仅涵盖摘要中的信息，可能未涵盖文章的全部细节。",
+        "title": "从辅助到执行：企业如何让AI发挥作用",
+        "publisher_summary": "OpenAI的研究揭示了企业如何采用智能体AI，使用ChatGPT和Codex，以及前沿公司如何在AI采用方面领先。"
+      },
+      "output_hash": "8bb5a890a1c75bb9d76c9a39e92d2dc4ebe010d74263ded689a1f6c4ff0127cd",
+      "input_truncated": false,
+      "created_at": "2026-08-12T17:15:11Z"
+    },
+    {
       "cache_key": "1120c20e0ca311fdc6b7a09f79704c8b719fa1475e2621884cf033e3836bfdf4",
       "article": {
         "source_slug": "openai-news",
@@ -8235,11 +8265,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "2f837191149acfa8cd52d1a56000dd7ed11a882d77af7399263d31c19ba02aea",
+      "ledger_key": "225911ffe6a69d310eb620c1d731dc54eab865aa9dac004557d1fdf2193367fd",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-12T05:50:15Z",
+      "covered_through": "2026-08-12T17:15:12Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -8255,11 +8285,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "0d07ccb07cf471163b43d32d4ced900f12143a2fb8b967499b097a94d0fa1e23",
+      "ledger_key": "ebbbb48227674ca989da920a139fb835787d19d6bdfd2e7eeef111badd48214c",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-12T05:50:15Z",
+      "covered_through": "2026-08-12T17:15:12Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8275,11 +8305,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "94310a4bc8c12fbd99f028001c1d9ccfb9d78904e828642b2c4bceb3827aac5d",
+      "ledger_key": "3689e268edf686981abbba3460a205a518efc4b247ee5e47d918881ccb94dce1",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-12T05:50:15Z",
+      "covered_through": "2026-08-12T17:15:12Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -8295,11 +8325,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "9319c37e5a56ff83ae9cca89cd999d8306a63055f245ae3688e8fc1e28842ee5",
+      "ledger_key": "754af673c30a9d24fe2ec59e2207025b3e8274b634dc78c16ebead1622b10b29",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-12T05:50:15Z",
+      "covered_through": "2026-08-12T17:15:12Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8315,11 +8345,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "2708f9fdc23bd0bae7863bb8753ca952710f39cf1d3c4a797407aa59fb62fc3a",
+      "ledger_key": "eaee66e0aa98142dfe58ebb36a4a5c51e071b607a6cf41c34662fd3ccec00e22",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-12T05:50:15Z",
+      "covered_through": "2026-08-12T17:15:12Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8335,11 +8365,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "6325268fa418dccebf6722cf94afeb65a19a01211adce1d9cafbdeb739df1ab1",
+      "ledger_key": "f3b43f22be24d9ea68665999d37d6c2cfc8b76d4cdf19cdd04a4230d765e2f02",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-12T05:50:15Z",
+      "covered_through": "2026-08-12T17:15:12Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8355,11 +8385,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "5dce61ee961962abfa23d8e40620cdf0a6ed8baacbbe8a5059fc090a54687353",
+      "ledger_key": "80d0dd3f809908f02b48328312a5217b8be8f652e0cb00b706da91981660a987",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-12T05:50:15Z",
+      "covered_through": "2026-08-12T17:15:12Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8375,11 +8405,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "2d189a2fe7587beaa8a465832b55b1c2f251f9bc6d484aef5f4f963bd5144f9c",
+      "ledger_key": "bb9c1ea9e0f4b6d9a34d5933e08d15e621000a6ff3f5c1ace14d0da1bbccc994",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-12T05:50:15Z",
+      "covered_through": "2026-08-12T17:15:12Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -8395,11 +8425,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "72931dd48efd4379f45dd25c202e5316465fc403edd500bc3da9cafd7b5a527f",
+      "ledger_key": "0ed7acb32883dcf00042bc6d9ea98558045f8aaeb18aabd1c840d4db13e447a4",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-12T05:50:15Z",
+      "covered_through": "2026-08-12T17:15:12Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -8411,6 +8441,26 @@
       "reasoning_tokens": 3137,
       "total_tokens": 12022,
       "reserved_total_tokens_for_unconfirmed": 4205,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "b0fcef88c1127e446aebca0cc390eca1f2785b58e87417133f2b46256840cb4a",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-12T07:00:00Z",
+      "day_end": "2026-08-13T07:00:00Z",
+      "covered_through": "2026-08-12T17:15:12Z",
+      "requests": 2,
+      "confirmed_requests": 2,
+      "unconfirmed_requests": 0,
+      "input_tokens": 870,
+      "cached_input_tokens": 256,
+      "cache_miss_input_tokens": 614,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 155,
+      "reasoning_tokens": 0,
+      "total_tokens": 1025,
+      "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
     }
