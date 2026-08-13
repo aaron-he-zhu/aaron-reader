@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-12T17:15:12Z",
-  "bundle_hash": "a1afbb00c6c7155c094a17ff99b16c7c68417dde33fe81a12d8fba519ec46340",
+  "exported_at": "2026-08-13T05:53:06Z",
+  "bundle_hash": "23d145b123dd5f143e302aebec90481abd091f8e6e393a1ff1ed32b003cf2847",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -258,6 +258,36 @@
       "output_hash": "2ae0aab000c2f6bb7a225b1f8f9115803860de2b5376ce090f7c4751bdb353ec",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "9d9ff7b48bc79dcbd79b8888d7091e8c60d6c76a3e8d74991a52e6bbfb6b4ee7",
+      "article": {
+        "source_slug": "anthropic-news",
+        "external_id": "https://www.anthropic.com/news/claude-sonnet-5",
+        "canonical_url": "https://www.anthropic.com/news/claude-sonnet-5",
+        "content_hash": "dd15f651a4f78d542b65101823a38c09b4f603ac1edde302c7ff8488663079f7"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "google/gemma-4-26b-a4b-it:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "推出 Claude Sonnet 5",
+        "publisher_summary": "Sonnet 5 在编程、智能体以及大规模专业工作方面展现了前沿性能。"
+      },
+      "output_hash": "0bd2d4ed4a498b755bffab11bb73c6b45e91abd554418ca37ef2873fae3b8e67",
+      "input_truncated": false,
+      "created_at": "2026-08-13T05:52:38Z"
     },
     {
       "cache_key": "5df632918cd9f368b4215ceef79942e1c959747b3c6a28d6e8c52fb553237ce3",
@@ -1620,6 +1650,36 @@
       "output_hash": "d28b340956738d974cc0bf95a99f67d25f1ef05f5ee44116eca1dfeafa4cde4f",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "8e1f774e40a17ffc909413035d7b1b306340539fe3be55d82decac95017e9db0",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/cowork-chrome-side-panel",
+        "canonical_url": "https://claude.com/blog/cowork-chrome-side-panel",
+        "content_hash": "0de9b27d044925cf7b21c9274ff28caa652decd6fb779d8290959c2f9a0faa05"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "publisher_summary 为空，无法提供摘要内容。",
+        "title": "Claude 在 Chrome 侧边栏现在称为 Claude Coworker",
+        "publisher_summary": ""
+      },
+      "output_hash": "0b7d01ccfa64d3b45b9a629acb3ad729716dbc89caae4c53b6283a529dcca44c",
+      "input_truncated": false,
+      "created_at": "2026-08-13T05:51:16Z"
     },
     {
       "cache_key": "195d8b19d4ab3ef9bc06c983f6d229e7d579df8a02229993c6b35f5d3caa0d40",
@@ -3886,6 +3946,36 @@
       "output_hash": "20fc3ef4821c04b51bb3be1dbc53adc51edf0195b0180497a381976111503ac0",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "5e2066e51fc8791a51f01f28ac799b51c3972d14a593bb77f33685b785a5a73e",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/academy/chatgpt-work/how-sales-teams-use-codex",
+        "canonical_url": "https://openai.com/academy/chatgpt-work/how-sales-teams-use-codex",
+        "content_hash": "1b2a2c048c2938267fd675710bc83411850a483c67059b8e94e603c83ecc4f11"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "google/gemma-4-26b-a4b-it:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "None stated in the source.",
+        "title": "销售团队如何使用 ChatGPT Work",
+        "publisher_summary": "了解销售团队如何利用 ChatGPT Work，通过实际工作输入来创建销售漏斗简报、会议准备包、预测回顾、客户计划以及停滞交易的诊断。"
+      },
+      "output_hash": "ddf57a6c8bd3a41fa8315dc94354e20f8ac67e03bbb4eb63dff41912c6a34bec",
+      "input_truncated": false,
+      "created_at": "2026-08-13T05:52:05Z"
     },
     {
       "cache_key": "c4e75aee720c702b3a31bca5260b0a0c5265a013cad8987f949f3d03f78c7a31",
@@ -7658,6 +7748,36 @@
       "created_at": "2026-08-11T05:32:07Z"
     },
     {
+      "cache_key": "2e1196bd1ba384fd34c94bfc19661aa21c07b4ed24dc23bd03c2e66859bbd7b4",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/ringcentral",
+        "canonical_url": "https://openai.com/index/ringcentral",
+        "content_hash": "7bb1c60fe76fed63bb3ccbdd982c2cb58c1dd720a8fe96e86f8934b4d927519e"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "摘要内容基于提供的 JSON 数据，未涉及具体技术细节、时间范围或量化结果。",
+        "title": "RingCentral 如何从工程到运营构建 AI 原生工作流",
+        "publisher_summary": "了解 RingCentral 如何使用 ChatGPT Work 和 Codex 加速 AI 产品开发，并在工程和运营领域实现运营智能的集中化。"
+      },
+      "output_hash": "afcdadf86563709047163b83211623fd6e21999412f342f6d2861a746936456f",
+      "input_truncated": false,
+      "created_at": "2026-08-13T05:51:42Z"
+    },
+    {
       "cache_key": "3ebae40416571da64fad87949a5683ec8519d6aab4abf376ca6044c3fd6497b6",
       "article": {
         "source_slug": "openai-news",
@@ -8265,11 +8385,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "225911ffe6a69d310eb620c1d731dc54eab865aa9dac004557d1fdf2193367fd",
+      "ledger_key": "d8e3a812bb999287c87aa2ab9edddf0ade380928a291c76ff1a164ace9a983dd",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-12T17:15:12Z",
+      "covered_through": "2026-08-13T05:53:06Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -8285,11 +8405,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "ebbbb48227674ca989da920a139fb835787d19d6bdfd2e7eeef111badd48214c",
+      "ledger_key": "522431b5a2c762bb8b5a3517fe8a18db476f16b7ee320505a56251dfe2ca5978",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-12T17:15:12Z",
+      "covered_through": "2026-08-13T05:53:06Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8305,11 +8425,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "3689e268edf686981abbba3460a205a518efc4b247ee5e47d918881ccb94dce1",
+      "ledger_key": "41b599c5a4a2dd53d7a7fa7e7cbcee6de59202677ac9e6288d5d84f0486ea5af",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-12T17:15:12Z",
+      "covered_through": "2026-08-13T05:53:06Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -8325,11 +8445,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "754af673c30a9d24fe2ec59e2207025b3e8274b634dc78c16ebead1622b10b29",
+      "ledger_key": "8d4967aa94821ed813b408f5a0fa2acc057afeba875dd713a561f1a0926da5a7",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-12T17:15:12Z",
+      "covered_through": "2026-08-13T05:53:06Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8345,11 +8465,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "eaee66e0aa98142dfe58ebb36a4a5c51e071b607a6cf41c34662fd3ccec00e22",
+      "ledger_key": "7492ca739c862a4dc7f3307e8f55bba51b9256f5f58d79380936cc80f435bac3",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-12T17:15:12Z",
+      "covered_through": "2026-08-13T05:53:06Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8365,11 +8485,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "f3b43f22be24d9ea68665999d37d6c2cfc8b76d4cdf19cdd04a4230d765e2f02",
+      "ledger_key": "047d8b3cb817cf7a2becabab463e9921655628fdf329519f8076ef88aa96b6c2",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-12T17:15:12Z",
+      "covered_through": "2026-08-13T05:53:06Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8385,11 +8505,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "80d0dd3f809908f02b48328312a5217b8be8f652e0cb00b706da91981660a987",
+      "ledger_key": "9f59c977fe13b0391f1933c8508b60cfeeb904306627f0bcfd23d00c4a7ed13b",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-12T17:15:12Z",
+      "covered_through": "2026-08-13T05:53:06Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8405,11 +8525,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "bb9c1ea9e0f4b6d9a34d5933e08d15e621000a6ff3f5c1ace14d0da1bbccc994",
+      "ledger_key": "8c98ed4bc40cc5e251658c2460fd5835a75dad0ad3d85496f634e79faa90b8a9",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-12T17:15:12Z",
+      "covered_through": "2026-08-13T05:53:06Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -8425,11 +8545,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "0ed7acb32883dcf00042bc6d9ea98558045f8aaeb18aabd1c840d4db13e447a4",
+      "ledger_key": "3fc0bfe6ad06de90bc83a36cfce7470e437852d884ccaef07af192bb21870b12",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-12T17:15:12Z",
+      "covered_through": "2026-08-13T05:53:06Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -8445,21 +8565,21 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b0fcef88c1127e446aebca0cc390eca1f2785b58e87417133f2b46256840cb4a",
+      "ledger_key": "89638e57a78a7f45dce4f3fe5cee248cc246e40332306ad6749aa7c62bb45dd8",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-12T17:15:12Z",
-      "requests": 2,
-      "confirmed_requests": 2,
+      "covered_through": "2026-08-13T05:53:06Z",
+      "requests": 8,
+      "confirmed_requests": 8,
       "unconfirmed_requests": 0,
-      "input_tokens": 870,
+      "input_tokens": 3280,
       "cached_input_tokens": 256,
-      "cache_miss_input_tokens": 614,
+      "cache_miss_input_tokens": 3024,
       "cache_write_input_tokens": 0,
-      "output_tokens": 155,
-      "reasoning_tokens": 0,
-      "total_tokens": 1025,
+      "output_tokens": 2052,
+      "reasoning_tokens": 1500,
+      "total_tokens": 5332,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
@@ -8627,23 +8747,23 @@
       "last_seen_at": "2026-08-11T05:36:34Z"
     },
     {
-      "hold_key": "f154a8671e7b04efeed24921c1511a20e8036ebec7af8aeda85098f053a2a759",
+      "hold_key": "b6af045626fa7d4b8a199408fe3bef4f0f05aa31fee748aa8efd7a3e57c2973b",
       "workload_kind": "article",
-      "hold_class": "ambiguous",
+      "hold_class": "paid_failure",
       "descriptor": {
         "article_identities": [
           {
-            "canonical_url": "https://www.anthropic.com/news/claude-sonnet-5",
-            "content_hash": "cb0ffda532e6b1be2d35b4eb215050365cd7e0557dbe5eaa427635e767ef62ad",
-            "external_id": "https://www.anthropic.com/news/claude-sonnet-5",
-            "source_slug": "anthropic-news"
+            "canonical_url": "https://openai.com/academy/chatgpt-work/how-business-operations-teams-use-codex",
+            "content_hash": "7cd9135caa89681afc74f5caacac9e5b7dbdf405ce9dddee3d27d63053a2e5e2",
+            "external_id": "https://openai.com/academy/chatgpt-work/how-business-operations-teams-use-codex",
+            "source_slug": "openai-news"
           }
         ],
         "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
         "input_scope": "metadata",
         "max_output_tokens": 800,
         "model": "openrouter/free",
-        "portable_input_hash": "16e86353bfbb08017277d5a787f841beaaf06179e147b6e8175277a9385f2e10",
+        "portable_input_hash": "047f4c641b3a165e9a84e09563754bbc83a242c785cf8bc1fe7bec9a4a4c3063",
         "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
         "prompt_version": "ai-enrichment-v1",
         "protocol": "aaron-reader-ai-generation-hold/v1",
@@ -8655,8 +8775,40 @@
         "task_type": "translation",
         "workload_kind": "article"
       },
-      "first_seen_at": "2026-08-11T17:18:55Z",
-      "last_seen_at": "2026-08-11T17:19:06Z"
+      "first_seen_at": "2026-08-13T05:52:38Z",
+      "last_seen_at": "2026-08-13T05:53:05Z"
+    },
+    {
+      "hold_key": "badbf571786e9ee6308630734f055de20d0d8328ddd4567777344366e3daa250",
+      "workload_kind": "article",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
+            "content_hash": "500a692c16777a41ed9decc6c0db304fa8232b4a97f6dd5c6b29347d21108f98",
+            "external_id": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
+            "source_slug": "openai-news"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "openrouter/free",
+        "portable_input_hash": "c43bd42cff5bcfabfd4ea2a801820e3d5b960f4a563f75c7be45a2d8e1bdf7ca",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "openrouter",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-13T05:52:05Z",
+      "last_seen_at": "2026-08-13T05:52:34Z"
     },
     {
       "hold_key": "fe5b45a7af975c2247da19dd558f1aba84a79661cc173957c50d11fd761eb48c",
