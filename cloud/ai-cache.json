@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-13T05:53:06Z",
-  "bundle_hash": "23d145b123dd5f143e302aebec90481abd091f8e6e393a1ff1ed32b003cf2847",
+  "exported_at": "2026-08-13T17:17:24Z",
+  "bundle_hash": "6a13ae1268ca98f0c378e5ab92467955c0c90a228d495759634dba41a1d11422",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -3946,6 +3946,36 @@
       "output_hash": "20fc3ef4821c04b51bb3be1dbc53adc51edf0195b0180497a381976111503ac0",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "dbdec35c5b7e0a9ecc4273fbba169f1ae28e2c2e343d9bfdb4f847a073ffcaaa",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
+        "canonical_url": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
+        "content_hash": "500a692c16777a41ed9decc6c0db304fa8232b4a97f6dd5c6b29347d21108f98"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "仅基于提供的 JSON 数据中的 publisher_summary 和 title 进行翻译，未获取或验证完整文章内容。",
+        "title": "数据科学团队如何使用 ChatGPT Work",
+        "publisher_summary": "了解数据科学团队如何利用 ChatGPT Work 从真实工作输入中构建根因简报、影响读出、KPI 备忘录、范围分析和仪表盘规范。"
+      },
+      "output_hash": "20fc186693e3896bc75f609f8964cebde19be2c5e05f971bafec60b3be221afd",
+      "input_truncated": false,
+      "created_at": "2026-08-13T17:16:44Z"
     },
     {
       "cache_key": "5e2066e51fc8791a51f01f28ac799b51c3972d14a593bb77f33685b785a5a73e",
@@ -8385,11 +8415,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "d8e3a812bb999287c87aa2ab9edddf0ade380928a291c76ff1a164ace9a983dd",
+      "ledger_key": "451ed2f7f629a09f574f40913dc336905991e90ff45277b06614bfa4bbc69d4c",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-13T05:53:06Z",
+      "covered_through": "2026-08-13T17:17:24Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -8405,11 +8435,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "522431b5a2c762bb8b5a3517fe8a18db476f16b7ee320505a56251dfe2ca5978",
+      "ledger_key": "85c677cb121d4fc0f08c588b712374b532ef55c7b34673291dae95acc6033d54",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-13T05:53:06Z",
+      "covered_through": "2026-08-13T17:17:24Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8425,11 +8455,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "41b599c5a4a2dd53d7a7fa7e7cbcee6de59202677ac9e6288d5d84f0486ea5af",
+      "ledger_key": "297354e0a74dd238f8a66f1c96b1fc01dcd5c5d2edfe70d89cea910ca12d2e67",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-13T05:53:06Z",
+      "covered_through": "2026-08-13T17:17:24Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -8445,11 +8475,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "8d4967aa94821ed813b408f5a0fa2acc057afeba875dd713a561f1a0926da5a7",
+      "ledger_key": "8f61648ed487332be7559a4a405b2355f77f2ff5b2b766c030a26ca2382758e0",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-13T05:53:06Z",
+      "covered_through": "2026-08-13T17:17:24Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8465,11 +8495,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "7492ca739c862a4dc7f3307e8f55bba51b9256f5f58d79380936cc80f435bac3",
+      "ledger_key": "cde7b95eb88708dfb2c488c6628293e2d09e937dc9588363ce7accfa73d4fe48",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-13T05:53:06Z",
+      "covered_through": "2026-08-13T17:17:24Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8485,11 +8515,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "047d8b3cb817cf7a2becabab463e9921655628fdf329519f8076ef88aa96b6c2",
+      "ledger_key": "4f966c079ca331dc57dc245351059934b4b627793e101ce40f8bdc81bfca3e27",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-13T05:53:06Z",
+      "covered_through": "2026-08-13T17:17:24Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8505,11 +8535,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "9f59c977fe13b0391f1933c8508b60cfeeb904306627f0bcfd23d00c4a7ed13b",
+      "ledger_key": "2ff06ae6bca018e9fec310676a3c9f3d69077fdc61d6526b40efdd7d5e45dc16",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-13T05:53:06Z",
+      "covered_through": "2026-08-13T17:17:24Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8525,11 +8555,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "8c98ed4bc40cc5e251658c2460fd5835a75dad0ad3d85496f634e79faa90b8a9",
+      "ledger_key": "34bd4c3107932df1e9087a309cfab4042c283726094f02d97fb63b5c89c94d5c",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-13T05:53:06Z",
+      "covered_through": "2026-08-13T17:17:24Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -8545,11 +8575,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "3fc0bfe6ad06de90bc83a36cfce7470e437852d884ccaef07af192bb21870b12",
+      "ledger_key": "835a6f5db20c48ca41b024b39492ca72ebf8618154c08105e8545f014f04de37",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-13T05:53:06Z",
+      "covered_through": "2026-08-13T17:17:24Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -8565,11 +8595,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "89638e57a78a7f45dce4f3fe5cee248cc246e40332306ad6749aa7c62bb45dd8",
+      "ledger_key": "96711f53610da5b93fd3133f1c8baa360fb8c4cbdb901fb4247b296770305abb",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-13T05:53:06Z",
+      "covered_through": "2026-08-13T17:17:24Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8581,6 +8611,26 @@
       "reasoning_tokens": 1500,
       "total_tokens": 5332,
       "reserved_total_tokens_for_unconfirmed": 0,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "9e20bbb289f7a722cf2cacd9f079dc8416f5ace882a76785a3be6d6d563047da",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-13T07:00:00Z",
+      "day_end": "2026-08-14T07:00:00Z",
+      "covered_through": "2026-08-13T17:17:24Z",
+      "requests": 5,
+      "confirmed_requests": 3,
+      "unconfirmed_requests": 2,
+      "input_tokens": 1119,
+      "cached_input_tokens": 0,
+      "cache_miss_input_tokens": 1119,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1725,
+      "reasoning_tokens": 1480,
+      "total_tokens": 2844,
+      "reserved_total_tokens_for_unconfirmed": 8392,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
     }
@@ -8715,6 +8765,70 @@
       "last_seen_at": "2026-08-11T05:38:11Z"
     },
     {
+      "hold_key": "9195c3a50b64e61963b1ef44c4060c121341a97a4f6f01c68580206e31afe618",
+      "workload_kind": "article",
+      "hold_class": "ambiguous",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://claude.com/blog/claude-tag-now-reads-even-more-of-the-room",
+            "content_hash": "e01b5d1597f2334bb9d3448992cbdc2cad554451fb583339c54e2a13e2a4a489",
+            "external_id": "https://claude.com/blog/claude-tag-now-reads-even-more-of-the-room",
+            "source_slug": "claude-blog"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "openrouter/free",
+        "portable_input_hash": "ff1370e17444376a874f4aec139e75408ff1a4b18c2dd294afe30f099a8c59fe",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "openrouter",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-13T17:16:15Z",
+      "last_seen_at": "2026-08-13T17:16:26Z"
+    },
+    {
+      "hold_key": "98248aca569743c5fe7e71ff09c19c3066f3cefa1bc60caea6f05e17169e3645",
+      "workload_kind": "article",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://openai.com/index/previewing-ultrafast",
+            "content_hash": "4fdaf82d0db28f30c2574f79c9f8ead9438a2fdd48a38e8aa12d9379a4b1c8b1",
+            "external_id": "https://openai.com/index/previewing-ultrafast",
+            "source_slug": "openai-news"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "openrouter/free",
+        "portable_input_hash": "d6e0414445679f695b5373a22a878e325501105472c0d009a4574aa9fa307974",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "openrouter",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-13T17:15:34Z",
+      "last_seen_at": "2026-08-13T17:16:05Z"
+    },
+    {
       "hold_key": "996e7b4980e04cc532c1f30995e2e96478943e5bc1be7866d46145f694b6b1ab",
       "workload_kind": "article",
       "hold_class": "ambiguous",
@@ -8776,18 +8890,18 @@
         "workload_kind": "article"
       },
       "first_seen_at": "2026-08-13T05:52:38Z",
-      "last_seen_at": "2026-08-13T05:53:05Z"
+      "last_seen_at": "2026-08-13T17:17:24Z"
     },
     {
-      "hold_key": "badbf571786e9ee6308630734f055de20d0d8328ddd4567777344366e3daa250",
+      "hold_key": "e524785d49ccb677eff5306cf0000283255583fd147748a43af5841197208def",
       "workload_kind": "article",
-      "hold_class": "paid_failure",
+      "hold_class": "ambiguous",
       "descriptor": {
         "article_identities": [
           {
-            "canonical_url": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
-            "content_hash": "500a692c16777a41ed9decc6c0db304fa8232b4a97f6dd5c6b29347d21108f98",
-            "external_id": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
+            "canonical_url": "https://openai.com/index/dali-rajic-chief-revenue-officer",
+            "content_hash": "8993564095cf4d2d374a9b165afe9538863dd0cc82fccd45921d10f13add7c89",
+            "external_id": "https://openai.com/index/dali-rajic-chief-revenue-officer",
             "source_slug": "openai-news"
           }
         ],
@@ -8795,7 +8909,7 @@
         "input_scope": "metadata",
         "max_output_tokens": 800,
         "model": "openrouter/free",
-        "portable_input_hash": "c43bd42cff5bcfabfd4ea2a801820e3d5b960f4a563f75c7be45a2d8e1bdf7ca",
+        "portable_input_hash": "3785da02bb1d97cd513bfd9878a3e64695c45f6ee1136b45075c089105487db6",
         "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
         "prompt_version": "ai-enrichment-v1",
         "protocol": "aaron-reader-ai-generation-hold/v1",
@@ -8807,8 +8921,8 @@
         "task_type": "translation",
         "workload_kind": "article"
       },
-      "first_seen_at": "2026-08-13T05:52:05Z",
-      "last_seen_at": "2026-08-13T05:52:34Z"
+      "first_seen_at": "2026-08-13T17:16:05Z",
+      "last_seen_at": "2026-08-13T17:16:15Z"
     },
     {
       "hold_key": "fe5b45a7af975c2247da19dd558f1aba84a79661cc173957c50d11fd761eb48c",
