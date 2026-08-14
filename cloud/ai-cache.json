@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-14T05:49:18Z",
-  "bundle_hash": "2edbd734527962c1a2d8c666af7d07b20576d0cc889057cb4914ce1fc7c50481",
+  "exported_at": "2026-08-14T17:14:07Z",
+  "bundle_hash": "306818da0192b47933d0768ca1b7547c483ccc02cc41c300c5b7351be6dc0272",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -2129,6 +2129,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "c038a056ca49ea34db8735a398d5f47d229dca8abd2ce7eb3097c092333fa959",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/maximizing-the-value-of-your-claude-code-sessions",
+        "canonical_url": "https://claude.com/blog/maximizing-the-value-of-your-claude-code-sessions",
+        "content_hash": "90642b37869fd4f645409eb6c4ac7798533c17b6d65b0b6a9138f026f1c5b914"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "源数据中 publisher_summary 为空字符串，未提供可翻译的摘要内容。",
+        "title": "最大化您的 Claude Code 会话价值",
+        "publisher_summary": ""
+      },
+      "output_hash": "32f714930558afb46cf68934fbe3e59a2f7ff78da2b2caf36ad644bf57f18f2e",
+      "input_truncated": false,
+      "created_at": "2026-08-14T17:14:01Z"
+    },
+    {
       "cache_key": "9cf7d330666c7343a857fd0ab92aa448cd9864f3e9d73c057d554564c6c217e6",
       "article": {
         "source_slug": "claude-blog",
@@ -4008,6 +4038,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "5a9f1c7696cda8530c6b723952e01ca868f1dc21e0265e1ee2c79326c1fe3671",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/academy/chatgpt-work/how-business-operations-teams-use-codex",
+        "canonical_url": "https://openai.com/academy/chatgpt-work/how-business-operations-teams-use-codex",
+        "content_hash": "7cd9135caa89681afc74f5caacac9e5b7dbdf405ce9dddee3d27d63053a2e5e2"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "google/gemma-4-26b-a4b-it:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "None stated in the source data.",
+        "title": "业务运营团队如何使用 ChatGPT Work",
+        "publisher_summary": "了解业务运营团队如何使用 ChatGPT Work 根据实际工作输入来创建项目简介、策略更新、领导决策包、进度更新等。"
+      },
+      "output_hash": "b4736a045e14b78a6a57fbd161b627bdbfa1ca9d101e7f89e2d1bf69aabca3db",
+      "input_truncated": false,
+      "created_at": "2026-08-14T17:14:07Z"
+    },
+    {
       "cache_key": "dbdec35c5b7e0a9ecc4273fbba169f1ae28e2c2e343d9bfdb4f847a073ffcaaa",
       "article": {
         "source_slug": "openai-news",
@@ -4871,6 +4931,36 @@
       "output_hash": "34812fbc7b911137cfff16ce3b446c9461b16602cbf22e3694d86ad7d493b166",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "54b961d316a20c32d7ad29306ea28b437c5051124e5314797511ea6dad6e4b9a",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/builders-guide-to-gpt-5-6",
+        "canonical_url": "https://openai.com/index/builders-guide-to-gpt-5-6",
+        "content_hash": "40553e28b106c648b4a6e38a8223cfab729907f499153701fab8511942584503"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "Translation based solely on provided publisher summary and title; no additional context from full article was available.",
+        "title": "构建者的 GPT‑5.6 指南",
+        "publisher_summary": "了解初创公司如何使用 GPT-5.6 构建更快速、更具成本效益的 AI 代理，通过更智能的模型选择和新的 Responses API 功能。"
+      },
+      "output_hash": "7ff374ecae93fb69cc950e1e82043362ca87c5bc94656d7eecb01bc5bdc5b9d3",
+      "input_truncated": false,
+      "created_at": "2026-08-14T17:14:04Z"
     },
     {
       "cache_key": "22dd45a9670d8901ad168f50255a19d64ef98c47ae0ee2ee9204d67838d98750",
@@ -8505,11 +8595,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "f89520fe715f593dadedb64682bff3b085d36d0c810f3bd2371d0ba85158428f",
+      "ledger_key": "b004e0746fe55b155030136a32762286db23e7ca3597156b93a5a4f4b2343c5b",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-14T05:49:18Z",
+      "covered_through": "2026-08-14T17:14:07Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -8525,11 +8615,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "8606e3b8cafc0cbc5a6e64de4cf0ce22fa2ffaa697746dbee6c5fca681bbb6b1",
+      "ledger_key": "ec311bbbe58e8ef892b6207e6f220b673bbb80606c8b286132cac0dc13260dc7",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-14T05:49:18Z",
+      "covered_through": "2026-08-14T17:14:07Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8545,11 +8635,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b40487e2b05760c3dd00ea29601fb4d1e0e77a39eb26c190b306410552f3639a",
+      "ledger_key": "c39f8732aa756f64b759a0776bb3c17bcdea4ac368a5978d804fd8a6fd0e70fa",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-14T05:49:18Z",
+      "covered_through": "2026-08-14T17:14:07Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -8565,11 +8655,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "a0e1994020155be36b50cadd25568c45f9648e39afa117b07d0d2ea47229fa44",
+      "ledger_key": "77e19afbc1b0c941b343361117bfe50804f9766cdb7ed3785868c76004c120a7",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-14T05:49:18Z",
+      "covered_through": "2026-08-14T17:14:07Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8585,11 +8675,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "cc4af929fa73e1303c8f19711cb852a962bb3d92128962c6770dbce1a1860c44",
+      "ledger_key": "113654d342d3d87b8af638e3953c7344a150f59070969128ff1bf13ba2581306",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-14T05:49:18Z",
+      "covered_through": "2026-08-14T17:14:07Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8605,11 +8695,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "0a64d1feb2ec9d2b301ca148576e87284b795e0ccc6ae7072a8ae06235444059",
+      "ledger_key": "0237903445b64976fef9e8408467b3b9942670c60ba1e1bf5d54784099b7eece",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-14T05:49:18Z",
+      "covered_through": "2026-08-14T17:14:07Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8625,11 +8715,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "39b2f2a4ca1d495a5c684e0c10288627c5571b5c05eeff4ab2951957976b81e5",
+      "ledger_key": "2cbda3f7a81d8ac6d5dc5bae6b7566ee4ebb1472be131fc02b98253fccf5a690",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-14T05:49:18Z",
+      "covered_through": "2026-08-14T17:14:07Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8645,11 +8735,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "ea567532e79e62b7fa4a625044e680a6c291a2528dd2051e7d347b344d3e44da",
+      "ledger_key": "e2c46bc3acc09d1d822a77484c637fb287a80431c491226b02c8227723573d43",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-14T05:49:18Z",
+      "covered_through": "2026-08-14T17:14:07Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -8665,11 +8755,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "3fe0de0f7fc8716b8929f5625856c5160b5bf700e16b8869de9a1999198d59ee",
+      "ledger_key": "e18b0e53c9abda0cc543790215f1ee8e32f2260caad090bdea607e736abf19ef",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-14T05:49:18Z",
+      "covered_through": "2026-08-14T17:14:07Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -8685,11 +8775,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "ffc3796155ae07ee51643059ddd8c12f06b4674ff55f4cf6f6d890dbe4ec9d9a",
+      "ledger_key": "741fd61e776f405e781a451f79ac77c026e4c57f10ba402448dc49eee69eba93",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-14T05:49:18Z",
+      "covered_through": "2026-08-14T17:14:07Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8705,11 +8795,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "6320f0e97d333d3cc9778fbe27301cd6e805b3d2fe2e994e26c88856eca062d3",
+      "ledger_key": "29cbc804e5e7886fa6e016fa16b2813822f557b68903d7ae2f37cad67fe5c7d7",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-14T05:49:18Z",
+      "covered_through": "2026-08-14T17:14:07Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -8723,41 +8813,29 @@
       "reserved_total_tokens_for_unconfirmed": 8392,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "76a910dd9a30ada17d20a8470758fed830d1b89bde2b79f019180b87d55d93e2",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-14T07:00:00Z",
+      "day_end": "2026-08-15T07:00:00Z",
+      "covered_through": "2026-08-14T17:14:07Z",
+      "requests": 3,
+      "confirmed_requests": 3,
+      "unconfirmed_requests": 0,
+      "input_tokens": 1198,
+      "cached_input_tokens": 0,
+      "cache_miss_input_tokens": 1198,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 237,
+      "reasoning_tokens": 0,
+      "total_tokens": 1435,
+      "reserved_total_tokens_for_unconfirmed": 0,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
     }
   ],
   "generation_holds": [
-    {
-      "hold_key": "25229a208d153985bd872d30a43e019a2649686279302b9869742e706fbfc4e7",
-      "workload_kind": "article",
-      "hold_class": "paid_failure",
-      "descriptor": {
-        "article_identities": [
-          {
-            "canonical_url": "https://openai.com/index/builders-guide-to-gpt-5-6",
-            "content_hash": "40553e28b106c648b4a6e38a8223cfab729907f499153701fab8511942584503",
-            "external_id": "https://openai.com/index/builders-guide-to-gpt-5-6",
-            "source_slug": "openai-news"
-          }
-        ],
-        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
-        "input_scope": "metadata",
-        "max_output_tokens": 800,
-        "model": "openrouter/free",
-        "portable_input_hash": "f0aba407e0eae352f2893fee7bf97ceed6c12d6fed796c06efdc875e7e017ec4",
-        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
-        "prompt_version": "ai-enrichment-v1",
-        "protocol": "aaron-reader-ai-generation-hold/v1",
-        "provider": "openrouter",
-        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-        "schema_name": "article_translation",
-        "schema_version": "ai-output-v1",
-        "target_language": "zh-CN",
-        "task_type": "translation",
-        "workload_kind": "article"
-      },
-      "first_seen_at": "2026-08-14T05:48:20Z",
-      "last_seen_at": "2026-08-14T05:48:40Z"
-    },
     {
       "hold_key": "2585fe65788d73248c463206918a60b2d88a15fde8edd313550567e58c48a27d",
       "workload_kind": "article_pair",
@@ -8949,38 +9027,6 @@
       },
       "first_seen_at": "2026-08-11T05:36:13Z",
       "last_seen_at": "2026-08-11T05:36:34Z"
-    },
-    {
-      "hold_key": "b6af045626fa7d4b8a199408fe3bef4f0f05aa31fee748aa8efd7a3e57c2973b",
-      "workload_kind": "article",
-      "hold_class": "paid_failure",
-      "descriptor": {
-        "article_identities": [
-          {
-            "canonical_url": "https://openai.com/academy/chatgpt-work/how-business-operations-teams-use-codex",
-            "content_hash": "7cd9135caa89681afc74f5caacac9e5b7dbdf405ce9dddee3d27d63053a2e5e2",
-            "external_id": "https://openai.com/academy/chatgpt-work/how-business-operations-teams-use-codex",
-            "source_slug": "openai-news"
-          }
-        ],
-        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
-        "input_scope": "metadata",
-        "max_output_tokens": 800,
-        "model": "openrouter/free",
-        "portable_input_hash": "047f4c641b3a165e9a84e09563754bbc83a242c785cf8bc1fe7bec9a4a4c3063",
-        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
-        "prompt_version": "ai-enrichment-v1",
-        "protocol": "aaron-reader-ai-generation-hold/v1",
-        "provider": "openrouter",
-        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-        "schema_name": "article_translation",
-        "schema_version": "ai-output-v1",
-        "target_language": "zh-CN",
-        "task_type": "translation",
-        "workload_kind": "article"
-      },
-      "first_seen_at": "2026-08-13T05:52:38Z",
-      "last_seen_at": "2026-08-14T05:49:18Z"
     },
     {
       "hold_key": "e524785d49ccb677eff5306cf0000283255583fd147748a43af5841197208def",
