@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-13T17:17:24Z",
-  "bundle_hash": "6a13ae1268ca98f0c378e5ab92467955c0c90a228d495759634dba41a1d11422",
+  "exported_at": "2026-08-14T05:49:18Z",
+  "bundle_hash": "2edbd734527962c1a2d8c666af7d07b20576d0cc889057cb4914ce1fc7c50481",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -1970,6 +1970,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "b2ff91a17ff29f4e11bd64a303f92e6987f307c0e55b3ec5d08adde596b53477",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/how-jetbrains-evaluates-and-deploys-claude-fable-5",
+        "canonical_url": "https://claude.com/blog/how-jetbrains-evaluates-and-deploys-claude-fable-5",
+        "content_hash": "edf3e1c6da26cddfc032bc6f4c027c433c325effb80be00ba8c2cb3677941832"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "The provided publisher_summary is empty, so no factual content could be translated or verified. The translation of the title is based solely on the supplied text.",
+        "title": "保护前沿：JetBrains如何评估和部署Claude Fable 5",
+        "publisher_summary": ""
+      },
+      "output_hash": "0b35f23727f9add9eee51cc321b50a1cf956059d1b9bcfe0005e3eb00576b093",
+      "input_truncated": false,
+      "created_at": "2026-08-14T05:48:56Z"
+    },
+    {
       "cache_key": "ad59eaa2b89cc692a3fe8b5234c67e365e5e41a272a40114b2c5943436e01d93",
       "article": {
         "source_slug": "claude-blog",
@@ -2283,6 +2313,36 @@
       "output_hash": "e117db2716047180ff37313a015f6e4e0990fd7385731835c328fe9a0935a092",
       "input_truncated": false,
       "created_at": "2026-08-11T05:37:16Z"
+    },
+    {
+      "cache_key": "09448aeda24b7d4818733515ac2b2a21567d72cc9d2978089afeb01b5fcfff39",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
+        "canonical_url": "https://claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
+        "content_hash": "37afd24a0890fcddea57eeb2a18be39bae199e9a65c6b35c849defa14ec8a141"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "google/gemma-4-26b-a4b-it:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "No limitations identified.",
+        "title": "Slack 中的自助式数据分析：Anthropic 如何部署 Claude Tag 来回答即时问题",
+        "publisher_summary": ""
+      },
+      "output_hash": "41f759b78676117cb83948aed081ca477a8c1a3f921c29f4b4be79f8ee415319",
+      "input_truncated": false,
+      "created_at": "2026-08-14T05:48:57Z"
     },
     {
       "cache_key": "661a1bb47a526d96c701040c3087081b48f926b85679931fcebf5587f4986bca",
@@ -7654,6 +7714,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "380a64423a8eebd7a35c5305fb7de4aa36ef92c479a8a9a3f5e409ca2f39cf22",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/previewing-ultrafast",
+        "canonical_url": "https://openai.com/index/previewing-ultrafast",
+        "content_hash": "4fdaf82d0db28f30c2574f79c9f8ead9438a2fdd48a38e8aa12d9379a4b1c8b1"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "google/gemma-4-26b-a4b-it:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "null",
+        "title": "预览 Ultrafast 模式：GPT-5.6 Sol 的速度提升高达 14 倍",
+        "publisher_summary": "预览 Ultrafast，这是 OpenAI 的一个全新 API 服务层，其运行 GPT-5.6 Sol 的速度提升高达 14 倍。在 Cerebras 的驱动下，它能提供每秒高达 750 个输出 token 的速度。"
+      },
+      "output_hash": "3c88dd073ba14c2493d203720baed33e0cc92a23ee6a2959ce57df2d3423f454",
+      "input_truncated": false,
+      "created_at": "2026-08-14T05:48:50Z"
+    },
+    {
       "cache_key": "9a816a68f4c63db5ded30b2b42092923d7053f24475394f2008dac821e26d64b",
       "article": {
         "source_slug": "openai-news",
@@ -8415,11 +8505,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "451ed2f7f629a09f574f40913dc336905991e90ff45277b06614bfa4bbc69d4c",
+      "ledger_key": "f89520fe715f593dadedb64682bff3b085d36d0c810f3bd2371d0ba85158428f",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-13T17:17:24Z",
+      "covered_through": "2026-08-14T05:49:18Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -8435,11 +8525,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "85c677cb121d4fc0f08c588b712374b532ef55c7b34673291dae95acc6033d54",
+      "ledger_key": "8606e3b8cafc0cbc5a6e64de4cf0ce22fa2ffaa697746dbee6c5fca681bbb6b1",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-13T17:17:24Z",
+      "covered_through": "2026-08-14T05:49:18Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8455,11 +8545,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "297354e0a74dd238f8a66f1c96b1fc01dcd5c5d2edfe70d89cea910ca12d2e67",
+      "ledger_key": "b40487e2b05760c3dd00ea29601fb4d1e0e77a39eb26c190b306410552f3639a",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-13T17:17:24Z",
+      "covered_through": "2026-08-14T05:49:18Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -8475,11 +8565,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "8f61648ed487332be7559a4a405b2355f77f2ff5b2b766c030a26ca2382758e0",
+      "ledger_key": "a0e1994020155be36b50cadd25568c45f9648e39afa117b07d0d2ea47229fa44",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-13T17:17:24Z",
+      "covered_through": "2026-08-14T05:49:18Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8495,11 +8585,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "cde7b95eb88708dfb2c488c6628293e2d09e937dc9588363ce7accfa73d4fe48",
+      "ledger_key": "cc4af929fa73e1303c8f19711cb852a962bb3d92128962c6770dbce1a1860c44",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-13T17:17:24Z",
+      "covered_through": "2026-08-14T05:49:18Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8515,11 +8605,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "4f966c079ca331dc57dc245351059934b4b627793e101ce40f8bdc81bfca3e27",
+      "ledger_key": "0a64d1feb2ec9d2b301ca148576e87284b795e0ccc6ae7072a8ae06235444059",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-13T17:17:24Z",
+      "covered_through": "2026-08-14T05:49:18Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8535,11 +8625,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "2ff06ae6bca018e9fec310676a3c9f3d69077fdc61d6526b40efdd7d5e45dc16",
+      "ledger_key": "39b2f2a4ca1d495a5c684e0c10288627c5571b5c05eeff4ab2951957976b81e5",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-13T17:17:24Z",
+      "covered_through": "2026-08-14T05:49:18Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8555,11 +8645,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "34bd4c3107932df1e9087a309cfab4042c283726094f02d97fb63b5c89c94d5c",
+      "ledger_key": "ea567532e79e62b7fa4a625044e680a6c291a2528dd2051e7d347b344d3e44da",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-13T17:17:24Z",
+      "covered_through": "2026-08-14T05:49:18Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -8575,11 +8665,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "835a6f5db20c48ca41b024b39492ca72ebf8618154c08105e8545f014f04de37",
+      "ledger_key": "3fe0de0f7fc8716b8929f5625856c5160b5bf700e16b8869de9a1999198d59ee",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-13T17:17:24Z",
+      "covered_through": "2026-08-14T05:49:18Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -8595,11 +8685,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "96711f53610da5b93fd3133f1c8baa360fb8c4cbdb901fb4247b296770305abb",
+      "ledger_key": "ffc3796155ae07ee51643059ddd8c12f06b4674ff55f4cf6f6d890dbe4ec9d9a",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-13T17:17:24Z",
+      "covered_through": "2026-08-14T05:49:18Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8615,27 +8705,59 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "9e20bbb289f7a722cf2cacd9f079dc8416f5ace882a76785a3be6d6d563047da",
+      "ledger_key": "6320f0e97d333d3cc9778fbe27301cd6e805b3d2fe2e994e26c88856eca062d3",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-13T17:17:24Z",
-      "requests": 5,
-      "confirmed_requests": 3,
+      "covered_through": "2026-08-14T05:49:18Z",
+      "requests": 10,
+      "confirmed_requests": 8,
       "unconfirmed_requests": 2,
-      "input_tokens": 1119,
+      "input_tokens": 3196,
       "cached_input_tokens": 0,
-      "cache_miss_input_tokens": 1119,
+      "cache_miss_input_tokens": 3196,
       "cache_write_input_tokens": 0,
-      "output_tokens": 1725,
-      "reasoning_tokens": 1480,
-      "total_tokens": 2844,
+      "output_tokens": 3547,
+      "reasoning_tokens": 3016,
+      "total_tokens": 6743,
       "reserved_total_tokens_for_unconfirmed": 8392,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
     }
   ],
   "generation_holds": [
+    {
+      "hold_key": "25229a208d153985bd872d30a43e019a2649686279302b9869742e706fbfc4e7",
+      "workload_kind": "article",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://openai.com/index/builders-guide-to-gpt-5-6",
+            "content_hash": "40553e28b106c648b4a6e38a8223cfab729907f499153701fab8511942584503",
+            "external_id": "https://openai.com/index/builders-guide-to-gpt-5-6",
+            "source_slug": "openai-news"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "openrouter/free",
+        "portable_input_hash": "f0aba407e0eae352f2893fee7bf97ceed6c12d6fed796c06efdc875e7e017ec4",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "openrouter",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-14T05:48:20Z",
+      "last_seen_at": "2026-08-14T05:48:40Z"
+    },
     {
       "hold_key": "2585fe65788d73248c463206918a60b2d88a15fde8edd313550567e58c48a27d",
       "workload_kind": "article_pair",
@@ -8797,38 +8919,6 @@
       "last_seen_at": "2026-08-13T17:16:26Z"
     },
     {
-      "hold_key": "98248aca569743c5fe7e71ff09c19c3066f3cefa1bc60caea6f05e17169e3645",
-      "workload_kind": "article",
-      "hold_class": "paid_failure",
-      "descriptor": {
-        "article_identities": [
-          {
-            "canonical_url": "https://openai.com/index/previewing-ultrafast",
-            "content_hash": "4fdaf82d0db28f30c2574f79c9f8ead9438a2fdd48a38e8aa12d9379a4b1c8b1",
-            "external_id": "https://openai.com/index/previewing-ultrafast",
-            "source_slug": "openai-news"
-          }
-        ],
-        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
-        "input_scope": "metadata",
-        "max_output_tokens": 800,
-        "model": "openrouter/free",
-        "portable_input_hash": "d6e0414445679f695b5373a22a878e325501105472c0d009a4574aa9fa307974",
-        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
-        "prompt_version": "ai-enrichment-v1",
-        "protocol": "aaron-reader-ai-generation-hold/v1",
-        "provider": "openrouter",
-        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-        "schema_name": "article_translation",
-        "schema_version": "ai-output-v1",
-        "target_language": "zh-CN",
-        "task_type": "translation",
-        "workload_kind": "article"
-      },
-      "first_seen_at": "2026-08-13T17:15:34Z",
-      "last_seen_at": "2026-08-13T17:16:05Z"
-    },
-    {
       "hold_key": "996e7b4980e04cc532c1f30995e2e96478943e5bc1be7866d46145f694b6b1ab",
       "workload_kind": "article",
       "hold_class": "ambiguous",
@@ -8890,7 +8980,7 @@
         "workload_kind": "article"
       },
       "first_seen_at": "2026-08-13T05:52:38Z",
-      "last_seen_at": "2026-08-13T17:17:24Z"
+      "last_seen_at": "2026-08-14T05:49:18Z"
     },
     {
       "hold_key": "e524785d49ccb677eff5306cf0000283255583fd147748a43af5841197208def",
