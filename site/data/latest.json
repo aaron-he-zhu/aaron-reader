@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T16:43:33Z",
+  "generated_at": "2026-08-16T04:51:35Z",
   "language": "en",
   "supported_languages": [
     "en",
@@ -23,28 +23,28 @@
       "slug": "anthropic-news",
       "name": "Anthropic News",
       "health": "healthy",
-      "last_success_at": "2026-08-15T16:43:31Z",
+      "last_success_at": "2026-08-16T04:51:33Z",
       "article_count": 16
     },
     {
       "slug": "claude-blog",
       "name": "Claude Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-15T16:43:30Z",
+      "last_success_at": "2026-08-16T04:51:32Z",
       "article_count": 38
     },
     {
       "slug": "openai-developers",
       "name": "OpenAI Developer Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-15T16:43:30Z",
+      "last_success_at": "2026-08-16T04:51:31Z",
       "article_count": 21
     },
     {
       "slug": "openai-news",
       "name": "OpenAI News",
       "health": "healthy",
-      "last_success_at": "2026-08-15T16:43:30Z",
+      "last_success_at": "2026-08-16T04:51:31Z",
       "article_count": 81
     }
   ],
