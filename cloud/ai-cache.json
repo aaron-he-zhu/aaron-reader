@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-17T05:00:22Z",
-  "bundle_hash": "4e1f95a43afc048fbb4d9df87786316611409622547ac76d34d0299077ed9cfd",
+  "exported_at": "2026-08-17T16:49:08Z",
+  "bundle_hash": "3eafdb644717c0782c9f9ecee7fe2f09c23b8ea1a35cdf75ff042314417262dc",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -7610,6 +7610,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "f7d921aba112fea9b75679a5fa6a23b2ddae92f08b7c3738605b73518a031206",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/new-policy-ideas-for-the-intelligence-age",
+        "canonical_url": "https://openai.com/index/new-policy-ideas-for-the-intelligence-age",
+        "content_hash": "32ac108d5199df8d3ad11147c407ee742fbfc95d949ae60f968515a2a049a50d"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "Translation based solely on provided JSON fields; no external verification or expansion of content performed.",
+        "title": "智能时代的新政策理念",
+        "publisher_summary": "OpenAI 资助 14 个独立项目，探索新的人工智能政策理念，以扩大经济机会并增强智能时代的社会韧性。"
+      },
+      "output_hash": "4a236708bc2c0b7d2eb014214877fccfc116bc2598eb7c1e023864a2e17c9e51",
+      "input_truncated": false,
+      "created_at": "2026-08-17T16:49:07Z"
+    },
+    {
       "cache_key": "a090a5a02aff56d255d500ce4a4e8a75ed5fde61fa7a706f9d45a3dd96e1ae04",
       "article": {
         "source_slug": "openai-news",
@@ -7738,6 +7768,36 @@
       "output_hash": "df1052b41d9cb82c7672fdc9311958a8af77a69d4461608e4990bf44b41682b2",
       "input_truncated": false,
       "created_at": "2026-08-07T17:44:51Z"
+    },
+    {
+      "cache_key": "58bb31621479dce2a641dc0757b164437744ae8da08c9022432ccd1f6e88c3ba",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/openai-joins-ports-pike-project",
+        "canonical_url": "https://openai.com/index/openai-joins-ports-pike-project",
+        "content_hash": "c0bb5507576e5dcc07ffee2f568665db1d42694c2aa2ef72f768a000620f0ed4"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "dots-studio/dots-3-note-preview:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "仅基于提供的摘要信息，未包含文章全文细节。无法确认具体投资金额、项目时间表或所有参与方的完整名单。",
+        "title": "OpenAI 加入 PORTS-Pike 项目",
+        "publisher_summary": "OpenAI 加入 PORTS-Pike 项目，扩大社区投资并支持南俄亥俄州数千个就业岗位。"
+      },
+      "output_hash": "228424d5a47c0eb0919d0ef86716cab905d7bcec58822a5b80a14f285f5cbb63",
+      "input_truncated": false,
+      "created_at": "2026-08-17T16:49:05Z"
     },
     {
       "cache_key": "ae917f4717b3e22b03812b97dc8ac0824ce1dd3608238d38a8378763cfad4382",
@@ -8305,6 +8365,36 @@
       "created_at": "2026-08-11T17:15:21Z"
     },
     {
+      "cache_key": "39bb7c7d87ec05c62d88fc87b8b497fd2b2d5a6ef1485b99e47a37cba788a2aa",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/the-defenders-window",
+        "canonical_url": "https://openai.com/index/the-defenders-window",
+        "content_hash": "b4d1eff3334cc2918b1043313234730e4cef25169a0d04d925b823c8af8f312e"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "google/gemma-4-26b-a4b-it:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "N/A",
+        "title": "防御者的窗口",
+        "publisher_summary": "AI 正在重塑攻击者和防御者的网络安全。了解 OpenAI 如何加强其防御，以及安全团队现在可以做些什么。"
+      },
+      "output_hash": "e818f43d162a9a238391ec95cf10bda98b25093a74c67dd1b3108d006136db9d",
+      "input_truncated": false,
+      "created_at": "2026-08-17T16:48:43Z"
+    },
+    {
       "cache_key": "584b12488de25d0a54ae0809a9ae3a830089801b856ff1358f7f15ae0e10b64e",
       "article": {
         "source_slug": "openai-news",
@@ -8625,11 +8715,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "cd412465cd0e22c6dc7ca312fb39150beb1d3f489fa05bbeaa8eb9019ba3b151",
+      "ledger_key": "4821c360371710d280f69b7a7cb10fcdc9635f8913789966119f6983368ceb58",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -8645,11 +8735,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1304043f0e54639a1d264c9f5913813c1e458510096bfd5188edbc7ac3fe3db0",
+      "ledger_key": "84fd4dfa0e1ad34b5822cc2d54c79079f60fdcf7e4c99c708e1912d9992e1f89",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8665,11 +8755,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "eeabb67e75be585b87263c3d1aee64638ca4c097194fd79daf2eff2760cc3926",
+      "ledger_key": "b0986926c79dc53b6e73e2996457cf9c33d69907d10f0af28339ffac009039db",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -8685,11 +8775,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "ed45a5d98e8b50945f3128e83dc441dbe53c52d56805deb1fc83014257232e6d",
+      "ledger_key": "5f0716031974ea40fca8fb77da738c92fc6c33bed1afa176a83f7e30e67f54d1",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8705,11 +8795,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "5fa7dc3a1b2bbe281a2e3fa9c7b8507b772e24f6152e28c9949afab4ed35bef0",
+      "ledger_key": "dcca955c6461a8ab1c9e8613822d5d4f4b96ddc948a5c1b8605caa747208af23",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8725,11 +8815,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "4f8cdacd290355a35d8a4e03787c63ac1690dd6f343d0c561d3fa72b601b5ee4",
+      "ledger_key": "3dcdb9f69952736d2e7363190fea7a7560ee429ea819b96fa93a3481b4d57189",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8745,11 +8835,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "bc007f617aec93bb3f607d0fcdb88385dfd06f575ec5a4efcdd13cb4d392e7e0",
+      "ledger_key": "2a800f21a12557801f1492bb725db6c8f06d118ea54a773a5afeca37c0e83a80",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8765,11 +8855,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "aaaa33601b4b7184df3c4133f0983c5b3868a9ede0274cb5b7a07643ac037160",
+      "ledger_key": "ece94c9da26214fac4141a16786d73c40b161576e7809768283750a24db0ff37",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -8785,11 +8875,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1c9c06b7e2ac28fe1da6a59d30e47d42202bd82dcd6ce40dfc93633cfda93065",
+      "ledger_key": "259a9d9877b0f1a5fe20c230c730df10b4de430cc9a238d701df989b6bf0267c",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -8805,11 +8895,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "d907b8003c9e03c5668000168b24dd582853387a9985ac5bdb136f0b951ddf9d",
+      "ledger_key": "d6ae66cba6aa950f58fe7e25d48f5cda009dea5163e76eda297fcd94381d2621",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8825,11 +8915,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "92320fca99cabcdc8d57b592b53b55fabba32c8b407a6e7cd0a8be7eaf132265",
+      "ledger_key": "5155bdd3c281a40d2c8f2c455ecedf083640df0edf51a4810f34286bb92663a8",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -8845,11 +8935,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "022682dab8c67633c0e734281e3d5520523c317028aceac50eaef5622323e29b",
+      "ledger_key": "7548e8ea5a785b7a327008ff3fb3542f139263a158f03e558907b62d9f01671a",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-17T05:00:22Z",
+      "covered_through": "2026-08-17T16:49:08Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8860,6 +8950,26 @@
       "output_tokens": 272,
       "reasoning_tokens": 0,
       "total_tokens": 1940,
+      "reserved_total_tokens_for_unconfirmed": 0,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "db43347f44d9593a59ab92756625ab16b34c537d96dbceeed030c4452c5ca9ef",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-17T07:00:00Z",
+      "day_end": "2026-08-18T07:00:00Z",
+      "covered_through": "2026-08-17T16:49:08Z",
+      "requests": 3,
+      "confirmed_requests": 3,
+      "unconfirmed_requests": 0,
+      "input_tokens": 1174,
+      "cached_input_tokens": 0,
+      "cache_miss_input_tokens": 1174,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 235,
+      "reasoning_tokens": 0,
+      "total_tokens": 1409,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
