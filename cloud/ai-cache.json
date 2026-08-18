@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-17T16:49:08Z",
-  "bundle_hash": "3eafdb644717c0782c9f9ecee7fe2f09c23b8ea1a35cdf75ff042314417262dc",
+  "exported_at": "2026-08-18T04:56:06Z",
+  "bundle_hash": "bfab93282057ee502c8eb20721f52eb39beb769f507d126f09840cf828873531",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -8715,11 +8715,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "4821c360371710d280f69b7a7cb10fcdc9635f8913789966119f6983368ceb58",
+      "ledger_key": "e621e036531434da7d67a2ff398c62e9fb42cd6293d440af2d59a56c58af8668",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -8735,11 +8735,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "84fd4dfa0e1ad34b5822cc2d54c79079f60fdcf7e4c99c708e1912d9992e1f89",
+      "ledger_key": "a241ac5e028d5e63fbe4a0fb5ab551e813ed6409c330fd328aeed48607896fd5",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8755,11 +8755,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b0986926c79dc53b6e73e2996457cf9c33d69907d10f0af28339ffac009039db",
+      "ledger_key": "9ffd3e8db819bc1e0867a251dc24add125bbccb002aa54369474e66e6d544f15",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -8775,11 +8775,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "5f0716031974ea40fca8fb77da738c92fc6c33bed1afa176a83f7e30e67f54d1",
+      "ledger_key": "9e5545f45de187ca480d6c7b089d28d4120780ec62f7005b7300902b85cf3c9c",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8795,11 +8795,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "dcca955c6461a8ab1c9e8613822d5d4f4b96ddc948a5c1b8605caa747208af23",
+      "ledger_key": "a4e2758b30d3ea46bdd39ad5e9365c387d88775862aa808fbdec5b698b340225",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8815,11 +8815,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "3dcdb9f69952736d2e7363190fea7a7560ee429ea819b96fa93a3481b4d57189",
+      "ledger_key": "7572f14ff74507e4ffd8bf23dfc1d1bc4b286ce7a9ea2e187ee0dba034515ae0",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8835,11 +8835,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "2a800f21a12557801f1492bb725db6c8f06d118ea54a773a5afeca37c0e83a80",
+      "ledger_key": "91bfa81ed8815ca1957ceb645f27ef7fc04876fd0e695c85c638b23bfda83fc1",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8855,11 +8855,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "ece94c9da26214fac4141a16786d73c40b161576e7809768283750a24db0ff37",
+      "ledger_key": "8d6f5a3168e1656cfa87ece0632574fab44d41f524b6ac33c9fe497c90aacb80",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -8875,11 +8875,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "259a9d9877b0f1a5fe20c230c730df10b4de430cc9a238d701df989b6bf0267c",
+      "ledger_key": "8dc49005cc4987cdf0ca30c184792ef0fd5f51866f7091ffb9cf49393ab9f6c2",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -8895,11 +8895,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "d6ae66cba6aa950f58fe7e25d48f5cda009dea5163e76eda297fcd94381d2621",
+      "ledger_key": "39a2925404ba5987fcd20b27760e7fd79190925e02123e20c30a3e5567534217",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8915,11 +8915,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "5155bdd3c281a40d2c8f2c455ecedf083640df0edf51a4810f34286bb92663a8",
+      "ledger_key": "b806ae79f922079f24bb85e60c244be9fd3bd89bb86203aac1aa8e40d29849a1",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -8935,11 +8935,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "7548e8ea5a785b7a327008ff3fb3542f139263a158f03e558907b62d9f01671a",
+      "ledger_key": "c48d932481e2f5a9122db0b9c1fd2ca13a13f9116d3dce48c0f2d26ae5335ba3",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
+      "covered_through": "2026-08-18T04:56:06Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8955,27 +8955,59 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "db43347f44d9593a59ab92756625ab16b34c537d96dbceeed030c4452c5ca9ef",
+      "ledger_key": "509938aa388e448ab5c4b828dd519e5d86d39bdd787c5597f025310c87c95f57",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-17T07:00:00Z",
       "day_end": "2026-08-18T07:00:00Z",
-      "covered_through": "2026-08-17T16:49:08Z",
-      "requests": 3,
-      "confirmed_requests": 3,
+      "covered_through": "2026-08-18T04:56:06Z",
+      "requests": 4,
+      "confirmed_requests": 4,
       "unconfirmed_requests": 0,
-      "input_tokens": 1174,
+      "input_tokens": 1507,
       "cached_input_tokens": 0,
-      "cache_miss_input_tokens": 1174,
+      "cache_miss_input_tokens": 1507,
       "cache_write_input_tokens": 0,
-      "output_tokens": 235,
-      "reasoning_tokens": 0,
-      "total_tokens": 1409,
+      "output_tokens": 1035,
+      "reasoning_tokens": 776,
+      "total_tokens": 2542,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
     }
   ],
   "generation_holds": [
+    {
+      "hold_key": "1fa65e6d9599e5247f18e5c25da8b9e00bc4b57e19ea72800a63cd47638b7f53",
+      "workload_kind": "article",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://claude.com/blog/how-abc-legal-turned-every-employee-into-a-builder-with-claude-managed-agents",
+            "content_hash": "178b50511354092c7f23e7ed8a31bde1e2ffba7cfc729e6dae2d0b80db601510",
+            "external_id": "https://claude.com/blog/how-abc-legal-turned-every-employee-into-a-builder-with-claude-managed-agents",
+            "source_slug": "claude-blog"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "openrouter/free",
+        "portable_input_hash": "2291f15af93e3d208cb54ad1a6214eb9c9734311e0e241dd18be6f31cc30cdba",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "openrouter",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-18T04:55:41Z",
+      "last_seen_at": "2026-08-18T04:56:05Z"
+    },
     {
       "hold_key": "2585fe65788d73248c463206918a60b2d88a15fde8edd313550567e58c48a27d",
       "workload_kind": "article_pair",
