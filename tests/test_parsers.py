@@ -49,6 +49,12 @@ def source(adapter: str) -> SourceConfig:
             "https://www.anthropic.com/news",
             "https://www.anthropic.com/news",
         ),
+        "cursor_blog": (
+            "cursor-blog",
+            "Cursor Blog",
+            "https://cursor.com/blog",
+            "https://cursor.com/blog",
+        ),
     }
     slug, name, home_url, fetch_url = values[adapter]
     return SourceConfig(
@@ -183,8 +189,55 @@ class HTMLParserTests(unittest.TestCase):
         self.assertEqual("2026-07-30T00:00:00Z", incident.published_at)
         self.assertNotIn("https://www.anthropic.com/news/unrelated-footer-link", by_url)
 
+    def test_cursor_blog_featured_and_directory_items(self) -> None:
+        articles = parse_source(
+            source("cursor_blog"), fixture("cursor_blog.html"), FETCHED_AT
+        )
+
+        self.assertEqual(4, len(articles))
+        by_url = {article.url: article for article in articles}
+
+        git_article = by_url["https://cursor.com/blog/git-at-any-scale"]
+        self.assertEqual("Git at any scale", git_article.title)
+        self.assertEqual(
+            "How Cursor handles monorepos with millions of files.",
+            git_article.summary,
+        )
+        self.assertEqual("Research", git_article.category)
+        self.assertEqual("2026-08-18T12:00:00Z", git_article.published_at)
+
+        grok = by_url["https://cursor.com/blog/grok-4-6"]
+        self.assertEqual("Introducing Grok 4.6", grok.title)
+        self.assertEqual("Research", grok.category)
+        self.assertEqual("2026-08-12T00:00:00Z", grok.published_at)
+
+        builds = by_url["https://cursor.com/blog/builds"]
+        self.assertEqual("Cloud agents start 3x faster with builds", builds.title)
+        self.assertEqual("Product", builds.category)
+        self.assertEqual("2026-08-13T12:00:00Z", builds.published_at)
+
+        spacex = by_url["https://cursor.com/blog/joining-spacex"]
+        self.assertEqual("Cursor is now a part of SpaceX", spacex.title)
+        self.assertEqual("Company", spacex.category)
+
+        self.assertNotIn("https://cursor.com/blog/topic/research", by_url)
+
+    def test_cursor_blog_topic_urls_are_filtered(self) -> None:
+        html = b"""
+            <html><body>
+              <a class="card card--media card--feature" href="/blog/topic/research">
+                <p class="type-md text-theme-text">Topic page</p>
+              </a>
+              <a class="blog-directory__row" href="/blog/category">
+                <p class="type-base text-theme-text text-pretty">Category page</p>
+              </a>
+            </body></html>
+        """
+        with self.assertRaisesRegex(ValueError, "found no articles"):
+            parse_source(source("cursor_blog"), html, FETCHED_AT)
+
     def test_no_matching_articles_is_an_error(self) -> None:
-        for adapter in ("openai_developers", "claude_blog", "anthropic_news"):
+        for adapter in ("openai_developers", "claude_blog", "anthropic_news", "cursor_blog"):
             with self.subTest(adapter=adapter):
                 with self.assertRaisesRegex(ValueError, "found no articles"):
                     parse_source(source(adapter), fixture("empty.html"), FETCHED_AT)
@@ -324,6 +377,42 @@ class ArticlePageParserTests(unittest.TestCase):
         )
         self.assertEqual("Codex", article.category)
         self.assertEqual("2026-07-20T00:00:00Z", article.published_at)
+
+    def test_cursor_blog_json_ld_metadata(self) -> None:
+        article = parse_article_page(
+            source("cursor_blog"),
+            fixture("cursor_article.html"),
+            "https://cursor.com/blog/git-at-any-scale",
+            FETCHED_AT,
+        )
+
+        self.assertEqual("https://cursor.com/blog/git-at-any-scale", article.url)
+        self.assertEqual("Git at any scale", article.title)
+        self.assertEqual(
+            "How Cursor handles monorepos with millions of files.", article.summary
+        )
+        self.assertEqual("Vicent Martí", article.author)
+        self.assertEqual("Research", article.category)
+        self.assertEqual("2026-08-18T12:00:00Z", article.published_at)
+        self.assertEqual("2026-08-19T10:00:00Z", article.modified_at)
+
+    def test_cursor_blog_cn_official_locale(self) -> None:
+        article = parse_article_page(
+            source("cursor_blog"),
+            fixture("cursor_article_cn.html"),
+            "https://cursor.com/cn/blog/git-at-any-scale",
+            FETCHED_AT,
+        )
+
+        self.assertEqual("https://cursor.com/blog/git-at-any-scale", article.url)
+        self.assertEqual("任意规模的 Git", article.title)
+        self.assertEqual(
+            "Cursor 如何处理包含数百万文件的大型仓库。", article.summary
+        )
+        self.assertEqual("Vicent Martí", article.author)
+        self.assertEqual("研究", article.category)
+        self.assertEqual("2026-08-18T12:00:00Z", article.published_at)
+        self.assertEqual("2026-08-19T10:00:00Z", article.modified_at)
 
     def test_external_article_url_is_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "outside the configured publisher"):

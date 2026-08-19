@@ -677,6 +677,118 @@ def _anthropic_records(root: _HTMLNode, source: SourceConfig) -> List[_HTMLRecor
     return records
 
 
+def _cursor_blog_url(href: str, source: SourceConfig) -> Optional[str]:
+    """Validate a Cursor blog article URL.
+
+    Accepts /blog/{slug} and /cn/blog/{slug} paths. Returns the canonical
+    English URL (cursor.com/blog/{slug}) regardless of input locale.
+    """
+    blocked = {"topic", "topics", "category", "categories", "tag", "author", "page"}
+    if not href:
+        return None
+    try:
+        candidate = canonicalize_url(href, source.home_url)
+    except (TypeError, ValueError):
+        return None
+    parts = urlsplit(candidate)
+    if parts.scheme not in ("http", "https"):
+        return None
+    hostname = (parts.hostname or "").lower().removeprefix("www.")
+    expected_host = (urlsplit(source.home_url).hostname or "").lower().removeprefix("www.")
+    if hostname != expected_host:
+        return None
+    decoded_path = unquote(parts.path or "").strip("/")
+    segments = decoded_path.split("/") if decoded_path else []
+    if len(segments) == 2 and segments[0].lower() == "blog":
+        slug = segments[1].strip().lower()
+    elif len(segments) == 3 and segments[0].lower() == "cn" and segments[1].lower() == "blog":
+        slug = segments[2].strip().lower()
+    else:
+        return None
+    if not slug or slug in blocked or slug.startswith("."):
+        return None
+    return "https://cursor.com/blog/%s" % slug
+
+
+def _cursor_records(root: _HTMLNode, source: SourceConfig) -> List[_HTMLRecord]:
+    """Parse Cursor blog listing page.
+
+    Cursor's blog uses:
+    - Featured cards: <a class="card card--media card--feature" href="/blog/...">
+    - Directory items: <div class="blog-directory__item"><a href="/blog/...">
+
+    Extracts title, summary, date, and category from the card structure.
+    """
+    records: List[_HTMLRecord] = []
+    seen_urls: Set[str] = set()
+
+    for node in _descendants(root):
+        if node.tag != "a":
+            continue
+        href = node.attrs.get("href", "")
+        url = _cursor_blog_url(href, source)
+        if not url or url in seen_urls:
+            continue
+        classes = _classes(node)
+        is_feature_card = "card--feature" in classes or "card--media" in classes
+        is_directory_row = "blog-directory__row" in classes
+        if not is_feature_card and not is_directory_row:
+            continue
+        seen_urls.add(url)
+        title = ""
+        summary = ""
+        category = ""
+        published = ""
+        for desc in _descendants(node):
+            if desc.tag == "time":
+                value = clean_text(desc.attrs.get("datetime")) or _node_text(desc, limit=40)
+                if value and not published:
+                    published = value
+            elif desc.tag == "p":
+                text = _node_text(desc, limit=_SUMMARY_LIMIT)
+                desc_classes = desc.attrs.get("class", "").lower()
+                if "type-md" in desc_classes or "type-md-lg" in desc_classes:
+                    if not title:
+                        title = text[:500] if text else ""
+                elif "text-theme-text-sec" in desc_classes:
+                    if not summary:
+                        summary = text
+                elif "type-base" in desc_classes and "text-theme-text" in desc_classes:
+                    if "text-pretty" in desc_classes and not title:
+                        title = text[:500] if text else ""
+            elif desc.tag == "span":
+                text = _node_text(desc, limit=120)
+                if text and not category:
+                    lower_text = text.lower()
+                    if lower_text not in (
+                        "·", "→", "↗", "cursor team", "min", "min read",
+                    ) and not lower_text.endswith(" min") and not lower_text.endswith(" min read"):
+                        date_like = (
+                            lower_text.startswith("aug") or lower_text.startswith("jul")
+                            or lower_text.startswith("jun") or lower_text.startswith("may")
+                            or lower_text.startswith("apr") or lower_text.startswith("mar")
+                            or lower_text.startswith("feb") or lower_text.startswith("jan")
+                            or lower_text.startswith("sep") or lower_text.startswith("oct")
+                            or lower_text.startswith("nov") or lower_text.startswith("dec")
+                        )
+                        if not date_like:
+                            category = text
+
+        if not title:
+            continue
+        records.append(
+            _HTMLRecord(
+                url=url,
+                title=title,
+                summary=summary,
+                category=category,
+                published=published,
+            )
+        )
+
+    return records
+
+
 def _parse_fixed_html(
     source: SourceConfig, body: bytes, fetched_at: Optional[datetime]
 ) -> List[ArticleCandidate]:
@@ -700,6 +812,8 @@ def _parse_fixed_html(
         records = _claude_records(root, source)
     elif source.adapter == "anthropic_news":
         records = _anthropic_records(root, source)
+    elif source.adapter == "cursor_blog":
+        records = _cursor_records(root, source)
     else:
         raise ValueError("unsupported HTML adapter: %s" % source.adapter)
     candidates = [
@@ -1047,7 +1161,7 @@ def parse_source(
 
     if source.adapter == "rss":
         candidates = _parse_feed(source, body, fetched_at)
-    elif source.adapter in ("openai_developers", "claude_blog", "anthropic_news"):
+    elif source.adapter in ("openai_developers", "claude_blog", "anthropic_news", "cursor_blog"):
         candidates = _parse_fixed_html(source, body, fetched_at)
     else:
         raise ValueError("unsupported source adapter: %s" % source.adapter)

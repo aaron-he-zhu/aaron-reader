@@ -4,7 +4,7 @@
 
 **[在线站点](https://aaron-reader.aaron-he-zhu.workers.dev/)**
 
-把 OpenAI 和 Anthropic 的官方文章收成一份列表，中英都能看。中文只翻译标题和简介，点进去读原文。
+把 OpenAI、Anthropic 和 Cursor 的官方文章收成一份列表，中英都能看。只展示标题和简介，点进去读原文。Cursor 的中文用官方译文。
 
 ## 订阅源
 
@@ -12,6 +12,7 @@
 - [OpenAI Developer Blog](https://developers.openai.com/blog)
 - [Claude Blog](https://claude.com/blog/)
 - [Anthropic News](https://www.anthropic.com/news)
+- [Cursor Blog](https://cursor.com/blog)
 
 ## 如何使用
 
@@ -53,7 +54,7 @@ Cloudflare 不抓取发布方网页，也不调用模型。Worker 只提供已�
 
 每轮定时任务都会：
 
-- 用固定程序检查四个来源；
+- 用固定程序检查五个来源；
 - 复用已经与当前文章内容哈希绑定的有效结果；
 - 在有界的当前文章集合中扫描所有缺少简体中文译文的条目，而不只处理本轮新发现的文章，并按每轮配置上限依次补译；
 - 只翻译标题和发布方摘要，并隔离单篇失败，使一个 `AIServiceError` 不会阻止后续缺译文章继续处理；
