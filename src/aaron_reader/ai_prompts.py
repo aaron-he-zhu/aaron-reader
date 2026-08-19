@@ -8,9 +8,72 @@ for a strict Structured Output.
 
 import hashlib
 import json
+import re
 import unicodedata
 from dataclasses import dataclass
 from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+
+
+def _has_cjk(text: str) -> bool:
+    """Return True if text contains any CJK (Chinese/Japanese/Korean) characters."""
+    for char in text:
+        code = ord(char)
+        if (
+            0x4E00 <= code <= 0x9FFF  # CJK Unified Ideographs
+            or 0x3400 <= code <= 0x4DBF  # CJK Unified Ideographs Extension A
+            or 0x20000 <= code <= 0x2A6DF  # CJK Unified Ideographs Extension B
+            or 0xF900 <= code <= 0xFAFF  # CJK Compatibility Ideographs
+            or 0x2F800 <= code <= 0x2FA1F  # CJK Compatibility Ideographs Supplement
+            or 0x3000 <= code <= 0x303F  # CJK Symbols and Punctuation
+            or 0x3040 <= code <= 0x309F  # Hiragana
+            or 0x30A0 <= code <= 0x30FF  # Katakana
+            or 0xAC00 <= code <= 0xD7AF  # Hangul Syllables
+        ):
+            return True
+    return False
+
+
+def _normalize_for_comparison(text: str) -> str:
+    """Normalize text for comparing source vs output (ignore whitespace/punctuation)."""
+    normalized = unicodedata.normalize("NFC", text.lower())
+    return re.sub(r"[\s\u00a0\u3000]+", " ", normalized).strip()
+
+
+def _text_appears_untranslated(
+    source: str,
+    output: str,
+    target_language: str,
+) -> bool:
+    """Check if output text appears to be untranslated from source.
+
+    Returns True (untranslated) when:
+    - Source is not in target language AND output is an exact copy of source
+    - Target is Chinese (zh-*), source has no CJK, and output also has no CJK
+
+    Returns False (appears translated) when:
+    - Source already appears to be in the target language
+    - Output contains CJK characters (even mixed with product names)
+    - Source and output are meaningfully different
+    """
+    if not source or not output:
+        return False
+
+    source_has_cjk = _has_cjk(source)
+    output_has_cjk = _has_cjk(output)
+
+    if target_language.startswith("zh"):
+        if source_has_cjk:
+            return False
+
+        source_norm = _normalize_for_comparison(source)
+        output_norm = _normalize_for_comparison(output)
+        if source_norm == output_norm:
+            return True
+
+        if not output_has_cjk and len(output) > 10:
+            return True
+
+    return False
 
 
 PROMPT_VERSION = "ai-enrichment-v1"
@@ -220,6 +283,28 @@ def parse_and_validate_output(
                     )
                 clean_translation[field] = cleaned
                 readable_parts.append(cleaned)
+
+        # 防呆: Reject translations where requested fields were not actually
+        # translated.  This catches models that return the English source text
+        # as-is while claiming language="zh-CN".  Treat as invalid_structured_output
+        # so Layer 1 fallback can try DeepSeek.
+        if translation_input is not None:
+            for field in ("title", "publisher_summary"):
+                if field not in fields:
+                    continue
+                source_text = translation_input.get(field)
+                output_text = clean_translation.get(field)
+                if (
+                    isinstance(source_text, str)
+                    and isinstance(output_text, str)
+                    and source_text
+                    and output_text
+                    and _text_appears_untranslated(source_text, output_text, language)
+                ):
+                    raise ValueError(
+                        "translation field %s appears untranslated (source text returned as-is)" % field
+                    )
+
         return clean_translation, "\n\n".join(readable_parts)
 
     raise ValueError("unsupported AI task: %s" % task_type)

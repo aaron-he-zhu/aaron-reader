@@ -883,6 +883,165 @@ class AIServiceTests(unittest.TestCase):
                 },
             )
 
+    def test_exact_english_title_copy_is_rejected_as_untranslated(self):
+        """防呆: Exact copy of English source title should be rejected."""
+        english_title = "How NVIDIA scales expertise with ChatGPT Work"
+        output = json.dumps(
+            {
+                "title": english_title,
+                "publisher_summary": "这是中文简介。",
+                "language": "zh-CN",
+                "limitations": "",
+            },
+            ensure_ascii=False,
+        )
+        with self.assertRaisesRegex(ValueError, "title appears untranslated"):
+            parse_and_validate_output(
+                "translation",
+                output,
+                target_language="zh-CN",
+                input_scope="metadata",
+                translation_input={
+                    "title": english_title,
+                    "publisher_summary": "English summary",
+                },
+            )
+
+    def test_latin_only_output_for_chinese_target_is_rejected(self):
+        """防呆: Latin-only output when target is zh-CN and source was English."""
+        output = json.dumps(
+            {
+                "title": "Some Different But Still English Title",
+                "publisher_summary": "Another completely English summary text here.",
+                "language": "zh-CN",
+                "limitations": "",
+            },
+            ensure_ascii=False,
+        )
+        with self.assertRaisesRegex(ValueError, "title appears untranslated"):
+            parse_and_validate_output(
+                "translation",
+                output,
+                target_language="zh-CN",
+                input_scope="metadata",
+                translation_input={
+                    "title": "Original English Title Here",
+                    "publisher_summary": "Original English summary.",
+                },
+            )
+
+    def test_mixed_chinese_with_product_names_is_accepted(self):
+        """防呆: Chinese title with English product names should pass."""
+        output = json.dumps(
+            {
+                "title": "NVIDIA 如何通过 ChatGPT Work 扩展专业知识",
+                "publisher_summary": "GPT-5.6 和 Claude 等大语言模型正在改变企业工作方式。",
+                "language": "zh-CN",
+                "limitations": "",
+            },
+            ensure_ascii=False,
+        )
+        validated, readable = parse_and_validate_output(
+            "translation",
+            output,
+            target_language="zh-CN",
+            input_scope="metadata",
+            translation_input={
+                "title": "How NVIDIA scales expertise with ChatGPT Work",
+                "publisher_summary": "GPT-5.6 and Claude are transforming enterprise work.",
+            },
+        )
+        self.assertEqual("NVIDIA 如何通过 ChatGPT Work 扩展专业知识", validated["title"])
+        self.assertIn("GPT-5.6", validated["publisher_summary"])
+        self.assertIn("大语言模型", validated["publisher_summary"])
+
+    def test_already_chinese_source_is_not_rejected(self):
+        """Chinese source text that stays Chinese should pass."""
+        chinese_title = "人工智能发展报告"
+        output = json.dumps(
+            {
+                "title": chinese_title,
+                "publisher_summary": "本报告概述了人工智能的最新进展。",
+                "language": "zh-CN",
+                "limitations": "",
+            },
+            ensure_ascii=False,
+        )
+        validated, _ = parse_and_validate_output(
+            "translation",
+            output,
+            target_language="zh-CN",
+            input_scope="metadata",
+            translation_input={
+                "title": chinese_title,
+                "publisher_summary": "本报告概述了人工智能的发展。",
+            },
+        )
+        self.assertEqual(chinese_title, validated["title"])
+
+    def test_cached_untranslated_artifact_triggers_regeneration(self):
+        """防呆: Cached translation with untranslated text should be treated as cache miss."""
+
+        class EnglishTitleProvider(FakeProvider):
+            def generate(self, request):
+                return ProviderResponse(
+                    output_text=json.dumps({
+                        "title": "How NVIDIA scales expertise",
+                        "publisher_summary": "这是中文简介内容。",
+                        "language": "zh-CN",
+                        "limitations": "",
+                    }),
+                    usage=ProviderUsage(input_tokens=50, output_tokens=30, total_tokens=80),
+                    model="test-model",
+                    request_id="request-1",
+                )
+
+        class ChineseTitleProvider(FakeProvider):
+            def generate(self, request):
+                return ProviderResponse(
+                    output_text=json.dumps({
+                        "title": "NVIDIA 如何扩展专业知识",
+                        "publisher_summary": "这是更好的中文简介。",
+                        "language": "zh-CN",
+                        "limitations": "",
+                    }),
+                    usage=ProviderUsage(input_tokens=50, output_tokens=30, total_tokens=80),
+                    model="test-model",
+                    request_id="request-2",
+                )
+
+        untranslated_candidates = [
+            candidate(
+                "untranslated-title",
+                title="How NVIDIA scales expertise",
+                summary="English summary about NVIDIA.",
+            ),
+        ]
+        self.database.commit_candidates(
+            SOURCE,
+            untranslated_candidates,
+            started_at=utc_now(),
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="untranslated-test",
+        )
+        articles = {
+            str(article["external_id"]): article
+            for article in self.database.list_articles(limit=20)
+        }
+        article_id = int(articles["untranslated-title"]["id"])
+
+        bad_provider = EnglishTitleProvider()
+        bad_service = AIService(self.app(), self.database, provider=bad_provider)
+
+        with self.assertRaisesRegex(AIServiceError, "title appears untranslated"):
+            bad_service.generate_article(
+                article_id,
+                task_type="translation",
+                target_language="zh-CN",
+            )
+
     def test_empty_publisher_summary_null_succeeds_for_single_and_pair_calls(self):
         empty_candidates = [
             candidate("empty-single", summary=""),

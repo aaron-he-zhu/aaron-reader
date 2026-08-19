@@ -19,6 +19,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from .ai_prompts import (
     TaskDefinition,
+    _text_appears_untranslated,
     canonical_json,
     parse_and_validate_output,
     stable_hash,
@@ -102,6 +103,15 @@ _FALLBACK_KNOWN_PROVIDER_CODES = frozenset(
         "thinking_output",
         "thinking_tokens",
         "tool_calls",
+        # Known unusable completions WITH confirmed usage.  The provider billed
+        # us but returned no usable output; trying DeepSeek is safe because we
+        # have exact usage data and are not risking a double-bill ambiguity.
+        "no_output",
+        "finish_length",
+        "finish_error",
+        "finish_reason",
+        # Service-layer validation failures after a billed HTTP 200 response.
+        "invalid_structured_output",
     }
 )
 
@@ -1198,6 +1208,41 @@ class AIService:
             client_request_id=client_request_id,
         )
 
+    def _cached_translation_is_valid(
+        self,
+        cached: Mapping[str, object],
+        prepared: PreparedTask,
+    ) -> bool:
+        """防呆: Validate cached translation hasn't been detected as untranslated.
+
+        Returns False if the cached output appears to be untranslated source text,
+        which triggers a cache miss and regeneration with DeepSeek fallback.
+        """
+        if prepared.task_type != "translation":
+            return True
+
+        try:
+            output_json = str(cached.get("output_json") or "{}")
+            output = json.loads(output_json)
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return True
+
+        target_language = prepared.target_language
+        for field in ("title", "publisher_summary"):
+            if field not in prepared.translated_fields:
+                continue
+            source_text = prepared.input_payload.get(field)
+            output_text = output.get(field)
+            if (
+                isinstance(source_text, str)
+                and isinstance(output_text, str)
+                and source_text
+                and output_text
+                and _text_appears_untranslated(source_text, output_text, target_language)
+            ):
+                return False
+        return True
+
     def generate_article(
         self,
         article_id: int,
@@ -1222,7 +1267,7 @@ class AIService:
             fetch_if_missing=scope == "full_text",
         )
         cached = self.database.ai_artifact_by_key(prepared.artifact_key)
-        if cached is not None:
+        if cached is not None and self._cached_translation_is_valid(cached, prepared):
             return self._artifact_result(cached, cache_hit=True)
         article_hold = self._generation_hold_template(
             prepared, workload_kind="article"
@@ -1341,11 +1386,19 @@ class AIService:
             task_type="summary",
             target_language=language,
         )
-        cached_translation = self.current_article_artifact(
-            article_id,
-            task_type="translation",
-            target_language=language,
+        cached_translation_artifact = self.database.ai_artifact_by_key(
+            translation.artifact_key
         )
+
+        # 防呆: Validate cached translation hasn't been detected as untranslated.
+        # If invalid, treat as cache miss and regenerate with DeepSeek fallback.
+        cached_translation: Optional[Dict[str, object]] = None
+        if cached_translation_artifact is not None:
+            if self._cached_translation_is_valid(cached_translation_artifact, translation):
+                cached_translation = self._artifact_result(
+                    cached_translation_artifact, cache_hit=True
+                )
+
         if cached_summary is not None and cached_translation is not None:
             return {
                 "summary": cached_summary,
