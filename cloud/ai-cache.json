@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-19T12:03:43Z",
-  "bundle_hash": "887cd9dc6f4c4100e44a5ea59afbbceeaa0fe3b94332b418df2394c820d4e163",
+  "exported_at": "2026-08-19T14:54:18Z",
+  "bundle_hash": "962b10963ee3afba4b65ff138260bf6a75e8778d16967adc7611ce25a0dc3746",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -7845,7 +7845,7 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
-      "cache_key": "84fd7321bb0a595fb42e78ceb0d749d163389ac04541a7b39f3a20a10d12ad04",
+      "cache_key": "9e2985082be9cf20944ee99efe43274d3dcc397515a36f0b801599fbaaea94da",
       "article": {
         "source_slug": "openai-news",
         "external_id": "https://openai.com/index/model-ml",
@@ -7862,17 +7862,17 @@
       "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
       "provider": "openrouter",
       "requested_model": "openrouter/free",
-      "resolved_model": "google/gemma-4-26b-a4b-it:free",
+      "resolved_model": "nvidia/nemotron-3-super-120b-a12b:free",
       "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "Based on the provided summary only.",
-        "title": "Model ML completes finance work more efficiently with GPT-5.6 Sol",
-        "publisher_summary": "Model ML uses GPT-5.6 Sol to carry finance work from research and analysis through editable, traceable PowerPoint decks and Excel workbooks."
+        "limitations": "输入数据为机器翻译优化的简短摘录，可能未完整呈现原始文章的完整上下文、细节或局限性。",
+        "title": "Model ML 通过使用 GPT-5.6 Sol 更高效地完成金融工作",
+        "publisher_summary": "Model ML 使用 GPT-5.6 Sol 从研究和分析到可编辑、可追溯的 PowerPoint 演示文稿和 Excel 工作簿来完成金融工作。"
       },
-      "output_hash": "04779266f7e88358cf49a44776e3d2d2fb55d9f100bb73a48b3ac7bace505594",
+      "output_hash": "e255bcb718df6e75444efc8db85db87a76661f9115c2d41bef612afb103a6169",
       "input_truncated": false,
-      "created_at": "2026-08-11T05:32:48Z"
+      "created_at": "2026-08-19T14:54:17Z"
     },
     {
       "cache_key": "4bebfb19331bc254d83f3edbf606cbe5e39d958b355d0174cdb76566c6c89a1e",
@@ -8036,7 +8036,7 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
-      "cache_key": "f786f17e31c850491728ccf97a943491e9ba0ab2bdbde1bb2f72bbaffc5acdc5",
+      "cache_key": "95a7dd748c8db54959cf1e2d6a10d70e9596c95b8e630e3536a172a1e8b26909",
       "article": {
         "source_slug": "openai-news",
         "external_id": "https://openai.com/index/nvidia/chatgpt-work",
@@ -8053,17 +8053,17 @@
       "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
       "provider": "openrouter",
       "requested_model": "openrouter/free",
-      "resolved_model": "dots-studio/dots-3-note-preview:free",
+      "resolved_model": "nvidia/nemotron-3-super-120b-a12b:free",
       "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "仅基于提供的摘要信息，未包含完整文章内容；无法确认具体实施细节、团队规模或量化成果。",
-        "title": "How NVIDIA scales expertise with ChatGPT Work",
-        "publisher_summary": "NVIDIA团队使用ChatGPT Work来减少手动任务、连接快速变化的信号，并在全球范围内扩展成功的流程。"
+        "limitations": "The summary is based solely on the provided publisher summary and does not include additional context from the full article.",
+        "title": "NVIDIA 如何利用 ChatGPT Work 扩展专业知识",
+        "publisher_summary": "NVIDIA 团队使用 ChatGPT Work 来减少手动任务、快速连接信号并全球规模化成功工作流。"
       },
-      "output_hash": "00a6026ad0c3c00ea2e4c652e3abf4f55547d0826666eba9b60a86065853cf5f",
+      "output_hash": "d5a7d1f0c6ab39b04e5fe24b1653b28fa62268d64b640ec28f3c5c8fc05f0036",
       "input_truncated": false,
-      "created_at": "2026-08-19T04:55:27Z"
+      "created_at": "2026-08-19T14:54:15Z"
     },
     {
       "cache_key": "ed9ef7aae0e4df3f5f11a8f9c8b021cd16876226f0b1496348b19a084ac422ed",
@@ -8372,6 +8372,36 @@
       "output_hash": "584a22e59e82ee61b20ddb47a65b872aff1ce62a8afdc5a387b82295b1cec77a",
       "input_truncated": false,
       "created_at": "2026-08-11T17:16:39Z"
+    },
+    {
+      "cache_key": "c3957f05086c5d3a98fc90cbeb944e959c8152a04c26bea6e27c0763d8d28519",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/replit",
+        "canonical_url": "https://openai.com/index/replit",
+        "content_hash": "cc095b34d1b1323a37deac9e40f3af050e70dd4dbf97c145e7cb90c1aaf4aa13"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "dots-studio/dots-3-note-preview:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "仅基于提供的摘要信息，未获取完整文章内容。未验证关于GPT-5.6 Luna模型的具体技术细节或Replit平台的完整功能说明。",
+        "title": "Replit借助GPT-5.6 Luna扩大软件创建的访问权限",
+        "publisher_summary": "Replit推出由GPT-5.6 Luna驱动的Free Mode，使任何人都能将想法转化为可运行的软件，无需担心token成本。"
+      },
+      "output_hash": "3182e640227705e569a0bc0b2371833cfa9a517414c43f6fd4ea9f58417f622a",
+      "input_truncated": false,
+      "created_at": "2026-08-19T14:54:13Z"
     },
     {
       "cache_key": "7ebb2eded2ce5dc6039d155c0de7a68de3e99fe000dd20386c756b4989bbc1f5",
@@ -9165,11 +9195,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "fd334fb62ad0b4a5c61ed013ac1fc382e34351eb7c418efe4fcf7a78af2dd99a",
+      "ledger_key": "1bd3d015b6058ca309bc737238851f8d6b87480e79f716652a697e1cedd8b11b",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -9185,11 +9215,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "651480e64bf0fee9140b2bc8ff5aa43a59aa3a4efd3c9e0794ade874020d70e3",
+      "ledger_key": "dc10c9187496b9fa8a1675183a2bcfe90ea27f341cba6c8183fb24c6f9259d8d",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9205,11 +9235,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "49b189ddf7e5074f750a7e7367daffc6ea6867a5236034aae4c1b2c87dd7ebf6",
+      "ledger_key": "24af03981f6ccab62609f240ae8bc4c2ef691e4dec3aae8abbabc87add994190",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -9225,11 +9255,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "157fc60065d2f57afb0becc50e201fc962fc300d0bd185c7762adbf1b1fca56b",
+      "ledger_key": "172085c2827d3543a014efcf8129b83e98958142190b3cd5caabcf044d0c0589",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9245,11 +9275,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "6026dbeac8554c922825edbb329602ab736919ab160d5202f43d6d3f2eaa2b74",
+      "ledger_key": "67ef19088a0aece36d8bf63aaac187c99e5c83af3230044dcef1d3644cd02342",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9265,11 +9295,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "eac7170a8d78a4b4b462f9e134209d2d36162ff7e32cd3c3b87eb41b2274657f",
+      "ledger_key": "02de2a923c0dc2b99f1bb5bd526f290d44db224c399f30ce88d63fba58208a54",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9285,11 +9315,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "6f28ff2e44f21a0968fd10fed5fde483becf76ef3962c5c9905fba76becec0f5",
+      "ledger_key": "72065bb56fd381c5d90a185d9137979101c18af1398205397896b47b690bc5b0",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9305,11 +9335,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "d1290ebd21c265877a17faa2479934d7181c6d3cf1b846ff1258eabd6e0f0508",
+      "ledger_key": "37d4b80f4b84e1a45872fad5ec2381d65910a8a9bd5540da6e385420c17b3e2d",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -9325,11 +9355,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "d27b31ebce1b122d942d84d287b6239faabdc2921050b0d12b3f4aa96409fa28",
+      "ledger_key": "d78b87f3109d274087acef1cebc74d74b3a0594ce94032909234080f75bb4fe4",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9345,11 +9375,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "de5b7b9880dd0af7f223e9f92dae27c68734ebb068c9bd06fed56f425904ca9e",
+      "ledger_key": "76893fe9764a52043a4b46399422777a69668b0138bd86e4802f436a465578fd",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9365,11 +9395,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "4d698733020e9ed1d0da38657b4151d0334b351eb6a869d2024149e588e433a8",
+      "ledger_key": "6d8deef9c6832212f63354bc87ccba1baf578bbab993f79c218582007f49fbba",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -9385,11 +9415,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "f7eaeda2a711f569e652ba97c5383353828f2b25ad58d128c01759846cb08907",
+      "ledger_key": "79cf37626b1c0a90747c31b1276cdbd29664d028a8cb9cce7dafa48431140567",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9405,11 +9435,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "d3fd604e34bc0de9e2b2ef77b91a93f5f2c5be4c18786ef0ba1560bb769af685",
+      "ledger_key": "aece485f7d930b475c077f6f8b5e12124382c134f4bfe3406f98b29df25dffa0",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-17T07:00:00Z",
       "day_end": "2026-08-18T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9425,11 +9455,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "ae3a7b76a6869c70b91733d8d90fd11f84344b63c226b9620a00c4ea85006384",
+      "ledger_key": "76af4a2659805d71f0d040607a25d325632a1bbe8ddc856c8899102c71c7fdd8",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-18T07:00:00Z",
       "day_end": "2026-08-19T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
+      "covered_through": "2026-08-19T14:54:18Z",
       "requests": 9,
       "confirmed_requests": 9,
       "unconfirmed_requests": 0,
@@ -9445,21 +9475,21 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b582e4f970c6e2bb537e62639b2b9ccc5e7d146a79cc217705c9bc457d6a9569",
+      "ledger_key": "8b5efb1f46c2619fae0f80dfefff582aae58ceee4c0b294991f29ffb201d3980",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-19T07:00:00Z",
       "day_end": "2026-08-20T07:00:00Z",
-      "covered_through": "2026-08-19T12:03:43Z",
-      "requests": 7,
-      "confirmed_requests": 7,
+      "covered_through": "2026-08-19T14:54:18Z",
+      "requests": 10,
+      "confirmed_requests": 10,
       "unconfirmed_requests": 0,
-      "input_tokens": 2440,
+      "input_tokens": 3511,
       "cached_input_tokens": 1536,
-      "cache_miss_input_tokens": 904,
+      "cache_miss_input_tokens": 1975,
       "cache_write_input_tokens": 0,
-      "output_tokens": 488,
+      "output_tokens": 838,
       "reasoning_tokens": 0,
-      "total_tokens": 2928,
+      "total_tokens": 4349,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
