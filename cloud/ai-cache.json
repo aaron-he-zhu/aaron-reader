@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-19T04:55:28Z",
-  "bundle_hash": "1394656b120beafc30215ec20d23e632288b3771a0e659ec28910caf4cc56594",
+  "exported_at": "2026-08-19T10:41:09Z",
+  "bundle_hash": "e5f80bafc7011ae87b67599640c0c90ddc9c13e826e8e0b2b21e8b105e735165",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -830,6 +830,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "e4a11c369b9354ae11b7fcaec28a12009764fcda27430ff82bc84bc7a2b35fa5",
+      "article": {
+        "source_slug": "anthropic-news",
+        "external_id": "https://www.anthropic.com/news/tino-cuellar",
+        "canonical_url": "https://www.anthropic.com/news/tino-cuellar",
+        "content_hash": "260cb4e38c53a6620d45d72a4c46407ccf60895f87b5ee2dd8a6c7d78fde093f"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "提供的JSON中publisher_summary字段为空，因此未提供出版社摘要。摘要仅基于标题信息生成，无法全面反映文章内容。",
+        "title": "Mariano-Florentino (Tino) Cuéllar 将加入Anthropic担任首席全球事务官",
+        "publisher_summary": ""
+      },
+      "output_hash": "87e882ec049cd5b1a24382f57dd6120e37e2b38e4dd1eac8165601eea955dd57",
+      "input_truncated": false,
+      "created_at": "2026-08-19T10:41:08Z"
+    },
+    {
       "cache_key": "8c11291be05f9bf52c0a10031241a38071a587e478a7d74c5eb5597030831fdf",
       "article": {
         "source_slug": "claude-blog",
@@ -858,6 +888,36 @@
       "output_hash": "cb3f55046ea2b54fd55c8c69f9710e91f49e6b077eb1f5538acc4b2b7ecccbcb",
       "input_truncated": false,
       "created_at": "2026-08-11T05:38:01Z"
+    },
+    {
+      "cache_key": "5f37fbcf57867ebe81f64e9b2f26db21115e5fac19a06919182c22ad57ea1460",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/ai-ci-cd-on-call",
+        "canonical_url": "https://claude.com/blog/ai-ci-cd-on-call",
+        "content_hash": "1d353193c2987bcfdc08eb8f6e8719b748812a541b045fce3b8aa54bdbd99f7c"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "仅基于提供的文章标题和来源信息；标题未明确提及CI/CD故障的具体处理细节或技术实现，因此无法提供更详细的摘要。",
+        "title": "随叫随到的 Claude：Claude Tag 如何充当 Anthropic 的 CI/CD 故障第一响应者",
+        "publisher_summary": ""
+      },
+      "output_hash": "1c2443ba7849c1f585dd2ff65b6b6d7d0cd1a7c6c3a5adb8615598afe7d29ede",
+      "input_truncated": false,
+      "created_at": "2026-08-19T10:41:00Z"
     },
     {
       "cache_key": "b811bb84ef9f41a783e5cf24e0ecf09420317ba4c144edd79cf7df162a7ae12c",
@@ -985,6 +1045,66 @@
       "output_hash": "8010a774752a652903ff55ea67427574752876b008aa7ef4d08577e7357c1ece",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "4850e48dd6d748ae3acd210c94bf25e3965c0b11db957f69149d6ead0e6bec74",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/auto-mode-default-in-claude-code",
+        "canonical_url": "https://claude.com/blog/auto-mode-default-in-claude-code",
+        "content_hash": "ce9bc51f07df0dbd51060dc42bf7ebeb9d40e28db3964d926159d216be78ad7b"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "本文仅包含标题信息，无正文或摘要内容，因此无法提供更多细节。标题提及的“Auto 模式”默认设置变化及具体影响范围未在提供的数据中详细说明。",
+        "title": "Auto 模式现已成为 Claude Code 中 Pro、Max 和 Team 套餐的默认模式",
+        "publisher_summary": ""
+      },
+      "output_hash": "0e638365959c0faf9c97c6f712230970cf498f325707aeec2f84583a122fcf9c",
+      "input_truncated": false,
+      "created_at": "2026-08-19T10:41:07Z"
+    },
+    {
+      "cache_key": "5620e71bb236294e5e73dee3862f3a5aa574661ce2751c20e583bd5aedcc4a62",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/auto-mode-in-production",
+        "canonical_url": "https://claude.com/blog/auto-mode-in-production",
+        "content_hash": "62bb6b2e45506230d3f9698d91467d7ae43230667aed8bd7b37fd8dad5974b11"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "该文章摘要为空，仅基于标题提供翻译，无法提供更多内容细节。",
+        "title": "在生产环境中运行自动模式",
+        "publisher_summary": ""
+      },
+      "output_hash": "ceb1adebb946918642df2b98ffd7f60780fd038ba463615565c4f3c941715a23",
+      "input_truncated": false,
+      "created_at": "2026-08-19T10:41:05Z"
     },
     {
       "cache_key": "bce7d3eabd68e8c728e7317ff923bc6ff3e10f53479a2fec90ea6497126405e4",
@@ -1587,6 +1707,36 @@
       "output_hash": "4066c01dafd0c7a0cbee1e828c85a685f18d967477b3d8bce1f18e495909b9ca",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "45510b6e481aad04c4493558f31083554079dc23abad3e4a8e27ccec13146dec",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/claude-tag-now-reads-even-more-of-the-room",
+        "canonical_url": "https://claude.com/blog/claude-tag-now-reads-even-more-of-the-room",
+        "content_hash": "e01b5d1597f2334bb9d3448992cbdc2cad554451fb583339c54e2a13e2a4a489"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "仅根据提供的标题翻译，摘要为空，未提供文章正文事实。标题中的“Tag”可能指产品名，保留原文。该标题含有营销语气，未额外解释含义。无法验证标题是否完整反映文章内容。",
+        "title": "Claude Tag 现在能看更多的房间",
+        "publisher_summary": ""
+      },
+      "output_hash": "fed78a402ba35ec0a9de0a44616d5cbd31389b82bc8d9ca30efb48d4c1ecb3ba",
+      "input_truncated": false,
+      "created_at": "2026-08-19T10:41:03Z"
     },
     {
       "cache_key": "2fc67359ca0d13c3b07c72a645dd8370c26107b05c3e00c4f0d71ee72d1b43c6",
@@ -5307,6 +5457,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "caff427c66aaf32e6b15d6f3256512f6b937f0b43477c98b83a600e95ec787d6",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/chatgpt-ads-expands-across-europe",
+        "canonical_url": "https://openai.com/index/chatgpt-ads-expands-across-europe",
+        "content_hash": "e1708a6fb2b34d9fc7f78c93fcf17234c4844b61315e9164444be78d94cade9b"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "仅基于提供的摘要信息，未涵盖完整文章内容。",
+        "title": "ChatGPT 广告扩展到欧洲",
+        "publisher_summary": "ChatGPT 广告正在扩展到31个欧洲市场。了解广告商如何在人们探索、比较选项和做出决策时触达他们。"
+      },
+      "output_hash": "3eeb307b733cf44c31b7e2d314dcb8eb8eaf2d59917dbdbaf10e1b3452637ce2",
+      "input_truncated": false,
+      "created_at": "2026-08-19T10:40:58Z"
+    },
+    {
       "cache_key": "e6171bff7096a9f3175f7cbe9244098ade95c749ce578ba58f0b608c9bd08cf7",
       "article": {
         "source_slug": "openai-news",
@@ -5727,6 +5907,36 @@
       "output_hash": "dc7efbad11bcc9fc90aadbb7050178337a68a541cad460e5dd96264a1b2a698b",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "d5e2a73859744719a7496af2f374037244a41287ee945e6f0e754a2183069f9b",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/dali-rajic-chief-revenue-officer",
+        "canonical_url": "https://openai.com/index/dali-rajic-chief-revenue-officer",
+        "content_hash": "8993564095cf4d2d374a9b165afe9538863dd0cc82fccd45921d10f13add7c89"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "本信息基于提供的数据，未涵盖文章全部内容。",
+        "title": "OpenAI任命Dali Rajic为首席营收官",
+        "publisher_summary": "OpenAI任命Dali Rajic为首席营收官，以领导其全球营收组织，并帮助企业实现AI的全部价值。"
+      },
+      "output_hash": "1fa9e9c5cd2c532a5f996abbd229eb08419f201ebf08e843be72ff3c374cf3d7",
+      "input_truncated": false,
+      "created_at": "2026-08-19T10:41:02Z"
     },
     {
       "cache_key": "09d555a1009fc72cae77c6668cbd40efb098534a540d7a0dbddb8ffe6bc8e2c6",
@@ -8955,11 +9165,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "e2634d33538f106b8487adcfa8f475ae8451a644fb7f0b9027e1081d6c3c1eea",
+      "ledger_key": "4146bc59dd6564318c0cdacbd84d5cdb70c34be6a3f5ec775d89b7db86530125",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -8975,11 +9185,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "32673eba199d3074807c7cedd098ce109031c0000f51b158c32f31da2be9e16d",
+      "ledger_key": "e4d5a43ff660fe78c504e40f84bfd1848fa02bbdc00bb7317b124940292bdbde",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8995,11 +9205,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "f641a14f4f743043c266a6a6699e4dd63075bfaecdc1a5802cf32870660248c5",
+      "ledger_key": "4aff724d10af3a23b1654f45529de6988c04dc2254f861b02b6440140e7cd82a",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -9015,11 +9225,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "15cbd23cf6729bc387a9c6c70ef2df9bac779a77d6f8e3db5a5a43eed53b6a68",
+      "ledger_key": "b21997a5e936eef9af6d576be74c44814755b756d8e651bced9bde90d1ae6c4f",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9035,11 +9245,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "7fd77ffb330ececff07ec273291c69bfd958b5198e1840beac69df436f7e5ba8",
+      "ledger_key": "0ecee5a646d1a30a4d44f7498598395f46c619415470658dd19228230d455f19",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9055,11 +9265,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "62d2f54665f29115b13483c2d7d05df0afc8d2373058fcc97b5c1a778db26843",
+      "ledger_key": "70b17b5c32b4efaf5090ce6883743301d7a58f23866ca9433e2f292499280c3e",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9075,11 +9285,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "703ac791dd09e15b462330093fb895c03177c0ecaf71cbe54ccf4c2f3ddd2513",
+      "ledger_key": "e61d0dac4093648e692ac873aa3af687a0aa168c38709a0ae70da079515392eb",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9095,11 +9305,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "120bd161d86c56759ac230b2b33626ed8048b6445b75e0efbff64365105c0dfb",
+      "ledger_key": "5e6d729f4cdf84a110e94956fee3b4ac6a996fda65306e77f7ee18aef2f16e2d",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -9115,11 +9325,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "7cfad7422f39f3a5c01f7d6968299aafbb2c4bedf0e9a0f7c11428a58b10dad9",
+      "ledger_key": "8b60d560bcd5d947b436cc822f61fc2ba3e3cdf00041ceb3e23c97680a0be3ec",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9135,11 +9345,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "f33480587c8d216e86c3e8102bdc754e165c7c063a798f400eae0b5024fb115f",
+      "ledger_key": "956a0ab4c252ff8a4c6d47629e79db75ebabca7675ac85124a83d9e934de4bea",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9155,11 +9365,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1e33bd12489bc7c2ae88a433a3f321c886ae44d0de097fe3d42836d32d23b1a2",
+      "ledger_key": "74ab963ce143f676ce182f420961dcf0e423f5551b293a942eff5b7bd99aaa04",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -9175,11 +9385,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1ba5f0e2015e078e5497aff8f04bfeff559c3bce1735338492120bcc533d2780",
+      "ledger_key": "48f47e92615312842552c9d286c1717ab7f285941da93dbcfccb2bb9a4370462",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9195,11 +9405,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "5a2386ea681df414a6b76070c1b87537d069ed3384516c5a1d5bd863956074f9",
+      "ledger_key": "4e7d6e4a84633589dc2f3258813d32c88c6f43e9fa9074c85d20ec2dc517007d",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-17T07:00:00Z",
       "day_end": "2026-08-18T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9215,11 +9425,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "998b89f6d9f97e685169fa1dc6bf178a403cb0ef88f9eb5f2532c5174b2f04fe",
+      "ledger_key": "8eca182b023e1bd557101f5c06da9e15c252289b60a646e64500649ba5c262e6",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-18T07:00:00Z",
       "day_end": "2026-08-19T07:00:00Z",
-      "covered_through": "2026-08-19T04:55:28Z",
+      "covered_through": "2026-08-19T10:41:09Z",
       "requests": 9,
       "confirmed_requests": 9,
       "unconfirmed_requests": 0,
@@ -9233,105 +9443,29 @@
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "47125b3b1a5e8f481444f94e94cf98baecc37e648219b12982b22e2fe5b1ddc1",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-19T07:00:00Z",
+      "day_end": "2026-08-20T07:00:00Z",
+      "covered_through": "2026-08-19T10:41:09Z",
+      "requests": 7,
+      "confirmed_requests": 7,
+      "unconfirmed_requests": 0,
+      "input_tokens": 2440,
+      "cached_input_tokens": 1536,
+      "cache_miss_input_tokens": 904,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 488,
+      "reasoning_tokens": 0,
+      "total_tokens": 2928,
+      "reserved_total_tokens_for_unconfirmed": 0,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
     }
   ],
   "generation_holds": [
-    {
-      "hold_key": "2585fe65788d73248c463206918a60b2d88a15fde8edd313550567e58c48a27d",
-      "workload_kind": "article_pair",
-      "hold_class": "paid_failure",
-      "descriptor": {
-        "article_identities": [
-          {
-            "canonical_url": "https://www.anthropic.com/news/tino-cuellar",
-            "content_hash": "260cb4e38c53a6620d45d72a4c46407ccf60895f87b5ee2dd8a6c7d78fde093f",
-            "external_id": "https://www.anthropic.com/news/tino-cuellar",
-            "source_slug": "anthropic-news"
-          }
-        ],
-        "generation_params_hash": "034fdacdb4908246cd8f4cb60d602cb3f3756a58bb6d9a3e38f4b0ef3cb54b41",
-        "input_scope": "metadata",
-        "max_output_tokens": 1200,
-        "model": "deepseek-v4-flash",
-        "portable_input_hash": "b08caa18139d6d72ff9637b3d78ed3c9e3fce032652752c7fa74bcaa5a2fa8c7",
-        "prompt_hash": "840fd030fa203d76dfbd985dda88b572794a5adebd340e835aa5748c62531538",
-        "prompt_version": "ai-enrichment-pair-v2",
-        "protocol": "aaron-reader-ai-generation-hold/v1",
-        "provider": "deepseek",
-        "schema_hash": "b7fb3cd18ef674abcb0b2a6f15771654463d3ceeeb775f8aad87da9cb16deb92",
-        "schema_name": "article_summary_translation",
-        "schema_version": "ai-output-pair-v1",
-        "target_language": "zh-CN",
-        "task_type": "summary",
-        "workload_kind": "article_pair"
-      },
-      "first_seen_at": "2026-08-04T18:25:59Z",
-      "last_seen_at": "2026-08-04T18:25:59Z"
-    },
-    {
-      "hold_key": "3bc73cdf7915ff9e01400b984857529a7a89cf0cbaa74be51f008ee1f84a5cdc",
-      "workload_kind": "article_pair",
-      "hold_class": "paid_failure",
-      "descriptor": {
-        "article_identities": [
-          {
-            "canonical_url": "https://claude.com/blog/auto-mode-default-in-claude-code",
-            "content_hash": "ce9bc51f07df0dbd51060dc42bf7ebeb9d40e28db3964d926159d216be78ad7b",
-            "external_id": "https://claude.com/blog/auto-mode-default-in-claude-code",
-            "source_slug": "claude-blog"
-          }
-        ],
-        "generation_params_hash": "034fdacdb4908246cd8f4cb60d602cb3f3756a58bb6d9a3e38f4b0ef3cb54b41",
-        "input_scope": "metadata",
-        "max_output_tokens": 1200,
-        "model": "deepseek-v4-flash",
-        "portable_input_hash": "47036217ae53260415f764b35132a7d9d098a7debd46205b06ffb0aa15d42a5e",
-        "prompt_hash": "840fd030fa203d76dfbd985dda88b572794a5adebd340e835aa5748c62531538",
-        "prompt_version": "ai-enrichment-pair-v2",
-        "protocol": "aaron-reader-ai-generation-hold/v1",
-        "provider": "deepseek",
-        "schema_hash": "b7fb3cd18ef674abcb0b2a6f15771654463d3ceeeb775f8aad87da9cb16deb92",
-        "schema_name": "article_summary_translation",
-        "schema_version": "ai-output-pair-v1",
-        "target_language": "zh-CN",
-        "task_type": "summary",
-        "workload_kind": "article_pair"
-      },
-      "first_seen_at": "2026-08-08T17:24:45Z",
-      "last_seen_at": "2026-08-08T17:24:45Z"
-    },
-    {
-      "hold_key": "7316d5694c8926d143a2f9594845392869abbf274a33f226985dd6e92c387f49",
-      "workload_kind": "article_pair",
-      "hold_class": "paid_failure",
-      "descriptor": {
-        "article_identities": [
-          {
-            "canonical_url": "https://claude.com/blog/auto-mode-in-production",
-            "content_hash": "62bb6b2e45506230d3f9698d91467d7ae43230667aed8bd7b37fd8dad5974b11",
-            "external_id": "https://claude.com/blog/auto-mode-in-production",
-            "source_slug": "claude-blog"
-          }
-        ],
-        "generation_params_hash": "034fdacdb4908246cd8f4cb60d602cb3f3756a58bb6d9a3e38f4b0ef3cb54b41",
-        "input_scope": "metadata",
-        "max_output_tokens": 1200,
-        "model": "deepseek-v4-flash",
-        "portable_input_hash": "3e1edd857ed2a7308a94a8bf147d2fbe6b71bd01298bba1ba9a9bd25c9f6182a",
-        "prompt_hash": "840fd030fa203d76dfbd985dda88b572794a5adebd340e835aa5748c62531538",
-        "prompt_version": "ai-enrichment-pair-v2",
-        "protocol": "aaron-reader-ai-generation-hold/v1",
-        "provider": "deepseek",
-        "schema_hash": "b7fb3cd18ef674abcb0b2a6f15771654463d3ceeeb775f8aad87da9cb16deb92",
-        "schema_name": "article_summary_translation",
-        "schema_version": "ai-output-pair-v1",
-        "target_language": "zh-CN",
-        "task_type": "summary",
-        "workload_kind": "article_pair"
-      },
-      "first_seen_at": "2026-08-08T05:39:15Z",
-      "last_seen_at": "2026-08-08T05:39:15Z"
-    },
     {
       "hold_key": "89a9a8e96cc88e6e3f441a4c1da648adec195d4ad95b05d549c3c4e04fd0036f",
       "workload_kind": "article",
@@ -9427,38 +9561,6 @@
       },
       "first_seen_at": "2026-08-11T05:36:13Z",
       "last_seen_at": "2026-08-11T05:36:34Z"
-    },
-    {
-      "hold_key": "a8e6d0eb43c5090a1b9a0ac527bad7b3a20af16029b12ef3d5c7e2b993948905",
-      "workload_kind": "article",
-      "hold_class": "paid_failure",
-      "descriptor": {
-        "article_identities": [
-          {
-            "canonical_url": "https://claude.com/blog/ai-ci-cd-on-call",
-            "content_hash": "1d353193c2987bcfdc08eb8f6e8719b748812a541b045fce3b8aa54bdbd99f7c",
-            "external_id": "https://claude.com/blog/ai-ci-cd-on-call",
-            "source_slug": "claude-blog"
-          }
-        ],
-        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
-        "input_scope": "metadata",
-        "max_output_tokens": 800,
-        "model": "openrouter/free",
-        "portable_input_hash": "1c4f94731e80c684f3854b21fd2f51325d9e60777bc3b4ce5d2d747a90b7e2fa",
-        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
-        "prompt_version": "ai-enrichment-v1",
-        "protocol": "aaron-reader-ai-generation-hold/v1",
-        "provider": "openrouter",
-        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-        "schema_name": "article_translation",
-        "schema_version": "ai-output-v1",
-        "target_language": "zh-CN",
-        "task_type": "translation",
-        "workload_kind": "article"
-      },
-      "first_seen_at": "2026-08-19T04:54:46Z",
-      "last_seen_at": "2026-08-19T04:55:07Z"
     },
     {
       "hold_key": "e524785d49ccb677eff5306cf0000283255583fd147748a43af5841197208def",
