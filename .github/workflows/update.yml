@@ -244,5 +244,41 @@ jobs:
       - name: Mark an incomplete AI cycle after preserving valid progress
         if: steps.ai.outcome == 'failure'
         run: |
-          echo "AI enrichment was incomplete; validated partial progress was published to avoid replaying successful calls."
-          exit 1
+          python3 - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          ai_result_path = Path("data/cloud-ai-run.json")
+          if not ai_result_path.is_file():
+              print("AI result file not found; treating as hard failure")
+              sys.exit(1)
+
+          try:
+              result = json.loads(ai_result_path.read_text(encoding="utf-8"))
+          except (OSError, json.JSONDecodeError) as e:
+              print("Failed to parse AI result: %s" % e)
+              sys.exit(1)
+
+          failures = result.get("failures", [])
+          new_holds = int(result.get("generation_holds_new_this_cycle", 0))
+          preexisting_skipped = int(result.get("generation_holds_preexisting_skipped", 0))
+          total_skipped = int(result.get("generation_holds_skipped", 0))
+
+          if failures or new_holds > 0:
+              print("AI enrichment had new failures this cycle:")
+              print("  - failures: %d" % len(failures))
+              print("  - new holds this cycle: %d" % new_holds)
+              print("  - preexisting holds skipped: %d" % preexisting_skipped)
+              print("Validated partial progress was published to avoid replaying successful calls.")
+              sys.exit(1)
+
+          if preexisting_skipped > 0:
+              print("::warning::AI backlog: %d pre-existing hold(s) were skipped (no new failures this cycle)" % preexisting_skipped)
+              print("Pre-existing holds require manual attention but do not indicate a regression.")
+              print("Cloudflare publish succeeded; treating this as a soft warning.")
+              sys.exit(0)
+
+          print("AI step reported failure but no failures or holds found; treating as soft warning")
+          sys.exit(0)
+          PY

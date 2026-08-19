@@ -212,6 +212,21 @@ def _language_hint(argv: Sequence[str]) -> str:
         return "en"
 
 
+def _hold_is_preexisting(exc_detail: str, preexisting_hold_keys: frozenset) -> bool:
+    """Check if an AIGenerationHeld exception refers to a pre-existing hold.
+
+    The exception message contains the hold key's first 12 characters in the
+    format "(..., <hold_key_prefix>)".  Match against the pre-existing set.
+    """
+
+    import re
+    match = re.search(r",\s*([a-f0-9]{12})\)?$", exc_detail)
+    if not match:
+        return False
+    prefix = match.group(1)
+    return any(key.startswith(prefix) for key in preexisting_hold_keys)
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     raw_argv = list(argv) if argv is not None else sys.argv[1:]
     language = _language_hint(raw_argv)
@@ -608,6 +623,10 @@ def _run_ai_command(
             baseline_attempt_id = (
                 int(previous_attempts[0]["id"]) if previous_attempts else 0
             )
+            preexisting_hold_keys = frozenset(
+                str(hold.get("hold_key") or "")
+                for hold in database.list_ai_generation_holds()
+            )
             now = datetime.now(timezone.utc).replace(microsecond=0)
             result = {
                 "provider": ai.provider,
@@ -636,6 +655,7 @@ def _run_ai_command(
                 "provider_api_calls": 0,
                 "coverage_cache_hits": 0,
                 "generation_holds_skipped": 0,
+                "generation_holds_preexisting_skipped": 0,
                 "article_results": [],
                 "failures": [],
             }
@@ -727,13 +747,20 @@ def _run_ai_command(
                     )
                 except AIGenerationHeld as exc:
                     result["generation_holds_skipped"] += 1
+                    exc_detail = str(exc)[:200]
+                    is_preexisting = _hold_is_preexisting(
+                        exc_detail, preexisting_hold_keys
+                    )
+                    if is_preexisting:
+                        result["generation_holds_preexisting_skipped"] += 1
                     result["article_results"].append(
                         {
                             "article_id": article_id,
                             "provider_api_calls": 0,
                             "cache_hit": False,
                             "skipped": "generation_hold",
-                            "detail": str(exc)[:200],
+                            "preexisting": is_preexisting,
+                            "detail": exc_detail,
                         }
                     )
                 except AIServiceError as exc:
@@ -769,9 +796,19 @@ def _run_ai_command(
             # needs operator attention.  Continue processing unrelated work so
             # safe progress can be published, then leave the workflow visibly
             # failed instead of silently reporting a complete AI cycle.
+            #
+            # Pre-existing holds (imported from a previous run's ai-cache) that
+            # were merely skipped should not cause the job to fail; they require
+            # manual attention but do not indicate a regression this cycle.  New
+            # holds created THIS cycle (failures or ambiguous results) still fail.
+            new_holds_this_cycle = (
+                int(result["generation_holds_skipped"])
+                - int(result["generation_holds_preexisting_skipped"])
+            )
+            result["generation_holds_new_this_cycle"] = new_holds_this_cycle
             result["completed"] = (
                 not result["failures"]
-                and int(result["generation_holds_skipped"]) == 0
+                and new_holds_this_cycle == 0
             )
             audited_attempts = _ai_attempts_after(
                 database,
