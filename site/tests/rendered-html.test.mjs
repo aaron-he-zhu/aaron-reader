@@ -44,13 +44,6 @@ test("server-renders the Aaron Reader snapshot", async () => {
   const snapshot = JSON.parse(
     await readFile(new URL("../data/latest.json", import.meta.url), "utf8"),
   );
-  const articleCount = snapshot.articles.length;
-  const coveredArticleCount = snapshot.articles.filter((article) => {
-    const artifacts = article.ai_artifacts || [];
-    return artifacts.some(
-      (artifact) => artifact.task === "translation" && artifact.target_language === "zh-CN",
-    );
-  }).length;
   assert.equal(
     Object.hasOwn(snapshot, "ai_reports"),
     false,
@@ -76,30 +69,24 @@ test("server-renders the Aaron Reader snapshot", async () => {
     /<meta property="og:url" content="https:\/\/aaron-reader\.aaron-he-zhu\.workers\.dev\/"\s*\/?>/i,
   );
   assert.doesNotMatch(html, /aaron-reader\.zhuhe1983\.workers\.dev/i);
-  assert.match(html, /Independent signal desk/);
-  assert.match(html, /The work behind/);
-  assert.match(html, /Default · OpenRouter Free → DeepSeek V4 Flash/);
-  assert.match(html, /can switch once to DeepSeek V4 Flash/);
-  assert.match(html, /explicitly selected DeepSeek-only run.+never falls back in reverse/);
-  assert.match(
-    html,
-    /Ambiguous network results, unknown or future error codes, and safety or policy refusals never fall back/,
-  );
-  assert.match(
-    html,
-    /OpenRouter Free may resolve to and internally route among different eligible free providers/,
-  );
-  assert.doesNotMatch(html, /DeepSeek V4 Flash · automatic twice daily/);
-  assert.match(html, /Chinese AI automation coverage/);
-  assert.match(
-    html,
-    new RegExp(`<strong>${coveredArticleCount}(?:<!-- -->)?\\/(?:<!-- -->)?${articleCount}<\\/strong>`),
-  );
-  if (coveredArticleCount === articleCount) {
-    assert.match(html, /All articles have a cached Chinese translation/);
-  } else {
-    assert.match(html, /Cloud automation will fill missing article translations/);
-  }
+
+  assert.match(html, /Official OpenAI and Anthropic posts/);
+  assert.match(html, /click through to read the original/);
+  assert.match(html, /Updated twice a day/);
+  assert.match(html, /Chinese is added automatically/);
+
+  assert.doesNotMatch(html, /Independent signal desk/);
+  assert.doesNotMatch(html, /The work behind/);
+  assert.doesNotMatch(html, /deterministic feed/);
+  assert.doesNotMatch(html, /0 LLM tokens|LLM tokens for collection/);
+  assert.doesNotMatch(html, /Built for signal, not engagement/);
+  assert.doesNotMatch(html, /Default · OpenRouter Free → DeepSeek V4 Flash/);
+  assert.doesNotMatch(html, /can switch once to DeepSeek V4 Flash/);
+  assert.doesNotMatch(html, /explicitly selected DeepSeek-only run/);
+  assert.doesNotMatch(html, /Ambiguous network results/);
+  assert.doesNotMatch(html, /OpenRouter Free may resolve to/);
+  assert.doesNotMatch(html, /Chinese AI automation coverage/);
+
   assert.doesNotMatch(html, /class="ai-summary-card"/);
   assert.doesNotMatch(html, /Translate to Chinese|翻译为中文/);
   assert.doesNotMatch(html, /Backfill 3 articles|补齐接下来 3 篇/);
@@ -109,9 +96,6 @@ test("server-renders the Aaron Reader snapshot", async () => {
   assert.doesNotMatch(html, /on-demand ai|workspace path|local checkout/i);
   assert.doesNotMatch(html, /signed-in ChatGPT subscription/i);
   assert.doesNotMatch(html, /Summarize (?:today|this week|in English)/);
-  assert.match(html, /GitHub Actions · 09:15 &amp; 21:15 San Francisco/);
-  assert.match(html, /collected at 09:15 and 21:15 San Francisco time/);
-  assert.doesNotMatch(html, /collected at 10:00 and 22:00 San Francisco time/);
   assert.doesNotMatch(html, /id="report-section-title"/);
   assert.doesNotMatch(
     html,

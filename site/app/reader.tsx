@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   artifactPayload,
   findArtifact,
+  hasValidTranslation,
   translationSearchText,
   type AIArtifact,
 } from "./ai-artifacts";
@@ -44,15 +45,12 @@ type Snapshot = {
 
 const copy = {
   en: {
-    eyebrow: "Independent signal desk",
-    titleA: "The work behind",
-    titleB: "the AI frontier.",
+    title: "Aaron Reader",
     intro:
-      "OpenAI, Anthropic, and Claude updates in one calm, deterministic feed. Collection, parsing, and publishing use fixed programs—not an LLM.",
+      "Official OpenAI and Anthropic posts, in English and 简体中文. We only translate the title and short blurb — click through to read the original.",
     updated: "Updated",
     articles: "articles",
     sources: "sources",
-    zero: "LLM tokens for collection",
     search: "Search the archive",
     allSources: "All sources",
     showing: "Showing",
@@ -61,40 +59,29 @@ const copy = {
     clear: "Clear filters",
     read: "Read original",
     more: "Show more",
-    system: "System",
-    collection: "Collection",
-    deterministic: "GitHub Actions · 09:15 & 21:15 San Francisco",
-    enrichment: "AI enrichment",
-    enrichmentValue: "Default · OpenRouter Free → DeepSeek V4 Flash",
+    about: "About",
+    aboutText: "Updated twice a day. Chinese is added automatically for title + blurb.",
     language: "Language",
     sourceHealth: "Source health",
     healthy: "Healthy",
     degraded: "Degraded",
     error: "Error",
     never_synced: "Awaiting first sync",
-    cached: "cached article translations",
-    aiTranslation: "Publisher metadata translation",
+    aiTranslation: "AI translation",
     generatedCached: "AI-generated · cached",
     generatedOn: "Generated",
     feed: "RSS feed",
     digest: "Markdown digest",
-    coverage: "Chinese AI automation coverage",
-    coverageSuffix: "Cloud automation will fill missing article translations on its next run.",
-    coverageCompleteSuffix: "All articles have a cached Chinese translation.",
-    policy:
-      "By default, each scheduled cloud run starts with the fixed OpenRouter Free profile and can switch once to DeepSeek V4 Flash only when the OpenRouter credential is missing before transmission, after an explicit OpenRouter 401, 402, 404, or 429 response, or after a closed, non-policy availability/profile failure or locally invalid result with fully audited usage. An explicitly selected DeepSeek-only run receives no OpenRouter credential and never falls back in reverse. Ambiguous network results, unknown or future error codes, and safety or policy refusals never fall back. The active profile refreshes cached Chinese article translations twice daily. OpenRouter Free may resolve to and internally route among different eligible free providers; Aaron Reader's one-way rule covers only its separate DeepSeek continuation. The browser only reads the latest verified snapshot and never calls a model or AI API.",
-    footer: "Built for signal, not engagement.",
+    notTranslatedYet: "Chinese not ready yet — showing English.",
+    noSummary: "No short summary from the publisher.",
   },
   "zh-CN": {
-    eyebrow: "独立信号台",
-    titleA: "读懂 AI 前沿",
-    titleB: "背后的工作。",
+    title: "Aaron Reader",
     intro:
-      "把 OpenAI、Anthropic 与 Claude 的更新汇集成一份安静、确定性的订阅。采集、解析和发布均由固定程序完成，不调用 LLM。",
+      "把 OpenAI 和 Anthropic 的官方文章收成一份列表，中英都能看。中文只翻译标题和简介，点进去读原文。",
     updated: "更新时间",
     articles: "篇文章",
     sources: "个来源",
-    zero: "采集所用 LLM token",
     search: "搜索全部文章",
     allSources: "全部来源",
     showing: "当前显示",
@@ -103,28 +90,21 @@ const copy = {
     clear: "清除筛选",
     read: "阅读原文",
     more: "显示更多",
-    system: "系统",
-    collection: "订阅采集",
-    deterministic: "GitHub Actions · 旧金山时间 09:15、21:15",
-    enrichment: "AI 增强",
-    enrichmentValue: "默认 · OpenRouter Free → DeepSeek V4 Flash",
+    about: "关于",
+    aboutText: "每天更新两次。中文只自动补标题和简介。",
     language: "语言",
     sourceHealth: "来源状态",
     healthy: "正常",
     degraded: "降级",
     error: "错误",
     never_synced: "等待首次同步",
-    cached: "个已缓存文章翻译",
-    aiTranslation: "发布方元数据翻译",
+    aiTranslation: "AI 翻译",
     generatedCached: "AI 生成 · 已缓存",
     generatedOn: "生成于",
     feed: "RSS 订阅",
     digest: "Markdown 摘要",
-    coverage: "中文 AI 自动覆盖",
-    coverageSuffix: "缺失的文章翻译会由云端自动化在下一轮补齐。",
-    coverageCompleteSuffix: "全部文章都已有缓存的中文翻译。",
-    policy: "每轮定时云端任务默认从固定的 OpenRouter Free profile 开始；只有发送前缺少 OpenRouter 凭据、OpenRouter 明确返回 401、402、404 或 429，或封闭白名单内的非政策可用性/profile 失败或本地无效结果已完整落账时，才会单向切换一次到 DeepSeek V4 Flash。显式选择的 DeepSeek-only 任务不会接收 OpenRouter 凭据，也绝不会反向兜底。网络结果不明、用量未知、未来未知错误码以及安全或政策拒答绝不会兜底。当前 profile 每天两次更新缓存的中文文章翻译。OpenRouter Free 每次请求都可能解析到不同的合格免费模型，也可能在内部上游间路由；Aaron Reader 的单向规则只约束它自己后续发起的 DeepSeek 调用。浏览器只读取最新的已验证快照，不会调用模型或 AI API。",
-    footer: "为信号而建，而非为互动量而建。",
+    notTranslatedYet: "中文还没好，先显示英文。",
+    noSummary: "发布方没有提供简介。",
   },
 } as const;
 
@@ -138,9 +118,10 @@ const sourceColor: Record<string, string> = {
 function formatDate(value: string | null, language: Language, long = false) {
   if (!value) return "—";
   const date = new Date(value);
+  const timeZone = language === "zh-CN" ? "Asia/Shanghai" : "America/Los_Angeles";
   return new Intl.DateTimeFormat(language, long
-    ? { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Singapore", timeZoneName: "short" }
-    : { year: "numeric", month: "short", day: "numeric", timeZone: "Asia/Singapore" }
+    ? { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone, timeZoneName: "short" }
+    : { year: "numeric", month: "short", day: "numeric", timeZone }
   ).format(date);
 }
 
@@ -154,7 +135,14 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
   useEffect(() => {
     const stored = window.localStorage.getItem("aaron-reader-language");
     const frame = window.requestAnimationFrame(() => {
-      if (stored === "zh-CN" || stored === "en") setLanguage(stored);
+      if (stored === "zh-CN" || stored === "en") {
+        setLanguage(stored);
+      } else {
+        const browserLang = navigator.language || "";
+        if (browserLang.startsWith("zh")) {
+          setLanguage("zh-CN");
+        }
+      }
     });
     return () => window.cancelAnimationFrame(frame);
   }, []);
@@ -184,25 +172,6 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
     });
   }, [language, query, snapshot.articles, source]);
 
-  const cachedTranslationArtifactCount = useMemo(
-    () => snapshot.articles.reduce(
-      (count, article) => count + article.ai_artifacts.filter(
-        (artifact) => artifact.task === "translation",
-      ).length,
-      0,
-    ),
-    [snapshot.articles],
-  );
-  const chineseTranslatedArticleCount = useMemo(
-    () => snapshot.articles.filter(
-      (article) => Boolean(findArtifact(article.ai_artifacts, "translation", "zh-CN")),
-    ).length,
-    [snapshot.articles],
-  );
-  const translationCoverageComplete = (
-    snapshot.articles.length > 0
-    && chineseTranslatedArticleCount === snapshot.articles.length
-  );
   const chooseLanguage = (next: Language) => {
     setLanguage(next);
   };
@@ -233,8 +202,7 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
       <div className="page" id="top">
         <section className="hero" aria-labelledby="page-title">
           <div>
-            <p className="eyebrow"><span className="live-dot" />{t.eyebrow}</p>
-            <h1 id="page-title"><span>{t.titleA}</span> {t.titleB}</h1>
+            <h1 id="page-title">{t.title}</h1>
           </div>
           <div className="hero-copy">
             <p>{t.intro}</p>
@@ -245,7 +213,6 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
         <section className="metrics" aria-label="Reader metrics">
           <div><strong>{snapshot.articles.length}</strong><span>{t.articles}</span></div>
           <div><strong>{snapshot.sources.length}</strong><span>{t.sources}</span></div>
-          <div><strong>{snapshot.render_llm_tokens_used}</strong><span>{t.zero}</span></div>
         </section>
 
         <section className="workspace">
@@ -282,9 +249,11 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
               {filtered.slice(0, visible).map((article, index) => {
                 const translationArtifact = findArtifact(article.ai_artifacts, "translation", language);
                 const translation = artifactPayload(translationArtifact);
-                const title = translation.title || article.title;
-                const publisherSummary = translation.publisherSummary || article.summary;
-                const hasTranslation = Boolean(translation.title || translation.publisherSummary);
+                const hasTranslation = hasValidTranslation(translation, language);
+                const title = hasTranslation && translation.title ? translation.title : article.title;
+                const publisherSummary = hasTranslation && translation.publisherSummary ? translation.publisherSummary : article.summary;
+                const showNotTranslatedYet = language === "zh-CN" && !hasTranslation;
+                const hasSummary = Boolean(publisherSummary);
                 return (
                   <article className="article" key={article.id} style={{ "--source-color": sourceColor[article.source] || "#171717" } as React.CSSProperties}>
                     <span className="article-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
@@ -306,7 +275,10 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
                           )}
                         </div>
                       )}
-                      {publisherSummary && <p>{publisherSummary}</p>}
+                      {showNotTranslatedYet && (
+                        <p className="not-translated-note">{t.notTranslatedYet}</p>
+                      )}
+                      {hasSummary ? <p>{publisherSummary}</p> : <p className="no-summary">{t.noSummary}</p>}
                       <div className="article-links">
                         <a className="read-link" href={article.url} target="_blank" rel="noopener noreferrer">{t.read}<span aria-hidden="true">↗</span></a>
                       </div>
@@ -321,20 +293,8 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
           </div>
 
           <aside className="system-panel">
-            <p className="panel-kicker">{t.system}</p>
-            <dl className="system-list">
-              <div><dt>{t.collection}</dt><dd><span className="status-dot healthy" />{t.deterministic}</dd></div>
-              <div><dt>{t.enrichment}</dt><dd>{t.enrichmentValue}</dd></div>
-              <div>
-                <dt>{t.coverage}</dt>
-                <dd className="coverage-value">
-                  <strong>{chineseTranslatedArticleCount}/{snapshot.articles.length}</strong>
-                  <span>{translationCoverageComplete ? t.coverageCompleteSuffix : t.coverageSuffix}</span>
-                </dd>
-              </div>
-              <div><dt>{t.language}</dt><dd>English / 简体中文</dd></div>
-            </dl>
-            <p className="policy">{t.policy}</p>
+            <p className="panel-kicker">{t.about}</p>
+            <p className="about-text">{t.aboutText}</p>
             <div className="health-block">
               <p>{t.sourceHealth}</p>
               {snapshot.sources.map((item) => (
@@ -344,12 +304,11 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
                 </div>
               ))}
             </div>
-            <p className="cache-note">{cachedTranslationArtifactCount} {t.cached}</p>
           </aside>
         </section>
       </div>
 
-      <footer><span>Aaron Reader · 2026</span><span>{t.footer}</span></footer>
+      <footer><span>Aaron Reader · 2026</span></footer>
     </main>
   );
 }

@@ -39,7 +39,7 @@ OpenRouter attempt is eligible. If the cycle has already switched to DeepSeek,
 later articles stay on that active profile. Manual runs leave this narrow
 policy off by default; the explicit broad `force_held` recovery can
 bypass ambiguous holds and therefore carries duplicate-billing risk. Valid
-partial progress is published before an incomplete producer job finishes red.
+partial progress is published before an incomplete producer job finishes with a warning.
 
 OpenRouter Free is a dynamic router rather than one deterministic model. Its
 eligible free-model pool, upstream provider, availability, latency, output

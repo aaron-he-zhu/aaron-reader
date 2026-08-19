@@ -2,11 +2,9 @@
 
 [简体中文](README.zh-CN.md)
 
-[Live site](https://aaron-reader.aaron-he-zhu.workers.dev/) · [GitHub repository](https://github.com/aaron-he-zhu/aaron-reader)
+**[Live site](https://aaron-reader.aaron-he-zhu.workers.dev/)**
 
-Aaron Reader is a bilingual, cloud-hosted reader for official OpenAI and Anthropic publications. GitHub Actions collects and verifies new articles; OpenRouter Free translates each article's title and publisher summary into Simplified Chinese, with DeepSeek V4 Flash as a bounded fallback; and Cloudflare Workers serves the resulting read-only snapshot.
-
-Production runs entirely on GitHub and Cloudflare. It does not depend on a personal computer, a local database, a desktop application, or an interactive AI subscription.
+Official OpenAI and Anthropic posts, in English and 简体中文. We only translate the title and short blurb — click through to read the original.
 
 ## Sources
 
@@ -15,9 +13,19 @@ Production runs entirely on GitHub and Cloudflare. It does not depend on a perso
 - [Claude Blog](https://claude.com/blog/)
 - [Anthropic News](https://www.anthropic.com/news)
 
-English is the default interface. The language selector provides a complete Simplified Chinese interface and automatically displays cached Chinese translations when they are available. The website has no client-side translation button, and it does not generate a separate per-article AI summary.
+## How to use
 
-## Cloud architecture
+**As a visitor**: Open the site → click 简 to switch to Chinese → click any title to read the original article.
+
+**As Aaron (or a fork operator)**: The site updates automatically twice a day via GitHub Actions. To trigger a manual update, go to Actions → select the production update workflow → Run workflow → leave defaults → Run.
+
+---
+
+## Operator notes
+
+The following sections are technical documentation for operators and contributors.
+
+### Cloud architecture
 
 ```text
 Official publisher feeds and pages
@@ -39,7 +47,7 @@ The scheduled update is a single pipeline so the crawler state, AI cache, and pu
 
 Cloudflare does not crawl publishers or call the model. The Worker only serves files that passed the GitHub workflow's schema, health, privacy, lint, type, build, and rendered-output checks.
 
-## Schedule and AI cadence
+### Schedule and AI cadence
 
 The update workflow runs every day at **09:15 and 21:15 in `America/Los_Angeles`**. The named timezone is intentional: GitHub applies the San Francisco daylight-saving transition instead of relying on a fixed UTC offset. These times map to 00:15 and 12:15 Beijing time during Pacific daylight time, and 01:15 and 13:15 during Pacific standard time, keeping the scheduled runs outside DeepSeek's announced 09:00–12:00 and 14:00–18:00 Beijing peak windows.
 
@@ -49,11 +57,11 @@ Each scheduled cycle:
 - reuses valid artifacts already bound to the current article content hash;
 - scans the bounded current corpus for articles that still lack a Simplified Chinese translation, not only articles discovered in that run, and considers up to the configured per-cycle limit;
 - translates only the title and publisher summary, and isolates article failures so one `AIServiceError` does not prevent later missing articles from being considered; and
-- publishes only strictly validated state, including safe partial progress before an incomplete AI cycle finishes red.
+- publishes only strictly validated state, including safe partial progress before an incomplete AI cycle finishes with a warning.
 
 Everything outside that language-understanding task uses fixed code and consumes no LLM tokens: HTTP caching, parsing, URL normalization, article identity, content hashing, deduplication, source health, cache selection, budget enforcement, serialization, rendering, tests, commits, and deployment preparation.
 
-## Fixed AI provider profiles
+### Fixed AI provider profiles
 
 Production uses the closed OpenRouter Free profile by default and the closed DeepSeek V4 Flash profile as its only automatic fallback. `config.ai.provider` selects the primary profile; `ai cloud-run --provider ...` can explicitly override it for one run. A manually selected DeepSeek run is DeepSeek-only and never falls back in reverse.
 
@@ -76,7 +84,7 @@ Immediately before each provider POST, the local attempt state and an `ambiguous
 
 `openrouter/free` is a dynamic zero-cost routing target, not a single deterministic model or a reliability guarantee. Its eligible model pool, availability, latency, output characteristics, upstream provider, and upstream data-handling policy can change. OpenRouter receives the request and may route or fail over among its eligible upstream providers; Aaron Reader's one-way rule governs only the separate OpenRouter-to-DeepSeek continuation performed by this application. Aaron Reader therefore sends only bounded public publisher metadata, never personal reading state or private content. Operators should review OpenRouter's current [Free Models Router](https://openrouter.ai/docs/guides/routing/routers/free-router), [provider routing](https://openrouter.ai/docs/guides/routing/provider-selection), and [provider data-policy controls](https://openrouter.ai/docs/guides/privacy/provider-logging/) before enabling that profile and must not use it for confidential, personal, or otherwise sensitive input.
 
-## Persistent public state
+### Persistent public state
 
 GitHub-hosted runners are disposable, so the repository contains two deliberately small, public continuation files:
 
@@ -89,7 +97,7 @@ Before a release is committed, the two exported handoffs are imported once more 
 
 Because AI artifacts are content-hash-bound, an unchanged article remains a cache hit across runs. Valid historical artifacts can also be reused after a provider or model change; switching the configured model does not by itself force every article to be regenerated.
 
-## Model credentials
+### Model credentials
 
 Configure both fixed-profile credentials as GitHub Actions repository secrets:
 
@@ -104,7 +112,7 @@ The workflow makes credentials available only inside the bounded AI-generation s
 
 Forks do not inherit repository secrets. A fork must add its own `DEEPSEEK_API_KEY` and `OPENROUTER_API_KEY` before both profiles are available to its production update workflow.
 
-## Token, budget, and failure behavior
+### Token, budget, and failure behavior
 
 Aaron Reader minimizes billable work at several layers:
 
@@ -117,15 +125,15 @@ Aaron Reader minimizes billable work at several layers:
 - a fallback-eligible OpenRouter failure can add exactly one DeepSeek request and visibly marks the run as degraded; and
 - an ambiguous network result, unknown usage, or safety/policy refusal never falls back and creates the appropriate stable generation hold; scheduled replay remains limited to workloads whose every equivalent hold is `paid_failure`.
 
-Source-health, state-schema, privacy, test, repository-boundary, or site-build failures are fail-closed and publish nothing. Article-level AI failures are isolated: one `AIServiceError` is recorded and the scheduled scan continues with later missing articles. An incomplete AI cycle is handled differently to avoid charging twice for work that already succeeded: invalid model output is discarded, but every earlier artifact, aggregate usage update, and generation hold that passed strict validation is exported and published before the job finishes red. Missing credentials, provider errors, holds, and exhausted budgets therefore never publish unvalidated output, while safely completed partial progress remains reusable on the next run.
+Source-health, state-schema, privacy, test, repository-boundary, or site-build failures are fail-closed and publish nothing. Article-level AI failures are isolated: one `AIServiceError` is recorded and the scheduled scan continues with later missing articles. An incomplete AI cycle is handled differently to avoid charging twice for work that already succeeded: invalid model output is discarded, but every earlier artifact, aggregate usage update, and generation hold that passed strict validation is exported and published before the job finishes with a warning. Missing credentials, provider errors, holds, and exhausted budgets therefore never publish unvalidated output, while safely completed partial progress remains reusable on the next run.
 
-## Running an update manually
+### Running an update manually
 
 Open the repository's **Actions** tab, select the production update workflow under `.github/workflows/`, choose **Run workflow**, leave the default `openrouter` primary or select `deepseek` for a DeepSeek-only diagnostic run, and run it on `main`. A manual run uses the same ephemeral database, secret boundary, cache checks, safety limits, tests, exact-file commit, and Cloudflare deployment path as a scheduled run, but it does not enable the scheduled all-paid-failure replay policy by default. `force_held` is a broad recovery control that may repeat a previously billed or ambiguous generation; leave it disabled unless you have reviewed the workflow summary and intentionally accept that risk. Scheduled runs never enable `force_held`; their distinct automatic authorization is limited to one active-profile replay per article whose every equivalent hold is `paid_failure`.
 
 The workflow summary is the operational record: it reports cache hits, provider calls and token usage, failures, changed public files, and whether a commit was published. Secret values and provider response bodies are not logged.
 
-## Deploying a fork
+### Deploying a fork
 
 To host an independent copy:
 
@@ -141,7 +149,7 @@ The workflow derives its write boundary from GitHub's immutable current-reposito
 
 After every push, the workflow polls `PUBLIC_SITE_URL` and compares the deployed reader snapshot byte for byte with the verified commit. It succeeds only after Cloudflare has actually published that exact state. This check uses the public site and needs no Cloudflare credential.
 
-## Development and verification
+### Development and verification
 
 Development and CI checks can be run from any temporary checkout. No checkout, workstation process, or developer database is part of the production runtime.
 
