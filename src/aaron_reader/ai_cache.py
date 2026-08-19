@@ -33,7 +33,12 @@ from typing import Dict, Iterable, List, Mapping, Sequence, Tuple
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
-from .ai_prompts import canonical_json, parse_and_validate_output, stable_hash
+from .ai_prompts import (
+    _text_appears_untranslated,
+    canonical_json,
+    parse_and_validate_output,
+    stable_hash,
+)
 from .ai_service import AIService, PreparedTask
 from .crawler_state import _source_url_is_allowed
 from .database import Database, utc_now
@@ -1270,6 +1275,38 @@ def _insert_artifact(
     return int(stored["id"]), cursor.rowcount == 0
 
 
+def _artifact_appears_untranslated(
+    entry: Mapping[str, object],
+    row: Mapping[str, object],
+) -> bool:
+    """Check if a translation artifact appears untranslated vs the source article.
+
+    Returns True if the artifact's output title or publisher_summary appears to
+    be untranslated source text, based on comparing against the resolved article.
+    """
+    task_type = str(entry.get("task_type") or "")
+    if task_type != "translation":
+        return False
+
+    target_language = str(entry.get("target_language") or "")
+    output = entry.get("output")
+    if not isinstance(output, dict):
+        return False
+
+    for field, source_key in (("title", "title"), ("publisher_summary", "summary")):
+        source_text = row.get(source_key)
+        output_text = output.get(field)
+        if (
+            isinstance(source_text, str)
+            and isinstance(output_text, str)
+            and source_text
+            and output_text
+            and _text_appears_untranslated(source_text, output_text, target_language)
+        ):
+            return True
+    return False
+
+
 def _resolved_payload(
     database: Database,
     app_config: AppConfig,
@@ -1279,6 +1316,7 @@ def _resolved_payload(
     List[Dict[str, object]],
     List[Dict[str, object]],
     Dict[Tuple[str, str, str, str], int],
+    int,
 ]:
     service = AIService(app_config, database)
     identity_rows: Dict[Tuple[str, str, str, str], Dict[str, object]] = {}
@@ -1296,6 +1334,7 @@ def _resolved_payload(
 
     artifacts: List[Dict[str, object]] = []
     local_key_seen = set()
+    dropped_untranslated = 0
     for index, entry in enumerate(payload["artifacts"]):  # type: ignore[index]
         row = identity_rows[_identity_key(entry["article"])]
         prepared = service.prepare_article(
@@ -1311,6 +1350,9 @@ def _resolved_payload(
             raise ValueError(
                 "AI cache artifact is incompatible with the current prompt or schema"
             )
+        if _artifact_appears_untranslated(entry, row):
+            dropped_untranslated += 1
+            continue
         validated, readable = _validate_article_output(
             entry, "artifacts[%d]" % index
         )
@@ -1335,7 +1377,7 @@ def _resolved_payload(
         dict(entry)
         for entry in payload["generation_holds"]  # type: ignore[index]
     ]
-    return artifacts, usage_ledger, generation_holds, id_map
+    return artifacts, usage_ledger, generation_holds, id_map, dropped_untranslated
 
 
 def _recheck_identity_map(
@@ -1368,8 +1410,8 @@ def import_ai_cache(
 
     payload = _read_payload(Path(path))
     validated = _validate_payload(payload, app_config.sources, verify_hash=True)
-    artifacts, usage_ledger, generation_holds, id_map = _resolved_payload(
-        database, app_config, validated
+    artifacts, usage_ledger, generation_holds, id_map, dropped_untranslated = (
+        _resolved_payload(database, app_config, validated)
     )
 
     inserted_artifacts = 0
@@ -1429,6 +1471,7 @@ def import_ai_cache(
         "artifacts": len(artifacts),
         "inserted_artifacts": inserted_artifacts,
         "artifact_cache_hits": artifact_cache_hits,
+        "dropped_untranslated": dropped_untranslated,
         "provider_api_calls": 0,
         "api_key_used": False,
     }

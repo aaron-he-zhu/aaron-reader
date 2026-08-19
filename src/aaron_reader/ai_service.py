@@ -1222,6 +1222,8 @@ class AIService:
 
         Returns False if the cached output appears to be untranslated source text,
         which triggers a cache miss and regeneration with DeepSeek fallback.
+
+        Fail-closed: JSON parse errors → False (cache miss).
         """
         if prepared.task_type != "translation":
             return True
@@ -1230,7 +1232,7 @@ class AIService:
             output_json = str(cached.get("output_json") or "{}")
             output = json.loads(output_json)
         except (TypeError, ValueError, json.JSONDecodeError):
-            return True
+            return False
 
         target_language = prepared.target_language
         for field in ("title", "publisher_summary"):
@@ -1362,16 +1364,18 @@ class AIService:
         Returns False if the cached output appears to be untranslated source
         text (e.g. Latin-only title for a zh-CN target), which triggers a cache
         miss so cloud-run can regenerate it with DeepSeek fallback.
+
+        Fail-closed: JSON parse errors or missing article → False (cache miss).
         """
         try:
             output_json = str(artifact.get("output_json") or "{}")
             output = json.loads(output_json)
         except (TypeError, ValueError, json.JSONDecodeError):
-            return True
+            return False
 
         article = self.database.article(article_id)
         if article is None:
-            return True
+            return False
 
         for field, source_key in (("title", "title"), ("publisher_summary", "summary")):
             source_text = article.get(source_key)
