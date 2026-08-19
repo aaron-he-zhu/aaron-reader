@@ -102,6 +102,15 @@ _FALLBACK_KNOWN_PROVIDER_CODES = frozenset(
         "thinking_output",
         "thinking_tokens",
         "tool_calls",
+        # Known unusable completions WITH confirmed usage.  The provider billed
+        # us but returned no usable output; trying DeepSeek is safe because we
+        # have exact usage data and are not risking a double-bill ambiguity.
+        "no_output",
+        "finish_length",
+        "finish_error",
+        "finish_reason",
+        # Service-layer validation failures after a billed HTTP 200 response.
+        "invalid_structured_output",
     }
 )
 

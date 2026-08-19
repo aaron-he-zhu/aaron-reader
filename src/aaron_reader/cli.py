@@ -6,7 +6,7 @@ import sys
 from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence
 
 from .ai_profiles import (
     DEFAULT_AI_FALLBACK_PROVIDER,
@@ -792,15 +792,44 @@ def _run_ai_command(
                     break
             result["articles_missing_considered"] = missing_seen
             result["budget_exhausted"] = budget_exhausted
+
+            # Layer 3 防呆: Enhanced reporting for visibility into stuck work.
+            # Count successful translations this cycle.
+            translations_succeeded = sum(
+                1 for r in result["article_results"]
+                if r.get("translation_artifact_id") is not None
+            )
+            result["translations_succeeded"] = translations_succeeded
+
+            # Count articles still needing translation (not including those
+            # beyond the --limit that weren't considered this run).
+            result["untranslated_count"] = (
+                int(result["articles_scanned"])
+                - int(result["coverage_cache_hits"])
+                - translations_succeeded
+            )
+
+            # Breakdown of current holds by class for visibility.
+            current_holds = database.list_ai_generation_holds()
+            holds_by_class: Dict[str, int] = {}
+            for hold in current_holds:
+                hold_class = str(hold.get("hold_class") or "unknown")
+                holds_by_class[hold_class] = holds_by_class.get(hold_class, 0) + 1
+            result["holds_by_class"] = holds_by_class
+            result["total_holds"] = len(current_holds)
+
             # A durable hold prevents an automatic duplicate bill, but it still
             # needs operator attention.  Continue processing unrelated work so
-            # safe progress can be published, then leave the workflow visibly
-            # failed instead of silently reporting a complete AI cycle.
+            # safe progress can be published.
             #
             # Pre-existing holds (imported from a previous run's ai-cache) that
             # were merely skipped should not cause the job to fail; they require
-            # manual attention but do not indicate a regression this cycle.  New
-            # holds created THIS cycle (failures or ambiguous results) still fail.
+            # manual attention but do not indicate a regression this cycle.
+            #
+            # Layer 2 防呆: Even new failures/holds this cycle should not fail
+            # the job if publish succeeded.  The CLI still reports `completed`
+            # accurately for diagnostics, but the workflow marker decides the
+            # job conclusion based on whether Cloudflare publish succeeded.
             new_holds_this_cycle = (
                 int(result["generation_holds_skipped"])
                 - int(result["generation_holds_preexisting_skipped"])

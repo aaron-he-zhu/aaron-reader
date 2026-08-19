@@ -663,6 +663,101 @@ class AICliTests(unittest.TestCase):
         self.assertEqual(2, result["usage"]["confirmed_requests"])
         self.assertEqual([], Database(self.database_path).list_ai_generation_holds())
 
+    def test_openrouter_no_output_falls_back_to_deepseek(self):
+        """Layer 1 防呆: no_output with confirmed usage triggers DeepSeek fallback."""
+
+        class FixedDateTime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                value = cls(2026, 8, 1, 5, 0, tzinfo=timezone.utc)
+                return value if tz is None else value.astimezone(tz)
+
+        no_output_error = ProviderKnownError(
+            "provider returned a known unusable chat completion",
+            code="no_output",
+            usage=ProviderUsage(input_tokens=50, output_tokens=0, total_tokens=50),
+            model="routed-model",
+            request_id="request-no-output",
+            response_id="response-no-output",
+        )
+        output = io.StringIO()
+        with mock.patch.dict(
+            os.environ,
+            {
+                "OPENROUTER_API_KEY": "openrouter-test",
+                "DEEPSEEK_API_KEY": "deepseek-test",
+            },
+            clear=True,
+        ), mock.patch(
+            "aaron_reader.cli.datetime", FixedDateTime
+        ), mock.patch(
+            "aaron_reader.ai_provider.OpenRouterChatCompletionsProvider.generate",
+            side_effect=no_output_error,
+        ) as openrouter_generate, mock.patch(
+            "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
+            side_effect=self.cloud_provider_response,
+        ) as deepseek_generate, redirect_stdout(output):
+            status = main(
+                self.base_args() + ["ai", "cloud-run", "--yes", "--json"]
+            )
+
+        result = json.loads(output.getvalue())
+        self.assertEqual(0, status)
+        self.assertTrue(result["completed"])
+        self.assertEqual(1, openrouter_generate.call_count)
+        self.assertEqual(1, deepseek_generate.call_count)
+        self.assertTrue(result["fallback_activated"])
+        self.assertEqual("no_output", result["fallback_events"][0]["reason"])
+        self.assertTrue(result["fallback_events"][0]["primary_call_made"])
+        self.assertEqual([], Database(self.database_path).list_ai_generation_holds())
+
+    def test_openrouter_finish_length_falls_back_to_deepseek(self):
+        """Layer 1 防呆: finish_length with confirmed usage triggers DeepSeek fallback."""
+
+        class FixedDateTime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                value = cls(2026, 8, 1, 5, 0, tzinfo=timezone.utc)
+                return value if tz is None else value.astimezone(tz)
+
+        finish_length_error = ProviderKnownError(
+            "provider returned a known unusable chat completion",
+            code="finish_length",
+            usage=ProviderUsage(input_tokens=50, output_tokens=800, total_tokens=850),
+            model="routed-model",
+            request_id="request-finish-length",
+            response_id="response-finish-length",
+        )
+        output = io.StringIO()
+        with mock.patch.dict(
+            os.environ,
+            {
+                "OPENROUTER_API_KEY": "openrouter-test",
+                "DEEPSEEK_API_KEY": "deepseek-test",
+            },
+            clear=True,
+        ), mock.patch(
+            "aaron_reader.cli.datetime", FixedDateTime
+        ), mock.patch(
+            "aaron_reader.ai_provider.OpenRouterChatCompletionsProvider.generate",
+            side_effect=finish_length_error,
+        ) as openrouter_generate, mock.patch(
+            "aaron_reader.ai_provider.DeepSeekChatCompletionsProvider.generate",
+            side_effect=self.cloud_provider_response,
+        ) as deepseek_generate, redirect_stdout(output):
+            status = main(
+                self.base_args() + ["ai", "cloud-run", "--yes", "--json"]
+            )
+
+        result = json.loads(output.getvalue())
+        self.assertEqual(0, status)
+        self.assertTrue(result["completed"])
+        self.assertEqual(1, openrouter_generate.call_count)
+        self.assertEqual(1, deepseek_generate.call_count)
+        self.assertTrue(result["fallback_activated"])
+        self.assertEqual("finish_length", result["fallback_events"][0]["reason"])
+        self.assertEqual([], Database(self.database_path).list_ai_generation_holds())
+
     def test_budget_blocked_fallback_is_resumed_without_replaying_openrouter(self):
         class FixedDateTime(datetime):
             @classmethod
@@ -808,11 +903,11 @@ class AICliTests(unittest.TestCase):
             release_step,
         )
 
-        sentinel_name = "Mark an incomplete AI cycle after preserving valid progress"
+        sentinel_name = "Report incomplete AI cycle after successful publish"
         sentinel_step = step(sentinel_name)
         self.assertIn("        if: steps.ai.outcome == 'failure'\n", sentinel_step)
-        self.assertIn("sys.exit(1)", sentinel_step)
         self.assertIn("sys.exit(0)", sentinel_step)
+        self.assertNotIn("sys.exit(1)", sentinel_step)
         ordered_steps = [
             ai_name,
             "Export and independently validate both public handoffs",
@@ -1416,45 +1511,47 @@ class AICliTests(unittest.TestCase):
         self.assertEqual(1, len(holds))
         self.assertEqual("ambiguous", holds[0]["hold_class"])
 
-    def test_workflow_marker_step_does_not_fail_on_preexisting_holds(self):
-        """The workflow marker step should not exit 1 for pre-existing holds."""
+    def test_workflow_marker_never_fails_after_successful_publish(self):
+        """Layer 2 防呆: The marker step must NEVER exit 1 after successful publish."""
 
         marker_script = textwrap.dedent("""
             import json
             import sys
             from pathlib import Path
 
+            # Layer 2 防呆: If we reach this step, crawl/validate/push/Cloudflare verify
+            # have all succeeded.  A successful publish must NEVER be a red job.
+
             ai_result_path = Path("data/cloud-ai-run.json")
             if not ai_result_path.is_file():
-                print("AI result file not found; treating as hard failure")
-                sys.exit(1)
+                print("::warning::AI result file not found; publish succeeded but AI status unknown")
+                sys.exit(0)
 
             try:
                 result = json.loads(ai_result_path.read_text(encoding="utf-8"))
             except (OSError, json.JSONDecodeError) as e:
-                print("Failed to parse AI result: %s" % e)
-                sys.exit(1)
+                print("::warning::Failed to parse AI result: %s; publish succeeded but AI status unknown" % e)
+                sys.exit(0)
 
             failures = result.get("failures", [])
             new_holds = int(result.get("generation_holds_new_this_cycle", 0))
             preexisting_skipped = int(result.get("generation_holds_preexisting_skipped", 0))
             total_skipped = int(result.get("generation_holds_skipped", 0))
+            fallback_events = result.get("fallback_events", [])
+            untranslated = int(result.get("untranslated_count", 0))
 
-            if failures or new_holds > 0:
-                print("AI enrichment had new failures this cycle:")
-                print("  - failures: %d" % len(failures))
-                print("  - new holds this cycle: %d" % new_holds)
-                print("  - preexisting holds skipped: %d" % preexisting_skipped)
-                print("Validated partial progress was published to avoid replaying successful calls.")
-                sys.exit(1)
-
+            if failures:
+                print("::warning::AI enrichment had %d failure(s) this cycle" % len(failures))
+            if new_holds > 0:
+                print("::warning::AI created %d new hold(s) this cycle" % new_holds)
             if preexisting_skipped > 0:
-                print("::warning::AI backlog: %d pre-existing hold(s) were skipped (no new failures this cycle)" % preexisting_skipped)
-                print("Pre-existing holds require manual attention but do not indicate a regression.")
-                print("Cloudflare publish succeeded; treating this as a soft warning.")
-                sys.exit(0)
+                print("::warning::AI skipped %d pre-existing hold(s)" % preexisting_skipped)
+            if fallback_events:
+                print("::notice::AI fallback activated %d time(s)" % len(fallback_events))
+            if untranslated > 0:
+                print("::warning::%d article(s) remain untranslated" % untranslated)
 
-            print("AI step reported failure but no failures or holds found; treating as soft warning")
+            # ALWAYS succeed - publish was successful
             sys.exit(0)
         """).strip()
 
@@ -1468,6 +1565,7 @@ class AICliTests(unittest.TestCase):
                 "generation_holds_skipped": 2,
                 "generation_holds_preexisting_skipped": 2,
                 "generation_holds_new_this_cycle": 0,
+                "untranslated_count": 2,
             }
             (root / "data" / "cloud-ai-run.json").write_text(
                 json.dumps(preexisting_only), encoding="utf-8"
@@ -1490,6 +1588,7 @@ class AICliTests(unittest.TestCase):
                 "generation_holds_skipped": 1,
                 "generation_holds_preexisting_skipped": 0,
                 "generation_holds_new_this_cycle": 1,
+                "untranslated_count": 1,
             }
             (root / "data" / "cloud-ai-run.json").write_text(
                 json.dumps(new_holds), encoding="utf-8"
@@ -1502,8 +1601,8 @@ class AICliTests(unittest.TestCase):
                 text=True,
                 timeout=10,
             )
-            self.assertEqual(1, completed.returncode)
-            self.assertIn("new holds this cycle: 1", completed.stdout)
+            self.assertEqual(0, completed.returncode)
+            self.assertIn("1 new hold", completed.stdout)
 
             with_failures = {
                 "completed": False,
@@ -1511,6 +1610,7 @@ class AICliTests(unittest.TestCase):
                 "generation_holds_skipped": 0,
                 "generation_holds_preexisting_skipped": 0,
                 "generation_holds_new_this_cycle": 0,
+                "untranslated_count": 1,
             }
             (root / "data" / "cloud-ai-run.json").write_text(
                 json.dumps(with_failures), encoding="utf-8"
@@ -1523,8 +1623,8 @@ class AICliTests(unittest.TestCase):
                 text=True,
                 timeout=10,
             )
-            self.assertEqual(1, completed.returncode)
-            self.assertIn("failures: 1", completed.stdout)
+            self.assertEqual(0, completed.returncode)
+            self.assertIn("1 failure", completed.stdout)
 
 
 if __name__ == "__main__":
