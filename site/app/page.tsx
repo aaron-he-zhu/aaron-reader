@@ -5,7 +5,7 @@ import { Reader } from "./reader";
 export const metadata: Metadata = {
   title: "Aaron Reader — AI labs, without the noise",
   description:
-    "A deterministic feed for OpenAI, Anthropic, and Claude updates, with automatically refreshed multilingual AI enrichment.",
+    "Official OpenAI and Anthropic posts, in English and 简体中文. We only translate the title and short blurb — click through to read the original.",
   alternates: {
     canonical: "/",
     types: {
@@ -13,9 +13,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Aaron Reader",
+    title: "Aaron Reader — AI labs, without the noise",
     description:
-      "The work behind the AI frontier, collected at 09:15 and 21:15 San Francisco time.",
+      "Official OpenAI and Anthropic posts, in English and 简体中文. We only translate the title and short blurb — click through to read the original.",
     url: "/",
     images: [{ url: "/og.png", width: 1200, height: 630 }],
     type: "website",

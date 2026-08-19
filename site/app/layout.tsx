@@ -3,11 +3,16 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://aaron-reader.aaron-he-zhu.workers.dev/"),
-  title: "Aaron Reader",
-  description: "A deterministic signal reader for the leading AI labs.",
+  title: "Aaron Reader — AI labs, without the noise",
+  description: "Official OpenAI and Anthropic posts, in English and 简体中文. We only translate the title and short blurb — click through to read the original.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
+  },
+  openGraph: {
+    title: "Aaron Reader — AI labs, without the noise",
+    description: "Official OpenAI and Anthropic posts, in English and 简体中文. We only translate the title and short blurb — click through to read the original.",
+    type: "website",
   },
 };
 

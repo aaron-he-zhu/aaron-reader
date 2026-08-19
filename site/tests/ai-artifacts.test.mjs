@@ -4,6 +4,8 @@ import test from "node:test";
 import {
   artifactPayload,
   findArtifact,
+  hasValidTranslation,
+  textAppearsTranslated,
   translationSearchText,
 } from "../app/ai-artifacts.ts";
 
@@ -77,4 +79,65 @@ test("keeps compatibility with an older flattened artifact", () => {
     summary: "Legacy cached summary",
     keyPoints: ["Legacy point"],
   });
+});
+
+test("textAppearsTranslated returns false for Latin-only zh-CN output", () => {
+  assert.equal(textAppearsTranslated("This is English only", "zh-CN"), false);
+  assert.equal(textAppearsTranslated("Some long Latin text without any Chinese characters", "zh-CN"), false);
+});
+
+test("textAppearsTranslated returns true for text with CJK characters", () => {
+  assert.equal(textAppearsTranslated("中文标题", "zh-CN"), true);
+  assert.equal(textAppearsTranslated("GPT-5 发布公告", "zh-CN"), true);
+  assert.equal(textAppearsTranslated("OpenAI 的新模型", "zh-CN"), true);
+});
+
+test("textAppearsTranslated returns true for short text", () => {
+  assert.equal(textAppearsTranslated("Short", "zh-CN"), true);
+  assert.equal(textAppearsTranslated(null, "zh-CN"), true);
+  assert.equal(textAppearsTranslated("", "zh-CN"), true);
+});
+
+test("textAppearsTranslated returns true for English target language", () => {
+  assert.equal(textAppearsTranslated("This is English only", "en"), true);
+});
+
+test("hasValidTranslation returns false for Latin-only zh-CN translation", () => {
+  const payload = {
+    title: "English Title Without Translation",
+    publisherSummary: "English summary without translation",
+    summary: null,
+    keyPoints: [],
+  };
+  assert.equal(hasValidTranslation(payload, "zh-CN"), false);
+});
+
+test("hasValidTranslation returns true for properly translated zh-CN", () => {
+  const payload = {
+    title: "中文标题",
+    publisherSummary: "中文简介",
+    summary: null,
+    keyPoints: [],
+  };
+  assert.equal(hasValidTranslation(payload, "zh-CN"), true);
+});
+
+test("hasValidTranslation returns false for empty translation", () => {
+  const payload = {
+    title: null,
+    publisherSummary: null,
+    summary: null,
+    keyPoints: [],
+  };
+  assert.equal(hasValidTranslation(payload, "zh-CN"), false);
+});
+
+test("hasValidTranslation returns true when title is translated but summary is Latin", () => {
+  const payload = {
+    title: "中文标题",
+    publisherSummary: null,
+    summary: null,
+    keyPoints: [],
+  };
+  assert.equal(hasValidTranslation(payload, "zh-CN"), true);
 });

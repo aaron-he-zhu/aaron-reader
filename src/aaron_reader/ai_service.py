@@ -652,7 +652,9 @@ class AIService:
         """Select preflight holds that a successful result fully settles.
 
         A direct fallback-pending or paid-failure hold represents exactly the
-        requested task, so a successful generation settles it.  A legacy
+        requested task, so a successful generation settles it.  For translation
+        tasks, ambiguous holds are also retired when a valid translation now
+        exists, so they no longer block future same-hash regeneration.  A legacy
         article-pair hold is broader and may be settled only by the complete
         production translation (title plus publisher summary), never by a
         title-only or publisher-summary-only request.
@@ -663,13 +665,16 @@ class AIService:
             and set(prepared.translated_fields)
             == {"title", "publisher_summary"}
         )
+        clearable_classes = {"fallback_pending", "paid_failure"}
+        if prepared.task_type == "translation":
+            clearable_classes.add("ambiguous")
         return tuple(
             observation.delete_guard()
             for observation in observed_holds
             if (
                 complete_translation
                 if observation.legacy_pair
-                else observation.hold_class in {"fallback_pending", "paid_failure"}
+                else observation.hold_class in clearable_classes
             )
         )
 
@@ -1319,7 +1324,12 @@ class AIService:
         target_language: str = "zh-CN",
         input_scope: str = "metadata",
     ) -> Optional[Dict[str, object]]:
-        """Return current coverage regardless of the producing provider/model."""
+        """Return current coverage regardless of the producing provider/model.
+
+        For translation tasks, validates that the cached output actually appears
+        translated (contains CJK for zh-* targets).  An untranslated cached
+        artifact is treated as a miss so the cloud-run scan can regenerate it.
+        """
 
         if task_type not in {"summary", "translation"}:
             raise AIInputError("article task must be summary or translation")
@@ -1334,8 +1344,47 @@ class AIService:
                 and artifact.get("target_language") == language
                 and artifact.get("input_scope") == scope
             ):
+                if task_type == "translation" and not self._cached_artifact_is_translated(
+                    artifact, int(article_id), language
+                ):
+                    continue
                 return self._artifact_result(artifact, cache_hit=True)
         return None
+
+    def _cached_artifact_is_translated(
+        self,
+        artifact: Mapping[str, object],
+        article_id: int,
+        target_language: str,
+    ) -> bool:
+        """防呆: Validate cached translation actually appears translated.
+
+        Returns False if the cached output appears to be untranslated source
+        text (e.g. Latin-only title for a zh-CN target), which triggers a cache
+        miss so cloud-run can regenerate it with DeepSeek fallback.
+        """
+        try:
+            output_json = str(artifact.get("output_json") or "{}")
+            output = json.loads(output_json)
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return True
+
+        article = self.database.article(article_id)
+        if article is None:
+            return True
+
+        for field, source_key in (("title", "title"), ("publisher_summary", "summary")):
+            source_text = article.get(source_key)
+            output_text = output.get(field)
+            if (
+                isinstance(source_text, str)
+                and isinstance(output_text, str)
+                and source_text
+                and output_text
+                and _text_appears_untranslated(source_text, output_text, target_language)
+            ):
+                return False
+        return True
 
     def generate_article_pair(
         self,

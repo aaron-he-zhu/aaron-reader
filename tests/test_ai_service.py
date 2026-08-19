@@ -2717,5 +2717,145 @@ class AIServiceTests(unittest.TestCase):
         )
         self.assertEqual(1, len(provider.requests))
 
+    def test_current_article_artifact_treats_untranslated_cached_as_miss(self):
+        """Cached zh-CN translation with Latin-only title should be a miss.
+
+        This tests the 防呆 layer in current_article_artifact: existing cached
+        artifacts with Latin-only titles (created before validation was added)
+        should be treated as cache misses during cloud-run scans.
+        """
+        ai = enabled_ai(
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        service = AIService(self.app(ai), self.database, provider=FakeProvider())
+
+        article_id = int(self.article["id"])
+        prepared = service.prepare_article(
+            article_id,
+            task_type="translation",
+            target_language="zh-CN",
+            input_scope="metadata",
+            translated_fields=("title", "publisher_summary"),
+        )
+
+        untranslated_output = json.dumps({
+            "title": "Article",
+            "publisher_summary": "Publisher description",
+            "language": "zh-CN",
+            "limitations": "",
+        }, ensure_ascii=False)
+
+        with self.database.connect() as conn:
+            conn.execute("""
+                INSERT INTO ai_artifacts (
+                    article_id, task_type, input_scope, source_language,
+                    target_language, artifact_key, input_hash, article_content_hash,
+                    prompt_version, prompt_hash, response_schema_version,
+                    response_schema_hash, provider, requested_model, resolved_model,
+                    generation_params_hash, output_json, output_text, output_hash,
+                    status, input_truncated, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                article_id, "translation", "metadata", "",
+                "zh-CN", prepared.artifact_key, prepared.input_hash,
+                prepared.article_content_hash, "v1", "hash1", "v1", "hash2",
+                "test", "test-model", "test-model", prepared.generation_params_hash,
+                untranslated_output, "", "hash3", "succeeded", 0, utc_now()
+            ))
+            conn.commit()
+
+        result = service.current_article_artifact(
+            article_id,
+            task_type="translation",
+            target_language="zh-CN",
+        )
+        self.assertIsNone(result)
+
+    def test_current_article_artifact_accepts_properly_translated_artifact(self):
+        """Cached zh-CN translation with CJK title should be a hit."""
+        ai = enabled_ai(
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        service = AIService(self.app(ai), self.database, provider=FakeProvider())
+
+        article_id = int(self.article["id"])
+        service.generate_article(
+            article_id,
+            task_type="translation",
+            target_language="zh-CN",
+            input_scope="metadata",
+            translated_fields=("title", "publisher_summary"),
+        )
+
+        result = service.current_article_artifact(
+            article_id,
+            task_type="translation",
+            target_language="zh-CN",
+        )
+        self.assertIsNotNone(result)
+        self.assertTrue(result.get("cache_hit"))
+
+    def test_success_clears_ambiguous_hold_when_valid_translation_exists(self):
+        """Ambiguous holds should be retired when a valid translation is created."""
+        ai = enabled_ai(
+            provider="deepseek",
+            fallback_provider="",
+            summary_model=DEEPSEEK_MODEL,
+            translation_model=DEEPSEEK_MODEL,
+            api_key_environment="DEEPSEEK_API_KEY",
+        )
+        service = AIService(self.app(ai), self.database, provider=FakeProvider())
+        article_id = int(self.article["id"])
+
+        prepared = service.prepare_article(
+            article_id,
+            task_type="translation",
+            target_language="zh-CN",
+            input_scope="metadata",
+            translated_fields=("title", "publisher_summary"),
+        )
+        hold_template = service._generation_hold_template(
+            prepared, workload_kind="article"
+        )
+
+        held_at = utc_now()
+        self.database.replace_ai_generation_holds(
+            [
+                {
+                    **service._classified_generation_hold(hold_template, "ambiguous"),
+                    "first_seen_at": held_at,
+                    "last_seen_at": held_at,
+                }
+            ]
+        )
+
+        hold_key = str(hold_template["hold_key"])
+        self.assertIsNotNone(self.database.ai_generation_hold(hold_key))
+        self.assertEqual(
+            "ambiguous", self.database.ai_generation_hold(hold_key)["hold_class"]
+        )
+
+        result = service.generate_article(
+            article_id,
+            task_type="translation",
+            target_language="zh-CN",
+            input_scope="metadata",
+            translated_fields=("title", "publisher_summary"),
+            force_held=True,
+        )
+
+        self.assertIsNotNone(result)
+        self.assertFalse(result.get("cache_hit", False))
+        self.assertIsNone(self.database.ai_generation_hold(hold_key))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -66,8 +66,8 @@ by default. `force_held` remains an explicit broad recovery control that may
 bypass ambiguous holds; tests and documentation must not conflate it with the
 scheduled all-paid-failure rule.
 Every strictly valid artifact, ledger update, and hold produced before an
-incomplete cycle must be published atomically, while the final job still fails
-visibly if any article failed or remained held.
+incomplete cycle must be published atomically, while the final job finishes
+with a visible warning if any article failed or remained held.
 
 OpenRouter Free dynamically chooses an upstream free model, so tests must not
 assume one resolved model and production prompts must remain limited to public
