@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-18T16:50:45Z",
-  "bundle_hash": "1691fc7a418c5a0c9571ed167b9407c27fe401f149093eda24b5a6d6dbbcbe45",
+  "exported_at": "2026-08-19T04:55:28Z",
+  "bundle_hash": "1394656b120beafc30215ec20d23e632288b3771a0e659ec28910caf4cc56594",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -7826,6 +7826,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "f786f17e31c850491728ccf97a943491e9ba0ab2bdbde1bb2f72bbaffc5acdc5",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/nvidia/chatgpt-work",
+        "canonical_url": "https://openai.com/index/nvidia/chatgpt-work",
+        "content_hash": "e89ce570246502ed8924526a83ec55b785eb14c4b869547d5e35d2c17ffb52fa"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "dots-studio/dots-3-note-preview:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "仅基于提供的摘要信息，未包含完整文章内容；无法确认具体实施细节、团队规模或量化成果。",
+        "title": "How NVIDIA scales expertise with ChatGPT Work",
+        "publisher_summary": "NVIDIA团队使用ChatGPT Work来减少手动任务、连接快速变化的信号，并在全球范围内扩展成功的流程。"
+      },
+      "output_hash": "00a6026ad0c3c00ea2e4c652e3abf4f55547d0826666eba9b60a86065853cf5f",
+      "input_truncated": false,
+      "created_at": "2026-08-19T04:55:27Z"
+    },
+    {
       "cache_key": "ed9ef7aae0e4df3f5f11a8f9c8b021cd16876226f0b1496348b19a084ac422ed",
       "article": {
         "source_slug": "openai-news",
@@ -7918,6 +7948,36 @@
       "output_hash": "228424d5a47c0eb0919d0ef86716cab905d7bcec58822a5b80a14f285f5cbb63",
       "input_truncated": false,
       "created_at": "2026-08-17T16:49:05Z"
+    },
+    {
+      "cache_key": "f649513967a5faacad780c9f8387ef842bb1f7ae8b034ea2459f158708001aa5",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/pacing-model-development-cyber-capabilities",
+        "canonical_url": "https://openai.com/index/pacing-model-development-cyber-capabilities",
+        "content_hash": "b99c0d172276c72ad4b0752ec7abebca1f3c1ae4c3d47a8f259ae4b56328bdf2"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "dots-studio/dots-3-note-preview:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "仅基于提供的摘要内容进行翻译，未包含原文完整细节。摘要信息较简略，无法确认具体模型名称、技术细节或实施时间表。",
+        "title": "在具备关键网络能力的时代，掌控模型开发节奏",
+        "publisher_summary": "OpenAI 正在加强前沿人工智能模型的监控、对齐与安全措施。了解新型安全机制如何引导模型开发的节奏。"
+      },
+      "output_hash": "f851101a01f7445d34227dd99c80b9b2ce9ea76c9fdb433b866c162ff671641a",
+      "input_truncated": false,
+      "created_at": "2026-08-19T04:54:46Z"
     },
     {
       "cache_key": "439712c900f04c491aa7f3f58d1aafed4ce80c4a9acc255f77e6c92799c64f49",
@@ -8421,6 +8481,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "47ef95d282455212a7a9d0e27b747fa0ba5d95bf9d4d8d671d414feebacdbf78",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/strengthening-democratic-oversight-in-national-security",
+        "canonical_url": "https://openai.com/index/strengthening-democratic-oversight-in-national-security",
+        "content_hash": "9482301a300ad1ba26a21fd6214d352d79397b83006253db1912d38e2bfe9ca4"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "dots-studio/dots-3-note-preview:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "仅基于提供的文章数据进行翻译，未添加或推断任何额外信息。",
+        "title": "加强国家安全中的民主监督",
+        "publisher_summary": "OpenAI启动一项计划，以加强国家人工智能在国家安全领域的民主监督，为政府机构提供工具、培训和专业知识支持。"
+      },
+      "output_hash": "b20a3bfd04940b819b16b12e7ece5612dd29fc9d860788768f7e4ae47dbf273d",
+      "input_truncated": false,
+      "created_at": "2026-08-19T04:54:19Z"
+    },
+    {
       "cache_key": "ba89560c71b26808ae0d2b6427d3f9cc79e1e7c766006df019f8c224f7c978db",
       "article": {
         "source_slug": "openai-news",
@@ -8865,11 +8955,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "d86ac2518e7a5ff2135f419f40a784674bf7443f64032c968cb2708bbc41f954",
+      "ledger_key": "e2634d33538f106b8487adcfa8f475ae8451a644fb7f0b9027e1081d6c3c1eea",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -8885,11 +8975,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "c3e5c43a448e2f54c4a0dbaa35ca7ed1845f80fcba4860f41ef21c8ee4dce3b5",
+      "ledger_key": "32673eba199d3074807c7cedd098ce109031c0000f51b158c32f31da2be9e16d",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8905,11 +8995,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "39150edc290b2a620c198ddf2d2d4fc7476017573c43db2dbc2547d12a1887e2",
+      "ledger_key": "f641a14f4f743043c266a6a6699e4dd63075bfaecdc1a5802cf32870660248c5",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -8925,11 +9015,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "d3ad371ee71bd2944ffb7c9da19759fe1017ead0f520cbc03235ab523abc0c64",
+      "ledger_key": "15cbd23cf6729bc387a9c6c70ef2df9bac779a77d6f8e3db5a5a43eed53b6a68",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -8945,11 +9035,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "06186ab7ff178f317eb62459097d06a7515b83326030715ce2a6da6cb84c02d5",
+      "ledger_key": "7fd77ffb330ececff07ec273291c69bfd958b5198e1840beac69df436f7e5ba8",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -8965,11 +9055,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "56cb0d70575bd597e18e271bbf654bb52c6fe6bde6e9ad7a692f826916c2f605",
+      "ledger_key": "62d2f54665f29115b13483c2d7d05df0afc8d2373058fcc97b5c1a778db26843",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -8985,11 +9075,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "9ed1f8a8ebf9f062d4fdcdea46591d3d58385a3d7f6b39fad82ce4e10a0b540a",
+      "ledger_key": "703ac791dd09e15b462330093fb895c03177c0ecaf71cbe54ccf4c2f3ddd2513",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9005,11 +9095,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b2dd0f3590822dfcedd347ba01a33bfbee177ba456285b094ee796c1b64640d9",
+      "ledger_key": "120bd161d86c56759ac230b2b33626ed8048b6445b75e0efbff64365105c0dfb",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -9025,11 +9115,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1864a72ff19199b27bf543b101de1c4017159d53ba571314fcb2847402857c89",
+      "ledger_key": "7cfad7422f39f3a5c01f7d6968299aafbb2c4bedf0e9a0f7c11428a58b10dad9",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9045,11 +9135,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "94c77afc81b2df8a39775f2ad1b4ef418965b5451f62b62cca03c3758c914e44",
+      "ledger_key": "f33480587c8d216e86c3e8102bdc754e165c7c063a798f400eae0b5024fb115f",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9065,11 +9155,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "f508fa939ceb41c18d9248c627c556276a65695f1b224de9dbbd7245dfaccda8",
+      "ledger_key": "1e33bd12489bc7c2ae88a433a3f321c886ae44d0de097fe3d42836d32d23b1a2",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -9085,11 +9175,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "60683a29ff54e8c5319a8a4393c5fd8c72bb0145a3473a00ede5927106160a51",
+      "ledger_key": "1ba5f0e2015e078e5497aff8f04bfeff559c3bce1735338492120bcc533d2780",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9105,11 +9195,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "3e1dbbd33989a948ac7dbe3c41fc5ebe0607cbaff71283ad890c6e4ac51742f8",
+      "ledger_key": "5a2386ea681df414a6b76070c1b87537d069ed3384516c5a1d5bd863956074f9",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-17T07:00:00Z",
       "day_end": "2026-08-18T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
+      "covered_through": "2026-08-19T04:55:28Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9125,21 +9215,21 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "52c43ef8452bcd81e1a7f9eaf2edc71d6ba705ac2b8cdf9930d58b6dcf29b540",
+      "ledger_key": "998b89f6d9f97e685169fa1dc6bf178a403cb0ef88f9eb5f2532c5174b2f04fe",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-18T07:00:00Z",
       "day_end": "2026-08-19T07:00:00Z",
-      "covered_through": "2026-08-18T16:50:45Z",
-      "requests": 5,
-      "confirmed_requests": 5,
+      "covered_through": "2026-08-19T04:55:28Z",
+      "requests": 9,
+      "confirmed_requests": 9,
       "unconfirmed_requests": 0,
-      "input_tokens": 1993,
+      "input_tokens": 3326,
       "cached_input_tokens": 0,
-      "cache_miss_input_tokens": 1993,
+      "cache_miss_input_tokens": 3326,
       "cache_write_input_tokens": 0,
-      "output_tokens": 399,
-      "reasoning_tokens": 0,
-      "total_tokens": 2392,
+      "output_tokens": 1430,
+      "reasoning_tokens": 761,
+      "total_tokens": 4756,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
@@ -9337,6 +9427,38 @@
       },
       "first_seen_at": "2026-08-11T05:36:13Z",
       "last_seen_at": "2026-08-11T05:36:34Z"
+    },
+    {
+      "hold_key": "a8e6d0eb43c5090a1b9a0ac527bad7b3a20af16029b12ef3d5c7e2b993948905",
+      "workload_kind": "article",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://claude.com/blog/ai-ci-cd-on-call",
+            "content_hash": "1d353193c2987bcfdc08eb8f6e8719b748812a541b045fce3b8aa54bdbd99f7c",
+            "external_id": "https://claude.com/blog/ai-ci-cd-on-call",
+            "source_slug": "claude-blog"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "openrouter/free",
+        "portable_input_hash": "1c4f94731e80c684f3854b21fd2f51325d9e60777bc3b4ce5d2d747a90b7e2fa",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "openrouter",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-19T04:54:46Z",
+      "last_seen_at": "2026-08-19T04:55:07Z"
     },
     {
       "hold_key": "e524785d49ccb677eff5306cf0000283255583fd147748a43af5841197208def",
