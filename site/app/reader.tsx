@@ -51,13 +51,12 @@ const copy = {
     updated: "Updated",
     articles: "articles",
     sources: "sources",
-    search: "Search the archive",
+    search: "Search articles",
     allSources: "All sources",
     showing: "Showing",
     of: "of",
     noResults: "No articles match this view.",
     clear: "Clear filters",
-    read: "Read original",
     more: "Show more",
     about: "About",
     aboutText: "Updated twice a day. Chinese is added automatically for title + blurb.",
@@ -67,9 +66,6 @@ const copy = {
     degraded: "Degraded",
     error: "Error",
     never_synced: "Awaiting first sync",
-    aiTranslation: "AI translation",
-    generatedCached: "AI-generated · cached",
-    generatedOn: "Generated",
     feed: "RSS feed",
     digest: "Markdown digest",
     notTranslatedYet: "Chinese not ready yet — showing English.",
@@ -82,13 +78,12 @@ const copy = {
     updated: "更新时间",
     articles: "篇文章",
     sources: "个来源",
-    search: "搜索全部文章",
+    search: "搜索文章",
     allSources: "全部来源",
     showing: "当前显示",
     of: "共",
     noResults: "没有符合当前条件的文章。",
     clear: "清除筛选",
-    read: "阅读原文",
     more: "显示更多",
     about: "关于",
     aboutText: "每天更新两次。中文只自动补标题和简介。",
@@ -98,9 +93,6 @@ const copy = {
     degraded: "降级",
     error: "错误",
     never_synced: "等待首次同步",
-    aiTranslation: "AI 翻译",
-    generatedCached: "AI 生成 · 已缓存",
-    generatedOn: "生成于",
     feed: "RSS 订阅",
     digest: "Markdown 摘要",
     notTranslatedYet: "中文还没好，先显示英文。",
@@ -129,13 +121,17 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
   const [language, setLanguage] = useState<Language>("en");
   const [query, setQuery] = useState("");
   const [source, setSource] = useState("");
-  const [visible, setVisible] = useState(36);
+  const [visible, setVisible] = useState(50);
   const t = copy[language];
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get("lang");
     const stored = window.localStorage.getItem("aaron-reader-language");
     const frame = window.requestAnimationFrame(() => {
-      if (stored === "zh-CN" || stored === "en") {
+      if (urlLang === "zh-CN" || urlLang === "en") {
+        setLanguage(urlLang);
+      } else if (stored === "zh-CN" || stored === "en") {
         setLanguage(stored);
       } else {
         const browserLang = navigator.language || "";
@@ -193,7 +189,7 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
           <a href="/reader/digest.md">{t.digest}</a>
           <span className="language-switch" role="group" aria-label={t.language}>
             <button className={language === "en" ? "active" : ""} onClick={() => chooseLanguage("en")}>EN</button>
-            <span aria-hidden="true">/</span>
+            <span className="lang-sep" aria-hidden="true">/</span>
             <button className={language === "zh-CN" ? "active" : ""} onClick={() => chooseLanguage("zh-CN")}>简</button>
           </span>
         </nav>
@@ -225,7 +221,7 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
                   value={query}
                   onChange={(event) => {
                     setQuery(event.target.value);
-                    setVisible(36);
+                    setVisible(50);
                   }}
                   placeholder={t.search}
                   aria-label={t.search}
@@ -233,7 +229,7 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
               </label>
               <select value={source} onChange={(event) => {
                 setSource(event.target.value);
-                setVisible(36);
+                setVisible(50);
               }} aria-label={t.allSources}>
                 <option value="">{t.allSources}</option>
                 {snapshot.sources.map((item) => <option key={item.slug} value={item.slug}>{item.name}</option>)}
@@ -263,25 +259,11 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
                         <time dateTime={article.published_at || undefined}>{formatDate(article.published_at, language)}</time>
                         {article.category && <span>{article.category}</span>}
                       </div>
-                      <h2><a href={article.url} target="_blank" rel="noopener noreferrer">{title}</a></h2>
-                      {hasTranslation && (
-                        <div className="ai-translation-note" aria-label={t.aiTranslation}>
-                          <strong>{t.aiTranslation}</strong>
-                          <span className="ai-state"><i />{t.generatedCached}</span>
-                          {translationArtifact?.generated_at && (
-                            <time dateTime={translationArtifact.generated_at}>
-                              {t.generatedOn} {formatDate(translationArtifact.generated_at, language)}
-                            </time>
-                          )}
-                        </div>
-                      )}
+                      <h2><a href={article.url} target="_blank" rel="noopener noreferrer">{title}<span className="external-arrow" aria-hidden="true">↗</span></a></h2>
                       {showNotTranslatedYet && (
                         <p className="not-translated-note">{t.notTranslatedYet}</p>
                       )}
                       {hasSummary ? <p>{publisherSummary}</p> : <p className="no-summary">{t.noSummary}</p>}
-                      <div className="article-links">
-                        <a className="read-link" href={article.url} target="_blank" rel="noopener noreferrer">{t.read}<span aria-hidden="true">↗</span></a>
-                      </div>
                     </div>
                   </article>
                 );
@@ -289,7 +271,7 @@ export function Reader({ snapshot }: { snapshot: Snapshot }) {
             </div>
 
             {filtered.length === 0 && <div className="empty"><p>{t.noResults}</p><button onClick={reset}>{t.clear}</button></div>}
-            {visible < filtered.length && <button className="show-more" onClick={() => setVisible((count) => count + 36)}>{t.more} <span>+{Math.min(36, filtered.length - visible)}</span></button>}
+            {visible < filtered.length && <button className="show-more" onClick={() => setVisible((count) => count + 50)}>{t.more} <span>+{Math.min(50, filtered.length - visible)}</span></button>}
           </div>
 
           <aside className="system-panel">
