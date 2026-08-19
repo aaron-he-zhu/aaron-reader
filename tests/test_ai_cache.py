@@ -1415,5 +1415,423 @@ class TrackedPublicAICacheTests(unittest.TestCase):
         self.assertNotIn("starred_at", keys)
 
 
+class UntranslatedCacheImportTests(unittest.TestCase):
+    """Integration tests for dropping untranslated artifacts during import.
+
+    Uses the REAL problematic cache records from Production #38 that motivated PR #15:
+    - NVIDIA article with English title but Chinese summary
+    - Model ML article with both English title and summary
+    Plus a good Chinese control that should import successfully.
+    """
+
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory()
+        self.root = Path(self.temporary.name)
+        self.openai_source = SourceConfig(
+            slug="openai-news",
+            name="OpenAI News",
+            home_url="https://openai.com/news/",
+            fetch_url="https://openai.com/news/rss.xml",
+            adapter="rss",
+        )
+        self.anthropic_source = SourceConfig(
+            slug="anthropic-news",
+            name="Anthropic News",
+            home_url="https://www.anthropic.com/news",
+            fetch_url="https://www.anthropic.com/news",
+            adapter="anthropic_news",
+        )
+        self.config = AppConfig(
+            sources=[self.openai_source, self.anthropic_source],
+            ai=AIConfig(
+                enabled=True,
+                provider="deepseek",
+                fallback_provider="",
+                summary_model="deepseek-v4-flash",
+                translation_model="deepseek-v4-flash",
+                reasoning_effort="none",
+                api_key_environment="DEEPSEEK_API_KEY",
+            ),
+        )
+        self.database = self._create_database_with_articles()
+
+    def tearDown(self) -> None:
+        self.temporary.cleanup()
+
+    def _create_database_with_articles(self) -> Database:
+        database = Database(self.root / "test.sqlite3")
+        database.initialize()
+        database.sync_source_configs([self.openai_source, self.anthropic_source])
+        nvidia_candidate = ArticleCandidate(
+            source_slug="openai-news",
+            external_id="https://openai.com/index/nvidia/chatgpt-work",
+            url="https://openai.com/index/nvidia/chatgpt-work",
+            title="How NVIDIA scales expertise with ChatGPT Work",
+            summary="NVIDIA teams use ChatGPT Work to reduce manual tasks and connect rapidly changing signals.",
+            author="OpenAI",
+            category="News",
+            published_at="2026-08-19T00:00:00Z",
+            content_hash="e89ce570246502ed8924526a83ec55b785eb14c4b869547d5e35d2c17ffb52fa",
+        )
+        model_ml_candidate = ArticleCandidate(
+            source_slug="openai-news",
+            external_id="https://openai.com/index/model-ml",
+            url="https://openai.com/index/model-ml",
+            title="Model ML completes finance work more efficiently with GPT-5.6 Sol",
+            summary="Model ML uses GPT-5.6 Sol to carry finance work from research and analysis through editable, traceable PowerPoint decks and Excel workbooks.",
+            author="OpenAI",
+            category="News",
+            published_at="2026-08-11T00:00:00Z",
+            content_hash="3f1fde4002e985b92d72cc7fb6d50652fc58267c611712d44730c028915a1692",
+        )
+        anthropic_candidate = ArticleCandidate(
+            source_slug="anthropic-news",
+            external_id="https://www.anthropic.com/news/anthropic-economic-index-connector",
+            url="https://www.anthropic.com/news/anthropic-economic-index-connector",
+            title="Ask Claude about the Anthropic Economic Index",
+            summary="",
+            author="Anthropic",
+            category="News",
+            published_at="2026-08-02T00:00:00Z",
+            content_hash="4d5dd7244ed3325a0018cd327431dbc930e33283ed81d9bd4b1982b5ae1b9790",
+        )
+        database.commit_candidates(
+            self.openai_source,
+            [nvidia_candidate, model_ml_candidate],
+            started_at="2026-08-19T10:00:00Z",
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="openai-test",
+        )
+        database.commit_candidates(
+            self.anthropic_source,
+            [anthropic_candidate],
+            started_at="2026-08-19T10:00:00Z",
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="anthropic-test",
+        )
+        return database
+
+    def _create_test_bundle(self) -> Path:
+        """Create a minimal cache bundle with the real problematic records."""
+        nvidia_artifact = {
+            "cache_key": "f786f17e31c850491728ccf97a943491e9ba0ab2bdbde1bb2f72bbaffc5acdc5",
+            "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/nvidia/chatgpt-work",
+                "canonical_url": "https://openai.com/index/nvidia/chatgpt-work",
+                "content_hash": "e89ce570246502ed8924526a83ec55b785eb14c4b869547d5e35d2c17ffb52fa",
+            },
+            "task_type": "translation",
+            "input_scope": "metadata",
+            "source_language": "unknown",
+            "target_language": "zh-CN",
+            "prompt_version": "ai-enrichment-v1",
+            "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+            "response_schema_version": "ai-output-v1",
+            "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+            "provider": "openrouter",
+            "requested_model": "openrouter/free",
+            "resolved_model": "dots-studio/dots-3-note-preview:free",
+            "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+            "output": {
+                "language": "zh-CN",
+                "limitations": "仅基于提供的摘要信息，未包含完整文章内容；无法确认具体实施细节、团队规模或量化成果。",
+                "title": "How NVIDIA scales expertise with ChatGPT Work",
+                "publisher_summary": "NVIDIA团队使用ChatGPT Work来减少手动任务、连接快速变化的信号，并在全球范围内扩展成功的流程。",
+            },
+            "output_hash": "00a6026ad0c3c00ea2e4c652e3abf4f55547d0826666eba9b60a86065853cf5f",
+            "input_truncated": False,
+            "created_at": "2026-08-19T04:55:27Z",
+        }
+        model_ml_artifact = {
+            "cache_key": "84fd7321bb0a595fb42e78ceb0d749d163389ac04541a7b39f3a20a10d12ad04",
+            "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/model-ml",
+                "canonical_url": "https://openai.com/index/model-ml",
+                "content_hash": "3f1fde4002e985b92d72cc7fb6d50652fc58267c611712d44730c028915a1692",
+            },
+            "task_type": "translation",
+            "input_scope": "metadata",
+            "source_language": "unknown",
+            "target_language": "zh-CN",
+            "prompt_version": "ai-enrichment-v1",
+            "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+            "response_schema_version": "ai-output-v1",
+            "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+            "provider": "openrouter",
+            "requested_model": "openrouter/free",
+            "resolved_model": "google/gemma-4-26b-a4b-it:free",
+            "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+            "output": {
+                "language": "zh-CN",
+                "limitations": "Based on the provided summary only.",
+                "title": "Model ML completes finance work more efficiently with GPT-5.6 Sol",
+                "publisher_summary": "Model ML uses GPT-5.6 Sol to carry finance work from research and analysis through editable, traceable PowerPoint decks and Excel workbooks.",
+            },
+            "output_hash": "04779266f7e88358cf49a44776e3d2d2fb55d9f100bb73a48b3ac7bace505594",
+            "input_truncated": False,
+            "created_at": "2026-08-11T05:32:48Z",
+        }
+        good_chinese_artifact = {
+            "cache_key": "50f9dc54caf64efb692074d76d221c41ea501254e746bd1fc220904c3653bf6b",
+            "article": {
+                "source_slug": "anthropic-news",
+                "external_id": "https://www.anthropic.com/news/anthropic-economic-index-connector",
+                "canonical_url": "https://www.anthropic.com/news/anthropic-economic-index-connector",
+                "content_hash": "4d5dd7244ed3325a0018cd327431dbc930e33283ed81d9bd4b1982b5ae1b9790",
+            },
+            "task_type": "translation",
+            "input_scope": "metadata",
+            "source_language": "unknown",
+            "target_language": "zh-CN",
+            "prompt_version": "ai-enrichment-v1",
+            "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+            "response_schema_version": "ai-output-v1",
+            "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+            "provider": "chatgpt-codex-subscription",
+            "requested_model": "gpt-5.6-luna",
+            "resolved_model": "gpt-5.6-luna",
+            "generation_params_hash": "bd6f4e320e48ae894fbf2375ac97f856b960ac8af5d24448db550c33fe07a790",
+            "output": {
+                "language": "zh-CN",
+                "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
+                "title": "向 Claude 询问 Anthropic Economic Index",
+                "publisher_summary": "",
+            },
+            "output_hash": "907d2ad802fa64028f35742f3e792767a625751a9cec8914d1d7273ba63775b1",
+            "input_truncated": False,
+            "created_at": "2026-08-02T07:12:37Z",
+        }
+        artifacts = sorted(
+            [model_ml_artifact, nvidia_artifact, good_chinese_artifact],
+            key=lambda a: (
+                a["article"]["source_slug"],
+                a["article"]["external_id"],
+                a["article"]["canonical_url"],
+                a["task_type"],
+                a["target_language"],
+            ),
+        )
+        bundle = {
+            "protocol": AI_CACHE_PROTOCOL,
+            "exported_at": "2026-08-19T12:00:00Z",
+            "bundle_hash": "0" * 64,
+            "artifacts": artifacts,
+            "usage_ledger": [],
+            "generation_holds": [],
+        }
+        bundle["bundle_hash"] = _cache_hash(bundle)
+        bundle_path = self.root / "test-bundle.json"
+        with bundle_path.open("w", encoding="utf-8") as f:
+            json.dump(bundle, f, ensure_ascii=False, indent=2)
+        return bundle_path
+
+    def test_import_drops_untranslated_artifacts(self):
+        """Untranslated translation artifacts should be dropped during import."""
+        bundle_path = self._create_test_bundle()
+        result = import_ai_cache(self.database, self.config, bundle_path)
+        self.assertEqual(2, result["dropped_untranslated"])
+        self.assertEqual(1, result["artifacts"])
+        self.assertEqual(1, result["inserted_artifacts"])
+
+    def test_current_article_artifact_returns_none_for_dropped(self):
+        """current_article_artifact should return None for dropped untranslated artifacts."""
+        bundle_path = self._create_test_bundle()
+        import_ai_cache(self.database, self.config, bundle_path)
+        service = AIService(self.config, self.database)
+        articles = self.database.list_articles(limit=10)
+        nvidia_article = next(
+            a for a in articles
+            if "nvidia" in a["canonical_url"]
+        )
+        model_ml_article = next(
+            a for a in articles
+            if "model-ml" in a["canonical_url"]
+        )
+        anthropic_article = next(
+            a for a in articles
+            if "anthropic" in a["canonical_url"]
+        )
+        nvidia_result = service.current_article_artifact(
+            int(nvidia_article["id"]),
+            task_type="translation",
+            target_language="zh-CN",
+        )
+        self.assertIsNone(nvidia_result)
+        model_ml_result = service.current_article_artifact(
+            int(model_ml_article["id"]),
+            task_type="translation",
+            target_language="zh-CN",
+        )
+        self.assertIsNone(model_ml_result)
+        anthropic_result = service.current_article_artifact(
+            int(anthropic_article["id"]),
+            task_type="translation",
+            target_language="zh-CN",
+        )
+        self.assertIsNotNone(anthropic_result)
+        self.assertIn("向 Claude 询问", anthropic_result["output"]["title"])
+
+    def test_mixed_chinese_product_names_imports_as_hit(self):
+        """Translations with mixed Chinese + product names (NVIDIA/ChatGPT/GPT) should import."""
+        mixed_artifact = {
+            "cache_key": "",
+            "article": {
+                "source_slug": "openai-news",
+                "external_id": "https://openai.com/index/nvidia/chatgpt-work",
+                "canonical_url": "https://openai.com/index/nvidia/chatgpt-work",
+                "content_hash": "e89ce570246502ed8924526a83ec55b785eb14c4b869547d5e35d2c17ffb52fa",
+            },
+            "task_type": "translation",
+            "input_scope": "metadata",
+            "source_language": "unknown",
+            "target_language": "zh-CN",
+            "prompt_version": "ai-enrichment-v1",
+            "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+            "response_schema_version": "ai-output-v1",
+            "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+            "provider": "deepseek",
+            "requested_model": "deepseek-v4-flash",
+            "resolved_model": "deepseek-v4-flash",
+            "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+            "output": {
+                "language": "zh-CN",
+                "limitations": "",
+                "title": "NVIDIA 如何通过 ChatGPT Work 扩展专业知识",
+                "publisher_summary": "NVIDIA 团队使用 ChatGPT Work 和 GPT-5.6 减少手动任务并扩展流程。",
+            },
+            "output_hash": stable_hash(canonical_json({
+                "language": "zh-CN",
+                "limitations": "",
+                "title": "NVIDIA 如何通过 ChatGPT Work 扩展专业知识",
+                "publisher_summary": "NVIDIA 团队使用 ChatGPT Work 和 GPT-5.6 减少手动任务并扩展流程。",
+            })),
+            "input_truncated": False,
+            "created_at": "2026-08-19T10:00:00Z",
+        }
+        mixed_artifact["cache_key"] = _entry_hash(mixed_artifact)
+        bundle = {
+            "protocol": AI_CACHE_PROTOCOL,
+            "exported_at": "2026-08-19T12:00:00Z",
+            "bundle_hash": "0" * 64,
+            "artifacts": [mixed_artifact],
+            "usage_ledger": [],
+            "generation_holds": [],
+        }
+        bundle["bundle_hash"] = _cache_hash(bundle)
+        bundle_path = self.root / "mixed-bundle.json"
+        with bundle_path.open("w", encoding="utf-8") as f:
+            json.dump(bundle, f, ensure_ascii=False, indent=2)
+        result = import_ai_cache(self.database, self.config, bundle_path)
+        self.assertEqual(0, result["dropped_untranslated"])
+        self.assertEqual(1, result["artifacts"])
+        self.assertEqual(1, result["inserted_artifacts"])
+        service = AIService(self.config, self.database)
+        articles = self.database.list_articles(limit=10)
+        nvidia_article = next(
+            a for a in articles
+            if "nvidia" in a["canonical_url"]
+        )
+        nvidia_result = service.current_article_artifact(
+            int(nvidia_article["id"]),
+            task_type="translation",
+            target_language="zh-CN",
+        )
+        self.assertIsNotNone(nvidia_result)
+        self.assertIn("NVIDIA 如何通过", nvidia_result["output"]["title"])
+
+    def test_regeneration_after_dropped_import_produces_cjk_titles(self):
+        """After dropping untranslated artifacts, regeneration should produce CJK titles."""
+        bundle_path = self._create_test_bundle()
+        import_ai_cache(self.database, self.config, bundle_path)
+
+        class ChineseTranslationProvider:
+            def __init__(self):
+                self.generate_calls = []
+
+            def generate(self, request):
+                self.generate_calls.append(request)
+                input_value = json.loads(request.input_text)
+                title = input_value.get("title", "")
+                summary = input_value.get("publisher_summary", "")
+                if "NVIDIA" in title:
+                    output = {
+                        "title": "NVIDIA 如何通过 ChatGPT Work 扩展专业知识",
+                        "publisher_summary": "NVIDIA 团队使用 ChatGPT Work 减少手动任务并扩展流程。",
+                        "language": "zh-CN",
+                        "limitations": "",
+                    }
+                elif "Model ML" in title:
+                    output = {
+                        "title": "Model ML 如何使用 GPT-5.6 Sol 更高效地完成财务工作",
+                        "publisher_summary": "Model ML 使用 GPT-5.6 Sol 完成财务研究和分析工作。",
+                        "language": "zh-CN",
+                        "limitations": "",
+                    }
+                else:
+                    output = {
+                        "title": "翻译：%s" % title,
+                        "publisher_summary": "翻译：%s" % summary if summary else "",
+                        "language": "zh-CN",
+                        "limitations": "",
+                    }
+                return ProviderResponse(
+                    output_text=json.dumps(output, ensure_ascii=False),
+                    usage=ProviderUsage(input_tokens=100, output_tokens=50, total_tokens=150),
+                    model="deepseek-v4-flash",
+                    request_id="test-request",
+                )
+
+        provider = ChineseTranslationProvider()
+        service = AIService(self.config, self.database, provider=provider)
+        articles = self.database.list_articles(limit=10)
+        nvidia_article = next(
+            a for a in articles
+            if "nvidia" in a["canonical_url"]
+        )
+        model_ml_article = next(
+            a for a in articles
+            if "model-ml" in a["canonical_url"]
+        )
+        with mock.patch.dict("os.environ", {"DEEPSEEK_API_KEY": "test-key"}):
+            nvidia_result = service.generate_article(
+                int(nvidia_article["id"]),
+                task_type="translation",
+                target_language="zh-CN",
+            )
+            model_ml_result = service.generate_article(
+                int(model_ml_article["id"]),
+                task_type="translation",
+                target_language="zh-CN",
+            )
+        self.assertEqual(2, len(provider.generate_calls))
+        self.assertIn("NVIDIA 如何通过", nvidia_result["output"]["title"])
+        self.assertIn("Model ML 如何使用", model_ml_result["output"]["title"])
+        export_path = self.root / "re-export.json"
+        export_result = export_ai_cache(self.database, self.config, export_path)
+        with export_path.open("r", encoding="utf-8") as f:
+            exported = json.load(f)
+        exported_titles = [
+            a["output"]["title"]
+            for a in exported["artifacts"]
+            if a["task_type"] == "translation"
+        ]
+        self.assertNotIn(
+            "How NVIDIA scales expertise with ChatGPT Work",
+            exported_titles,
+        )
+        self.assertNotIn(
+            "Model ML completes finance work more efficiently with GPT-5.6 Sol",
+            exported_titles,
+        )
+        chinese_titles = [t for t in exported_titles if any(0x4E00 <= ord(c) <= 0x9FFF for c in t)]
+        self.assertEqual(len(exported_titles), len(chinese_titles))
+
+
 if __name__ == "__main__":
     unittest.main()
