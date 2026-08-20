@@ -865,6 +865,69 @@ def _validated_db_output(
     return validated, readable
 
 
+def _is_publisher_artifact(row: Mapping[str, object]) -> bool:
+    """Check if an artifact row is a publisher-provided translation."""
+    return str(row.get("provider") or "") == "publisher"
+
+
+def _validated_publisher_output(
+    row: Mapping[str, object],
+) -> Tuple[Dict[str, object], str]:
+    """Validate a publisher artifact's output without a PreparedTask.
+
+    Publisher artifacts use fixed prompt/schema markers ('publisher', '') and
+    don't go through AI model calls, so they cannot use the normal contract
+    matching. This validates the output structure and CJK requirement.
+    """
+    task_type = str(row.get("task_type") or "")
+    target_language = str(row.get("target_language") or "")
+    input_scope = str(row.get("input_scope") or "")
+    if task_type != "translation" or input_scope != "metadata":
+        raise ValueError("publisher artifact must be a metadata translation")
+    try:
+        validated, readable = parse_and_validate_output(
+            task_type,
+            str(row.get("output_json") or ""),
+            target_language=target_language,
+            input_scope=input_scope,
+            translated_fields=("title", "publisher_summary"),
+        )
+    except ValueError as exc:
+        raise ValueError("publisher artifact output failed validation: %s" % exc) from exc
+    output_json = canonical_json(validated)
+    if str(row.get("output_json") or "") != output_json:
+        raise ValueError("publisher artifact output is not canonical JSON")
+    if str(row.get("output_hash") or "") != stable_hash(output_json):
+        raise ValueError("publisher artifact output hash is invalid")
+    if str(row.get("output_text") or "") != readable:
+        raise ValueError("publisher artifact readable output is inconsistent")
+    return validated, readable
+
+
+def _publisher_artifact_fields(
+    row: Mapping[str, object], output: Mapping[str, object]
+) -> Dict[str, object]:
+    """Return portable artifact fields for a publisher-provided translation."""
+    return {
+        "task_type": str(row["task_type"]),
+        "input_scope": str(row["input_scope"]),
+        "source_language": str(row["source_language"]),
+        "target_language": str(row["target_language"]),
+        "prompt_version": "publisher",
+        "prompt_hash": stable_hash("publisher"),
+        "response_schema_version": "publisher",
+        "response_schema_hash": stable_hash("publisher"),
+        "provider": "publisher",
+        "requested_model": "publisher",
+        "resolved_model": "publisher",
+        "generation_params_hash": stable_hash("publisher"),
+        "output": dict(output),
+        "output_hash": stable_hash(canonical_json(output)),
+        "input_truncated": False,
+        "created_at": str(row["created_at"]),
+    }
+
+
 def _article_rows(connection: sqlite3.Connection) -> List[Dict[str, object]]:
     return [
         dict(row)
@@ -1100,6 +1163,21 @@ def export_ai_cache(
     with database.connect() as connection:
         rows = _article_rows(connection)
     for row in rows:
+        identity = _identity_from_row(row)
+        if _is_publisher_artifact(row):
+            try:
+                output, _ = _validated_publisher_output(row)
+            except ValueError:
+                skipped_incompatible += 1
+                continue
+            entry: Dict[str, object] = {
+                "cache_key": "",
+                "article": identity,
+                **_publisher_artifact_fields(row, output),
+            }
+            entry["cache_key"] = _entry_hash(entry)
+            artifacts.append(entry)
+            continue
         prepared = service.prepare_article(
             int(row["article_id"]),
             task_type=str(row["task_type"]),
@@ -1107,16 +1185,11 @@ def export_ai_cache(
             input_scope="metadata",
             translated_fields=("title", "publisher_summary"),
         )
-        # Input hashes are independent of provider/model settings and ensure
-        # the stored result was originally bound to this exact metadata and
-        # local article version.  Artifact keys and model provenance are not
-        # required to match the current provider configuration.
         if not _row_contract_matches_prepared(row, prepared):
             skipped_incompatible += 1
             continue
         output, _ = _validated_db_output(row, prepared)
-        identity = _identity_from_row(row)
-        entry: Dict[str, object] = {
+        entry = {
             "cache_key": "",
             "article": identity,
             **_portable_artifact_fields(row, output),
@@ -1251,6 +1324,51 @@ def _db_artifact(
     }
 
 
+def _db_publisher_artifact(
+    article_id: int,
+    article_content_hash: str,
+    portable: Mapping[str, object],
+    validated_output: Mapping[str, object],
+    readable: str,
+) -> Dict[str, object]:
+    """Create a database artifact dict for a publisher-provided translation."""
+    output_json = canonical_json(validated_output)
+    target_language = str(portable["target_language"])
+    artifact_key = stable_hash(
+        "publisher-locale:%d:%s" % (article_id, target_language)
+    )
+    input_hash = stable_hash(
+        "publisher:%d:%s" % (article_id, article_content_hash)
+    )
+    return {
+        "article_id": article_id,
+        "task_type": "translation",
+        "input_scope": "metadata",
+        "source_language": str(portable["source_language"]),
+        "target_language": target_language,
+        "artifact_key": artifact_key,
+        "input_hash": input_hash,
+        "article_content_hash": article_content_hash,
+        "source_artifact_id": None,
+        "content_snapshot_id": None,
+        "prompt_version": "publisher",
+        "prompt_hash": "",
+        "response_schema_version": "publisher",
+        "response_schema_hash": "",
+        "provider": "publisher",
+        "requested_model": "publisher",
+        "resolved_model": "publisher",
+        "generation_params_hash": "",
+        "provider_response_id": "",
+        "output_json": output_json,
+        "output_text": readable,
+        "output_hash": stable_hash(output_json),
+        "status": "succeeded",
+        "input_truncated": 0,
+        "created_at": str(portable["created_at"]),
+    }
+
+
 def _insert_artifact(
     connection: sqlite3.Connection, artifact: Mapping[str, object]
 ) -> Tuple[int, bool]:
@@ -1307,6 +1425,11 @@ def _artifact_appears_untranslated(
     return False
 
 
+def _is_publisher_portable_artifact(entry: Mapping[str, object]) -> bool:
+    """Check if a portable artifact entry is a publisher-provided translation."""
+    return str(entry.get("provider") or "") == "publisher"
+
+
 def _resolved_payload(
     database: Database,
     app_config: AppConfig,
@@ -1337,14 +1460,33 @@ def _resolved_payload(
     dropped_untranslated = 0
     for index, entry in enumerate(payload["artifacts"]):  # type: ignore[index]
         row = identity_rows[_identity_key(entry["article"])]
+        article_id = int(row["id"])
+        article_content_hash = str(entry["article"]["content_hash"])
+        if str(row["content_hash"]) != article_content_hash:
+            raise ValueError("AI cache article content_hash changed during import")
+        if _is_publisher_portable_artifact(entry):
+            if _artifact_appears_untranslated(entry, row):
+                dropped_untranslated += 1
+                continue
+            validated, readable = _validate_article_output(
+                entry, "artifacts[%d]" % index
+            )
+            artifact = _db_publisher_artifact(
+                article_id, article_content_hash, entry, validated, readable
+            )
+            if artifact["artifact_key"] in local_key_seen:
+                raise ValueError("AI cache entries map to a duplicate local artifact key")
+            local_key_seen.add(artifact["artifact_key"])
+            artifacts.append(artifact)
+            continue
         prepared = service.prepare_article(
-            int(row["id"]),
+            article_id,
             task_type=str(entry["task_type"]),
             target_language=str(entry["target_language"]),
             input_scope="metadata",
             translated_fields=("title", "publisher_summary"),
         )
-        if prepared.article_content_hash != str(entry["article"]["content_hash"]):
+        if prepared.article_content_hash != article_content_hash:
             raise ValueError("AI cache article content_hash changed during import")
         if not _prepared_contract_matches(prepared, entry):
             raise ValueError(

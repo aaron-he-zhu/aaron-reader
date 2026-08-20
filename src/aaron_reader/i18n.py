@@ -155,6 +155,8 @@ _MESSAGES = {
         "sync.sitemap_remaining": "{count} sitemap URL(s) remain in the persistent queue and will continue in later runs",
         "sync.metadata_missing": "OpenAI Developer HTML listing is missing {url}",
         "sync.metadata_failed": "OpenAI Developer date hydration failed: {error}",
+        "sync.zh_locale_listing_failed": "CN locale listing fetch failed: {error}",
+        "sync.zh_locale_store_failed": "failed to store CN locale for {slug}: {error}",
     },
     "zh-CN": {
         "language.name": "简体中文",
@@ -285,6 +287,8 @@ _MESSAGES = {
         "sync.sitemap_remaining": "仍有 {count} 个 sitemap URL 在持久队列中，后续轮次继续处理",
         "sync.metadata_missing": "OpenAI Developer HTML 列表缺少 {url}",
         "sync.metadata_failed": "OpenAI Developer 日期列表补全失败：{error}",
+        "sync.zh_locale_listing_failed": "中文列表页抓取失败：{error}",
+        "sync.zh_locale_store_failed": "无法存储 {slug} 中文本地化：{error}",
     },
 }
 

@@ -11,7 +11,7 @@ sys.path.insert(0, str(REPOSITORY_ROOT / "src"))
 
 from aaron_reader.database import Database  # noqa: E402
 from aaron_reader.http_client import FetchError  # noqa: E402
-from aaron_reader.models import AppConfig, FetchResult, SourceConfig  # noqa: E402
+from aaron_reader.models import AppConfig, ArticleCandidate, FetchResult, SourceConfig  # noqa: E402
 from aaron_reader.sync import SyncAlreadyRunning, sync_all, sync_lock  # noqa: E402
 
 
@@ -586,6 +586,257 @@ class SyncTests(unittest.TestCase):
         self.assertEqual("测试文章标题", output["title"])
         self.assertEqual("中文摘要", output["publisher_summary"])
         self.assertEqual("zh-CN", output["language"])
+
+    def test_cursor_zh_locale_survives_export_import_roundtrip(self) -> None:
+        """Publisher translation must survive export/import and appear in latest_ai_artifacts."""
+        from pathlib import Path
+        from aaron_reader.ai_cache import export_ai_cache, import_ai_cache
+        from aaron_reader.models import AIConfig
+
+        cursor_source = SourceConfig(
+            slug="cursor-blog",
+            name="Cursor Blog",
+            home_url="https://cursor.com/blog",
+            fetch_url="https://cursor.com/blog",
+            adapter="cursor_blog",
+            zh_locale_url="https://cursor.com/cn/blog",
+        )
+        config = AppConfig(
+            sources=[cursor_source],
+            database_path=str(self.database.path),
+            ai=AIConfig(
+                enabled=False,
+                provider="deepseek",
+                summary_model="deepseek-v4-flash",
+                translation_model="deepseek-v4-flash",
+                reasoning_effort="none",
+                api_key_environment="DEEPSEEK_API_KEY",
+            ),
+        )
+        self.database.initialize()
+        self.database.sync_source_configs([cursor_source])
+
+        en_html = b"""
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <a class="card card--feature" href="/blog/roundtrip-test">
+            <p class="type-md">Roundtrip Test Article</p>
+            <p class="text-theme-text-sec">English summary for roundtrip test.</p>
+            <time datetime="2026-08-01">Aug 1, 2026</time>
+        </a>
+        </body>
+        </html>
+        """
+        zh_html = b"""
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <a class="card card--feature" href="/cn/blog/roundtrip-test">
+            <p class="type-md">\xe5\x9b\x9e\xe7\x8e\xaf\xe6\xb5\x8b\xe8\xaf\x95\xe6\x96\x87\xe7\xab\xa0</p>
+            <p class="text-theme-text-sec">\xe4\xb8\xad\xe6\x96\x87\xe5\x9b\x9e\xe7\x8e\xaf\xe6\xb5\x8b\xe8\xaf\x95\xe6\x91\x98\xe8\xa6\x81</p>
+        </a>
+        </body>
+        </html>
+        """
+        client = RoutingClient({
+            "https://cursor.com/blog": en_html,
+            "https://cursor.com/cn/blog": zh_html,
+        })
+
+        result = sync_all(config, self.database, client=client)
+        self.assertEqual("ok", result.sources[0].status)
+
+        cache_path = Path(self.temporary.name) / "ai-cache.json"
+        export_result = export_ai_cache(self.database, config, cache_path)
+        self.assertEqual(1, export_result["article_artifacts"])
+        self.assertEqual(0, export_result["skipped_incompatible"])
+
+        import json
+        payload = json.loads(cache_path.read_text(encoding="utf-8"))
+        self.assertEqual(1, len(payload["artifacts"]))
+        artifact = payload["artifacts"][0]
+        self.assertEqual("publisher", artifact["provider"])
+        self.assertEqual("translation", artifact["task_type"])
+        self.assertEqual("回环测试文章", artifact["output"]["title"])
+
+        original_article = self.database.list_articles()[0]
+        fresh_db = Database(Path(self.temporary.name) / "fresh.sqlite3")
+        fresh_db.initialize()
+        fresh_db.sync_source_configs([cursor_source])
+        fresh_db.commit_candidates(
+            cursor_source,
+            [
+                ArticleCandidate(
+                    source_slug="cursor-blog",
+                    external_id=str(original_article["external_id"]),
+                    url=str(original_article["canonical_url"]),
+                    title=str(original_article["title"]),
+                    summary=str(original_article["summary"] or ""),
+                    published_at=str(original_article["published_at"]),
+                    content_hash=str(original_article["content_hash"]),
+                )
+            ],
+            started_at="2026-08-01T17:00:00Z",
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="fixture",
+        )
+
+        import_result = import_ai_cache(fresh_db, config, cache_path)
+        self.assertEqual(1, import_result["inserted_artifacts"])
+        self.assertEqual(0, import_result["dropped_untranslated"])
+
+        articles = fresh_db.list_articles()
+        fresh_artifacts = fresh_db.latest_ai_artifacts([int(articles[0]["id"])])
+        self.assertEqual(1, len(fresh_artifacts.get(int(articles[0]["id"]), [])))
+        fresh_artifact = fresh_artifacts[int(articles[0]["id"])][0]
+        self.assertEqual("publisher", fresh_artifact["provider"])
+        self.assertEqual("回环测试文章", json.loads(fresh_artifact["output_json"])["title"])
+
+    def test_cursor_zh_locale_fetches_per_article_when_listing_missing_slug(self) -> None:
+        """Articles not in CN listing but with CN article page should be stored."""
+        cursor_source = SourceConfig(
+            slug="cursor-blog",
+            name="Cursor Blog",
+            home_url="https://cursor.com/blog",
+            fetch_url="https://cursor.com/blog",
+            adapter="cursor_blog",
+            zh_locale_url="https://cursor.com/cn/blog",
+        )
+        config = AppConfig(
+            sources=[cursor_source],
+            database_path=str(self.database.path),
+        )
+        self.database.initialize()
+        self.database.sync_source_configs([cursor_source])
+
+        en_html = b"""
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <a class="card card--feature" href="/blog/slug-a">
+            <p class="type-md">Article A Title</p>
+            <p class="text-theme-text-sec">English summary A.</p>
+            <time datetime="2026-08-01">Aug 1, 2026</time>
+        </a>
+        </body>
+        </html>
+        """
+        zh_listing_html = b"""
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <!-- slug-a is NOT in the CN listing -->
+        </body>
+        </html>
+        """
+        zh_article_html = b"""
+        <!DOCTYPE html>
+        <html lang="zh">
+        <head>
+            <title>\xe6\x96\x87\xe7\xab\xa0 A \xe6\xa0\x87\xe9\xa2\x98 \xc2\xb7 Cursor</title>
+            <link rel="canonical" href="https://cursor.com/blog/slug-a"/>
+            <meta property="og:title" content="\xe6\x96\x87\xe7\xab\xa0 A \xe6\xa0\x87\xe9\xa2\x98"/>
+            <meta property="og:description" content="\xe6\x96\x87\xe7\xab\xa0 A \xe4\xb8\xad\xe6\x96\x87\xe6\x91\x98\xe8\xa6\x81"/>
+        </head>
+        <body>
+            <h1>\xe6\x96\x87\xe7\xab\xa0 A \xe6\xa0\x87\xe9\xa2\x98</h1>
+        </body>
+        </html>
+        """
+        client = RoutingClient({
+            "https://cursor.com/blog": en_html,
+            "https://cursor.com/cn/blog": zh_listing_html,
+            "https://cursor.com/cn/blog/slug-a": zh_article_html,
+        })
+
+        result = sync_all(config, self.database, client=client)
+        self.assertEqual("ok", result.sources[0].status)
+
+        articles = self.database.list_articles()
+        self.assertEqual(1, len(articles))
+        article_id = int(articles[0]["id"])
+
+        artifacts = self.database.latest_ai_artifacts([article_id])
+        self.assertIn(article_id, artifacts)
+        artifact_list = artifacts[article_id]
+        self.assertEqual(1, len(artifact_list))
+
+        artifact = artifact_list[0]
+        self.assertEqual("publisher", artifact["provider"])
+        import json
+        output = json.loads(artifact["output_json"])
+        self.assertEqual("文章 A 标题", output["title"])
+        self.assertEqual("文章 A 中文摘要", output["publisher_summary"])
+
+    def test_cursor_zh_locale_skips_english_only_cn_article_page(self) -> None:
+        """CN article page with no CJK title should NOT be stored as zh-CN."""
+        cursor_source = SourceConfig(
+            slug="cursor-blog",
+            name="Cursor Blog",
+            home_url="https://cursor.com/blog",
+            fetch_url="https://cursor.com/blog",
+            adapter="cursor_blog",
+            zh_locale_url="https://cursor.com/cn/blog",
+        )
+        config = AppConfig(
+            sources=[cursor_source],
+            database_path=str(self.database.path),
+        )
+        self.database.initialize()
+        self.database.sync_source_configs([cursor_source])
+
+        en_html = b"""
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <a class="card card--feature" href="/blog/english-only">
+            <p class="type-md">English Only Article</p>
+            <p class="text-theme-text-sec">English summary.</p>
+            <time datetime="2026-08-01">Aug 1, 2026</time>
+        </a>
+        </body>
+        </html>
+        """
+        zh_listing_html = b"""
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <!-- No CN translation in listing -->
+        </body>
+        </html>
+        """
+        en_only_cn_page = b"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>English Only Article - Cursor</title>
+            <link rel="canonical" href="https://cursor.com/blog/english-only"/>
+            <meta property="og:title" content="English Only Article"/>
+            <meta property="og:description" content="Still in English on CN page."/>
+        </head>
+        <body>
+            <h1>English Only Article</h1>
+        </body>
+        </html>
+        """
+        client = RoutingClient({
+            "https://cursor.com/blog": en_html,
+            "https://cursor.com/cn/blog": zh_listing_html,
+            "https://cursor.com/cn/blog/english-only": en_only_cn_page,
+        })
+
+        result = sync_all(config, self.database, client=client)
+        self.assertEqual("ok", result.sources[0].status)
+
+        articles = self.database.list_articles()
+        self.assertEqual(1, len(articles))
+        article_id = int(articles[0]["id"])
+
+        artifacts = self.database.latest_ai_artifacts([article_id])
+        self.assertEqual({}, artifacts.get(article_id, {}))
 
 
 if __name__ == "__main__":

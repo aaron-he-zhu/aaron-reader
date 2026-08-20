@@ -1397,26 +1397,33 @@ class Database:
 
         Publisher locales are stored with provider='publisher' and skip model calls.
         They use a fixed artifact key derived from article identity and target language.
+        Uses the same canonical output format as AI-generated translations to ensure
+        export/import compatibility.
         Returns the artifact row dict (existing or newly created).
         """
-        import hashlib
+        from .ai_prompts import canonical_json, parse_and_validate_output, stable_hash
         now = utc_now()
-        output = {
+        raw_output = {
             "title": title,
             "publisher_summary": summary,
             "language": target_language,
             "limitations": "",
         }
-        output_json = json.dumps(
-            output, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        validated, readable = parse_and_validate_output(
+            "translation",
+            canonical_json(raw_output),
+            target_language=target_language,
+            input_scope="metadata",
+            translated_fields=("title", "publisher_summary"),
         )
-        output_hash = hashlib.sha256(output_json.encode("utf-8")).hexdigest()
-        artifact_key = hashlib.sha256(
-            ("publisher-locale:%d:%s" % (article_id, target_language)).encode("utf-8")
-        ).hexdigest()
-        input_hash = hashlib.sha256(
-            ("publisher:%d:%s" % (article_id, article_content_hash)).encode("utf-8")
-        ).hexdigest()
+        output_json = canonical_json(validated)
+        output_hash = stable_hash(output_json)
+        artifact_key = stable_hash(
+            "publisher-locale:%d:%s" % (article_id, target_language)
+        )
+        input_hash = stable_hash(
+            "publisher:%d:%s" % (article_id, article_content_hash)
+        )
         with self.connect() as connection:
             existing = connection.execute(
                 "SELECT * FROM ai_artifacts WHERE artifact_key=?",
@@ -1441,7 +1448,7 @@ class Database:
                         (
                             article_content_hash,
                             output_json,
-                            title,
+                            readable,
                             output_hash,
                             now,
                             artifact_key,
@@ -1473,7 +1480,7 @@ class Database:
                     input_hash,
                     article_content_hash,
                     output_json,
-                    title,
+                    readable,
                     output_hash,
                     now,
                 ),
