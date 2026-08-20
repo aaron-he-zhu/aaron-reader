@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-20T03:03:29Z",
-  "bundle_hash": "7bbae5590defaf188119ca7a8f9fa86c29d98c72f6d90d2b614a1c02f72141bf",
+  "exported_at": "2026-08-20T04:55:51Z",
+  "bundle_hash": "0e89c45ec8d71ba181a974125f29183116f1152dca81a18dc95fc4b3928475ee",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -3263,6 +3263,36 @@
       "output_hash": "2ceeaa8a695c3c5e9fd50e41dd1c9bf3226f1c6088a48aa2ebd7fd1750b3fd24",
       "input_truncated": false,
       "created_at": "2026-08-20T03:03:27Z"
+    },
+    {
+      "cache_key": "60f3e39451210cfcbeac1bc64b0f7b14d0ffc7545a6f2bb97a551bf0e6823583",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/how-cursor-router-works",
+        "canonical_url": "https://cursor.com/blog/how-cursor-router-works",
+        "content_hash": "7cc659fa8b6361dff1f3b032a8988d6fe6bb253ee70abab61b7b9c580033e51f"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "The provided publisher_summary is empty, so no translation could be performed for that field. Only the title was translated based on the given text.",
+        "title": "如何选择适合任务的模型：Cursor Router 是如何工作的",
+        "publisher_summary": ""
+      },
+      "output_hash": "913a821a0baa565771fd3fcb9636e3c5db0f8f4b22122f46b2f368e572ca3152",
+      "input_truncated": false,
+      "created_at": "2026-08-20T04:55:51Z"
     },
     {
       "cache_key": "07b1a3025de7a1ad1617d01a59ce3eee32f763ff20489d46315a5076430d90f3",
@@ -9705,11 +9735,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "d5c4d075f9ab7ea1014969e18d65985ab89011dc657137746be675e18517582b",
+      "ledger_key": "c428cb4c6e1a80b72a05dc1afb8f4c9e2cc5bd9b36352310fb12dbb5f3edcb2a",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -9725,11 +9755,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "31571165c6fa4f27603f15b178bcfae41339b27c1e7bdbedd03e363f73922d6b",
+      "ledger_key": "0c57ff10be56d9e1076a6409f345cbde08692b5deee3ddf14b462ea3ac8dc0ba",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9745,11 +9775,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "01d7f5f42fafcb0410c500e43c912de1c805a7e148b8222ca05aa7e5dc057d09",
+      "ledger_key": "5fe598ef45b7c3d837f9406bb5de803dd5ec792867c9c0803d60f7e1b2f27842",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -9765,11 +9795,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "ca760fbc07bb43fd000b958a7a05dd0e7ee9b54da4c46e3d44567e7b57d94e42",
+      "ledger_key": "ad222737876ba9de3b81bf5cc1b7b9e1d7be749e71bf8b759641d33ef67ab5ae",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9785,11 +9815,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "6911d07275c7d8fb4e09e8cc301f0bb2d64e6d3b3fcbebf3698b771e013dc828",
+      "ledger_key": "f46026f2e623e6610b88057847f280daceea235485e2b3366ecb58c0fd4e17b0",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9805,11 +9835,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "70e69e8036d3cf26cd35017a6a03adf3a2922742ffb4a2e63851b45288132339",
+      "ledger_key": "77b716d4977127842ce4bf2bd4c15f2b45e4eb996b3823e052c4ac1362ca2397",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9825,11 +9855,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "562248c8494e077919a6ce402f9ffae949e34c6d792b3ac7a23637c00c634a3d",
+      "ledger_key": "5bd34073ca43a2590a1f3c897b08640ea3b61aeef8e96159d222044c64f8457c",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9845,11 +9875,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "25eaf5a9c2b1a08429c1c98c1d08e574d4723aa7142452f2d08fee5ba5d16ef5",
+      "ledger_key": "7147b5907c3e4a530dc72f45ac96e6db9ac0988683636fc69bc4cf7f7fda5d3e",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -9865,11 +9895,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1898b9f3f95a75c46624c36699d89ffc56faeb8f1003559ec911a0885b03af70",
+      "ledger_key": "2e66cd22ef88862ed1dcdcbfc0f714754c484e982fdd7327a840625aec64ffba",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9885,11 +9915,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "de6a60c6c84b499cf05f2de7acfa1c0e423eca5f2b605294560f20def6e1052f",
+      "ledger_key": "5a245520c825754dafce81a6ee33794efb1aca46210c547b859332c67bc9a187",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9905,11 +9935,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "e3800cafcec88b6e3e0987995023effb104a01ba5c595e3adb9ba7dbd1fafef8",
+      "ledger_key": "a1082e140dd50cd2c635f738898029dfcd1c958c4ec9ceb942e53ae53aea7ace",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -9925,11 +9955,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b6d2bf2220e9ddc7b1e49b8ae037730563ca4acbe868e2008bc13dd23ced647e",
+      "ledger_key": "4598da523164f6ba8a75542a3f73b82e56a4a06b2931ba3e3b2e44d0db95325d",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9945,11 +9975,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "096d29a4f59af01297f0c7164fa0ead39eac6385cf8caff2a0476bff80a2a299",
+      "ledger_key": "1f79b7b403419a04bcb204a9ecc844f71fcd7867ed77e65743d3d660c95545eb",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-17T07:00:00Z",
       "day_end": "2026-08-18T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9965,11 +9995,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "0116d70ca95b794330df32f16a4135def02ea2c47d76ff0d95501c6a934aaf5a",
+      "ledger_key": "b49690ab42137190f01326327f77fd10fd75fca2d6421909b7fc03f57198580a",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-18T07:00:00Z",
       "day_end": "2026-08-19T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
+      "covered_through": "2026-08-20T04:55:51Z",
       "requests": 9,
       "confirmed_requests": 9,
       "unconfirmed_requests": 0,
@@ -9985,21 +10015,21 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "cf3aa691f9a81144b10fef2bb3875bd1188f9f0821604a97473dbd976f9a6494",
+      "ledger_key": "781020b1c768339e323b6a9b72d189541b4d6773c2a6f992d6957d7a1bc4389d",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-19T07:00:00Z",
       "day_end": "2026-08-20T07:00:00Z",
-      "covered_through": "2026-08-20T03:03:29Z",
-      "requests": 18,
-      "confirmed_requests": 17,
+      "covered_through": "2026-08-20T04:55:51Z",
+      "requests": 19,
+      "confirmed_requests": 18,
       "unconfirmed_requests": 1,
-      "input_tokens": 5896,
+      "input_tokens": 6227,
       "cached_input_tokens": 3072,
-      "cache_miss_input_tokens": 2824,
+      "cache_miss_input_tokens": 3155,
       "cache_write_input_tokens": 0,
-      "output_tokens": 2083,
+      "output_tokens": 2158,
       "reasoning_tokens": 765,
-      "total_tokens": 7979,
+      "total_tokens": 8385,
       "reserved_total_tokens_for_unconfirmed": 4287,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
@@ -10133,38 +10163,6 @@
       },
       "first_seen_at": "2026-08-11T05:36:13Z",
       "last_seen_at": "2026-08-11T05:36:34Z"
-    },
-    {
-      "hold_key": "de1696bbbfca394c4b323c9685595923f0e8bc1390a0a000ca18d6d39f68aef0",
-      "workload_kind": "article",
-      "hold_class": "paid_failure",
-      "descriptor": {
-        "article_identities": [
-          {
-            "canonical_url": "https://cursor.com/blog/how-cursor-router-works",
-            "content_hash": "7cc659fa8b6361dff1f3b032a8988d6fe6bb253ee70abab61b7b9c580033e51f",
-            "external_id": "https://cursor.com/blog/how-cursor-router-works",
-            "source_slug": "cursor-blog"
-          }
-        ],
-        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
-        "input_scope": "metadata",
-        "max_output_tokens": 800,
-        "model": "deepseek-v4-flash",
-        "portable_input_hash": "b17cfaa1e50e8d687789eeb8bd4d671fe208be0af425195ef46eddf91fa3082a",
-        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
-        "prompt_version": "ai-enrichment-v1",
-        "protocol": "aaron-reader-ai-generation-hold/v1",
-        "provider": "deepseek",
-        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-        "schema_name": "article_translation",
-        "schema_version": "ai-output-v1",
-        "target_language": "zh-CN",
-        "task_type": "translation",
-        "workload_kind": "article"
-      },
-      "first_seen_at": "2026-08-20T02:35:51Z",
-      "last_seen_at": "2026-08-20T02:35:53Z"
     },
     {
       "hold_key": "e524785d49ccb677eff5306cf0000283255583fd147748a43af5841197208def",

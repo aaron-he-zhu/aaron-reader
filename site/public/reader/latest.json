@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-20T03:03:30Z",
+  "generated_at": "2026-08-20T04:55:53Z",
   "language": "en",
   "supported_languages": [
     "en",
@@ -7,7 +7,7 @@
   ],
   "llm_tokens_used": 0,
   "render_llm_tokens_used": 0,
-  "cached_ai_artifact_count": 187,
+  "cached_ai_artifact_count": 188,
   "counts": {
     "total": 189
   },
@@ -23,35 +23,35 @@
       "slug": "anthropic-news",
       "name": "Anthropic News",
       "health": "healthy",
-      "last_success_at": "2026-08-20T03:03:25Z",
+      "last_success_at": "2026-08-20T04:55:46Z",
       "article_count": 16
     },
     {
       "slug": "claude-blog",
       "name": "Claude Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-20T03:03:24Z",
+      "last_success_at": "2026-08-20T04:55:46Z",
       "article_count": 42
     },
     {
       "slug": "cursor-blog",
       "name": "Cursor Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-20T03:03:26Z",
+      "last_success_at": "2026-08-20T04:55:46Z",
       "article_count": 16
     },
     {
       "slug": "openai-developers",
       "name": "OpenAI Developer Blog",
       "health": "healthy",
-      "last_success_at": "2026-08-20T03:03:24Z",
+      "last_success_at": "2026-08-20T04:55:46Z",
       "article_count": 22
     },
     {
       "slug": "openai-news",
       "name": "OpenAI News",
       "health": "healthy",
-      "last_success_at": "2026-08-20T03:03:24Z",
+      "last_success_at": "2026-08-20T04:55:46Z",
       "article_count": 93
     }
   ],
@@ -78,7 +78,7 @@
       "url": "https://openai.com/index/replit",
       "ai_artifacts": [
         {
-          "id": 281,
+          "id": 282,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -104,7 +104,7 @@
       "url": "https://developers.openai.com/blog/codex-as-a-platform",
       "ai_artifacts": [
         {
-          "id": 114,
+          "id": 115,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -156,7 +156,7 @@
       "url": "https://openai.com/index/chatgpt-ads-expands-across-europe",
       "ai_artifacts": [
         {
-          "id": 190,
+          "id": 191,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -182,7 +182,7 @@
       "url": "https://openai.com/index/strengthening-democratic-oversight-in-national-security",
       "ai_artifacts": [
         {
-          "id": 292,
+          "id": 293,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -234,7 +234,7 @@
       "url": "https://openai.com/index/partnering-with-codeai",
       "ai_artifacts": [
         {
-          "id": 275,
+          "id": 276,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -260,7 +260,7 @@
       "url": "https://openai.com/index/pacing-model-development-cyber-capabilities",
       "ai_artifacts": [
         {
-          "id": 274,
+          "id": 275,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -286,7 +286,7 @@
       "url": "https://openai.com/index/chatgpt-for-teens",
       "ai_artifacts": [
         {
-          "id": 193,
+          "id": 194,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -312,7 +312,7 @@
       "url": "https://openai.com/index/asana",
       "ai_artifacts": [
         {
-          "id": 175,
+          "id": 176,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -338,7 +338,7 @@
       "url": "https://openai.com/index/nvidia/chatgpt-work",
       "ai_artifacts": [
         {
-          "id": 270,
+          "id": 271,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -416,7 +416,7 @@
       "url": "https://openai.com/index/the-defenders-window",
       "ai_artifacts": [
         {
-          "id": 296,
+          "id": 297,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -442,7 +442,7 @@
       "url": "https://openai.com/index/openai-joins-ports-pike-project",
       "ai_artifacts": [
         {
-          "id": 273,
+          "id": 274,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -468,7 +468,7 @@
       "url": "https://openai.com/index/new-policy-ideas-for-the-intelligence-age",
       "ai_artifacts": [
         {
-          "id": 267,
+          "id": 268,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -520,7 +520,7 @@
       "url": "https://cursor.com/blog/joining-spacex",
       "ai_artifacts": [
         {
-          "id": 105,
+          "id": 106,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -676,7 +676,7 @@
       "url": "https://openai.com/index/builders-guide-to-gpt-5-6",
       "ai_artifacts": [
         {
-          "id": 182,
+          "id": 183,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -702,7 +702,7 @@
       "url": "https://openai.com/index/previewing-ultrafast",
       "ai_artifacts": [
         {
-          "id": 279,
+          "id": 280,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -728,7 +728,7 @@
       "url": "https://openai.com/index/dali-rajic-chief-revenue-officer",
       "ai_artifacts": [
         {
-          "id": 204,
+          "id": 205,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -832,7 +832,7 @@
       "url": "https://openai.com/index/how-enterprises-put-ai-to-work",
       "ai_artifacts": [
         {
-          "id": 231,
+          "id": 232,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -858,7 +858,7 @@
       "url": "https://openai.com/index/ringcentral",
       "ai_artifacts": [
         {
-          "id": 285,
+          "id": 286,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -936,7 +936,7 @@
       "url": "https://openai.com/index/testing-ads-in-chatgpt",
       "ai_artifacts": [
         {
-          "id": 295,
+          "id": 296,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -962,7 +962,7 @@
       "url": "https://openai.com/index/daybreak-models-are-now-available-on-aws",
       "ai_artifacts": [
         {
-          "id": 207,
+          "id": 208,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1014,7 +1014,7 @@
       "url": "https://openai.com/index/building-an-ai-native-finance-function",
       "ai_artifacts": [
         {
-          "id": 187,
+          "id": 188,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1040,7 +1040,7 @@
       "url": "https://openai.com/index/responsible-ai-infrastructure-texas",
       "ai_artifacts": [
         {
-          "id": 284,
+          "id": 285,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1066,7 +1066,7 @@
       "url": "https://openai.com/index/model-ml",
       "ai_artifacts": [
         {
-          "id": 264,
+          "id": 265,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1092,7 +1092,7 @@
       "url": "https://openai.com/index/putting-frontier-cyber-models-in-more-trusted-hands",
       "ai_artifacts": [
         {
-          "id": 280,
+          "id": 281,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1118,7 +1118,7 @@
       "url": "https://openai.com/index/expanding-daybreak-as-the-cyber-defense-window-narrows",
       "ai_artifacts": [
         {
-          "id": 212,
+          "id": 213,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1144,7 +1144,7 @@
       "url": "https://openai.com/index/zapier",
       "ai_artifacts": [
         {
-          "id": 306,
+          "id": 307,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1170,7 +1170,7 @@
       "url": "https://openai.com/index/virgin-atlantic/chatgpt-work",
       "ai_artifacts": [
         {
-          "id": 303,
+          "id": 304,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1196,7 +1196,7 @@
       "url": "https://openai.com/index/premium-seats-chatgpt-business",
       "ai_artifacts": [
         {
-          "id": 276,
+          "id": 277,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1222,7 +1222,7 @@
       "url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
       "ai_artifacts": [
         {
-          "id": 283,
+          "id": 284,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1248,7 +1248,7 @@
       "url": "https://openai.com/index/hsp-gruppe",
       "ai_artifacts": [
         {
-          "id": 241,
+          "id": 242,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1376,7 +1376,22 @@
       "category": "research",
       "published_at": "2026-08-06T12:00:00Z",
       "url": "https://cursor.com/blog/how-cursor-router-works",
-      "ai_artifacts": []
+      "ai_artifacts": [
+        {
+          "id": 105,
+          "task": "translation",
+          "input_scope": "metadata",
+          "target_language": "zh-CN",
+          "generated_at": "2026-08-20T04:55:51Z",
+          "input_truncated": false,
+          "output": {
+            "language": "zh-CN",
+            "limitations": "The provided publisher_summary is empty, so no translation could be performed for that field. Only the title was translated based on the given text.",
+            "publisher_summary": "",
+            "title": "如何选择适合任务的模型：Cursor Router 是如何工作的"
+          }
+        }
+      ]
     },
     {
       "id": 149,
@@ -1389,7 +1404,7 @@
       "url": "https://openai.com/index/improving-gpt-5-6-sol-in-chatgpt",
       "ai_artifacts": [
         {
-          "id": 245,
+          "id": 246,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1415,7 +1430,7 @@
       "url": "https://openai.com/index/openai-and-apa-partner-to-advance-responsible-ai",
       "ai_artifacts": [
         {
-          "id": 272,
+          "id": 273,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1441,7 +1456,7 @@
       "url": "https://openai.com/index/how-the-world-is-putting-chatgpt-to-work",
       "ai_artifacts": [
         {
-          "id": 235,
+          "id": 236,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1519,7 +1534,7 @@
       "url": "https://openai.com/index/accelerating-defenders-with-gpt-daybreak-legacy",
       "ai_artifacts": [
         {
-          "id": 164,
+          "id": 165,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1571,7 +1586,7 @@
       "url": "https://openai.com/index/third-party-cyber-evaluations-involving-openai-models",
       "ai_artifacts": [
         {
-          "id": 298,
+          "id": 299,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1597,7 +1612,7 @@
       "url": "https://cursor.com/blog/mixture-of-kittens",
       "ai_artifacts": [
         {
-          "id": 106,
+          "id": 107,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1623,7 +1638,7 @@
       "url": "https://openai.com/index/learn-teach-chatgpt-work-codex",
       "ai_artifacts": [
         {
-          "id": 259,
+          "id": 260,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1701,7 +1716,7 @@
       "url": "https://openai.com/index/apple-is-getting-this-wrong",
       "ai_artifacts": [
         {
-          "id": 174,
+          "id": 175,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1727,7 +1742,7 @@
       "url": "https://openai.com/index/continuous-voice-interaction-with-gpt-live",
       "ai_artifacts": [
         {
-          "id": 201,
+          "id": 202,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1753,7 +1768,7 @@
       "url": "https://openai.com/index/circles",
       "ai_artifacts": [
         {
-          "id": 197,
+          "id": 198,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1779,7 +1794,7 @@
       "url": "https://openai.com/index/ten-advances-in-mathematics",
       "ai_artifacts": [
         {
-          "id": 294,
+          "id": 295,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1805,7 +1820,7 @@
       "url": "https://openai.com/index/building-abundant-intelligence",
       "ai_artifacts": [
         {
-          "id": 184,
+          "id": 185,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1831,7 +1846,7 @@
       "url": "https://openai.com/index/advancing-responsible-ai-across-europe",
       "ai_artifacts": [
         {
-          "id": 168,
+          "id": 169,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1857,7 +1872,7 @@
       "url": "https://openai.com/index/unive",
       "ai_artifacts": [
         {
-          "id": 300,
+          "id": 301,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1883,7 +1898,7 @@
       "url": "https://openai.com/index/disrupting-malicious-uses-of-ai-criminal-scam-operation",
       "ai_artifacts": [
         {
-          "id": 211,
+          "id": 212,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1935,7 +1950,7 @@
       "url": "https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6",
       "ai_artifacts": [
         {
-          "id": 172,
+          "id": 173,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -1961,7 +1976,7 @@
       "url": "https://openai.com/index/avatarin",
       "ai_artifacts": [
         {
-          "id": 179,
+          "id": 180,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2013,7 +2028,7 @@
       "url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores",
       "ai_artifacts": [
         {
-          "id": 237,
+          "id": 238,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2039,7 +2054,7 @@
       "url": "https://openai.com/index/chatgpt-for-academic-researchers",
       "ai_artifacts": [
         {
-          "id": 192,
+          "id": 193,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2065,7 +2080,7 @@
       "url": "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency",
       "ai_artifacts": [
         {
-          "id": 220,
+          "id": 221,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2091,7 +2106,7 @@
       "url": "https://openai.com/index/scientific-computing-agentic-ai",
       "ai_artifacts": [
         {
-          "id": 289,
+          "id": 290,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2117,7 +2132,7 @@
       "url": "https://cursor.com/blog/vercel",
       "ai_artifacts": [
         {
-          "id": 108,
+          "id": 109,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2195,7 +2210,7 @@
       "url": "https://openai.com/index/how-ai-is-expanding-what-people-do-at-work",
       "ai_artifacts": [
         {
-          "id": 228,
+          "id": 229,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2377,7 +2392,7 @@
       "url": "https://openai.com/index/health-in-chatgpt",
       "ai_artifacts": [
         {
-          "id": 224,
+          "id": 225,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2455,7 +2470,7 @@
       "url": "https://openai.com/index/how-news-organizations-are-using-ai",
       "ai_artifacts": [
         {
-          "id": 233,
+          "id": 234,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2481,7 +2496,7 @@
       "url": "https://openai.com/index/building-ai-infrastructure-with-the-effingham-county-community",
       "ai_artifacts": [
         {
-          "id": 186,
+          "id": 187,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2507,7 +2522,7 @@
       "url": "https://openai.com/index/advancing-the-next-era-of-national-science",
       "ai_artifacts": [
         {
-          "id": 170,
+          "id": 171,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2533,7 +2548,7 @@
       "url": "https://openai.com/index/introducing-openai-presence",
       "ai_artifacts": [
         {
-          "id": 253,
+          "id": 254,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2559,7 +2574,7 @@
       "url": "https://openai.com/index/ntt-data",
       "ai_artifacts": [
         {
-          "id": 269,
+          "id": 270,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2585,7 +2600,7 @@
       "url": "https://cursor.com/blog/router",
       "ai_artifacts": [
         {
-          "id": 107,
+          "id": 108,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2715,7 +2730,7 @@
       "url": "https://openai.com/index/introducing-chatgpt-small-business-program",
       "ai_artifacts": [
         {
-          "id": 247,
+          "id": 248,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2741,7 +2756,7 @@
       "url": "https://openai.com/index/hugging-face-model-evaluation-security-incident",
       "ai_artifacts": [
         {
-          "id": 243,
+          "id": 244,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2767,7 +2782,7 @@
       "url": "https://openai.com/index/david-velez-robin-vince-join-openai-boards",
       "ai_artifacts": [
         {
-          "id": 206,
+          "id": 207,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2897,7 +2912,7 @@
       "url": "https://openai.com/index/safety-alignment-long-horizon-models",
       "ai_artifacts": [
         {
-          "id": 287,
+          "id": 288,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -2923,7 +2938,7 @@
       "url": "https://developers.openai.com/blog/custom-code-review-rules-for-codex",
       "ai_artifacts": [
         {
-          "id": 122,
+          "id": 123,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3001,7 +3016,7 @@
       "url": "https://openai.com/index/a-scorecard-for-the-ai-age",
       "ai_artifacts": [
         {
-          "id": 163,
+          "id": 164,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3079,7 +3094,7 @@
       "url": "https://openai.com/index/why-teens-deserve-access-safe-ai",
       "ai_artifacts": [
         {
-          "id": 305,
+          "id": 306,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3105,7 +3120,7 @@
       "url": "https://openai.com/index/codex-collaborator-creative-team",
       "ai_artifacts": [
         {
-          "id": 199,
+          "id": 200,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3131,7 +3146,7 @@
       "url": "https://openai.com/index/cars24",
       "ai_artifacts": [
         {
-          "id": 189,
+          "id": 190,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3209,7 +3224,7 @@
       "url": "https://openai.com/index/advancing-ai-safety-through-state-and-federal-action",
       "ai_artifacts": [
         {
-          "id": 166,
+          "id": 167,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3235,7 +3250,7 @@
       "url": "https://openai.com/index/unlocking-self-improvement-gpt-red",
       "ai_artifacts": [
         {
-          "id": 302,
+          "id": 303,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3261,7 +3276,7 @@
       "url": "https://openai.com/index/managing-ai-investments-in-agentic-era",
       "ai_artifacts": [
         {
-          "id": 261,
+          "id": 262,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3287,7 +3302,7 @@
       "url": "https://openai.com/academy/codex-for-work/how-sales-teams-use-codex",
       "ai_artifacts": [
         {
-          "id": 159,
+          "id": 160,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3313,7 +3328,7 @@
       "url": "https://openai.com/academy/codex-for-work/how-data-science-teams-use-codex",
       "ai_artifacts": [
         {
-          "id": 157,
+          "id": 158,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3339,7 +3354,7 @@
       "url": "https://openai.com/academy/chatgpt-work/how-sales-teams-use-codex",
       "ai_artifacts": [
         {
-          "id": 155,
+          "id": 156,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3365,7 +3380,7 @@
       "url": "https://openai.com/academy/chatgpt-work/how-data-science-teams-use-codex",
       "ai_artifacts": [
         {
-          "id": 154,
+          "id": 155,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3443,7 +3458,7 @@
       "url": "https://openai.com/index/deutsche-telekom",
       "ai_artifacts": [
         {
-          "id": 209,
+          "id": 210,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3469,7 +3484,7 @@
       "url": "https://openai.com/academy/getting-started",
       "ai_artifacts": [
         {
-          "id": 161,
+          "id": 162,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3495,7 +3510,7 @@
       "url": "https://openai.com/index/gpt-5-6-preferred-model-microsoft-365-copilot",
       "ai_artifacts": [
         {
-          "id": 222,
+          "id": 223,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3521,7 +3536,7 @@
       "url": "https://openai.com/index/gpt-5-6",
       "ai_artifacts": [
         {
-          "id": 218,
+          "id": 219,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3547,7 +3562,7 @@
       "url": "https://openai.com/index/chatgpt-for-your-most-ambitious-work",
       "ai_artifacts": [
         {
-          "id": 195,
+          "id": 196,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3573,7 +3588,7 @@
       "url": "https://openai.com/index/bio-bug-bounty",
       "ai_artifacts": [
         {
-          "id": 181,
+          "id": 182,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3625,7 +3640,7 @@
       "url": "https://openai.com/index/government-national-security-partnerships",
       "ai_artifacts": [
         {
-          "id": 216,
+          "id": 217,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3651,7 +3666,7 @@
       "url": "https://openai.com/index/separating-signal-from-noise-coding-evaluations",
       "ai_artifacts": [
         {
-          "id": 291,
+          "id": 292,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3677,7 +3692,7 @@
       "url": "https://openai.com/index/k-12-educators-practical-skills",
       "ai_artifacts": [
         {
-          "id": 257,
+          "id": 258,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3703,7 +3718,7 @@
       "url": "https://openai.com/index/introducing-gpt-live",
       "ai_artifacts": [
         {
-          "id": 251,
+          "id": 252,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3729,7 +3744,7 @@
       "url": "https://openai.com/index/mufg",
       "ai_artifacts": [
         {
-          "id": 266,
+          "id": 267,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3755,7 +3770,7 @@
       "url": "https://openai.com/index/australian-payments-plus",
       "ai_artifacts": [
         {
-          "id": 177,
+          "id": 178,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3781,7 +3796,7 @@
       "url": "https://openai.com/index/how-chatgpt-adoption-has-expanded",
       "ai_artifacts": [
         {
-          "id": 230,
+          "id": 231,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3807,7 +3822,7 @@
       "url": "https://openai.com/index/introducing-genebench-pro",
       "ai_artifacts": [
         {
-          "id": 249,
+          "id": 250,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3833,7 +3848,7 @@
       "url": "https://openai.com/index/genebench-pro/case-studies",
       "ai_artifacts": [
         {
-          "id": 214,
+          "id": 215,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3859,7 +3874,7 @@
       "url": "https://openai.com/index/core-dump-epidemiology-data-infrastructure-bug",
       "ai_artifacts": [
         {
-          "id": 203,
+          "id": 204,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3937,7 +3952,7 @@
       "url": "https://openai.com/index/mapping-ai-jobs-transition-eu",
       "ai_artifacts": [
         {
-          "id": 263,
+          "id": 264,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3963,7 +3978,7 @@
       "url": "https://openai.com/index/hp-frontier-partnership",
       "ai_artifacts": [
         {
-          "id": 239,
+          "id": 240,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -3989,7 +4004,7 @@
       "url": "https://openai.com/index/previewing-gpt-5-6-sol",
       "ai_artifacts": [
         {
-          "id": 278,
+          "id": 279,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4015,7 +4030,7 @@
       "url": "https://developers.openai.com/blog/connect-private-mcp-servers-to-openai-products",
       "ai_artifacts": [
         {
-          "id": 120,
+          "id": 121,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4041,7 +4056,7 @@
       "url": "https://openai.com/index/how-agents-are-transforming-work",
       "ai_artifacts": [
         {
-          "id": 226,
+          "id": 227,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4093,7 +4108,7 @@
       "url": "https://developers.openai.com/blog/mastering-codex-remote-for-engineering",
       "ai_artifacts": [
         {
-          "id": 130,
+          "id": 131,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4145,7 +4160,7 @@
       "url": "https://cursor.com/blog/wayfair",
       "ai_artifacts": [
         {
-          "id": 109,
+          "id": 110,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4171,7 +4186,7 @@
       "url": "https://openai.com/index/introducing-the-openai-economic-research-exchange",
       "ai_artifacts": [
         {
-          "id": 255,
+          "id": 256,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4301,7 +4316,7 @@
       "url": "https://openai.com/academy/chatgpt-work/how-business-operations-teams-use-codex",
       "ai_artifacts": [
         {
-          "id": 153,
+          "id": 154,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4483,7 +4498,7 @@
       "url": "https://developers.openai.com/blog/realtime-perplexity-computer",
       "ai_artifacts": [
         {
-          "id": 138,
+          "id": 139,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4509,7 +4524,7 @@
       "url": "https://developers.openai.com/blog/designing-delightful-frontends-with-gpt-5-4",
       "ai_artifacts": [
         {
-          "id": 124,
+          "id": 125,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4535,7 +4550,7 @@
       "url": "https://developers.openai.com/blog/one-year-of-responses",
       "ai_artifacts": [
         {
-          "id": 132,
+          "id": 133,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4561,7 +4576,7 @@
       "url": "https://developers.openai.com/blog/skills-agents-sdk",
       "ai_artifacts": [
         {
-          "id": 144,
+          "id": 145,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4587,7 +4602,7 @@
       "url": "https://developers.openai.com/blog/building-frontend-uis-with-codex-and-figma",
       "ai_artifacts": [
         {
-          "id": 113,
+          "id": 114,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4613,7 +4628,7 @@
       "url": "https://developers.openai.com/blog/run-long-horizon-tasks-with-codex",
       "ai_artifacts": [
         {
-          "id": 142,
+          "id": 143,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4639,7 +4654,7 @@
       "url": "https://developers.openai.com/blog/skills-shell-tips",
       "ai_artifacts": [
         {
-          "id": 146,
+          "id": 147,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4665,7 +4680,7 @@
       "url": "https://developers.openai.com/blog/15-lessons-building-chatgpt-apps",
       "ai_artifacts": [
         {
-          "id": 111,
+          "id": 112,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4691,7 +4706,7 @@
       "url": "https://developers.openai.com/blog/eval-skills",
       "ai_artifacts": [
         {
-          "id": 126,
+          "id": 127,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4717,7 +4732,7 @@
       "url": "https://developers.openai.com/blog/skyscanner-codex-jetbrains-mcp",
       "ai_artifacts": [
         {
-          "id": 148,
+          "id": 149,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4743,7 +4758,7 @@
       "url": "https://developers.openai.com/blog/openai-for-developers-2025",
       "ai_artifacts": [
         {
-          "id": 134,
+          "id": 135,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4769,7 +4784,7 @@
       "url": "https://developers.openai.com/blog/updates-audio-models",
       "ai_artifacts": [
         {
-          "id": 150,
+          "id": 151,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4795,7 +4810,7 @@
       "url": "https://developers.openai.com/blog/what-makes-a-great-chatgpt-app",
       "ai_artifacts": [
         {
-          "id": 152,
+          "id": 153,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4821,7 +4836,7 @@
       "url": "https://developers.openai.com/blog/codex-for-documentation-dagster",
       "ai_artifacts": [
         {
-          "id": 118,
+          "id": 119,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4847,7 +4862,7 @@
       "url": "https://developers.openai.com/blog/codex-at-devday",
       "ai_artifacts": [
         {
-          "id": 116,
+          "id": 117,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4873,7 +4888,7 @@
       "url": "https://developers.openai.com/blog/responses-api",
       "ai_artifacts": [
         {
-          "id": 140,
+          "id": 141,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4899,7 +4914,7 @@
       "url": "https://developers.openai.com/blog/realtime-api",
       "ai_artifacts": [
         {
-          "id": 136,
+          "id": 137,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
@@ -4925,7 +4940,7 @@
       "url": "https://developers.openai.com/blog/intro",
       "ai_artifacts": [
         {
-          "id": 128,
+          "id": 129,
           "task": "translation",
           "input_scope": "metadata",
           "target_language": "zh-CN",
