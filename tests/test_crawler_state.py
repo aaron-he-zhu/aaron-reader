@@ -32,6 +32,16 @@ def source() -> SourceConfig:
     )
 
 
+def new_source() -> SourceConfig:
+    return SourceConfig(
+        slug="new-source",
+        name="New Source",
+        home_url="https://new.example.com/blog",
+        fetch_url="https://new.example.com/feed.xml",
+        adapter="rss",
+    )
+
+
 def article(slug: str, title: str = "Article") -> ArticleCandidate:
     url = "https://example.com/blog/%s" % slug
     summary = "Official description for %s" % slug
@@ -343,6 +353,97 @@ class CrawlerStateTests(unittest.TestCase):
                         0,
                         connection.execute("SELECT COUNT(*) FROM seen_urls").fetchone()[0],
                     )
+
+    def test_import_allows_newly_configured_sources_not_in_bundle(self) -> None:
+        """Adding a new source to config should not block import of old bundle.
+
+        When a new source is added to the configuration, the committed crawler
+        bundle still contains only the previous sources. Import must succeed,
+        restoring the old sources while treating the new source as empty.
+        """
+        target = Database(self.root / "superset.sqlite3")
+        target.initialize()
+        target.sync_source_configs([source(), new_source()])
+
+        result = import_crawler_state(
+            target,
+            [source(), new_source()],
+            self.bundle,
+            seed=True,
+        )
+
+        self.assertEqual("seed", result["mode"])
+        self.assertEqual(1, result["sources"])
+        self.assertEqual(["new-source"], result["newly_configured_sources"])
+        self.assertEqual(1, result["inserted"])
+
+        articles = target.list_articles()
+        self.assertEqual(1, len(articles))
+        self.assertEqual("example", articles[0]["source_slug"])
+
+        with target.connect() as connection:
+            sources = connection.execute(
+                "SELECT slug, initialized_at FROM sources ORDER BY slug"
+            ).fetchall()
+            self.assertEqual(2, len(sources))
+            slugs = [row["slug"] for row in sources]
+            self.assertIn("example", slugs)
+            self.assertIn("new-source", slugs)
+
+            example_source = connection.execute(
+                "SELECT * FROM sources WHERE slug='example'"
+            ).fetchone()
+            new_src = connection.execute(
+                "SELECT * FROM sources WHERE slug='new-source'"
+            ).fetchone()
+            self.assertIsNotNone(example_source["initialized_at"])
+            self.assertIsNone(new_src["initialized_at"])
+
+    def test_import_rejects_bundle_with_unknown_source(self) -> None:
+        """Bundle containing a source not in current config must be rejected.
+
+        This catches importing the wrong bundle or config changes that remove
+        or rename a source. The integrity check must remain strict.
+        """
+        payload = self.payload()
+        payload["sources"][0]["slug"] = "renamed-source"
+        payload["articles"][0]["source_slug"] = "renamed-source"
+        payload["seen_urls"][0]["source_slug"] = "renamed-source"
+        payload["source_checks"][0]["source_slug"] = "renamed-source"
+        payload["bundle_hash"] = _bundle_hash(payload)
+        invalid = self.write_payload(payload, "unknown-source.json")
+
+        target = self.database("unknown.sqlite3")
+        with self.assertRaisesRegex(ValueError, "unknown or duplicated"):
+            import_crawler_state(target, [source()], invalid)
+        self.assertEqual([], target.list_articles())
+
+    def test_import_rejects_bundle_with_more_sources_than_config(self) -> None:
+        """Bundle with more sources than config indicates a stale config."""
+        target = Database(self.root / "fewer-config.sqlite3")
+        target.initialize()
+        target.sync_source_configs([source()])
+
+        two_source_db = Database(self.root / "two-source.sqlite3")
+        two_source_db.initialize()
+        two_source_db.sync_source_configs([source(), new_source()])
+        two_source_db.commit_candidates(
+            source(),
+            [article("one")],
+            started_at=utc_now(),
+            http_status=200,
+            etag="",
+            last_modified="",
+            body_hash="b" * 64,
+            listing_item_count=1,
+        )
+        two_source_bundle = self.root / "two-source-bundle.json"
+        export_crawler_state(
+            two_source_db, [source(), new_source()], two_source_bundle
+        )
+
+        with self.assertRaisesRegex(ValueError, "more sources than"):
+            import_crawler_state(target, [source()], two_source_bundle)
 
 
 if __name__ == "__main__":

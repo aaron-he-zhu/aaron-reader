@@ -789,6 +789,89 @@ def _cursor_records(root: _HTMLNode, source: SourceConfig) -> List[_HTMLRecord]:
     return records
 
 
+def parse_cursor_zh_locale(
+    source: SourceConfig, body: bytes
+) -> Dict[str, Dict[str, str]]:
+    """Parse Cursor's official Chinese locale page and return CN metadata by slug.
+
+    The CN page at /cn/blog uses the same HTML structure as the EN page.
+    Returns a dict mapping article slugs to their Chinese title and summary.
+    Only articles with actual Chinese content are included.
+    """
+    if not isinstance(body, bytes):
+        raise TypeError("zh_locale body must be bytes")
+    if not body.strip():
+        return {}
+
+    root = _parse_html_tree(body)
+    result: Dict[str, Dict[str, str]] = {}
+    seen_slugs: Set[str] = set()
+
+    for node in _descendants(root):
+        if node.tag != "a":
+            continue
+        href = node.attrs.get("href", "")
+        if not href:
+            continue
+        canonical_url = _cursor_blog_url(href, source)
+        if not canonical_url:
+            continue
+        slug = canonical_url.rsplit("/", 1)[-1].lower()
+        if slug in seen_slugs:
+            continue
+        classes = _classes(node)
+        is_feature_card = "card--feature" in classes or "card--media" in classes
+        is_directory_row = "blog-directory__row" in classes
+        if not is_feature_card and not is_directory_row:
+            continue
+
+        title = ""
+        summary = ""
+        for desc in _descendants(node):
+            if desc.tag == "p":
+                text = _node_text(desc, limit=_SUMMARY_LIMIT)
+                desc_classes = desc.attrs.get("class", "").lower()
+                if "type-md" in desc_classes or "type-md-lg" in desc_classes:
+                    if not title:
+                        title = text[:500] if text else ""
+                elif "text-theme-text-sec" in desc_classes:
+                    if not summary:
+                        summary = text
+                elif "type-base" in desc_classes and "text-theme-text" in desc_classes:
+                    if "text-pretty" in desc_classes and not title:
+                        title = text[:500] if text else ""
+
+        if not title:
+            continue
+        if not _text_contains_cjk(title):
+            continue
+        seen_slugs.add(slug)
+        result[slug] = {
+            "title": title,
+            "summary": summary or "",
+        }
+
+    return result
+
+
+def _text_contains_cjk(text: str) -> bool:
+    """Return True if text contains CJK characters (Chinese/Japanese/Korean)."""
+    for char in text:
+        codepoint = ord(char)
+        if (
+            0x4E00 <= codepoint <= 0x9FFF
+            or 0x3400 <= codepoint <= 0x4DBF
+            or 0x20000 <= codepoint <= 0x2A6DF
+            or 0x2A700 <= codepoint <= 0x2B73F
+            or 0x2B740 <= codepoint <= 0x2B81F
+            or 0x2B820 <= codepoint <= 0x2CEAF
+            or 0xF900 <= codepoint <= 0xFAFF
+            or 0x2F800 <= codepoint <= 0x2FA1F
+        ):
+            return True
+    return False
+
+
 def _parse_fixed_html(
     source: SourceConfig, body: bytes, fetched_at: Optional[datetime]
 ) -> List[ArticleCandidate]:
@@ -1171,4 +1254,4 @@ def parse_source(
     return candidates
 
 
-__all__ = ["parse_article_page", "parse_sitemap", "parse_source"]
+__all__ = ["parse_article_page", "parse_cursor_zh_locale", "parse_sitemap", "parse_source"]
