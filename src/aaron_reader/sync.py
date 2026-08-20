@@ -10,7 +10,7 @@ from .database import Database, utc_now
 from .http_client import FetchError, HttpClient
 from .i18n import translate
 from .models import AppConfig, ArticleCandidate, SourceConfig, SourceSyncResult, SyncResult
-from .parsers import parse_article_page, parse_sitemap, parse_source
+from .parsers import parse_article_page, parse_cursor_zh_locale, parse_sitemap, parse_source
 from .normalize import stable_hash
 
 
@@ -92,16 +92,17 @@ def sync_all(
         for source in config.sources:
             if not source.enabled or (selected and source.slug not in selected):
                 continue
-            results.sources.append(
-                _sync_source(
-                    source,
-                    database,
-                    http,
-                    force=force,
-                    keep_history_unread=keep_history_unread,
-                    language=language,
-                )
+            result = _sync_source(
+                source,
+                database,
+                http,
+                force=force,
+                keep_history_unread=keep_history_unread,
+                language=language,
             )
+            results.sources.append(result)
+            if source.zh_locale_url and result.status not in ("error",):
+                sync_publisher_locale(source, database, http, language=language)
 
     return results
 
@@ -540,3 +541,73 @@ def _hydrate_openai_developer_dates(
     except Exception as exc:
         warnings.append(translate("sync.metadata_failed", language, error=exc))
     return list(candidates), warnings
+
+
+def sync_publisher_locale(
+    source: SourceConfig,
+    database: Database,
+    client: HttpClient,
+    language: str = "en",
+) -> Dict[str, object]:
+    """Fetch official Chinese locale and store as publisher-provided translations.
+
+    For sources with zh_locale_url configured, fetches the official Chinese page
+    and stores title/summary as translation artifacts with provider='publisher'.
+    These artifacts skip AI model calls during cloud-run.
+    """
+    if not source.zh_locale_url:
+        return {"skipped": True, "reason": "no_zh_locale_url"}
+
+    try:
+        response = client.fetch(
+            source.zh_locale_url,
+            attempts=2,
+            accept="text/html, application/xhtml+xml;q=0.9, */*;q=0.1",
+        )
+        zh_metadata = parse_cursor_zh_locale(source, response.body)
+        if not zh_metadata:
+            return {
+                "skipped": False,
+                "zh_locale_url": source.zh_locale_url,
+                "articles_with_zh": 0,
+                "publisher_locales_stored": 0,
+            }
+
+        stored = 0
+        with database.connect() as connection:
+            articles = connection.execute(
+                """
+                SELECT id, canonical_url, content_hash
+                FROM articles
+                WHERE source_slug=?
+                """,
+                (source.slug,),
+            ).fetchall()
+
+        for article in articles:
+            url = str(article["canonical_url"])
+            slug = url.rsplit("/", 1)[-1].lower()
+            zh = zh_metadata.get(slug)
+            if zh is None:
+                continue
+            database.upsert_publisher_locale(
+                article_id=int(article["id"]),
+                target_language="zh-CN",
+                title=zh["title"],
+                summary=zh["summary"],
+                article_content_hash=str(article["content_hash"]),
+            )
+            stored += 1
+
+        return {
+            "skipped": False,
+            "zh_locale_url": source.zh_locale_url,
+            "articles_with_zh": len(zh_metadata),
+            "publisher_locales_stored": stored,
+        }
+    except Exception as exc:
+        return {
+            "skipped": False,
+            "zh_locale_url": source.zh_locale_url,
+            "error": str(exc)[:200],
+        }

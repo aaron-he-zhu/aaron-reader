@@ -1385,6 +1385,104 @@ class Database:
             results.setdefault(key[0], []).append(item)
         return results
 
+    def upsert_publisher_locale(
+        self,
+        article_id: int,
+        target_language: str,
+        title: str,
+        summary: str,
+        article_content_hash: str,
+    ) -> Dict[str, object]:
+        """Store official publisher-provided locale as a translation artifact.
+
+        Publisher locales are stored with provider='publisher' and skip model calls.
+        They use a fixed artifact key derived from article identity and target language.
+        Returns the artifact row dict (existing or newly created).
+        """
+        import hashlib
+        now = utc_now()
+        output = {
+            "title": title,
+            "publisher_summary": summary,
+            "language": target_language,
+            "limitations": "",
+        }
+        output_json = json.dumps(
+            output, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        )
+        output_hash = hashlib.sha256(output_json.encode("utf-8")).hexdigest()
+        artifact_key = hashlib.sha256(
+            ("publisher-locale:%d:%s" % (article_id, target_language)).encode("utf-8")
+        ).hexdigest()
+        input_hash = hashlib.sha256(
+            ("publisher:%d:%s" % (article_id, article_content_hash)).encode("utf-8")
+        ).hexdigest()
+        with self.connect() as connection:
+            existing = connection.execute(
+                "SELECT * FROM ai_artifacts WHERE artifact_key=?",
+                (artifact_key,),
+            ).fetchone()
+            if existing is not None:
+                if (
+                    str(existing["article_content_hash"]) != article_content_hash
+                    or str(existing["output_json"]) != output_json
+                ):
+                    connection.execute(
+                        """
+                        UPDATE ai_artifacts SET
+                            article_content_hash=?,
+                            output_json=?,
+                            output_text=?,
+                            output_hash=?,
+                            status='succeeded',
+                            created_at=?
+                        WHERE artifact_key=?
+                        """,
+                        (
+                            article_content_hash,
+                            output_json,
+                            title,
+                            output_hash,
+                            now,
+                            artifact_key,
+                        ),
+                    )
+                    return dict(connection.execute(
+                        "SELECT * FROM ai_artifacts WHERE artifact_key=?",
+                        (artifact_key,),
+                    ).fetchone())
+                return dict(existing)
+            connection.execute(
+                """
+                INSERT INTO ai_artifacts(
+                    article_id, task_type, input_scope, source_language,
+                    target_language, artifact_key, input_hash, article_content_hash,
+                    source_artifact_id, content_snapshot_id, prompt_version,
+                    prompt_hash, response_schema_version, response_schema_hash,
+                    provider, requested_model, resolved_model, generation_params_hash,
+                    provider_response_id, output_json, output_text, output_hash,
+                    status, input_truncated, created_at
+                ) VALUES (?, 'translation', 'metadata', 'en', ?, ?, ?, ?, NULL, NULL,
+                    'publisher', '', 'publisher', '', 'publisher', 'publisher',
+                    'publisher', '', '', ?, ?, ?, 'succeeded', 0, ?)
+                """,
+                (
+                    article_id,
+                    target_language,
+                    artifact_key,
+                    input_hash,
+                    article_content_hash,
+                    output_json,
+                    title,
+                    output_hash,
+                    now,
+                ),
+            )
+            return dict(connection.execute(
+                "SELECT * FROM ai_artifacts WHERE artifact_key=?",
+                (artifact_key,),
+            ).fetchone())
+
     def ensure_ai_job(
         self,
         *,

@@ -517,6 +517,76 @@ class SyncTests(unittest.TestCase):
         self.assertNotIn(first_new, pending)
         self.assertIn(second_new, pending)
 
+    def test_cursor_zh_locale_stores_publisher_translation_and_skips_ai(self) -> None:
+        """Official Chinese locale should skip AI provider for cursor-blog articles."""
+        cursor_source = SourceConfig(
+            slug="cursor-blog",
+            name="Cursor Blog",
+            home_url="https://cursor.com/blog",
+            fetch_url="https://cursor.com/blog",
+            adapter="cursor_blog",
+            zh_locale_url="https://cursor.com/cn/blog",
+        )
+        config = AppConfig(
+            sources=[cursor_source],
+            database_path=str(self.database.path),
+        )
+        self.database.initialize()
+        self.database.sync_source_configs([cursor_source])
+
+        en_html = b"""
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <a class="card card--feature" href="/blog/test-post">
+            <p class="type-md">Test Post Title</p>
+            <p class="text-theme-text-sec">English summary of the post.</p>
+            <time datetime="2026-08-01">Aug 1, 2026</time>
+        </a>
+        </body>
+        </html>
+        """
+        zh_html = b"""
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <a class="card card--feature" href="/cn/blog/test-post">
+            <p class="type-md">\xe6\xb5\x8b\xe8\xaf\x95\xe6\x96\x87\xe7\xab\xa0\xe6\xa0\x87\xe9\xa2\x98</p>
+            <p class="text-theme-text-sec">\xe4\xb8\xad\xe6\x96\x87\xe6\x91\x98\xe8\xa6\x81</p>
+        </a>
+        </body>
+        </html>
+        """
+        client = RoutingClient({
+            "https://cursor.com/blog": en_html,
+            "https://cursor.com/cn/blog": zh_html,
+        })
+
+        result = sync_all(config, self.database, client=client)
+        self.assertEqual("ok", result.sources[0].status)
+        self.assertEqual(1, result.sources[0].inserted)
+
+        articles = self.database.list_articles()
+        self.assertEqual(1, len(articles))
+        article_id = int(articles[0]["id"])
+        self.assertEqual("https://cursor.com/blog/test-post", articles[0]["canonical_url"])
+
+        artifacts = self.database.latest_ai_artifacts([article_id])
+        self.assertIn(article_id, artifacts)
+        artifact_list = artifacts[article_id]
+        self.assertEqual(1, len(artifact_list))
+
+        artifact = artifact_list[0]
+        self.assertEqual("translation", artifact["task_type"])
+        self.assertEqual("zh-CN", artifact["target_language"])
+        self.assertEqual("publisher", artifact["provider"])
+
+        import json
+        output = json.loads(artifact["output_json"])
+        self.assertEqual("测试文章标题", output["title"])
+        self.assertEqual("中文摘要", output["publisher_summary"])
+        self.assertEqual("zh-CN", output["language"])
+
 
 if __name__ == "__main__":
     unittest.main()
