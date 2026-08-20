@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-20T04:55:51Z",
-  "bundle_hash": "0e89c45ec8d71ba181a974125f29183116f1152dca81a18dc95fc4b3928475ee",
+  "exported_at": "2026-08-20T16:53:19Z",
+  "bundle_hash": "e3a229a3679eba360e82403299c6d640154004ac5102a524ee8be8e2661659de",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -2208,6 +2208,36 @@
       "output_hash": "0b35f23727f9add9eee51cc321b50a1cf956059d1b9bcfe0005e3eb00576b093",
       "input_truncated": false,
       "created_at": "2026-08-14T05:48:56Z"
+    },
+    {
+      "cache_key": "a4cfcb5f2b73f2053c233f0d7269dc5f0cb300669507a5401253e21d803e66a5",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/how-monday-com-transformed-its-platform-into-an-agent-first-product-where-humans-and-agents-collaborate",
+        "canonical_url": "https://claude.com/blog/how-monday-com-transformed-its-platform-into-an-agent-first-product-where-humans-and-agents-collaborate",
+        "content_hash": "24cec654284e5b782940917480b10c1542ccf5c18fe416e88364af4776a89ef8"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "提供的JSON数据中仅有文章标题和来源信息，未包含正文或摘要内容，因此无法提供除标题翻译以外的更多细节。标题翻译基于原文，未添加任何超出原文的信息。",
+        "title": "monday.com 如何将其平台转变为智能体优先的产品，实现人与智能体的协作",
+        "publisher_summary": ""
+      },
+      "output_hash": "2cc022a0dfaed4e9e5d26367811b3bcaab6b9ca14250247134df245897b94b4c",
+      "input_truncated": false,
+      "created_at": "2026-08-20T16:53:16Z"
     },
     {
       "cache_key": "ad59eaa2b89cc692a3fe8b5234c67e365e5e41a272a40114b2c5943436e01d93",
@@ -9735,11 +9765,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "c428cb4c6e1a80b72a05dc1afb8f4c9e2cc5bd9b36352310fb12dbb5f3edcb2a",
+      "ledger_key": "4ce0491f14d0523266d152d93fbbd875e5c70f18f0a188d5e12e81184bf47fdb",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -9755,11 +9785,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "0c57ff10be56d9e1076a6409f345cbde08692b5deee3ddf14b462ea3ac8dc0ba",
+      "ledger_key": "b529536d0e22fb8d5957485a23a2b55fcda1d80c768516fa7713f18e2ad80862",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9775,11 +9805,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "5fe598ef45b7c3d837f9406bb5de803dd5ec792867c9c0803d60f7e1b2f27842",
+      "ledger_key": "f6c8d3c2ec35932e09e1c585f67c6540e3ca6a25ee8d3cdfbf0c77ab5bb6cb95",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -9795,11 +9825,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "ad222737876ba9de3b81bf5cc1b7b9e1d7be749e71bf8b759641d33ef67ab5ae",
+      "ledger_key": "57194be3b4f79247d820774c6458794dda052fec371f6fdd19954f4371f243b4",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9815,11 +9845,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "f46026f2e623e6610b88057847f280daceea235485e2b3366ecb58c0fd4e17b0",
+      "ledger_key": "bab195b1fe28c9f0f3fd44f2acb470f75919f0394e9f97580f225a062f992eb6",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9835,11 +9865,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "77b716d4977127842ce4bf2bd4c15f2b45e4eb996b3823e052c4ac1362ca2397",
+      "ledger_key": "9b42eae760cf7721e4e10e5f71c252b49eb053b1b349cc294e57fd9152a6df93",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9855,11 +9885,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "5bd34073ca43a2590a1f3c897b08640ea3b61aeef8e96159d222044c64f8457c",
+      "ledger_key": "cabb056405ce1596bd97903f7f129ad94984f6949e0a7451b99c53bcdca3c6e2",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9875,11 +9905,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "7147b5907c3e4a530dc72f45ac96e6db9ac0988683636fc69bc4cf7f7fda5d3e",
+      "ledger_key": "c7e242cb2c1d578e3d433469eca449e7103442e31e4c5aaeff98b1dff514bb06",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -9895,11 +9925,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "2e66cd22ef88862ed1dcdcbfc0f714754c484e982fdd7327a840625aec64ffba",
+      "ledger_key": "29072971857e54f5babd793ffc8d6fa6105a97bc5f94cefb791a6003564061b5",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9915,11 +9945,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "5a245520c825754dafce81a6ee33794efb1aca46210c547b859332c67bc9a187",
+      "ledger_key": "9a3e6c5027ad99e4cb6df7ca20fe6606ca03df4b0d97173ad037a506e6c60648",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9935,11 +9965,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "a1082e140dd50cd2c635f738898029dfcd1c958c4ec9ceb942e53ae53aea7ace",
+      "ledger_key": "a68f8d1bfc22c6254713aab319dc260692b7aad259016130d90a522d2eadb294",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -9955,11 +9985,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "4598da523164f6ba8a75542a3f73b82e56a4a06b2931ba3e3b2e44d0db95325d",
+      "ledger_key": "f654492fcd534a3446685af61530fdc5bfe814250d92f4238b1f3ecb16b607cc",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9975,11 +10005,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1f79b7b403419a04bcb204a9ecc844f71fcd7867ed77e65743d3d660c95545eb",
+      "ledger_key": "7e7ba59fb321e3a7ea6a6697cd93313f2c9caf0dc3fd465f851ffcba4cce0ed0",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-17T07:00:00Z",
       "day_end": "2026-08-18T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9995,11 +10025,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b49690ab42137190f01326327f77fd10fd75fca2d6421909b7fc03f57198580a",
+      "ledger_key": "1b3abafb476c2ac029bb652418bf83080718993bd3297206c6f42d5bf7fa2f6f",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-18T07:00:00Z",
       "day_end": "2026-08-19T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 9,
       "confirmed_requests": 9,
       "unconfirmed_requests": 0,
@@ -10015,11 +10045,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "781020b1c768339e323b6a9b72d189541b4d6773c2a6f992d6957d7a1bc4389d",
+      "ledger_key": "66005f314779a4f54a66789f5f50c01f9fd79022dd1727af77aee1a2a4edb1d0",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-19T07:00:00Z",
       "day_end": "2026-08-20T07:00:00Z",
-      "covered_through": "2026-08-20T04:55:51Z",
+      "covered_through": "2026-08-20T16:53:19Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -10033,9 +10063,61 @@
       "reserved_total_tokens_for_unconfirmed": 4287,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "77d145a03c45ee5471ffbc6c1ef353fa048331ee047d1a2e838a7cc4f13bba2d",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-20T07:00:00Z",
+      "day_end": "2026-08-21T07:00:00Z",
+      "covered_through": "2026-08-20T16:53:19Z",
+      "requests": 4,
+      "confirmed_requests": 4,
+      "unconfirmed_requests": 0,
+      "input_tokens": 1369,
+      "cached_input_tokens": 768,
+      "cache_miss_input_tokens": 601,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 612,
+      "reasoning_tokens": 343,
+      "total_tokens": 1981,
+      "reserved_total_tokens_for_unconfirmed": 0,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
     }
   ],
   "generation_holds": [
+    {
+      "hold_key": "1ec5863945bd8d729054f02e9f8905df1c058e811e46b6df8307355f6934a253",
+      "workload_kind": "article",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://claude.com/blog/claude-code-guide-for-startups",
+            "content_hash": "ab9c544e2107dd437e29c9553bf31dd44c7dc6e8e385c2305436ac9611438a3b",
+            "external_id": "https://claude.com/blog/claude-code-guide-for-startups",
+            "source_slug": "claude-blog"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "deepseek-v4-flash",
+        "portable_input_hash": "f5fb9d48ef34fb02552b497e9d30620a973230867d659345761f9d05c72ba639",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "deepseek",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-20T16:53:13Z",
+      "last_seen_at": "2026-08-20T16:53:14Z"
+    },
     {
       "hold_key": "89a9a8e96cc88e6e3f441a4c1da648adec195d4ad95b05d549c3c4e04fd0036f",
       "workload_kind": "article",
@@ -10067,6 +10149,38 @@
       },
       "first_seen_at": "2026-08-11T05:38:01Z",
       "last_seen_at": "2026-08-11T05:38:11Z"
+    },
+    {
+      "hold_key": "8a35ada38c21d99f13ebc354541e97d5a9536e76bb7a42547d41505c6d7695ab",
+      "workload_kind": "article",
+      "hold_class": "fallback_pending",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://claude.com/blog/claude-code-guide-for-startups",
+            "content_hash": "ab9c544e2107dd437e29c9553bf31dd44c7dc6e8e385c2305436ac9611438a3b",
+            "external_id": "https://claude.com/blog/claude-code-guide-for-startups",
+            "source_slug": "claude-blog"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "openrouter/free",
+        "portable_input_hash": "f5fb9d48ef34fb02552b497e9d30620a973230867d659345761f9d05c72ba639",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "openrouter",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-20T16:53:02Z",
+      "last_seen_at": "2026-08-20T16:53:13Z"
     },
     {
       "hold_key": "8b32915d5befea3f2d26d55de2cbb6d5bbc710c6ddd5b43980bfff4e51ad3ffd",
@@ -10227,6 +10341,38 @@
       },
       "first_seen_at": "2026-08-11T05:36:35Z",
       "last_seen_at": "2026-08-11T05:36:45Z"
+    },
+    {
+      "hold_key": "ff1be8892aea51dc5939da4a18a5404b1b1007639ad7ed13dfc8b573ea9a2227",
+      "workload_kind": "article",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://openai.com/index/stampli",
+            "content_hash": "d754682a1d2bc6d826ece9b03683887de0c9bc6da01dc7e9f3e897706ff899e6",
+            "external_id": "https://openai.com/index/stampli",
+            "source_slug": "openai-news"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "deepseek-v4-flash",
+        "portable_input_hash": "a44d1044caddc23b5aa507dcfdd9ecb7f5125fee63b7ac17ce6656c22063682c",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "deepseek",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-20T16:53:16Z",
+      "last_seen_at": "2026-08-20T16:53:18Z"
     }
   ]
 }
