@@ -318,6 +318,9 @@ def import_crawler_state(
     bundle_seen = _group_by_source(validated["seen_urls"])  # type: ignore[arg-type]
     bundle_pending = _group_by_source(validated["pending_urls"])  # type: ignore[arg-type]
     bundle_checks = _group_by_source(validated["source_checks"])  # type: ignore[arg-type]
+    newly_configured_slugs = sorted(
+        slug for slug in configured_by_slug if slug not in bundle_sources
+    )
 
     inserted = 0
     updated = 0
@@ -518,6 +521,7 @@ def import_crawler_state(
         "bundle_hash": validated["bundle_hash"],
         "mode": "seed" if seed else "merge",
         "sources": len(bundle_sources),
+        "newly_configured_sources": newly_configured_slugs,
         "authoritative_sources": authoritative_sources,
         "articles": len(validated["articles"]),  # type: ignore[arg-type]
         "inserted": inserted,
@@ -625,8 +629,8 @@ def _validate_payload(
     raw_sources = payload["sources"]
     if len(configured_by_slug) != len(configured_sources):
         raise ValueError("configured crawler source slugs are not unique")
-    if len(raw_sources) != len(configured_by_slug):
-        raise ValueError("crawler state source set differs from current configuration")
+    if len(raw_sources) > len(configured_by_slug):
+        raise ValueError("crawler state contains more sources than current configuration")
     seen_source_slugs = set()
     for row in raw_sources:
         slug = _string(row["slug"], "source slug", 120, allow_empty=False)
@@ -659,8 +663,8 @@ def _validate_payload(
         _optional_http_status(row["last_http_status"], "source last_http_status")
         _integer(row["last_item_count"], "source last_item_count", 0, 1_000_000)
         _timestamp(row["updated_at"], "source updated_at", nullable=False)
-    if seen_source_slugs != set(configured_by_slug):
-        raise ValueError("crawler state source set differs from current configuration")
+    if not seen_source_slugs.issubset(set(configured_by_slug)):
+        raise ValueError("crawler state contains sources not in current configuration")
 
     article_identities = set()
     article_urls = set()
