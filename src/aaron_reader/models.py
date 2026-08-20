@@ -20,6 +20,7 @@ class SourceConfig:
     sitemap_prefix: str = ""
     sitemap_interval_hours: int = 24
     metadata_url: str = ""
+    zh_locale_url: str = ""
 
 
 @dataclass(frozen=True)

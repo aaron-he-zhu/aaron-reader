@@ -18,6 +18,7 @@ SOURCE_COLORS = {
     "openai-developers": "#2563eb",
     "claude-blog": "#d97757",
     "anthropic-news": "#7c3aed",
+    "cursor-blog": "#0ea5e9",
 }
 
 PAGE_ARTICLE_LIMIT = 500

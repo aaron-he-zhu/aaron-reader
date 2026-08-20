@@ -4,7 +4,7 @@
 
 **[Live site](https://aaron-reader.aaron-he-zhu.workers.dev/)**
 
-Official OpenAI and Anthropic posts, in English and 简体中文. We only translate the title and short blurb — click through to read the original.
+Official posts from OpenAI, Anthropic, and Cursor, in English and 简体中文. We only show the title and short blurb — click through to read the original.
 
 ## Sources
 
@@ -12,6 +12,7 @@ Official OpenAI and Anthropic posts, in English and 简体中文. We only transl
 - [OpenAI Developer Blog](https://developers.openai.com/blog)
 - [Claude Blog](https://claude.com/blog/)
 - [Anthropic News](https://www.anthropic.com/news)
+- [Cursor Blog](https://cursor.com/blog)
 
 ## How to use
 
@@ -53,7 +54,7 @@ The update workflow runs every day at **09:15 and 21:15 in `America/Los_Angeles`
 
 Each scheduled cycle:
 
-- checks all four sources with deterministic code;
+- checks all five sources with deterministic code;
 - reuses valid artifacts already bound to the current article content hash;
 - scans the bounded current corpus for articles that still lack a Simplified Chinese translation, not only articles discovered in that run, and considers up to the configured per-cycle limit;
 - translates only the title and publisher summary, and isolates article failures so one `AIServiceError` does not prevent later missing articles from being considered; and

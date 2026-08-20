@@ -87,6 +87,16 @@
       "sitemap_prefix": "https://www.anthropic.com/news/",
       "sitemap_interval_hours": 24,
       "enabled": true
+    },
+    {
+      "slug": "cursor-blog",
+      "name": "Cursor Blog",
+      "home_url": "https://cursor.com/blog",
+      "fetch_url": "https://cursor.com/blog",
+      "adapter": "cursor_blog",
+      "history_limit": 50,
+      "zh_locale_url": "https://cursor.com/cn/blog",
+      "enabled": true
     }
   ]
 }

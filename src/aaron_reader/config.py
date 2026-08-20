@@ -24,6 +24,7 @@ SUPPORTED_ADAPTERS = {
     "openai_developers",
     "claude_blog",
     "anthropic_news",
+    "cursor_blog",
 }
 
 
@@ -59,6 +60,7 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
             sitemap_prefix=str(raw.get("sitemap_prefix", "")).strip(),
             sitemap_interval_hours=int(raw.get("sitemap_interval_hours", 24)),
             metadata_url=str(raw.get("metadata_url", "")).strip(),
+            zh_locale_url=str(raw.get("zh_locale_url", "")).strip(),
         )
         if not source.slug or not source.name or not source.fetch_url:
             raise ValueError("source slug, name, and fetch_url are required")
