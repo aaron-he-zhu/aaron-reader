@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-20T02:35:59Z",
-  "bundle_hash": "b9191b37ac281290ea22a8c5f7e1b377385f07e9a75531af41a89f86826741eb",
+  "exported_at": "2026-08-20T03:03:29Z",
+  "bundle_hash": "7bbae5590defaf188119ca7a8f9fa86c29d98c72f6d90d2b614a1c02f72141bf",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -2965,7 +2965,187 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
-      "cache_key": "ce932d6631a23d3c6a619de5d65f25d6ce183832d18067665afaa0798f884ad6",
+      "cache_key": "c5c27979d65e734b0b207924bde1c2a31fe8e7cdb024d4731790928afc0acd8a",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/agent-swarm-model-economics",
+        "canonical_url": "https://cursor.com/blog/agent-swarm-model-economics",
+        "content_hash": "96fcbfdf545e2f6c53b9ef7338471b25164f6d2f11d6f8b2d691f598735277bb"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "智能体蜂群与新的模型经济学",
+        "publisher_summary": ""
+      },
+      "output_hash": "5715ad2114956b84c132dc4212ad716bc4c8d388c1c6c863c26e147c6f23136d",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:26Z"
+    },
+    {
+      "cache_key": "7ba9bba9d53446fde1be9de675982168f82359c6ec6a8cc9229e9fe297889738",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/aiuc-1",
+        "canonical_url": "https://cursor.com/blog/aiuc-1",
+        "content_hash": "1cbd797f48c7a25e8b67ede285b7c5b982db546967fc919ebd0c64568d461d20"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "Cursor 获得 AIUC-1 智能体安全与可靠性认证",
+        "publisher_summary": ""
+      },
+      "output_hash": "7926077330bc2aca3c0723dffc2f764d12d6de2352ff4c8ef2b718f0ff113993",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:26Z"
+    },
+    {
+      "cache_key": "9b93711ad4f26f0d443eb252f8b5e00d9eb3b8b765781eeb3f8654b73ba3ca56",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/builds",
+        "canonical_url": "https://cursor.com/blog/builds",
+        "content_hash": "80352b90a899eb1f350b9e33b5f68e2f98f07ab2d617544cd62f454d1d7cea07"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "借助构建，云端智能体启动速度提升至 3 倍",
+        "publisher_summary": ""
+      },
+      "output_hash": "26b28c02954c88694ec651f97c85ae10c75c1a35468cd447ae369b4b4a328ebd",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:26Z"
+    },
+    {
+      "cache_key": "31ec9577b4b14f43f5c618f16541267148105ceb583d6c1d700f34c5072f0e8b",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/cloud-agent-environment",
+        "canonical_url": "https://cursor.com/blog/cloud-agent-environment",
+        "content_hash": "fec6f22acb228c67083fbae66b289db6e9c99c66044f965b0d7b606597043502"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "我们如何搭建云端智能体环境",
+        "publisher_summary": ""
+      },
+      "output_hash": "524d890599bf509830641e66565dfcd9872932817576dfe987770d611278e644",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:26Z"
+    },
+    {
+      "cache_key": "eacdb32a949234a894019b0bae122dfd1fdddaf6d35e35225a7fdbea54f4bf20",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/coinbase",
+        "canonical_url": "https://cursor.com/blog/coinbase",
+        "content_hash": "3ad581decc5be2fd47183ed218de46672e25bb8f551f50041ce65023613a45f6"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "Coinbase 借助 Cursor 将从想法到上线的时间缩短了 90%",
+        "publisher_summary": ""
+      },
+      "output_hash": "e6c6729262fa322fff1679ded347629c644f5bb5cd530250548decb77b801a6a",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:26Z"
+    },
+    {
+      "cache_key": "11a7799879c0b40200bcb88cc0594ebe3549650033291df455ede332a62b1cbd",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/cursor-start-india",
+        "canonical_url": "https://cursor.com/blog/cursor-start-india",
+        "content_hash": "593c497c800f7bfaa2d59aa17652e6860c0430f2a9da50926a0a7954a61331fc"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "推出 Cursor Start",
+        "publisher_summary": ""
+      },
+      "output_hash": "2976fc7af3405c340b8e48c1793ebfdfb34f34e3e464f89d4629084f9f8b697f",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:26Z"
+    },
+    {
+      "cache_key": "161120bd043e336ae4d946f742a6316081b2d7df7c310ddd715b9db26189086b",
       "article": {
         "source_slug": "cursor-blog",
         "external_id": "https://cursor.com/blog/faire",
@@ -2974,25 +3154,145 @@
       },
       "task_type": "translation",
       "input_scope": "metadata",
-      "source_language": "unknown",
+      "source_language": "en",
       "target_language": "zh-CN",
-      "prompt_version": "ai-enrichment-v1",
-      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
-      "response_schema_version": "ai-output-v1",
-      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-      "provider": "deepseek",
-      "requested_model": "deepseek-v4-flash",
-      "resolved_model": "deepseek-v4-flash",
-      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
       "output": {
         "language": "zh-CN",
-        "limitations": "此结果基于提供的文章元数据，仅包含标题。未提供文章正文或摘要，因此无法验证或扩展标题中的声明。标题提及的‘翻倍’、‘Faire’和‘Cursor Cloud Agents’等细节来源于原始标题，未作进一步阐述。",
-        "title": "Faire 借助 Cursor Cloud Agents 将 PR 吞吐量翻倍",
+        "limitations": "",
+        "title": "Faire 借助 Cursor 云端智能体让每周 PR 吞吐量翻倍",
+        "publisher_summary": "Faire 选择 Cursor 作为其编程智能体平台，取代了内部的后台智能体系统。"
+      },
+      "output_hash": "aae40504c764196ed81069867f1071cf8b6dc31128a9139ad1d8f3ee7e36b695",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:27Z"
+    },
+    {
+      "cache_key": "ad0d89bc2efd1bb45dfb093ead1f2cdada86f0168a0721af42c5051dd882d17a",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/firetiger",
+        "canonical_url": "https://cursor.com/blog/firetiger",
+        "content_hash": "d6a72660852009110d4753b469b572696fc2e8248fa47ad80b8f79b3c2ffa82d"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "Firetiger 加入 Cursor",
         "publisher_summary": ""
       },
-      "output_hash": "f92e5855a9abc4bc703d387a110475897593af158480bf928a9d56bcafb2a916",
+      "output_hash": "02ae244617933891947416abd84d622506f2de4c8f238cb801409c82583237ef",
       "input_truncated": false,
-      "created_at": "2026-08-20T02:35:58Z"
+      "created_at": "2026-08-20T03:03:27Z"
+    },
+    {
+      "cache_key": "067935060474394e6f929dacf9a2355797343e4a04d1d7f5a36883f06311deea",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/git-at-any-scale",
+        "canonical_url": "https://cursor.com/blog/git-at-any-scale",
+        "content_hash": "12721ad34bb7f012a29dd2c37008a780ad56360cfffb7ad8d53c414a5204a4c7"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "任意规模的 Git",
+        "publisher_summary": ""
+      },
+      "output_hash": "b46fa97c6515967465a0b0d3ed7a4ab07efcadae11dca18c94b0847f3d27d19b",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:27Z"
+    },
+    {
+      "cache_key": "89a50b5d7f77a59ef2f91bc2011e2c0745ee486bb2bb2336f462841d196255b6",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/grok-4-6",
+        "canonical_url": "https://cursor.com/blog/grok-4-6",
+        "content_hash": "b422b81336d9afb0ef2c8224905e31500d8a1f433a4806f5fde12f9fe07faece"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "介绍 Grok 4.6",
+        "publisher_summary": "专为长时间运行的智能体，以及更复杂的交互和视觉工作而构建。"
+      },
+      "output_hash": "2ceeaa8a695c3c5e9fd50e41dd1c9bf3226f1c6088a48aa2ebd7fd1750b3fd24",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:27Z"
+    },
+    {
+      "cache_key": "07b1a3025de7a1ad1617d01a59ce3eee32f763ff20489d46315a5076430d90f3",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/joining-spacex",
+        "canonical_url": "https://cursor.com/blog/joining-spacex",
+        "content_hash": "202ff1fa9d4169b32859ac5b47b2757876553a81a4453d106805617f9bbd3a7e"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "Cursor 现已成为 SpaceX 的一部分",
+        "publisher_summary": "Cursor 已正式被 SpaceX 收购。"
+      },
+      "output_hash": "499b2eb360f7e9b21e27ab8bbe28020db17d040ca6a919a43f63a3ddd17dbaba",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:27Z"
     },
     {
       "cache_key": "bdc8e7ffb6393bc2e6cf2bb5c20fd3a6c4ee80006747f3e5ed429840d8f726be",
@@ -3025,7 +3325,67 @@
       "created_at": "2026-08-20T02:35:54Z"
     },
     {
-      "cache_key": "ab1251c7d8951151a94fb9c1d736cb3ec5a18d7fc5dc450ef8f70ae2d9f092fa",
+      "cache_key": "d65d2e058ef4065aa11a774b0f777f69c77a1938c11591bca9267850f31d7fbb",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/router",
+        "canonical_url": "https://cursor.com/blog/router",
+        "content_hash": "ab058a28b593bae7fb698a0a707fd5cbd7fccf0fc44bc073192a4f9f3a2f440a"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "推出 Cursor Router",
+        "publisher_summary": ""
+      },
+      "output_hash": "1c3011be796f367cf2c0b8f94aab97afc9fa1ba20c90ba15d49599325fd0c061",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:28Z"
+    },
+    {
+      "cache_key": "6c759552c5f09e6062fef3c27f973cb4671ac7a085993264ae4719d94287d85e",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/vercel",
+        "canonical_url": "https://cursor.com/blog/vercel",
+        "content_hash": "c254b2ea06ec6c1172267449d5dc9d7fc4e377b6946655d4c45b413ca7474272"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "en",
+      "target_language": "zh-CN",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "",
+        "title": "Vercel 如何使用 Cursor 构建 Queues",
+        "publisher_summary": ""
+      },
+      "output_hash": "32c4d4077036ec876e5a949cd30e794fbfd10296620d735fce842d5e6e1ff878",
+      "input_truncated": false,
+      "created_at": "2026-08-20T03:03:28Z"
+    },
+    {
+      "cache_key": "355519c653145ac3f9c8ddcf8e60e628ebb6907679bdccf6aef10f4731f24320",
       "article": {
         "source_slug": "cursor-blog",
         "external_id": "https://cursor.com/blog/wayfair",
@@ -3034,25 +3394,25 @@
       },
       "task_type": "translation",
       "input_scope": "metadata",
-      "source_language": "unknown",
+      "source_language": "en",
       "target_language": "zh-CN",
-      "prompt_version": "ai-enrichment-v1",
-      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
-      "response_schema_version": "ai-output-v1",
-      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-      "provider": "deepseek",
-      "requested_model": "deepseek-v4-flash",
-      "resolved_model": "deepseek-v4-flash",
-      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "prompt_version": "publisher",
+      "prompt_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "response_schema_version": "publisher",
+      "response_schema_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
+      "provider": "publisher",
+      "requested_model": "publisher",
+      "resolved_model": "publisher",
+      "generation_params_hash": "4f03a060b7eb032972dcb327f2c989b14d5e73c35b3d5928a6f875ca39c159ba",
       "output": {
         "language": "zh-CN",
-        "limitations": "仅基于提供的标题和来源信息，未提供文章正文摘要，因此无法提供更详细的内容或验证标题中的具体数据。标题中提及的90%成本削减百分比及两次削减行为均源自原始标题，未经过额外核实。",
-        "title": "Wayfair如何借助Cursor将ML模型成本削减90%（两次！）",
-        "publisher_summary": ""
+        "limitations": "",
+        "title": "Wayfair 如何借助 Cursor 将 ML 模型成本降低 90%（而且做到了两次！）",
+        "publisher_summary": "在 Cursor 负责执行实验的情况下，Wayfair 将原本需要数月的 ML 研究压缩到了几天内。5 名研究人员测试了 110 多种模型变体，并将标签验证模型的成本降低了 94%。"
       },
-      "output_hash": "29ad3f74daf9f81dd00b4a193b7c867a3271970cb43e7056a8f3300055c07d10",
+      "output_hash": "0889a6b7ebb465ef81491fca034354667ca72aad18d017d93d9e6378c0195aab",
       "input_truncated": false,
-      "created_at": "2026-08-20T02:35:56Z"
+      "created_at": "2026-08-20T03:03:28Z"
     },
     {
       "cache_key": "58db773507f6f64ea50be41c58ff53a6f096b6b12207da436f64f66079236d70",
@@ -9345,11 +9705,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "4003a275a2a3739d70aee14268a27f3fe04c8c5940c413f08b8c84704d6d3840",
+      "ledger_key": "d5c4d075f9ab7ea1014969e18d65985ab89011dc657137746be675e18517582b",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -9365,11 +9725,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "a0d0eb92cf9e5530efef4d9e69e8205530e0cf715dc8f18e2309286a00ac66fa",
+      "ledger_key": "31571165c6fa4f27603f15b178bcfae41339b27c1e7bdbedd03e363f73922d6b",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9385,11 +9745,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "034a4681252e936670f1b48513b0a209386d68f7528480dc7c5a3f78bec70d15",
+      "ledger_key": "01d7f5f42fafcb0410c500e43c912de1c805a7e148b8222ca05aa7e5dc057d09",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -9405,11 +9765,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b1870e359822849eff0982adf6ac2c9ff1143da8a138e9f5e1bb9189623f9955",
+      "ledger_key": "ca760fbc07bb43fd000b958a7a05dd0e7ee9b54da4c46e3d44567e7b57d94e42",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9425,11 +9785,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "3eff12ae414bf823dc38b148f972b30415fe9539bc1443f63f7f140558fcbc84",
+      "ledger_key": "6911d07275c7d8fb4e09e8cc301f0bb2d64e6d3b3fcbebf3698b771e013dc828",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9445,11 +9805,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "d6bf1a4d88b3840731de5e121f0f5c4bb4fedb2b266c8de21dcd1db67049dd9e",
+      "ledger_key": "70e69e8036d3cf26cd35017a6a03adf3a2922742ffb4a2e63851b45288132339",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9465,11 +9825,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "bdf468e98bc91c11bcfaa58912a16025ab7cb12c58413f955931bb3eb44c8457",
+      "ledger_key": "562248c8494e077919a6ce402f9ffae949e34c6d792b3ac7a23637c00c634a3d",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9485,11 +9845,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "8bb2ad61d233f37ca5a95b1eedb3664f9b09d93b829614ac62761c87b29b166b",
+      "ledger_key": "25eaf5a9c2b1a08429c1c98c1d08e574d4723aa7142452f2d08fee5ba5d16ef5",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -9505,11 +9865,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1113761a9a1e17d553dce25f276f2bf624656fd8bc956f3ee004e21ddc723cef",
+      "ledger_key": "1898b9f3f95a75c46624c36699d89ffc56faeb8f1003559ec911a0885b03af70",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9525,11 +9885,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "2f6befc5a1e31e3c90a5aea1fe5c6d446fd59869dabd13d3e0ee40b243249816",
+      "ledger_key": "de6a60c6c84b499cf05f2de7acfa1c0e423eca5f2b605294560f20def6e1052f",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9545,11 +9905,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "256479271477a710476fcdc5a25c1e25ff4af049adefc8771458398f25a70918",
+      "ledger_key": "e3800cafcec88b6e3e0987995023effb104a01ba5c595e3adb9ba7dbd1fafef8",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -9565,11 +9925,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "a1da8d604dbfa1a56a9f60bd6a9a43c2199fa3a2fd76d004a222cb51c3983ef9",
+      "ledger_key": "b6d2bf2220e9ddc7b1e49b8ae037730563ca4acbe868e2008bc13dd23ced647e",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9585,11 +9945,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "5cbe897244ba7addad79d274916d2d5a872cc77208d743b9c62d1f818df1de50",
+      "ledger_key": "096d29a4f59af01297f0c7164fa0ead39eac6385cf8caff2a0476bff80a2a299",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-17T07:00:00Z",
       "day_end": "2026-08-18T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9605,11 +9965,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "126a4abf498f8a583f32364a2a436a074b862388a834ef49748e6eade973b365",
+      "ledger_key": "0116d70ca95b794330df32f16a4135def02ea2c47d76ff0d95501c6a934aaf5a",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-18T07:00:00Z",
       "day_end": "2026-08-19T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 9,
       "confirmed_requests": 9,
       "unconfirmed_requests": 0,
@@ -9625,11 +9985,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "eeaba8febc6a45926fa5d01fa553a38f826a3a673e9ee5668ce994317e1faeb5",
+      "ledger_key": "cf3aa691f9a81144b10fef2bb3875bd1188f9f0821604a97473dbd976f9a6494",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-19T07:00:00Z",
       "day_end": "2026-08-20T07:00:00Z",
-      "covered_through": "2026-08-20T02:35:59Z",
+      "covered_through": "2026-08-20T03:03:29Z",
       "requests": 18,
       "confirmed_requests": 17,
       "unconfirmed_requests": 1,
