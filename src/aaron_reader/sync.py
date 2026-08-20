@@ -102,7 +102,17 @@ def sync_all(
             )
             results.sources.append(result)
             if source.zh_locale_url and result.status not in ("error",):
-                sync_publisher_locale(source, database, http, language=language)
+                locale_result = sync_publisher_locale(source, database, http, language=language)
+                locale_warnings = locale_result.get("warnings", [])
+                if locale_warnings:
+                    existing_warning = result.warning or ""
+                    all_warnings = (
+                        ([existing_warning] if existing_warning else [])
+                        + [str(w) for w in locale_warnings]
+                    )
+                    result.warning = "; ".join(all_warnings)
+                    if result.status == "ok":
+                        result.status = "degraded"
 
     return results
 
@@ -543,6 +553,24 @@ def _hydrate_openai_developer_dates(
     return list(candidates), warnings
 
 
+def _text_contains_cjk(text: str) -> bool:
+    """Return True if text contains CJK characters (Chinese/Japanese/Korean)."""
+    for char in text:
+        codepoint = ord(char)
+        if (
+            0x4E00 <= codepoint <= 0x9FFF
+            or 0x3400 <= codepoint <= 0x4DBF
+            or 0x20000 <= codepoint <= 0x2A6DF
+            or 0x2A700 <= codepoint <= 0x2B73F
+            or 0x2B740 <= codepoint <= 0x2B81F
+            or 0x2B820 <= codepoint <= 0x2CEAF
+            or 0xF900 <= codepoint <= 0xFAFF
+            or 0x2F800 <= codepoint <= 0x2FA1F
+        ):
+            return True
+    return False
+
+
 def sync_publisher_locale(
     source: SourceConfig,
     database: Database,
@@ -554,10 +582,15 @@ def sync_publisher_locale(
     For sources with zh_locale_url configured, fetches the official Chinese page
     and stores title/summary as translation artifacts with provider='publisher'.
     These artifacts skip AI model calls during cloud-run.
+
+    For articles not found in the CN listing, fetches individual CN article pages
+    to check for official translations.
     """
     if not source.zh_locale_url:
         return {"skipped": True, "reason": "no_zh_locale_url"}
 
+    warnings: List[str] = []
+    zh_metadata: Dict[str, Dict[str, str]] = {}
     try:
         response = client.fetch(
             source.zh_locale_url,
@@ -565,49 +598,88 @@ def sync_publisher_locale(
             accept="text/html, application/xhtml+xml;q=0.9, */*;q=0.1",
         )
         zh_metadata = parse_cursor_zh_locale(source, response.body)
-        if not zh_metadata:
-            return {
-                "skipped": False,
-                "zh_locale_url": source.zh_locale_url,
-                "articles_with_zh": 0,
-                "publisher_locales_stored": 0,
-            }
-
-        stored = 0
-        with database.connect() as connection:
-            articles = connection.execute(
-                """
-                SELECT id, canonical_url, content_hash
-                FROM articles
-                WHERE source_slug=?
-                """,
-                (source.slug,),
-            ).fetchall()
-
-        for article in articles:
-            url = str(article["canonical_url"])
-            slug = url.rsplit("/", 1)[-1].lower()
-            zh = zh_metadata.get(slug)
-            if zh is None:
-                continue
-            database.upsert_publisher_locale(
-                article_id=int(article["id"]),
-                target_language="zh-CN",
-                title=zh["title"],
-                summary=zh["summary"],
-                article_content_hash=str(article["content_hash"]),
-            )
-            stored += 1
-
-        return {
-            "skipped": False,
-            "zh_locale_url": source.zh_locale_url,
-            "articles_with_zh": len(zh_metadata),
-            "publisher_locales_stored": stored,
-        }
     except Exception as exc:
-        return {
-            "skipped": False,
-            "zh_locale_url": source.zh_locale_url,
-            "error": str(exc)[:200],
-        }
+        warnings.append(
+            translate("sync.zh_locale_listing_failed", language, error=str(exc)[:200])
+        )
+
+    with database.connect() as connection:
+        articles = connection.execute(
+            """
+            SELECT id, canonical_url, content_hash
+            FROM articles
+            WHERE source_slug=?
+            """,
+            (source.slug,),
+        ).fetchall()
+
+    stored = 0
+    fetched_per_article = 0
+    skipped_english_only = 0
+    for article in articles:
+        url = str(article["canonical_url"])
+        slug = url.rsplit("/", 1)[-1].lower()
+        zh = zh_metadata.get(slug)
+        if zh is not None:
+            try:
+                database.upsert_publisher_locale(
+                    article_id=int(article["id"]),
+                    target_language="zh-CN",
+                    title=zh["title"],
+                    summary=zh["summary"],
+                    article_content_hash=str(article["content_hash"]),
+                )
+                stored += 1
+            except Exception as exc:
+                warnings.append(
+                    translate(
+                        "sync.zh_locale_store_failed",
+                        language,
+                        slug=slug,
+                        error=str(exc)[:100],
+                    )
+                )
+            continue
+        zh_locale_base = source.zh_locale_url.rstrip("/")
+        article_cn_url = "%s/%s" % (zh_locale_base, slug)
+        try:
+            article_response = client.fetch(
+                article_cn_url,
+                attempts=1,
+                accept="text/html, application/xhtml+xml;q=0.9, */*;q=0.1",
+            )
+            parsed = parse_article_page(
+                source,
+                article_response.body,
+                article_cn_url,
+                fetched_at=datetime.now(timezone.utc),
+            )
+            if parsed.title and _text_contains_cjk(parsed.title):
+                database.upsert_publisher_locale(
+                    article_id=int(article["id"]),
+                    target_language="zh-CN",
+                    title=parsed.title,
+                    summary=parsed.summary or "",
+                    article_content_hash=str(article["content_hash"]),
+                )
+                stored += 1
+                fetched_per_article += 1
+            else:
+                skipped_english_only += 1
+        except FetchError as exc:
+            if exc.status not in (404, 410):
+                pass
+        except Exception:
+            pass
+
+    result: Dict[str, object] = {
+        "skipped": False,
+        "zh_locale_url": source.zh_locale_url,
+        "articles_with_zh": len(zh_metadata),
+        "publisher_locales_stored": stored,
+        "fetched_per_article": fetched_per_article,
+        "skipped_english_only": skipped_english_only,
+    }
+    if warnings:
+        result["warnings"] = warnings
+    return result
