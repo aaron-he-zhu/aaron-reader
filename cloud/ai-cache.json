@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-19T16:48:39Z",
-  "bundle_hash": "d7302a01ed8cd08bb1e859789efab7ee3fdc7ef0a4486c874443e1bae7527c9d",
+  "exported_at": "2026-08-20T02:35:59Z",
+  "bundle_hash": "b9191b37ac281290ea22a8c5f7e1b377385f07e9a75531af41a89f86826741eb",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -2744,6 +2744,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "cc86dd36c22f56f0f27a27548dc51e8de43fe5f238b5e23b5595cac857d10a99",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/turning-conversation-into-knowledge-how-slack-builds-human-agent-teams",
+        "canonical_url": "https://claude.com/blog/turning-conversation-into-knowledge-how-slack-builds-human-agent-teams",
+        "content_hash": "182989a63c175abeaaaf2fcf9aa12199db2934e1b872e5cdbf4e0769918737e1"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "由于原始数据中的publisher_summary字段为空，本次翻译仅包含文章标题，未提供摘要内容。如需完整摘要，请提供原始摘要文本。",
+        "title": "将对话转化为知识：Slack如何构建人机协作团队",
+        "publisher_summary": ""
+      },
+      "output_hash": "f2a841868b12573d7fb1604f37496db9f3919a44976b69361f5bbee2b0806118",
+      "input_truncated": false,
+      "created_at": "2026-08-20T02:35:49Z"
+    },
+    {
       "cache_key": "eab26aad64dd272731cd8845d424fd5df3c05b6ca44151d077cc10ed8f6685ae",
       "article": {
         "source_slug": "claude-blog",
@@ -2935,6 +2965,96 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "ce932d6631a23d3c6a619de5d65f25d6ce183832d18067665afaa0798f884ad6",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/faire",
+        "canonical_url": "https://cursor.com/blog/faire",
+        "content_hash": "9a067820f9b16685a44691abb99a87a40e023ef4662c7aa82498747c58c9d44d"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "此结果基于提供的文章元数据，仅包含标题。未提供文章正文或摘要，因此无法验证或扩展标题中的声明。标题提及的‘翻倍’、‘Faire’和‘Cursor Cloud Agents’等细节来源于原始标题，未作进一步阐述。",
+        "title": "Faire 借助 Cursor Cloud Agents 将 PR 吞吐量翻倍",
+        "publisher_summary": ""
+      },
+      "output_hash": "f92e5855a9abc4bc703d387a110475897593af158480bf928a9d56bcafb2a916",
+      "input_truncated": false,
+      "created_at": "2026-08-20T02:35:58Z"
+    },
+    {
+      "cache_key": "bdc8e7ffb6393bc2e6cf2bb5c20fd3a6c4ee80006747f3e5ed429840d8f726be",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/mixture-of-kittens",
+        "canonical_url": "https://cursor.com/blog/mixture-of-kittens",
+        "content_hash": "ab5fc906a89dbec06f09e8a50c12ff39e24a4eba59ba9e18b2aee8f4aacf9c49"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "本文仅提供了标题信息，没有可用的摘要内容。因此，仅翻译了标题，无法提供摘要或更多细节。",
+        "title": "Mixture-of-Kittens：我们针对NVL72s的开源MoE megakernel",
+        "publisher_summary": ""
+      },
+      "output_hash": "ee7cf0ceb660b4f0ed3978c800c1662ddc5aedf5a43b4e971216a3927a426803",
+      "input_truncated": false,
+      "created_at": "2026-08-20T02:35:54Z"
+    },
+    {
+      "cache_key": "ab1251c7d8951151a94fb9c1d736cb3ec5a18d7fc5dc450ef8f70ae2d9f092fa",
+      "article": {
+        "source_slug": "cursor-blog",
+        "external_id": "https://cursor.com/blog/wayfair",
+        "canonical_url": "https://cursor.com/blog/wayfair",
+        "content_hash": "6bbebdaa11206ca122932bafd25032ab35d1983b9d06f9ccc1bb75da990201a9"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "仅基于提供的标题和来源信息，未提供文章正文摘要，因此无法提供更详细的内容或验证标题中的具体数据。标题中提及的90%成本削减百分比及两次削减行为均源自原始标题，未经过额外核实。",
+        "title": "Wayfair如何借助Cursor将ML模型成本削减90%（两次！）",
+        "publisher_summary": ""
+      },
+      "output_hash": "29ad3f74daf9f81dd00b4a193b7c867a3271970cb43e7056a8f3300055c07d10",
+      "input_truncated": false,
+      "created_at": "2026-08-20T02:35:56Z"
+    },
+    {
       "cache_key": "58db773507f6f64ea50be41c58ff53a6f096b6b12207da436f64f66079236d70",
       "article": {
         "source_slug": "openai-developers",
@@ -3061,6 +3181,36 @@
       "output_hash": "3a0db5a94ce585696ed0be7ab3d70673ea108337e66cf2aeaa6884b6d49897ee",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "4864a5eea15d11c80153cf7f2abdf6662eb283417c0c506f6a314bc1eb8b5d3e",
+      "article": {
+        "source_slug": "openai-developers",
+        "external_id": "https://developers.openai.com/blog/codex-as-a-platform",
+        "canonical_url": "https://developers.openai.com/blog/codex-as-a-platform",
+        "content_hash": "1cfe464c5bdbf2d65634fac1b93298e0a686fa93d3a756cc69d7dd68dea41d2e"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "提供的元数据仅包含标题和摘要，未提供文章正文，因此无法确认关于平台功能、使用方法的详细内容。摘要内容为原文直译，未添加额外信息。",
+        "title": "Codex 作为平台：基于开放代理框架进行构建",
+        "publisher_summary": "将 Codex 集成到用户已经熟悉的产品和工作流程中。"
+      },
+      "output_hash": "dad991eea47417fed39f5f3b588fc264985aafb7ba724559a00942250854d0d7",
+      "input_truncated": false,
+      "created_at": "2026-08-20T02:35:51Z"
     },
     {
       "cache_key": "0ab13651424fe5f4466b6da6260117f6816ce155fe2217b0c48884dec98d807c",
@@ -9195,11 +9345,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "8258023b16f3dd79dd5f4ed29c614f4a8fd2f9f018f21f9c01bbcfcdd506c8a8",
+      "ledger_key": "4003a275a2a3739d70aee14268a27f3fe04c8c5940c413f08b8c84704d6d3840",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -9215,11 +9365,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "20da61f66f3cefe2e3e570b16686a901264987b48c77722aa2742f18da2282e8",
+      "ledger_key": "a0d0eb92cf9e5530efef4d9e69e8205530e0cf715dc8f18e2309286a00ac66fa",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9235,11 +9385,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "32545002ca77b2aefd4669dee491d63eb2088a513f896dc489adf4cf9c1de691",
+      "ledger_key": "034a4681252e936670f1b48513b0a209386d68f7528480dc7c5a3f78bec70d15",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -9255,11 +9405,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "97c9e891965e2f5b5c8827a7817d3084c5e4b51954ebea311610775c7e64e6ac",
+      "ledger_key": "b1870e359822849eff0982adf6ac2c9ff1143da8a138e9f5e1bb9189623f9955",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9275,11 +9425,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "c7e29792985244230985385f2f05fcbe1a904e8664a83d0ff21b301ffa0a365f",
+      "ledger_key": "3eff12ae414bf823dc38b148f972b30415fe9539bc1443f63f7f140558fcbc84",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9295,11 +9445,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "9f2408dc09cfcb48b257d56e362fb4a6a87833acafde6d0686a45fccb0b7a11d",
+      "ledger_key": "d6bf1a4d88b3840731de5e121f0f5c4bb4fedb2b266c8de21dcd1db67049dd9e",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9315,11 +9465,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "8448e68bf8afcd59112f4209e19e175eb1610dbcce88b7070cd26c68893bf86d",
+      "ledger_key": "bdf468e98bc91c11bcfaa58912a16025ab7cb12c58413f955931bb3eb44c8457",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9335,11 +9485,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "a7a4793e535441a4051674aba2682e714b42345d0b90ef4365fc3bd74aa52eff",
+      "ledger_key": "8bb2ad61d233f37ca5a95b1eedb3664f9b09d93b829614ac62761c87b29b166b",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -9355,11 +9505,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "85fd644de41967f127f24c4fe39dd632f94bbb507f4cc56a423d6d6889fefae8",
+      "ledger_key": "1113761a9a1e17d553dce25f276f2bf624656fd8bc956f3ee004e21ddc723cef",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9375,11 +9525,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "9a982c1d5fcf9c14bde65182fc2f10f3920c96bb13ac4772f53aa58c133f62c1",
+      "ledger_key": "2f6befc5a1e31e3c90a5aea1fe5c6d446fd59869dabd13d3e0ee40b243249816",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9395,11 +9545,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "accbe5727d2bd3a1fb2485c5261155a10ec6f04f4000c94bcbc513b71ddd9371",
+      "ledger_key": "256479271477a710476fcdc5a25c1e25ff4af049adefc8771458398f25a70918",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -9415,11 +9565,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "242b0d19d535b1ea8c957198af0e29153f7c81a902b8907bd940d4dc6d62ddda",
+      "ledger_key": "a1da8d604dbfa1a56a9f60bd6a9a43c2199fa3a2fd76d004a222cb51c3983ef9",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9435,11 +9585,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b28a7884a2a8fbad07d1215300adf600d8e094266b7edb3064dc0722cd21d9e3",
+      "ledger_key": "5cbe897244ba7addad79d274916d2d5a872cc77208d743b9c62d1f818df1de50",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-17T07:00:00Z",
       "day_end": "2026-08-18T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9455,11 +9605,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "bb46edf6be439a9c510744b3f9684f4c50b9fa1098faf0be12038f41f8308a98",
+      "ledger_key": "126a4abf498f8a583f32364a2a436a074b862388a834ef49748e6eade973b365",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-18T07:00:00Z",
       "day_end": "2026-08-19T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
+      "covered_through": "2026-08-20T02:35:59Z",
       "requests": 9,
       "confirmed_requests": 9,
       "unconfirmed_requests": 0,
@@ -9475,22 +9625,22 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "effbc27f7f6dc1856cddb2a343a2f099250c10a1d2a8776c596cde128d9a7c24",
+      "ledger_key": "eeaba8febc6a45926fa5d01fa553a38f826a3a673e9ee5668ce994317e1faeb5",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-19T07:00:00Z",
       "day_end": "2026-08-20T07:00:00Z",
-      "covered_through": "2026-08-19T16:48:39Z",
-      "requests": 10,
-      "confirmed_requests": 10,
-      "unconfirmed_requests": 0,
-      "input_tokens": 3511,
-      "cached_input_tokens": 1536,
-      "cache_miss_input_tokens": 1975,
+      "covered_through": "2026-08-20T02:35:59Z",
+      "requests": 18,
+      "confirmed_requests": 17,
+      "unconfirmed_requests": 1,
+      "input_tokens": 5896,
+      "cached_input_tokens": 3072,
+      "cache_miss_input_tokens": 2824,
       "cache_write_input_tokens": 0,
-      "output_tokens": 838,
-      "reasoning_tokens": 0,
-      "total_tokens": 4349,
-      "reserved_total_tokens_for_unconfirmed": 0,
+      "output_tokens": 2083,
+      "reasoning_tokens": 765,
+      "total_tokens": 7979,
+      "reserved_total_tokens_for_unconfirmed": 4287,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
     }
@@ -9527,6 +9677,38 @@
       },
       "first_seen_at": "2026-08-11T05:38:01Z",
       "last_seen_at": "2026-08-11T05:38:11Z"
+    },
+    {
+      "hold_key": "8b32915d5befea3f2d26d55de2cbb6d5bbc710c6ddd5b43980bfff4e51ad3ffd",
+      "workload_kind": "article",
+      "hold_class": "ambiguous",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://openai.com/index/offering-zero-data-retention-for-frontier-models",
+            "content_hash": "e37c375a1a0930761f69d653c64206102f5f07663a5cddad562a6a5d7de16bbb",
+            "external_id": "https://openai.com/index/offering-zero-data-retention-for-frontier-models",
+            "source_slug": "openai-news"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "openrouter/free",
+        "portable_input_hash": "21ee5e5c891742069f152a28ebee27f2ba2addbaffec31559d59d6ec80a69e43",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "openrouter",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-20T02:34:42Z",
+      "last_seen_at": "2026-08-20T02:35:27Z"
     },
     {
       "hold_key": "9195c3a50b64e61963b1ef44c4060c121341a97a4f6f01c68580206e31afe618",
@@ -9591,6 +9773,38 @@
       },
       "first_seen_at": "2026-08-11T05:36:13Z",
       "last_seen_at": "2026-08-11T05:36:34Z"
+    },
+    {
+      "hold_key": "de1696bbbfca394c4b323c9685595923f0e8bc1390a0a000ca18d6d39f68aef0",
+      "workload_kind": "article",
+      "hold_class": "paid_failure",
+      "descriptor": {
+        "article_identities": [
+          {
+            "canonical_url": "https://cursor.com/blog/how-cursor-router-works",
+            "content_hash": "7cc659fa8b6361dff1f3b032a8988d6fe6bb253ee70abab61b7b9c580033e51f",
+            "external_id": "https://cursor.com/blog/how-cursor-router-works",
+            "source_slug": "cursor-blog"
+          }
+        ],
+        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+        "input_scope": "metadata",
+        "max_output_tokens": 800,
+        "model": "deepseek-v4-flash",
+        "portable_input_hash": "b17cfaa1e50e8d687789eeb8bd4d671fe208be0af425195ef46eddf91fa3082a",
+        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+        "prompt_version": "ai-enrichment-v1",
+        "protocol": "aaron-reader-ai-generation-hold/v1",
+        "provider": "deepseek",
+        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+        "schema_name": "article_translation",
+        "schema_version": "ai-output-v1",
+        "target_language": "zh-CN",
+        "task_type": "translation",
+        "workload_kind": "article"
+      },
+      "first_seen_at": "2026-08-20T02:35:51Z",
+      "last_seen_at": "2026-08-20T02:35:53Z"
     },
     {
       "hold_key": "e524785d49ccb677eff5306cf0000283255583fd147748a43af5841197208def",
