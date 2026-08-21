@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-20T16:53:19Z",
-  "bundle_hash": "e3a229a3679eba360e82403299c6d640154004ac5102a524ee8be8e2661659de",
+  "exported_at": "2026-08-21T04:56:59Z",
+  "bundle_hash": "f1cb2babcee5749667fb165431a8ee074f152cb5a166a8cdea7d553862d26fb9",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -890,12 +890,12 @@
       "created_at": "2026-08-11T05:38:01Z"
     },
     {
-      "cache_key": "5f37fbcf57867ebe81f64e9b2f26db21115e5fac19a06919182c22ad57ea1460",
+      "cache_key": "48be97ecaefe4c8709cc3f668a35bb1169ce224d19fd6e395976f3fd82de7d7a",
       "article": {
         "source_slug": "claude-blog",
         "external_id": "https://claude.com/blog/ai-ci-cd-on-call",
         "canonical_url": "https://claude.com/blog/ai-ci-cd-on-call",
-        "content_hash": "1d353193c2987bcfdc08eb8f6e8719b748812a541b045fce3b8aa54bdbd99f7c"
+        "content_hash": "c28dfe2f671281f4fab1830edc9b9c6a52aa4f416651ddb1f96c960aa4770790"
       },
       "task_type": "translation",
       "input_scope": "metadata",
@@ -911,13 +911,13 @@
       "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "仅基于提供的文章标题和来源信息；标题未明确提及CI/CD故障的具体处理细节或技术实现，因此无法提供更详细的摘要。",
-        "title": "随叫随到的 Claude：Claude Tag 如何充当 Anthropic 的 CI/CD 故障第一响应者",
-        "publisher_summary": ""
+        "limitations": "本摘要和标题基于提供的元数据，可能未涵盖完整文章的所有细节。",
+        "title": "Claude 值班：Claude Tag 如何作为 Anthropic 的 CI/CD 故障第一响应者",
+        "publisher_summary": "Anthropic 如何为 CI/CD 运行 AI 事件响应：我们持续集成团队的一名工程师介绍了 Claude Tag 代理，它检测、分类并解决 CI 故障。"
       },
-      "output_hash": "1c2443ba7849c1f585dd2ff65b6b6d7d0cd1a7c6c3a5adb8615598afe7d29ede",
+      "output_hash": "8d6730829836f88b86cd52ab4593f43ff404eb2b7954d18836b8e60de0d97b96",
       "input_truncated": false,
-      "created_at": "2026-08-19T10:41:00Z"
+      "created_at": "2026-08-21T04:56:44Z"
     },
     {
       "cache_key": "b811bb84ef9f41a783e5cf24e0ecf09420317ba4c144edd79cf7df162a7ae12c",
@@ -982,6 +982,36 @@
       "output_hash": "3bffc571b5a6f5d2bd1d65a5bf574e8c0ec8fc7b5cdfc2f34aeafedf665b38e0",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "94bfff795c467c71cb0aaf9c31315496d88f42d0926e4cf0fa1684b78c9eb775",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/anthropics-approach-to-teaching-and-learning-ai",
+        "canonical_url": "https://claude.com/blog/anthropics-approach-to-teaching-and-learning-ai",
+        "content_hash": "8d1a79f58af949aec19f8a4568b01758c1e4c798e4e7d263f25d54656f9d48e3"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "本文仅基于所提供的标题和来源信息，未包含文章正文或摘要，因此无法提供关于文章内容的更多细节。",
+        "title": "Anthropic 的人工智能教学与学习方法",
+        "publisher_summary": ""
+      },
+      "output_hash": "3d76919b22471af6281194231639950f59f86afae07042f9087b1d554aacf407",
+      "input_truncated": false,
+      "created_at": "2026-08-21T04:56:39Z"
     },
     {
       "cache_key": "2b2d01e2ce473263b09df2ebfef5dd659a64e027759cb3a0773872547ba32465",
@@ -1171,47 +1201,12 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
-      "cache_key": "7fe76cc5a55411cb3e811447ea67c584fd72e9f7ea0739803f1ce2dcacfe1d94",
+      "cache_key": "76161be5cd5c22d03bce6159d219d9956af98002985a17e83a6724275b26115c",
       "article": {
         "source_slug": "claude-blog",
         "external_id": "https://claude.com/blog/building-verification-loops-in-claude-code-with-skills",
         "canonical_url": "https://claude.com/blog/building-verification-loops-in-claude-code-with-skills",
-        "content_hash": "8f584546aad8e520d6e7499c576dcaa8f87da4c3aacf576e90e41748847c9d05"
-      },
-      "task_type": "summary",
-      "input_scope": "metadata",
-      "source_language": "unknown",
-      "target_language": "zh-CN",
-      "prompt_version": "ai-enrichment-v1",
-      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
-      "response_schema_version": "ai-output-v1",
-      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "432c34a9a22a243e04f84f46488d31578a62217341cb4a0b492fbf02887b94e9",
-      "output": {
-        "summary": "文章标题表明，内容讨论如何利用 skills 在 Claude Code 中构建验证循环。",
-        "key_points": [
-          "环境是 Claude Code。",
-          "主题是构建验证循环。",
-          "标题称实现方式涉及 skills。"
-        ],
-        "language": "zh-CN",
-        "basis": "metadata",
-        "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断具体 skill、验证步骤、代码示例、适用场景或效果。"
-      },
-      "output_hash": "8d395185e3278e2827f6d64418f703d52d88dc36e8a5b52155643917331d7924",
-      "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
-    },
-    {
-      "cache_key": "b00f71e29d937f95d3c7dcd8b6f3eb4c65574faba0f4a88f8883991073fa0b23",
-      "article": {
-        "source_slug": "claude-blog",
-        "external_id": "https://claude.com/blog/building-verification-loops-in-claude-code-with-skills",
-        "canonical_url": "https://claude.com/blog/building-verification-loops-in-claude-code-with-skills",
-        "content_hash": "8f584546aad8e520d6e7499c576dcaa8f87da4c3aacf576e90e41748847c9d05"
+        "content_hash": "364f5d1905bc2bc7244d54b790da71558fd5bc75b02375124f4843da5e26f928"
       },
       "task_type": "translation",
       "input_scope": "metadata",
@@ -1221,61 +1216,27 @@
       "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
       "response_schema_version": "ai-output-v1",
       "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "bd6f4e320e48ae894fbf2375ac97f856b960ac8af5d24448db550c33fe07a790",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
-        "title": "利用 skills 在 Claude Code 中构建验证循环",
-        "publisher_summary": ""
+        "limitations": "此翻译基于提供的标题和摘要，未涵盖完整文章内容。",
+        "title": "使用技能在 Claude Code 中构建验证循环",
+        "publisher_summary": "Anthropic 如何在 Claude Code 中构建验证循环：将手动检查转化为技能，使 Claude 自行测试、修复和验证其工作。"
       },
-      "output_hash": "10f07c64a883700ae05e7b0d860c75bf41afa9d22da905c25bc9ff2cd57abcdd",
+      "output_hash": "fffd9b6b294e0390d703a6595762e165ebd286c23ac8515f5e1a27f8ec93d621",
       "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
+      "created_at": "2026-08-21T04:56:53Z"
     },
     {
-      "cache_key": "7c5f356aa9ed3725ec632b49fe90a31ddf502c8ba1c8b710277149daea79e3b9",
+      "cache_key": "6580b9fbe3289ba5fd82e986d8e79e43099376a070392d97196c71e2233acfdb",
       "article": {
         "source_slug": "claude-blog",
         "external_id": "https://claude.com/blog/ciso-guide-to-agentic-ai",
         "canonical_url": "https://claude.com/blog/ciso-guide-to-agentic-ai",
-        "content_hash": "7b090f148306b59476bb6f5a67f728559c710eb80c6bad98ffc87048cfe59e46"
-      },
-      "task_type": "summary",
-      "input_scope": "metadata",
-      "source_language": "unknown",
-      "target_language": "zh-CN",
-      "prompt_version": "ai-enrichment-v1",
-      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
-      "response_schema_version": "ai-output-v1",
-      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "432c34a9a22a243e04f84f46488d31578a62217341cb4a0b492fbf02887b94e9",
-      "output": {
-        "summary": "标题显示，这是一份面向首席信息安全官的智能体 AI 指南，其主题强调工作的目标并非实现零风险。",
-        "key_points": [
-          "面向首席信息安全官讨论智能体 AI。",
-          "标题明确提出“零风险并非目标”。"
-        ],
-        "language": "zh-CN",
-        "basis": "metadata",
-        "limitations": "仅有标题、来源和发布日期等元数据，发布者摘要为空且未读取正文；无法判断指南包含哪些风险、控制措施或建议。"
-      },
-      "output_hash": "b88dda0856c240a4c4402fa655b216d131af6e7269eebd4f7690a2a8226e4e12",
-      "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
-    },
-    {
-      "cache_key": "593a6eaedbd6b4d18ec31a0fe0e53937549ae21fa276770918f44e9927878874",
-      "article": {
-        "source_slug": "claude-blog",
-        "external_id": "https://claude.com/blog/ciso-guide-to-agentic-ai",
-        "canonical_url": "https://claude.com/blog/ciso-guide-to-agentic-ai",
-        "content_hash": "7b090f148306b59476bb6f5a67f728559c710eb80c6bad98ffc87048cfe59e46"
+        "content_hash": "585516a23f26a052dffd947ffddadba1d358ed52b7666b7d2e416d50970df5c9"
       },
       "task_type": "translation",
       "input_scope": "metadata",
@@ -1285,19 +1246,19 @@
       "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
       "response_schema_version": "ai-output-v1",
       "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "bd6f4e320e48ae894fbf2375ac97f856b960ac8af5d24448db550c33fe07a790",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "请求中的发布者摘要为空字符串，故保持为空；仅翻译标题，未读取正文。",
+        "limitations": "此元数据仅基于提供的摘要和标题，未涵盖文章全文。摘要未提及具体控制措施或框架细节，因此无法提供更详细的信息。",
         "title": "零风险并非目标：CISO 的智能体 AI 指南",
-        "publisher_summary": ""
+        "publisher_summary": "Anthropic 的副首席信息安全官分享了评估智能体 AI 风险的四个问题框架，并介绍了使智能体部署保持受限且可审计的控制措施。"
       },
-      "output_hash": "1b0dff250cb07a8fd353935819b90555d2ee51300b637888e7bb08fd991d801e",
+      "output_hash": "7afdc4055b2703f06fc5911fe5f30dc29fffb99bdf2f044ed755b4c8a1d1204e",
       "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
+      "created_at": "2026-08-21T04:56:58Z"
     },
     {
       "cache_key": "9a5a239b457d89d5bc2c453a1f7e9310ef7e2a1dcff6f397fafb3ceb9f60af59",
@@ -1361,6 +1322,36 @@
       "output_hash": "11a6728d05645b54135669a468486932350ec48542a234bc3291831c34104d28",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "f7369a8a57733649285ba9a857a3a86df631c193ef391c350159a7c177f0c6cf",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/claude-code-guide-for-startups",
+        "canonical_url": "https://claude.com/blog/claude-code-guide-for-startups",
+        "content_hash": "ab9c544e2107dd437e29c9553bf31dd44c7dc6e8e385c2305436ac9611438a3b"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "原始数据中未提供摘要内容，因此仅翻译了标题。本元数据不包含文章正文信息，无法提供更多内容。",
+        "title": "Claude Code 初创企业指南",
+        "publisher_summary": ""
+      },
+      "output_hash": "308d210e7618ae3d35886fe8bb8f2c9b534dfc4f943c74c197a2c7dc347feb93",
+      "input_truncated": false,
+      "created_at": "2026-08-21T04:56:42Z"
     },
     {
       "cache_key": "a3dea9f0d163c4059239e73946f65a6f2eeafd504e0b929e3e493538ccc0a053",
@@ -1645,46 +1636,12 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
-      "cache_key": "0a7e71a53159118d332b20d536ed5749cb45475eb7a2d85f228132287f50ff92",
+      "cache_key": "b9dd38e6a1175bbe5fc9f03b0459e47221f1aa33bf685964d2de3caf089ea04b",
       "article": {
         "source_slug": "claude-blog",
         "external_id": "https://claude.com/blog/claude-models-explained-choosing-the-best-model-for-your-use-case",
         "canonical_url": "https://claude.com/blog/claude-models-explained-choosing-the-best-model-for-your-use-case",
-        "content_hash": "041d22f0a69d8cc4660a8282bee5d97420bc474f794cd63568f24affc1500b40"
-      },
-      "task_type": "summary",
-      "input_scope": "metadata",
-      "source_language": "unknown",
-      "target_language": "zh-CN",
-      "prompt_version": "ai-enrichment-v1",
-      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
-      "response_schema_version": "ai-output-v1",
-      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "432c34a9a22a243e04f84f46488d31578a62217341cb4a0b492fbf02887b94e9",
-      "output": {
-        "summary": "文章标题表明，内容将解释 Claude 的不同模型，并讨论如何为具体使用场景选择最合适的模型。",
-        "key_points": [
-          "主题是 Claude 模型之间的选择。",
-          "选择依据被表述为具体使用场景。"
-        ],
-        "language": "zh-CN",
-        "basis": "metadata",
-        "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断涵盖哪些模型、比较标准、建议或限制。"
-      },
-      "output_hash": "a88abd36ff2a7e2ded6a9f3a42d4e22139f89749b06a97f8e2a441ebc0fbbf9c",
-      "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
-    },
-    {
-      "cache_key": "463d7597f8dadc7a6ccf9f49032e433ac9381298a4c92e30550e4d7154a8086b",
-      "article": {
-        "source_slug": "claude-blog",
-        "external_id": "https://claude.com/blog/claude-models-explained-choosing-the-best-model-for-your-use-case",
-        "canonical_url": "https://claude.com/blog/claude-models-explained-choosing-the-best-model-for-your-use-case",
-        "content_hash": "041d22f0a69d8cc4660a8282bee5d97420bc474f794cd63568f24affc1500b40"
+        "content_hash": "9c128ea20fde4a42dad72ac8964153fefa95fc7b15a0585ed92822221ec1dd69"
       },
       "task_type": "translation",
       "input_scope": "metadata",
@@ -1694,19 +1651,19 @@
       "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
       "response_schema_version": "ai-output-v1",
       "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "bd6f4e320e48ae894fbf2375ac97f856b960ac8af5d24448db550c33fe07a790",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
-        "title": "Claude 模型详解：为你的使用场景选择最佳模型",
-        "publisher_summary": ""
+        "limitations": "基于提供的摘要，仅列出模型名称和比较维度（智能、速度、成本），未提供具体差异和选择建议的细节。",
+        "title": "Claude模型详解：为您的用例选择最佳模型",
+        "publisher_summary": "Anthropic关于为您的用例选择最佳Claude模型的指南——Fable、Opus、Sonnet和Haiku在智能、速度和成本方面的差异，以及何时使用每一种。"
       },
-      "output_hash": "4066c01dafd0c7a0cbee1e828c85a685f18d967477b3d8bce1f18e495909b9ca",
+      "output_hash": "2d4724bbed711615d306fc2d6ea5d46b47c8503dda28afad52a158e19503ea2e",
       "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
+      "created_at": "2026-08-21T04:56:50Z"
     },
     {
       "cache_key": "45510b6e481aad04c4493558f31083554079dc23abad3e4a8e27ccec13146dec",
@@ -1767,6 +1724,36 @@
       "output_hash": "6ddba02425eb7f5f96d6b3e2dd31d54fcaf6aa1c0ee437c01e37cda1694ba51b",
       "input_truncated": false,
       "created_at": "2026-08-12T05:50:08Z"
+    },
+    {
+      "cache_key": "1978ee2da30e996d54010eb7b8e37e141f795274e27635eff9109e00a70a70c8",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/computer-use-skills-api-files-api",
+        "canonical_url": "https://claude.com/blog/computer-use-skills-api-files-api",
+        "content_hash": "4bd31df79da44543ab2d8e702dfc4446c96fd54c1e80594a39ad07797ab42bdd"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "此元数据仅包含标题和来源，无摘要内容。因此，无法提供除标题翻译外的其他信息。",
+        "title": "使用计算机操作、Skills API 和 Files API 构建生产级智能体",
+        "publisher_summary": ""
+      },
+      "output_hash": "9781462c9800d8eb2fbec3cbe9fdc0300966a6bff1e3a90632c13c3880010738",
+      "input_truncated": false,
+      "created_at": "2026-08-21T04:56:38Z"
     },
     {
       "cache_key": "8bcb72fc1f41243e1afcf31ccdd75032cc17da44c3dedde1fef3aa8a9df9d8c6",
@@ -2021,46 +2008,12 @@
       "created_at": "2026-08-18T16:50:44Z"
     },
     {
-      "cache_key": "d75a2954d7e88584f5f57ef9180e2da573d2c86a0c5b7031671fe8b2c6e96a35",
+      "cache_key": "7782347e085301d37ed8e08fbc2169ee99ef9056ff336104609a3e1efa50cb1b",
       "article": {
         "source_slug": "claude-blog",
         "external_id": "https://claude.com/blog/how-anthropic-secures-its-ai-native-software-development-lifecycle",
         "canonical_url": "https://claude.com/blog/how-anthropic-secures-its-ai-native-software-development-lifecycle",
-        "content_hash": "a28673bc9460ee860374a956a2905ce8482faef244ad9fd9410b873bdef5d111"
-      },
-      "task_type": "summary",
-      "input_scope": "metadata",
-      "source_language": "unknown",
-      "target_language": "zh-CN",
-      "prompt_version": "ai-enrichment-v1",
-      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
-      "response_schema_version": "ai-output-v1",
-      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "432c34a9a22a243e04f84f46488d31578a62217341cb4a0b492fbf02887b94e9",
-      "output": {
-        "summary": "文章标题表明，Anthropic 介绍了其保护 AI 原生软件开发生命周期的方法。",
-        "key_points": [
-          "主体是 Anthropic。",
-          "主题是 AI 原生软件开发生命周期的安全保障。"
-        ],
-        "language": "zh-CN",
-        "basis": "metadata",
-        "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断威胁模型、安全控制、开发阶段、工具、流程或验证结果。"
-      },
-      "output_hash": "c47ed40bf7aca41b6d6b50d8ab26a3c7dd740acd9de8b11b2253d8bf97ec0bc7",
-      "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
-    },
-    {
-      "cache_key": "1b54d194174113c5049eb19e526c7b5e1736347fd4f317b9a7e906defd9c0043",
-      "article": {
-        "source_slug": "claude-blog",
-        "external_id": "https://claude.com/blog/how-anthropic-secures-its-ai-native-software-development-lifecycle",
-        "canonical_url": "https://claude.com/blog/how-anthropic-secures-its-ai-native-software-development-lifecycle",
-        "content_hash": "a28673bc9460ee860374a956a2905ce8482faef244ad9fd9410b873bdef5d111"
+        "content_hash": "b28e876d2d496abeed0436a8fc2b728ec548c55194f1f4ceaa233d5f2abb443f"
       },
       "task_type": "translation",
       "input_scope": "metadata",
@@ -2070,27 +2023,27 @@
       "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
       "response_schema_version": "ai-output-v1",
       "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "bd6f4e320e48ae894fbf2375ac97f856b960ac8af5d24448db550c33fe07a790",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
-        "title": "Anthropic 如何保护其 AI 原生软件开发生命周期",
-        "publisher_summary": ""
+        "limitations": "此摘要基于提供的元数据，可能无法涵盖文章的全部内容。",
+        "title": "Anthropic 如何保障其 AI 原生软件开发生命周期的安全",
+        "publisher_summary": "Anthropic 副首席信息安全官 Jason Clinton 详细介绍了安全工程团队如何保障一个 AI 原生的软件开发生命周期，在该生命周期中，AI 撰写了 80% 的合并代码。"
       },
-      "output_hash": "f809748c5b91adb0045106964b79135c8d7b9c43a100d7aab5f194aca68b40b6",
+      "output_hash": "2bfed5e5ad43bde30d0ad47b499f67df86ddd0d6c072901876ff2a751f44e706",
       "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
+      "created_at": "2026-08-21T04:56:56Z"
     },
     {
-      "cache_key": "b9acbddd04dd26fe8832f6edd0b69c8851b3ee8689d38105319cc2683a4255c9",
+      "cache_key": "cf44ad8b84e6069f0f9c18e29611f5e221a2b8223dec46cb63818ce5c23c1d60",
       "article": {
         "source_slug": "claude-blog",
         "external_id": "https://claude.com/blog/how-anthropics-business-development-team-uses-claude-to-run-inbound-and-outbound-at-scale",
         "canonical_url": "https://claude.com/blog/how-anthropics-business-development-team-uses-claude-to-run-inbound-and-outbound-at-scale",
-        "content_hash": "627f6ac76f6bba6311dc9b7d86a3b1d7585beabac5f743d0918cb0c8b25a29e9"
+        "content_hash": "acaf77dd81cba81b4c998e10a66839a82fed0497cd368c4caece6d0adf2b13c4"
       },
       "task_type": "translation",
       "input_scope": "metadata",
@@ -2100,62 +2053,27 @@
       "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
       "response_schema_version": "ai-output-v1",
       "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-      "provider": "openrouter",
-      "requested_model": "openrouter/free",
-      "resolved_model": "google/gemma-4-26b-a4b-it:free",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
       "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "The provided data contains only a title and a source; no body content or detailed summary was provided to extract facts from.",
-        "title": "Anthropic 的业务发展团队如何大规模使用 Claude 进行进场和出场运营",
-        "publisher_summary": ""
+        "limitations": "本文基于摘要信息，仅涵盖团队使用Claude的三个具体场景，未涉及更广泛的团队策略或详细案例。",
+        "title": "Anthropic业务发展团队如何利用Claude大规模处理入站和出站工作",
+        "publisher_summary": "一位业务发展代表分享了其团队如何使用Claude来研究客户账目、起草客户回复以及处理临时的数据分析请求。"
       },
-      "output_hash": "65fd4b315cd9a00c25c5896ca01723f9cfa330cd9eed9f1acf0687aa412a4b20",
+      "output_hash": "52d3326ab4bb415643426865402040d2117dfefc688aee5533ec18a9d65715c9",
       "input_truncated": false,
-      "created_at": "2026-08-11T17:17:59Z"
+      "created_at": "2026-08-21T04:56:47Z"
     },
     {
-      "cache_key": "0d78cc15ed40714408ee450dfe11dc23dffce7fa8ad1376628c15f03bc2f1bd9",
+      "cache_key": "3857ce019c1faf5a90ef378b61935c2cbfce71de119e74d4e6638cb235f7ff88",
       "article": {
         "source_slug": "claude-blog",
         "external_id": "https://claude.com/blog/how-datadog-built-a-universal-machine-tool-for-claude-code",
         "canonical_url": "https://claude.com/blog/how-datadog-built-a-universal-machine-tool-for-claude-code",
-        "content_hash": "71ce3c65d93c895344706ba32cd72133ff73f4b8ca026747d701ddc66ca4169a"
-      },
-      "task_type": "summary",
-      "input_scope": "metadata",
-      "source_language": "unknown",
-      "target_language": "zh-CN",
-      "prompt_version": "ai-enrichment-v1",
-      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
-      "response_schema_version": "ai-output-v1",
-      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "432c34a9a22a243e04f84f46488d31578a62217341cb4a0b492fbf02887b94e9",
-      "output": {
-        "summary": "文章标题表明，Datadog 为 Claude Code 构建了一个被称为“通用机床”的工具。",
-        "key_points": [
-          "案例主体是 Datadog。",
-          "工具面向 Claude Code。",
-          "标题将其描述为“通用机床”。"
-        ],
-        "language": "zh-CN",
-        "basis": "metadata",
-        "limitations": "仅提供标题，发布方摘要为空；“通用机床”是标题中的描述，元数据不足以说明其实际功能、架构、适用范围或效果。"
-      },
-      "output_hash": "ebddab07888f8d66c18c82ed7f2b89ae4ccdbfc91d177b45f38f2410b718b165",
-      "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
-    },
-    {
-      "cache_key": "587d0229b1c6d63797263d4f9f9e1963144d134cdfb34f9244ea03122769c18c",
-      "article": {
-        "source_slug": "claude-blog",
-        "external_id": "https://claude.com/blog/how-datadog-built-a-universal-machine-tool-for-claude-code",
-        "canonical_url": "https://claude.com/blog/how-datadog-built-a-universal-machine-tool-for-claude-code",
-        "content_hash": "71ce3c65d93c895344706ba32cd72133ff73f4b8ca026747d701ddc66ca4169a"
+        "content_hash": "2db4ebcd32e679e731921ed1239423d88a822a02b6e449d9ffc7a6d3d793d7a2"
       },
       "task_type": "translation",
       "input_scope": "metadata",
@@ -2165,19 +2083,19 @@
       "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
       "response_schema_version": "ai-output-v1",
       "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "bd6f4e320e48ae894fbf2375ac97f856b960ac8af5d24448db550c33fe07a790",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
-        "title": "Datadog 如何为 Claude Code 构建“通用机床”",
-        "publisher_summary": ""
+        "limitations": "本摘要基于提供的元数据，未涵盖文章全部内容。",
+        "title": "Datadog 如何为 Claude Code 打造“通用机床”",
+        "publisher_summary": "Datadog 有一个代理为确定性内核编写规范，以编写应用程序代码"
       },
-      "output_hash": "32c522547618110b189b203cf790b1155b8dec377ad41967fb5161177ce58f89",
+      "output_hash": "8cb064b7c8bbccd7bfb03b3f149459988eff9eff6381b0741b5b87db3f3a9dc8",
       "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
+      "created_at": "2026-08-21T04:56:55Z"
     },
     {
       "cache_key": "b2ff91a17ff29f4e11bd64a303f92e6987f307c0e55b3ec5d08adde596b53477",
@@ -2240,47 +2158,12 @@
       "created_at": "2026-08-20T16:53:16Z"
     },
     {
-      "cache_key": "ad59eaa2b89cc692a3fe8b5234c67e365e5e41a272a40114b2c5943436e01d93",
+      "cache_key": "18804f85589320b22be63b67db155842a0afa1f955670d85c7f5fe24b4110450",
       "article": {
         "source_slug": "claude-blog",
         "external_id": "https://claude.com/blog/how-outtake-built-a-cyber-investigator-on-claude",
         "canonical_url": "https://claude.com/blog/how-outtake-built-a-cyber-investigator-on-claude",
-        "content_hash": "e3278936c731e527e311edd8e9f476de84bf39e3930ce5eb0294e58ad803b4e3"
-      },
-      "task_type": "summary",
-      "input_scope": "metadata",
-      "source_language": "unknown",
-      "target_language": "zh-CN",
-      "prompt_version": "ai-enrichment-v1",
-      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
-      "response_schema_version": "ai-output-v1",
-      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "432c34a9a22a243e04f84f46488d31578a62217341cb4a0b492fbf02887b94e9",
-      "output": {
-        "summary": "文章标题表明，Outtake 使用 Claude 构建了一个网络安全调查工具。",
-        "key_points": [
-          "案例主体是 Outtake。",
-          "所构建的产品被描述为网络安全调查工具。",
-          "该工具基于 Claude。"
-        ],
-        "language": "zh-CN",
-        "basis": "metadata",
-        "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断该工具的功能、数据来源、工作流、安全控制、评估或结果。"
-      },
-      "output_hash": "46284b3c01c9031a8da918aae369d86b4620734431d455c6a9a91e8a0e0c4630",
-      "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
-    },
-    {
-      "cache_key": "f27036971876dc32b256ca3256de18b66e69343bd4c717a7fe056e9e25579bb9",
-      "article": {
-        "source_slug": "claude-blog",
-        "external_id": "https://claude.com/blog/how-outtake-built-a-cyber-investigator-on-claude",
-        "canonical_url": "https://claude.com/blog/how-outtake-built-a-cyber-investigator-on-claude",
-        "content_hash": "e3278936c731e527e311edd8e9f476de84bf39e3930ce5eb0294e58ad803b4e3"
+        "content_hash": "dfe3a8ce1bdfc9af3c200a715c3b02484dcf60452cdadc30c1ec4a777901d5a3"
       },
       "task_type": "translation",
       "input_scope": "metadata",
@@ -2290,19 +2173,19 @@
       "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
       "response_schema_version": "ai-output-v1",
       "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "bd6f4e320e48ae894fbf2375ac97f856b960ac8af5d24448db550c33fe07a790",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
-        "title": "Outtake 如何基于 Claude 构建网络安全调查工具",
-        "publisher_summary": ""
+        "limitations": "本翻译仅基于提供的元数据，未涵盖文章全文内容，可能无法完全反映文章的所有细节和上下文。",
+        "title": "Outtake 如何利用 Claude 构建网络调查员",
+        "publisher_summary": "Outtake 如何确保多小时的代理会话保持正轨，以揭露攻击网络操作"
       },
-      "output_hash": "866922afd3b2de354200e8235ead1f525e6d5800c6a778a0ab99c83f9e37a385",
+      "output_hash": "6001376583e00375b03d9a5ddd1ff71e75df80b068d32363d6d9541a5820c186",
       "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
+      "created_at": "2026-08-21T04:56:52Z"
     },
     {
       "cache_key": "8aeddca7fede4e265d2273efecd3997984e8fb94ffadfa45b7565ca87a247277",
@@ -2585,36 +2468,6 @@
       "created_at": "2026-08-11T05:37:16Z"
     },
     {
-      "cache_key": "09448aeda24b7d4818733515ac2b2a21567d72cc9d2978089afeb01b5fcfff39",
-      "article": {
-        "source_slug": "claude-blog",
-        "external_id": "https://claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
-        "canonical_url": "https://claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
-        "content_hash": "37afd24a0890fcddea57eeb2a18be39bae199e9a65c6b35c849defa14ec8a141"
-      },
-      "task_type": "translation",
-      "input_scope": "metadata",
-      "source_language": "unknown",
-      "target_language": "zh-CN",
-      "prompt_version": "ai-enrichment-v1",
-      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
-      "response_schema_version": "ai-output-v1",
-      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-      "provider": "openrouter",
-      "requested_model": "openrouter/free",
-      "resolved_model": "google/gemma-4-26b-a4b-it:free",
-      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
-      "output": {
-        "language": "zh-CN",
-        "limitations": "No limitations identified.",
-        "title": "Slack 中的自助式数据分析：Anthropic 如何部署 Claude Tag 来回答即时问题",
-        "publisher_summary": ""
-      },
-      "output_hash": "41f759b78676117cb83948aed081ca477a8c1a3f921c29f4b4be79f8ee415319",
-      "input_truncated": false,
-      "created_at": "2026-08-14T05:48:57Z"
-    },
-    {
       "cache_key": "34c65a8ce6be417465e038441c8f59afdb5aa58d332765a89acecd3a3374e9e3",
       "article": {
         "source_slug": "claude-blog",
@@ -2645,47 +2498,12 @@
       "created_at": "2026-08-18T16:50:27Z"
     },
     {
-      "cache_key": "661a1bb47a526d96c701040c3087081b48f926b85679931fcebf5587f4986bca",
+      "cache_key": "6745387b4a1d9622ddcdc4592687d50725aee2235284015bb725469da5af9a75",
       "article": {
         "source_slug": "claude-blog",
         "external_id": "https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models",
         "canonical_url": "https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models",
-        "content_hash": "e56fd61caa9c2544db973e215841c3394ae10308de86600819928fbc9d84c6c1"
-      },
-      "task_type": "summary",
-      "input_scope": "metadata",
-      "source_language": "unknown",
-      "target_language": "zh-CN",
-      "prompt_version": "ai-enrichment-v1",
-      "prompt_hash": "f220c9fdc514fcad4b70ba57da720c3b57a189e867fdaf0c14f57c89ec513748",
-      "response_schema_version": "ai-output-v1",
-      "response_schema_hash": "9518f37a6b0c913b8e442fe5f2aa3a24ce1c7a86d38d2a8cbc2be5130fdacf3c",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "432c34a9a22a243e04f84f46488d31578a62217341cb4a0b492fbf02887b94e9",
-      "output": {
-        "summary": "文章标题表明，内容讨论面向 Claude 5 系列模型进行上下文工程的新规则。",
-        "key_points": [
-          "主题是上下文工程。",
-          "讨论对象是 Claude 5 系列模型。",
-          "标题将内容描述为一组新规则。"
-        ],
-        "language": "zh-CN",
-        "basis": "metadata",
-        "limitations": "仅提供标题，发布方摘要为空；无法从元数据判断规则内容、适用模型、示例、性能影响或迁移建议。"
-      },
-      "output_hash": "f598092f1a2bd74734038072c47b3a870ce605052b39c2ae49e3cd3e3e3287b2",
-      "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
-    },
-    {
-      "cache_key": "77fa7afcf444d6f283d1ece5e0c12c33adff38b6ceec189e3a64f797627aec40",
-      "article": {
-        "source_slug": "claude-blog",
-        "external_id": "https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models",
-        "canonical_url": "https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models",
-        "content_hash": "e56fd61caa9c2544db973e215841c3394ae10308de86600819928fbc9d84c6c1"
+        "content_hash": "b0183dc789025a12458589a85692a2ed3f5572dc88858b4443c59c104ee84d8b"
       },
       "task_type": "translation",
       "input_scope": "metadata",
@@ -2695,19 +2513,19 @@
       "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
       "response_schema_version": "ai-output-v1",
       "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-      "provider": "chatgpt-codex-subscription",
-      "requested_model": "gpt-5.6-luna",
-      "resolved_model": "gpt-5.6-luna",
-      "generation_params_hash": "bd6f4e320e48ae894fbf2375ac97f856b960ac8af5d24448db550c33fe07a790",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "发布方摘要为空，因此仅翻译标题；未提供正文。",
-        "title": "面向 Claude 5 系列模型的上下文工程新规则",
-        "publisher_summary": ""
+        "limitations": "此对象仅包含文章标题和发布者摘要，未提供文章正文或其他元数据。因此，无法验证或补充超出这些字段的内容，也无法确认文章是否完整涵盖其标题所暗示的主题。",
+        "title": "Claude 5 代模型上下文工程的新规则",
+        "publisher_summary": "我们为更先进的模型移除了 Claude Code 系统提示词中超过 80% 的内容。如何将我们学到的经验应用到您自己的 Claude Code 上下文工程以及您自己的智能体上。"
       },
-      "output_hash": "c6667898b7f38dfe487a8397466efb3648d16ddb41981785756510ab866b4839",
+      "output_hash": "b89cbbddbc97cfaf4b541e0ca5d2566c2be94b9ca40306bc127f2b59cb038c4a",
       "input_truncated": false,
-      "created_at": "2026-08-02T07:12:37Z"
+      "created_at": "2026-08-21T04:56:49Z"
     },
     {
       "cache_key": "8a4f56d7eb041f7856f3da7092149419d5ecd7125511b7d4351dde03813ddb4f",
@@ -7831,6 +7649,36 @@
       "created_at": "2026-08-07T17:44:49Z"
     },
     {
+      "cache_key": "226cf484b8f2dc16e55bec5c855879e7dbd8b1773e4fe04c163d7e19bb1cdab6",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/introducing-ai-futures",
+        "canonical_url": "https://openai.com/index/introducing-ai-futures",
+        "content_hash": "5c66f1da9e25d3eb39550d19e3b89872d63e266b9fcf56f6bc2917f44e921c48"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "Translation based solely on provided publisher_summary and title; no external knowledge or inference used. All facts preserved as given.",
+        "title": "介绍 AI Futures",
+        "publisher_summary": "介绍 AI Futures，这是一个全新的 OpenAI 博客，探讨变革性 AI 如何重塑权力、治理、经济和个人自由。"
+      },
+      "output_hash": "b7c843f521feb494becece9ca04e8ab504d5e46ee3a40061a74f2cb6336f9b39",
+      "input_truncated": false,
+      "created_at": "2026-08-21T04:56:12Z"
+    },
+    {
       "cache_key": "6071f4d2f8e8daadbc293b137f80ba070b9a9b19b2b80a24e5a2fe56cd60278d",
       "article": {
         "source_slug": "openai-news",
@@ -9291,6 +9139,36 @@
       "created_at": "2026-08-02T07:12:37Z"
     },
     {
+      "cache_key": "27d7f5e7e54ac1e2dbe74d516660a2a6ffc0c244fe79a85fc79dd4be352dc346",
+      "article": {
+        "source_slug": "openai-news",
+        "external_id": "https://openai.com/index/stampli",
+        "canonical_url": "https://openai.com/index/stampli",
+        "content_hash": "d22426d8fb2525c41895cb5fd99bcd413f2bcbff20b17e025c945d0636433cdc"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "此总结基于提供的数据，仅涵盖发布工时减少和工具使用情况，未包含完整文章细节。",
+        "title": "Stampli使用ChatGPT Work将发布工时削减68%",
+        "publisher_summary": "在固定截止日期和设计资源被分配到其他项目的情况下，Stampli利用Codex和ChatGPT Work将数周的发布准备工作压缩至数天完成。"
+      },
+      "output_hash": "d3d84081b6a1df7696079ac75969370e8b10d2bf7f924f1d4fb031b22e710a58",
+      "input_truncated": false,
+      "created_at": "2026-08-21T04:56:41Z"
+    },
+    {
       "cache_key": "47ef95d282455212a7a9d0e27b747fa0ba5d95bf9d4d8d671d414feebacdbf78",
       "article": {
         "source_slug": "openai-news",
@@ -9765,11 +9643,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "4ce0491f14d0523266d152d93fbbd875e5c70f18f0a188d5e12e81184bf47fdb",
+      "ledger_key": "2224d7649771975433b10f47b9b7e7f8f329ef704720e3431eaf40b6a951afd8",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -9785,11 +9663,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b529536d0e22fb8d5957485a23a2b55fcda1d80c768516fa7713f18e2ad80862",
+      "ledger_key": "139a7f673b167bbfdac75349fec6f8869c3a473d9df00c7d786ce34abfe46936",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9805,11 +9683,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "f6c8d3c2ec35932e09e1c585f67c6540e3ca6a25ee8d3cdfbf0c77ab5bb6cb95",
+      "ledger_key": "c7a926c1487b27e6d8380dac8f5864e4fe62b17db033439e1ecfe71671957069",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -9825,11 +9703,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "57194be3b4f79247d820774c6458794dda052fec371f6fdd19954f4371f243b4",
+      "ledger_key": "192f17311cc13b66618df7989f5a61ae07dd6bb648bed55aff25feba698b55d1",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9845,11 +9723,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "bab195b1fe28c9f0f3fd44f2acb470f75919f0394e9f97580f225a062f992eb6",
+      "ledger_key": "ab848e7fc80eedab46cacfa0b686fe4780c1984e308e7aa1f5545a82053a8b77",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9865,11 +9743,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "9b42eae760cf7721e4e10e5f71c252b49eb053b1b349cc294e57fd9152a6df93",
+      "ledger_key": "c578c2015d498bfa08dc5895e9095849d73db569d3e7950a3147a22f7ce47457",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9885,11 +9763,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "cabb056405ce1596bd97903f7f129ad94984f6949e0a7451b99c53bcdca3c6e2",
+      "ledger_key": "8fdc805829c244900437b6085f9d9a18982da221f72fd2de702d6428cb06cab8",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9905,11 +9783,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "c7e242cb2c1d578e3d433469eca449e7103442e31e4c5aaeff98b1dff514bb06",
+      "ledger_key": "1f4705fedcc84d515e4f5dde571997c8bcd9fbd7c18d7515e93be18867087c75",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -9925,11 +9803,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "29072971857e54f5babd793ffc8d6fa6105a97bc5f94cefb791a6003564061b5",
+      "ledger_key": "993d9fcd9c9b014169f8663e5829664a8be528480e51f6df213939743a39aab4",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9945,11 +9823,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "9a3e6c5027ad99e4cb6df7ca20fe6606ca03df4b0d97173ad037a506e6c60648",
+      "ledger_key": "c343cad11accc259324be0ef70ecffc7964f7d0a14d0dcd23194ff84f0175b99",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9965,11 +9843,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "a68f8d1bfc22c6254713aab319dc260692b7aad259016130d90a522d2eadb294",
+      "ledger_key": "d099d38eb0e3e954b691102a2a0c2cb77fc70e1f8cda7dba5fea1ab3fa13d0cf",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -9985,11 +9863,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "f654492fcd534a3446685af61530fdc5bfe814250d92f4238b1f3ecb16b607cc",
+      "ledger_key": "538de8f96b0aa69e7b02869f7ca07455ca4c3fc1416f93543ccde847341f85e2",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -10005,11 +9883,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "7e7ba59fb321e3a7ea6a6697cd93313f2c9caf0dc3fd465f851ffcba4cce0ed0",
+      "ledger_key": "b9021ff4686d8d9eddcc6debb2930eb43faaa96a36c93e81d92dac005f8705d5",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-17T07:00:00Z",
       "day_end": "2026-08-18T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -10025,11 +9903,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1b3abafb476c2ac029bb652418bf83080718993bd3297206c6f42d5bf7fa2f6f",
+      "ledger_key": "268216b902b7a7beec2b21756d32e5a0b70d6989facf1425c670262848143771",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-18T07:00:00Z",
       "day_end": "2026-08-19T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 9,
       "confirmed_requests": 9,
       "unconfirmed_requests": 0,
@@ -10045,11 +9923,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "66005f314779a4f54a66789f5f50c01f9fd79022dd1727af77aee1a2a4edb1d0",
+      "ledger_key": "e8c6e337bb8857fa9d73587bf94f1ed3e0c920c7f846472de822368fa00fac4a",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-19T07:00:00Z",
       "day_end": "2026-08-20T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
+      "covered_through": "2026-08-21T04:56:59Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -10065,21 +9943,21 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "77d145a03c45ee5471ffbc6c1ef353fa048331ee047d1a2e838a7cc4f13bba2d",
+      "ledger_key": "a58b34ce6527dda8d0a404c411e2052c8162c0339fcb63f9eb6ceab8262330cc",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-20T07:00:00Z",
       "day_end": "2026-08-21T07:00:00Z",
-      "covered_through": "2026-08-20T16:53:19Z",
-      "requests": 4,
-      "confirmed_requests": 4,
+      "covered_through": "2026-08-21T04:56:59Z",
+      "requests": 20,
+      "confirmed_requests": 20,
       "unconfirmed_requests": 0,
-      "input_tokens": 1369,
-      "cached_input_tokens": 768,
-      "cache_miss_input_tokens": 601,
+      "input_tokens": 7142,
+      "cached_input_tokens": 4352,
+      "cache_miss_input_tokens": 2790,
       "cache_write_input_tokens": 0,
-      "output_tokens": 612,
-      "reasoning_tokens": 343,
-      "total_tokens": 1981,
+      "output_tokens": 2647,
+      "reasoning_tokens": 1103,
+      "total_tokens": 9789,
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
@@ -10087,15 +9965,15 @@
   ],
   "generation_holds": [
     {
-      "hold_key": "1ec5863945bd8d729054f02e9f8905df1c058e811e46b6df8307355f6934a253",
+      "hold_key": "0b280208aa1227b43d48a4c248c9e15b510318df28fd548646119d8b92a07428",
       "workload_kind": "article",
       "hold_class": "paid_failure",
       "descriptor": {
         "article_identities": [
           {
-            "canonical_url": "https://claude.com/blog/claude-code-guide-for-startups",
-            "content_hash": "ab9c544e2107dd437e29c9553bf31dd44c7dc6e8e385c2305436ac9611438a3b",
-            "external_id": "https://claude.com/blog/claude-code-guide-for-startups",
+            "canonical_url": "https://claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
+            "content_hash": "48b29b33e7abbd9fae127bf1b863409e87bb542912c6aa7ceacb3bdda5683905",
+            "external_id": "https://claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
             "source_slug": "claude-blog"
           }
         ],
@@ -10103,7 +9981,7 @@
         "input_scope": "metadata",
         "max_output_tokens": 800,
         "model": "deepseek-v4-flash",
-        "portable_input_hash": "f5fb9d48ef34fb02552b497e9d30620a973230867d659345761f9d05c72ba639",
+        "portable_input_hash": "f146fd335d27686001b3a4914817c30b1f08ec9196a78e315e23386a0c293d31",
         "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
         "prompt_version": "ai-enrichment-v1",
         "protocol": "aaron-reader-ai-generation-hold/v1",
@@ -10115,8 +9993,8 @@
         "task_type": "translation",
         "workload_kind": "article"
       },
-      "first_seen_at": "2026-08-20T16:53:13Z",
-      "last_seen_at": "2026-08-20T16:53:14Z"
+      "first_seen_at": "2026-08-21T04:56:44Z",
+      "last_seen_at": "2026-08-21T04:56:45Z"
     },
     {
       "hold_key": "89a9a8e96cc88e6e3f441a4c1da648adec195d4ad95b05d549c3c4e04fd0036f",
@@ -10149,38 +10027,6 @@
       },
       "first_seen_at": "2026-08-11T05:38:01Z",
       "last_seen_at": "2026-08-11T05:38:11Z"
-    },
-    {
-      "hold_key": "8a35ada38c21d99f13ebc354541e97d5a9536e76bb7a42547d41505c6d7695ab",
-      "workload_kind": "article",
-      "hold_class": "fallback_pending",
-      "descriptor": {
-        "article_identities": [
-          {
-            "canonical_url": "https://claude.com/blog/claude-code-guide-for-startups",
-            "content_hash": "ab9c544e2107dd437e29c9553bf31dd44c7dc6e8e385c2305436ac9611438a3b",
-            "external_id": "https://claude.com/blog/claude-code-guide-for-startups",
-            "source_slug": "claude-blog"
-          }
-        ],
-        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
-        "input_scope": "metadata",
-        "max_output_tokens": 800,
-        "model": "openrouter/free",
-        "portable_input_hash": "f5fb9d48ef34fb02552b497e9d30620a973230867d659345761f9d05c72ba639",
-        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
-        "prompt_version": "ai-enrichment-v1",
-        "protocol": "aaron-reader-ai-generation-hold/v1",
-        "provider": "openrouter",
-        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-        "schema_name": "article_translation",
-        "schema_version": "ai-output-v1",
-        "target_language": "zh-CN",
-        "task_type": "translation",
-        "workload_kind": "article"
-      },
-      "first_seen_at": "2026-08-20T16:53:02Z",
-      "last_seen_at": "2026-08-20T16:53:13Z"
     },
     {
       "hold_key": "8b32915d5befea3f2d26d55de2cbb6d5bbc710c6ddd5b43980bfff4e51ad3ffd",
@@ -10341,38 +10187,6 @@
       },
       "first_seen_at": "2026-08-11T05:36:35Z",
       "last_seen_at": "2026-08-11T05:36:45Z"
-    },
-    {
-      "hold_key": "ff1be8892aea51dc5939da4a18a5404b1b1007639ad7ed13dfc8b573ea9a2227",
-      "workload_kind": "article",
-      "hold_class": "paid_failure",
-      "descriptor": {
-        "article_identities": [
-          {
-            "canonical_url": "https://openai.com/index/stampli",
-            "content_hash": "d754682a1d2bc6d826ece9b03683887de0c9bc6da01dc7e9f3e897706ff899e6",
-            "external_id": "https://openai.com/index/stampli",
-            "source_slug": "openai-news"
-          }
-        ],
-        "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
-        "input_scope": "metadata",
-        "max_output_tokens": 800,
-        "model": "deepseek-v4-flash",
-        "portable_input_hash": "a44d1044caddc23b5aa507dcfdd9ecb7f5125fee63b7ac17ce6656c22063682c",
-        "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
-        "prompt_version": "ai-enrichment-v1",
-        "protocol": "aaron-reader-ai-generation-hold/v1",
-        "provider": "deepseek",
-        "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
-        "schema_name": "article_translation",
-        "schema_version": "ai-output-v1",
-        "target_language": "zh-CN",
-        "task_type": "translation",
-        "workload_kind": "article"
-      },
-      "first_seen_at": "2026-08-20T16:53:16Z",
-      "last_seen_at": "2026-08-20T16:53:18Z"
     }
   ]
 }
