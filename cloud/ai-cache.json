@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-21T04:56:59Z",
-  "bundle_hash": "f1cb2babcee5749667fb165431a8ee074f152cb5a166a8cdea7d553862d26fb9",
+  "exported_at": "2026-08-21T16:54:32Z",
+  "bundle_hash": "721de8d496ba76a41b1e687806e6745d882513932a061803505c13eedb918390",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -890,12 +890,12 @@
       "created_at": "2026-08-11T05:38:01Z"
     },
     {
-      "cache_key": "48be97ecaefe4c8709cc3f668a35bb1169ce224d19fd6e395976f3fd82de7d7a",
+      "cache_key": "a595954de7770e6ece2fa25cd47cba463135231665f3261e912527a378d0a22f",
       "article": {
         "source_slug": "claude-blog",
         "external_id": "https://claude.com/blog/ai-ci-cd-on-call",
         "canonical_url": "https://claude.com/blog/ai-ci-cd-on-call",
-        "content_hash": "c28dfe2f671281f4fab1830edc9b9c6a52aa4f416651ddb1f96c960aa4770790"
+        "content_hash": "1d353193c2987bcfdc08eb8f6e8719b748812a541b045fce3b8aa54bdbd99f7c"
       },
       "task_type": "translation",
       "input_scope": "metadata",
@@ -911,13 +911,13 @@
       "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "本摘要和标题基于提供的元数据，可能未涵盖完整文章的所有细节。",
-        "title": "Claude 值班：Claude Tag 如何作为 Anthropic 的 CI/CD 故障第一响应者",
-        "publisher_summary": "Anthropic 如何为 CI/CD 运行 AI 事件响应：我们持续集成团队的一名工程师介绍了 Claude Tag 代理，它检测、分类并解决 CI 故障。"
+        "limitations": "仅基于提供的元数据，未包含文章正文内容，因此无法验证标题中描述的细节或提供额外信息。标题中的'Claude Tag'、'Anthropic'及'CI/CD'等术语为原文保留，未作翻译。由于没有摘要或正文，本翻译仅限于标题本身。",
+        "title": "Claude 随叫随到：Claude Tag 如何充当 Anthropic 的 CI/CD 故障第一响应者",
+        "publisher_summary": ""
       },
-      "output_hash": "8d6730829836f88b86cd52ab4593f43ff404eb2b7954d18836b8e60de0d97b96",
+      "output_hash": "88cad9996573cc3b7ea9057a53743ab78a468f1be14fcd848dae587d8ddc2c03",
       "input_truncated": false,
-      "created_at": "2026-08-21T04:56:44Z"
+      "created_at": "2026-08-21T16:54:28Z"
     },
     {
       "cache_key": "b811bb84ef9f41a783e5cf24e0ecf09420317ba4c144edd79cf7df162a7ae12c",
@@ -2038,12 +2038,12 @@
       "created_at": "2026-08-21T04:56:56Z"
     },
     {
-      "cache_key": "cf44ad8b84e6069f0f9c18e29611f5e221a2b8223dec46cb63818ce5c23c1d60",
+      "cache_key": "4abc5b84b9fd5328d9b0560d22ed8cb1f8da657a87a9f43ccb4c71e432711934",
       "article": {
         "source_slug": "claude-blog",
         "external_id": "https://claude.com/blog/how-anthropics-business-development-team-uses-claude-to-run-inbound-and-outbound-at-scale",
         "canonical_url": "https://claude.com/blog/how-anthropics-business-development-team-uses-claude-to-run-inbound-and-outbound-at-scale",
-        "content_hash": "acaf77dd81cba81b4c998e10a66839a82fed0497cd368c4caece6d0adf2b13c4"
+        "content_hash": "627f6ac76f6bba6311dc9b7d86a3b1d7585beabac5f743d0918cb0c8b25a29e9"
       },
       "task_type": "translation",
       "input_scope": "metadata",
@@ -2059,13 +2059,13 @@
       "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
       "output": {
         "language": "zh-CN",
-        "limitations": "本文基于摘要信息，仅涵盖团队使用Claude的三个具体场景，未涉及更广泛的团队策略或详细案例。",
-        "title": "Anthropic业务发展团队如何利用Claude大规模处理入站和出站工作",
-        "publisher_summary": "一位业务发展代表分享了其团队如何使用Claude来研究客户账目、起草客户回复以及处理临时的数据分析请求。"
+        "limitations": "提供的JSON数据中publisher_summary字段为空，本翻译仅基于标题内容。未提供文章正文或摘要，因此无法验证或补充其他细节。标题中的'Anthropic'、'Claude'等专有名词已按原文保留。此翻译不包含对文章实际内容的推断或扩展。",
+        "title": "Anthropic业务拓展团队如何利用Claude大规模管理入站与出站流程",
+        "publisher_summary": ""
       },
-      "output_hash": "52d3326ab4bb415643426865402040d2117dfefc688aee5533ec18a9d65715c9",
+      "output_hash": "5157a8b2d5a28dec6565f92ebe8df74efad079c3b81e5febfe521304d75743e4",
       "input_truncated": false,
-      "created_at": "2026-08-21T04:56:47Z"
+      "created_at": "2026-08-21T16:54:32Z"
     },
     {
       "cache_key": "3857ce019c1faf5a90ef378b61935c2cbfce71de119e74d4e6638cb235f7ff88",
@@ -2466,6 +2466,36 @@
       "output_hash": "e117db2716047180ff37313a015f6e4e0990fd7385731835c328fe9a0935a092",
       "input_truncated": false,
       "created_at": "2026-08-11T05:37:16Z"
+    },
+    {
+      "cache_key": "7aa76314086cf00f4a2c8a709f56b3de0b6b772e60bbbfd7b9bb5c2a004a42ec",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
+        "canonical_url": "https://claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
+        "content_hash": "b831537ebeb15345fdcd59e4bcf40e8834e28cbae59e7f1c7d1ef714be67f6c8"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "由于原始数据中的publisher_summary为空字符串，本翻译仅基于标题，未包含正文内容。可能无法全面反映文章细节。",
+        "title": "Slack中的自助数据分析：Anthropic如何为临时问题部署Claude Tag",
+        "publisher_summary": ""
+      },
+      "output_hash": "d849e207886bc976be105170fb4b5dedc0e086ea3627555f548ecb27671374bb",
+      "input_truncated": false,
+      "created_at": "2026-08-21T16:54:30Z"
     },
     {
       "cache_key": "34c65a8ce6be417465e038441c8f59afdb5aa58d332765a89acecd3a3374e9e3",
@@ -9643,11 +9673,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "2224d7649771975433b10f47b9b7e7f8f329ef704720e3431eaf40b6a951afd8",
+      "ledger_key": "c003656a74074b85da1d05499b7a2d5f001c64aac86ef1786188a27a7da9a24e",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -9663,11 +9693,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "139a7f673b167bbfdac75349fec6f8869c3a473d9df00c7d786ce34abfe46936",
+      "ledger_key": "b96c18ed472a41069db52cfc3d13102c3ee80084c5df9fd5df411d88ac5db94b",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9683,11 +9713,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "c7a926c1487b27e6d8380dac8f5864e4fe62b17db033439e1ecfe71671957069",
+      "ledger_key": "b0cfa62bfff9e39f4078323990a90814abab6a8f5cd4252a0bbb7cf3cd965ee3",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -9703,11 +9733,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "192f17311cc13b66618df7989f5a61ae07dd6bb648bed55aff25feba698b55d1",
+      "ledger_key": "338c685201d87862ec830e7b71be778778e5aadd0bd694f23741f4144f254cb6",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9723,11 +9753,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "ab848e7fc80eedab46cacfa0b686fe4780c1984e308e7aa1f5545a82053a8b77",
+      "ledger_key": "af2644a0165dc0c2720ce25164537a0715bc8166d7743ad6cab17c7c57a44066",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9743,11 +9773,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "c578c2015d498bfa08dc5895e9095849d73db569d3e7950a3147a22f7ce47457",
+      "ledger_key": "c7a2822226054a963a35ac8bf3decb13aba28bf3afc8cfbb52e40960282410f9",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9763,11 +9793,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "8fdc805829c244900437b6085f9d9a18982da221f72fd2de702d6428cb06cab8",
+      "ledger_key": "379a17b70c0fa71340c2d934e6ce15c513af57fbd8dd103bb472e4af147cc37c",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9783,11 +9813,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "1f4705fedcc84d515e4f5dde571997c8bcd9fbd7c18d7515e93be18867087c75",
+      "ledger_key": "3950af7bdf780d21b00d4a47b8ecf29b9d8b6d1ba5c84ff1c6855489fd3beb61",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -9803,11 +9833,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "993d9fcd9c9b014169f8663e5829664a8be528480e51f6df213939743a39aab4",
+      "ledger_key": "46fc4801ef82d7d6a6ed14dc2b0157ff8621cb1ce984d3da284e0f2e8b4e0dfd",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9823,11 +9853,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "c343cad11accc259324be0ef70ecffc7964f7d0a14d0dcd23194ff84f0175b99",
+      "ledger_key": "13a75e5af373936c25425bd342a060754dc1c5de16449f568df6efa4a902497e",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9843,11 +9873,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "d099d38eb0e3e954b691102a2a0c2cb77fc70e1f8cda7dba5fea1ab3fa13d0cf",
+      "ledger_key": "78f8e523a8c9856ca82a9df98451c439dd85f56a944146a9b50672d61da6c5f7",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -9863,11 +9893,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "538de8f96b0aa69e7b02869f7ca07455ca4c3fc1416f93543ccde847341f85e2",
+      "ledger_key": "0be250ae79c3c831b55782ae8d489fb1fc86f715c4b43398339721b5fbd5e25f",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9883,11 +9913,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b9021ff4686d8d9eddcc6debb2930eb43faaa96a36c93e81d92dac005f8705d5",
+      "ledger_key": "df7d03810f0ca362e34f33ae97136877441e7bb48a553e8b35561cc1846b1e36",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-17T07:00:00Z",
       "day_end": "2026-08-18T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9903,11 +9933,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "268216b902b7a7beec2b21756d32e5a0b70d6989facf1425c670262848143771",
+      "ledger_key": "98c74bc28d06cd42beb3cce1b953a88b7f8737b364948603aac2aad4662e16e9",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-18T07:00:00Z",
       "day_end": "2026-08-19T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 9,
       "confirmed_requests": 9,
       "unconfirmed_requests": 0,
@@ -9923,11 +9953,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "e8c6e337bb8857fa9d73587bf94f1ed3e0c920c7f846472de822368fa00fac4a",
+      "ledger_key": "9c21e7f678d24a69c1dc98c8547b57f11b80095d9ecaf59c6fbcb5a472246dbe",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-19T07:00:00Z",
       "day_end": "2026-08-20T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9943,11 +9973,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "a58b34ce6527dda8d0a404c411e2052c8162c0339fcb63f9eb6ceab8262330cc",
+      "ledger_key": "864710c6353fc5f1ea6a2c3fa46338746e4ededf9d12c5447b279f4851c29fa2",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-20T07:00:00Z",
       "day_end": "2026-08-21T07:00:00Z",
-      "covered_through": "2026-08-21T04:56:59Z",
+      "covered_through": "2026-08-21T16:54:32Z",
       "requests": 20,
       "confirmed_requests": 20,
       "unconfirmed_requests": 0,
@@ -9961,31 +9991,51 @@
       "reserved_total_tokens_for_unconfirmed": 0,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
+    },
+    {
+      "ledger_key": "8375332d1aacb2e2f6a9cdb2a28210dcac4365a53c6af8d19e68005d732d86b6",
+      "timezone": "America/Los_Angeles",
+      "day_start": "2026-08-21T07:00:00Z",
+      "day_end": "2026-08-22T07:00:00Z",
+      "covered_through": "2026-08-21T16:54:32Z",
+      "requests": 5,
+      "confirmed_requests": 4,
+      "unconfirmed_requests": 1,
+      "input_tokens": 1373,
+      "cached_input_tokens": 768,
+      "cache_miss_input_tokens": 605,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1082,
+      "reasoning_tokens": 626,
+      "total_tokens": 2455,
+      "reserved_total_tokens_for_unconfirmed": 4106,
+      "cost_micros": 0,
+      "reserved_cost_micros_for_unconfirmed": 0
     }
   ],
   "generation_holds": [
     {
-      "hold_key": "0b280208aa1227b43d48a4c248c9e15b510318df28fd548646119d8b92a07428",
+      "hold_key": "0ca0bc4b17802d035ac1b4e559f9de4dff230f2a52aebb270bee5c960738d278",
       "workload_kind": "article",
-      "hold_class": "paid_failure",
+      "hold_class": "ambiguous",
       "descriptor": {
         "article_identities": [
           {
-            "canonical_url": "https://claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
-            "content_hash": "48b29b33e7abbd9fae127bf1b863409e87bb542912c6aa7ceacb3bdda5683905",
-            "external_id": "https://claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
+            "canonical_url": "https://claude.com/blog/the-ai-native-sdlc-playbook",
+            "content_hash": "bec6db7d9b8ce7f0d6e13121dbb9a6ee3bf62c12e74e148151d8e0495bb7f4b0",
+            "external_id": "https://claude.com/blog/the-ai-native-sdlc-playbook",
             "source_slug": "claude-blog"
           }
         ],
         "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
         "input_scope": "metadata",
         "max_output_tokens": 800,
-        "model": "deepseek-v4-flash",
-        "portable_input_hash": "f146fd335d27686001b3a4914817c30b1f08ec9196a78e315e23386a0c293d31",
+        "model": "openrouter/free",
+        "portable_input_hash": "e4ddde23a303363882c43d004c55774f1381212576501240c3238fa0cdc81a03",
         "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
         "prompt_version": "ai-enrichment-v1",
         "protocol": "aaron-reader-ai-generation-hold/v1",
-        "provider": "deepseek",
+        "provider": "openrouter",
         "schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
         "schema_name": "article_translation",
         "schema_version": "ai-output-v1",
@@ -9993,8 +10043,8 @@
         "task_type": "translation",
         "workload_kind": "article"
       },
-      "first_seen_at": "2026-08-21T04:56:44Z",
-      "last_seen_at": "2026-08-21T04:56:45Z"
+      "first_seen_at": "2026-08-21T16:53:54Z",
+      "last_seen_at": "2026-08-21T16:54:08Z"
     },
     {
       "hold_key": "89a9a8e96cc88e6e3f441a4c1da648adec195d4ad95b05d549c3c4e04fd0036f",
