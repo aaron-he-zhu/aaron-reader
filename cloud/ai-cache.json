@@ -1,7 +1,7 @@
 {
   "protocol": "aaron-reader-public-ai-cache-v3",
-  "exported_at": "2026-08-21T16:54:32Z",
-  "bundle_hash": "721de8d496ba76a41b1e687806e6745d882513932a061803505c13eedb918390",
+  "exported_at": "2026-08-22T04:52:42Z",
+  "bundle_hash": "4322e4c7d333cafc3a00eec1f69f237cb7316d277cd7bab20a2b9d5d40e6022c",
   "artifacts": [
     {
       "cache_key": "1d8689ee179000cdf325f587fcc79d11f22fb3c74d8fd0b8b476d6b183c89474",
@@ -1135,6 +1135,36 @@
       "output_hash": "ceb1adebb946918642df2b98ffd7f60780fd038ba463615565c4f3c941715a23",
       "input_truncated": false,
       "created_at": "2026-08-19T10:41:05Z"
+    },
+    {
+      "cache_key": "8ba4e42adaa13940d70385ce00215075cd5a75928cd9d7557e93ecdd6963b334",
+      "article": {
+        "source_slug": "claude-blog",
+        "external_id": "https://claude.com/blog/bringing-claude-mythos-5-to-more-defenders",
+        "canonical_url": "https://claude.com/blog/bringing-claude-mythos-5-to-more-defenders",
+        "content_hash": "605875c6a3b40091224e9edcf2e26049d5550c5b7ce0c9b48776b25878477130"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "openrouter",
+      "requested_model": "openrouter/free",
+      "resolved_model": "dots-studio/dots-3-note-preview:free",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "仅基于提供的JSON数据进行翻译，未添加或推断任何额外信息。原文publisher_summary为空字符串，因此翻译后仍为空。",
+        "title": "将Claude Mythos 5的网络安全能力带给更多防御者",
+        "publisher_summary": ""
+      },
+      "output_hash": "a67ccb25c6ce9fffb4286811db53c07230a837b62bb7155b1b49e30381d74bd6",
+      "input_truncated": false,
+      "created_at": "2026-08-22T04:52:20Z"
     },
     {
       "cache_key": "bce7d3eabd68e8c728e7317ff923bc6ff3e10f53479a2fec90ea6497126405e4",
@@ -4374,6 +4404,36 @@
       "output_hash": "cd2992d512bbf2758535f02ac7dd01cf72bdb3c6b33e87d044a708f80fd63c46",
       "input_truncated": false,
       "created_at": "2026-08-02T07:12:37Z"
+    },
+    {
+      "cache_key": "1ea8bb81bb69d060a20516845d4c9d649a4f52ca30096045c3eff3485f4f0b74",
+      "article": {
+        "source_slug": "openai-developers",
+        "external_id": "https://developers.openai.com/blog/scaling-cyber-defenders-with-daybreak",
+        "canonical_url": "https://developers.openai.com/blog/scaling-cyber-defenders-with-daybreak",
+        "content_hash": "4868285fbb3aba74410998f154a7c6cf39607ad7303222a90521ebd66b5c2bd7"
+      },
+      "task_type": "translation",
+      "input_scope": "metadata",
+      "source_language": "unknown",
+      "target_language": "zh-CN",
+      "prompt_version": "ai-enrichment-v1",
+      "prompt_hash": "02fd7530627fb63bdf764af71f06077c7b0298122a834afbb846a69b812e3d8d",
+      "response_schema_version": "ai-output-v1",
+      "response_schema_hash": "852b5b36ced43460d3c11d1db23dfc71175f8316700c3109a584de3626d30a4e",
+      "provider": "deepseek",
+      "requested_model": "deepseek-v4-flash",
+      "resolved_model": "deepseek-v4-flash",
+      "generation_params_hash": "2d3ca133780779191f20a20163772118e1850f4bde63ea433cc340d1dff2cf80",
+      "output": {
+        "language": "zh-CN",
+        "limitations": "该摘要仅基于提供的文章元数据，未涵盖全部文章内容。",
+        "title": "使用Daybreak扩展网络防御者",
+        "publisher_summary": "使用ChatGPT、Codex Security和开源工具来调查威胁、验证漏洞，并将发现转化为经过审查和验证的修复方案。"
+      },
+      "output_hash": "2386947fbc9c45350136d3604e60b2ef0aeb15d3154a4755e5e751c7b1eca065",
+      "input_truncated": false,
+      "created_at": "2026-08-22T04:52:41Z"
     },
     {
       "cache_key": "22fb49e9f215fa2d11936d7ba031dd6cc113ff23c8ee31487eb84c70aceb23b3",
@@ -9673,11 +9733,11 @@
   ],
   "usage_ledger": [
     {
-      "ledger_key": "c003656a74074b85da1d05499b7a2d5f001c64aac86ef1786188a27a7da9a24e",
+      "ledger_key": "96c1830530eb887b527ebf3f695d37b14e9faf1ea1c058dc0d379c5574179b12",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-03T07:00:00Z",
       "day_end": "2026-08-04T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 1,
       "confirmed_requests": 1,
       "unconfirmed_requests": 0,
@@ -9693,11 +9753,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b96c18ed472a41069db52cfc3d13102c3ee80084c5df9fd5df411d88ac5db94b",
+      "ledger_key": "dbdd647c582060d394d7dae4c1546d0b1a234fad25632b7beabb5282fb42b22c",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-04T07:00:00Z",
       "day_end": "2026-08-05T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9713,11 +9773,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "b0cfa62bfff9e39f4078323990a90814abab6a8f5cd4252a0bbb7cf3cd965ee3",
+      "ledger_key": "678148d2a48bb62b1d7680ed22a85d662c429cf327f7c9729adcc01b8dcb105e",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-05T07:00:00Z",
       "day_end": "2026-08-06T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 3,
       "confirmed_requests": 3,
       "unconfirmed_requests": 0,
@@ -9733,11 +9793,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "338c685201d87862ec830e7b71be778778e5aadd0bd694f23741f4144f254cb6",
+      "ledger_key": "424bfaba41767393cd59f15fc8a018d1d49d9dc045cec9219270c394fb3170a5",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-06T07:00:00Z",
       "day_end": "2026-08-07T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9753,11 +9813,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "af2644a0165dc0c2720ce25164537a0715bc8166d7743ad6cab17c7c57a44066",
+      "ledger_key": "bc0a24044a927e317287655b5b6c6d0f6cb42f59caee8faea6e3107de8fec18d",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-07T07:00:00Z",
       "day_end": "2026-08-08T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9773,11 +9833,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "c7a2822226054a963a35ac8bf3decb13aba28bf3afc8cfbb52e40960282410f9",
+      "ledger_key": "1e8f3d9f194c6146a5376f87c6afb093ec195e23378a1899bff4b5d4400c4c69",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-08T07:00:00Z",
       "day_end": "2026-08-09T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9793,11 +9853,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "379a17b70c0fa71340c2d934e6ce15c513af57fbd8dd103bb472e4af147cc37c",
+      "ledger_key": "c91c6d6d5385d991571b956274149ffd94469e5f2939b248e0da33dcb553dfa4",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-09T07:00:00Z",
       "day_end": "2026-08-10T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 2,
       "confirmed_requests": 2,
       "unconfirmed_requests": 0,
@@ -9813,11 +9873,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "3950af7bdf780d21b00d4a47b8ecf29b9d8b6d1ba5c84ff1c6855489fd3beb61",
+      "ledger_key": "78dd5fe112bcdd57d42cdabdab4451e7896ec6d386fac7ed01fb0e4ceb2e32fa",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-10T07:00:00Z",
       "day_end": "2026-08-11T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 20,
       "confirmed_requests": 14,
       "unconfirmed_requests": 6,
@@ -9833,11 +9893,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "46fc4801ef82d7d6a6ed14dc2b0157ff8621cb1ce984d3da284e0f2e8b4e0dfd",
+      "ledger_key": "02f2ade50c7a27684bb54beb44e96731034811fd52400450137d1fbf8fc8784b",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-11T07:00:00Z",
       "day_end": "2026-08-12T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9853,11 +9913,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "13a75e5af373936c25425bd342a060754dc1c5de16449f568df6efa4a902497e",
+      "ledger_key": "c965dc49c78f269b016308281ff8efbc37b0de3f94713f613630122c4dd17d11",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-12T07:00:00Z",
       "day_end": "2026-08-13T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 8,
       "confirmed_requests": 8,
       "unconfirmed_requests": 0,
@@ -9873,11 +9933,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "78f8e523a8c9856ca82a9df98451c439dd85f56a944146a9b50672d61da6c5f7",
+      "ledger_key": "13815ddd93f324cc2229ca83922bdc9a8cfb0fe412801f93cc775650d1b2ca25",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-13T07:00:00Z",
       "day_end": "2026-08-14T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 10,
       "confirmed_requests": 8,
       "unconfirmed_requests": 2,
@@ -9893,11 +9953,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "0be250ae79c3c831b55782ae8d489fb1fc86f715c4b43398339721b5fbd5e25f",
+      "ledger_key": "47702bf475859709528ce20dc6f09e333879dc8380844abc98c6671fab24d618",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-14T07:00:00Z",
       "day_end": "2026-08-15T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9913,11 +9973,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "df7d03810f0ca362e34f33ae97136877441e7bb48a553e8b35561cc1846b1e36",
+      "ledger_key": "5c70bb2a8001d8087986f6619a4addcec7457df8cd1305f2d05be7601baef640",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-17T07:00:00Z",
       "day_end": "2026-08-18T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 4,
       "confirmed_requests": 4,
       "unconfirmed_requests": 0,
@@ -9933,11 +9993,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "98c74bc28d06cd42beb3cce1b953a88b7f8737b364948603aac2aad4662e16e9",
+      "ledger_key": "703db7b972f5ce84d38e3f4ebcdc232e062eb426c74ff1fe1e85c7aafc2b32ea",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-18T07:00:00Z",
       "day_end": "2026-08-19T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 9,
       "confirmed_requests": 9,
       "unconfirmed_requests": 0,
@@ -9953,11 +10013,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "9c21e7f678d24a69c1dc98c8547b57f11b80095d9ecaf59c6fbcb5a472246dbe",
+      "ledger_key": "f835c7ab28a4ea2326f68ca7e430a0dfd72f7a6199a67f9e57f89814bc890a7e",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-19T07:00:00Z",
       "day_end": "2026-08-20T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 19,
       "confirmed_requests": 18,
       "unconfirmed_requests": 1,
@@ -9973,11 +10033,11 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "864710c6353fc5f1ea6a2c3fa46338746e4ededf9d12c5447b279f4851c29fa2",
+      "ledger_key": "1bc56ab1bcaef83868453249a44d44ea2cd393b17bdbfa359f06208e4d34dc89",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-20T07:00:00Z",
       "day_end": "2026-08-21T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
+      "covered_through": "2026-08-22T04:52:42Z",
       "requests": 20,
       "confirmed_requests": 20,
       "unconfirmed_requests": 0,
@@ -9993,21 +10053,21 @@
       "reserved_cost_micros_for_unconfirmed": 0
     },
     {
-      "ledger_key": "8375332d1aacb2e2f6a9cdb2a28210dcac4365a53c6af8d19e68005d732d86b6",
+      "ledger_key": "976bc8d85050ce1dbc03b6135e83c4278bdf1a10f6642a2aa79da7579781ea48",
       "timezone": "America/Los_Angeles",
       "day_start": "2026-08-21T07:00:00Z",
       "day_end": "2026-08-22T07:00:00Z",
-      "covered_through": "2026-08-21T16:54:32Z",
-      "requests": 5,
-      "confirmed_requests": 4,
+      "covered_through": "2026-08-22T04:52:42Z",
+      "requests": 8,
+      "confirmed_requests": 7,
       "unconfirmed_requests": 1,
-      "input_tokens": 1373,
-      "cached_input_tokens": 768,
-      "cache_miss_input_tokens": 605,
+      "input_tokens": 2379,
+      "cached_input_tokens": 1024,
+      "cache_miss_input_tokens": 1355,
       "cache_write_input_tokens": 0,
-      "output_tokens": 1082,
+      "output_tokens": 1290,
       "reasoning_tokens": 626,
-      "total_tokens": 2455,
+      "total_tokens": 3669,
       "reserved_total_tokens_for_unconfirmed": 4106,
       "cost_micros": 0,
       "reserved_cost_micros_for_unconfirmed": 0
